@@ -1,0 +1,16 @@
+// =================================================================================================
+// VS Code Workspace File for Ekphrasis
+//
+// Defines the project folder structure for the workspace.
+// External configuration files are located in the `.vscode/` subdirectory:
+//   - `settings.json`  : Editor behavior, environment, and tools
+//   - `extensions.json`: Extension recommendations
+// =================================================================================================
+{
+  "folders": [
+    {
+      "name": "ekphrasis",
+      "path": "."
+    }
+  ]
+}

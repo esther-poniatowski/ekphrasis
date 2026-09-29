@@ -1,0 +1,33 @@
+# gitignore file for ekphrasis
+# ----------------------------------
+
+## Temporary files
+*.tmp
+*.temp
+
+## Credentials
+.git-credentials
+
+## macOS
+.DS_Store
+
+## Node
+node_modules/
+npm-debug.log*
+
+## Build Output (Obsidian plugin bundle)
+main.js
+*.js.map
+
+## Test Coverage
+coverage/
+
+## Tool Caches
+.eslintcache
+
+## Example Vault (keep only the shared schemas)
+examples/vault/.obsidian/*
+!examples/vault/.obsidian/yaml-schemas/
+
+## Claude Code skill-generated backups
+.claude/*.bak.*
