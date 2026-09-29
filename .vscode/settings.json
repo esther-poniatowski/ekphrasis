@@ -1,0 +1,81 @@
+// =================================================================================================
+// VS Code Workspace Settings for Ekphrasis
+//
+// Project-specific preferences for editor behavior and development tooling.
+//
+// General Sections
+// ----------------
+// - Editor Layout and Behavior
+// - File Explorer and Exclusions
+//
+// Tool Configuration
+// ------------------
+// - Spell Checking      : CSpell
+// - Formatting          : Prettier, Rewrap
+// - Linting             : ESLint
+// - Static Type Checking: TypeScript (workspace version)
+// - Testing             : Vitest
+// =================================================================================================
+{
+  // --- Editor Layout and Behavior ----------------------------------------------------------------
+  "workbench.editor.closeEmptyGroups": false,
+  "workbench.editor.openSideBySideDirection": "right",
+  "workbench.editor.openPositioning": "last",
+  "editor.lineNumbers": "on",
+  "editor.rulers": [100],
+  "editor.wordWrap": "off",
+
+  // --- File Explorer and Exclusions --------------------------------------------------------------
+  "files.exclude": {
+    "**/.git": false,
+    "**/.DS_Store": true,
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/coverage": true,
+    "main.js": true
+  },
+
+  // --- Spell Checking ----------------------------------------------------------------------------
+  "cSpell.enabled": true,
+  "cSpell.customDictionaries": {
+    "project": {
+      "name": "project",
+      "path": "${workspaceFolder}/config/dictionaries/project.txt"
+    },
+    "typescript": {
+      "name": "typescript",
+      "path": "${workspaceFolder}/config/dictionaries/typescript.txt"
+    },
+    "tools": {
+      "name": "tools",
+      "path": "${workspaceFolder}/config/dictionaries/tools.txt"
+    }
+  },
+
+  // --- Formatting --------------------------------------------------------------------------------
+  "rewrap.wrappingColumn": 100,
+  "rewrap.wholeComment": false,
+  "rewrap.autoWrap.enabled": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "prettier.configPath": "config/tools/prettier.json",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // --- Linting -----------------------------------------------------------------------------------
+  "eslint.options": { "overrideConfigFile": "config/tools/eslint.config.mjs" },
+  "eslint.validate": ["typescript"],
+
+  // --- Static Type Checking ----------------------------------------------------------------------
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // --- Testing -----------------------------------------------------------------------------------
+  "vitest.configSearchPatternInclude": "config/tools/vitest.config.ts"
+}

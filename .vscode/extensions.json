@@ -1,0 +1,41 @@
+// =================================================================================================
+// VS Code Extension Recommendations for Ekphrasis
+//
+// Categories
+// ----------
+// - Editor Enhancements
+// - Spell Checking
+// - Formatting
+// - Linting
+// - Testing
+// - Documentation
+// - Version Control
+// =================================================================================================
+{
+  "recommendations": [
+    // --- Editor Enhancements ---------------------------------------------------------------------
+    "wayou.vscode-todo-highlight",
+    "redhat.vscode-yaml",
+
+    // --- Spell Checking --------------------------------------------------------------------------
+    "streetsidesoftware.code-spell-checker",
+
+    // --- Formatting ------------------------------------------------------------------------------
+    "esbenp.prettier-vscode",
+    "stkb.rewrap",
+
+    // --- Linting ---------------------------------------------------------------------------------
+    "dbaeumer.vscode-eslint",
+
+    // --- Testing ---------------------------------------------------------------------------------
+    "vitest.explorer",
+
+    // --- Documentation ---------------------------------------------------------------------------
+    "davidanson.vscode-markdownlint",
+
+    // --- Version Control -------------------------------------------------------------------------
+    "mhutchie.git-graph",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github"
+  ]
+}
