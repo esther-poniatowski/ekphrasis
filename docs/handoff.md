@@ -11,7 +11,7 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The milestone *Toolchain and spikes* is complete, and every step is checked in the [roadmap](../TODO.md). Every spike has a recorded verdict, and the spike plugin is retired. Its code remains in the history, in the commit `test: Add spike plugin for Obsidian premises`. Continuous integration has not run yet, so the first push confirms that `npm ci` passes on the committed lock file.
+The milestone *Toolchain and spikes* is complete, and every step is checked in the [roadmap](../TODO.md). Every spike has a recorded verdict, and the spike plugin is retired. Its code remains in the history, in the commit `test: Add spike plugin for Obsidian premises`. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`, and its continuous integration passed on 2026-10-01, including `npm ci` on the committed lock file.
 
 The next milestone is *Bound form*. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
