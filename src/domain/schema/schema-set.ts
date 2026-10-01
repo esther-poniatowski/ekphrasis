@@ -51,7 +51,7 @@ export class SchemaSet {
       }),
     );
     if (!this.documents.has(rootPath)) {
-      throw new SchemaLoadError(`The root schema "${rootPath}" was not loaded.`, rootPath);
+      throw new SchemaLoadError(`The root schema \`${rootPath}\` was not loaded.`, rootPath);
     }
     for (const { path, root } of documents) {
       visitObjects(root, (object) => {
@@ -88,7 +88,7 @@ export class SchemaSet {
       current = this.locate(reference, current.document);
     }
     throw new SchemaReferenceError(
-      `A chain of $ref starting in "${schema.document}" loops without reaching a schema.`,
+      `A chain of \`$ref\` starting in \`${schema.document}\` loops without reaching a schema.`,
       schema.document,
     );
   }
@@ -96,7 +96,10 @@ export class SchemaSet {
   /** Schema designated by `reference`, written in the document `from`. */
   private locate(reference: string, from: string): LocatedSchema {
     const fail = (reason: string): never => {
-      throw new SchemaReferenceError(`The $ref "${reference}" in "${from}" ${reason}.`, from);
+      throw new SchemaReferenceError(
+        `The \`$ref\` \`${reference}\` in \`${from}\` ${reason}.`,
+        from,
+      );
     };
     const target = parseReference(reference, from) ?? fail("leaves the vault");
     const path =

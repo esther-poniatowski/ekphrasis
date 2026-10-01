@@ -83,7 +83,7 @@ class FormModelBuilder {
     if (unknownDeclaredKind !== null) {
       this.issues.push({
         path: printFieldPath(site.path),
-        message: `The keyword x-kind names no field kind: "${unknownDeclaredKind}".`,
+        message: `The keyword \`x-kind\` names no field kind: \`${unknownDeclaredKind}\`.`,
       });
     }
     return kind ?? kindOfNode(site.node);
@@ -129,7 +129,7 @@ class FormModelBuilder {
       const entry = byKey.get(key);
       return this.field({
         path: [...site.path, key],
-        label: property.title ?? key,
+        label: property.title ?? keyLabel(key),
         schema: property,
         node: entry?.value ?? null,
         required: required.has(key),
@@ -190,6 +190,16 @@ class FormModelBuilder {
   private textOf(node: YamlNode | null): string {
     return node?.range ? this.source.slice(node.range.start, node.range.end) : "";
   }
+}
+
+/**
+ * Label of a declared property without a title: its key, with underscores and hyphens read as
+ * spaces (`empty_hint` → `empty hint`). The keys of a mapping admitted by a pattern are data,
+ * such as identifiers, so they keep their written form.
+ */
+function keyLabel(key: string): string {
+  const label = key.replace(/[_-]+/g, " ").trim();
+  return label === "" ? key : label;
 }
 
 /** Follows aliases to their targets; a value reached through an alias is locked. */

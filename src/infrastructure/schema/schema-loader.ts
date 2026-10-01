@@ -2,7 +2,7 @@
  * Implementation of the `SchemaLoader` port: reads a schema file and every schema file that its
  * references reach, through the `FileSource` port, and parses each one as JSON or YAML.
  */
-import { parseDocument } from "yaml";
+import { LineCounter, parseDocument } from "yaml";
 import type { FileSource, SchemaLoader } from "../../application";
 import {
   asJsonValue,
@@ -15,6 +15,7 @@ import {
   type SchemaDocument,
 } from "../../domain";
 import { SchemaLoadError } from "../../errors";
+import { nameBareSymbols } from "../library-messages";
 
 export class FileSchemaLoader implements SchemaLoader {
   constructor(private readonly files: FileSource) {}
@@ -46,13 +47,13 @@ export class FileSchemaLoader implements SchemaLoader {
   private async read(path: string, referrer: string | null): Promise<JsonValue> {
     const text = await this.files.read(path);
     if (text === null) {
-      const origin = referrer === null ? "" : `, referenced from "${referrer}",`;
-      throw new SchemaLoadError(`The schema file "${path}"${origin} does not exist.`, path);
+      const origin = referrer === null ? "" : `, referenced from \`${referrer}\`,`;
+      throw new SchemaLoadError(`The schema file \`${path}\`${origin} does not exist.`, path);
     }
     const value = extensionOf(path) === "json" ? parseJson(text, path) : parseYaml(text, path);
     const json = asJsonValue(value);
     if (json === null) {
-      throw new SchemaLoadError(`The schema file "${path}" holds a value outside JSON.`, path);
+      throw new SchemaLoadError(`The schema file \`${path}\` holds a value outside JSON.`, path);
     }
     return json;
   }
@@ -62,17 +63,19 @@ function parseJson(text: string, path: string): unknown {
   try {
     return JSON.parse(text);
   } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    throw new SchemaLoadError(`The schema file "${path}" is not valid JSON: ${reason}`, path);
+    const reason = nameBareSymbols(error instanceof Error ? error.message : String(error));
+    throw new SchemaLoadError(`The schema file \`${path}\` is not valid JSON: ${reason}`, path);
   }
 }
 
 function parseYaml(text: string, path: string): unknown {
-  const document = parseDocument(text);
+  const lines = new LineCounter();
+  const document = parseDocument(text, { prettyErrors: false, lineCounter: lines });
   const [error] = document.errors;
   if (error) {
+    const { line, col } = lines.linePos(error.pos[0]);
     throw new SchemaLoadError(
-      `The schema file "${path}" is not valid YAML: ${error.message}`,
+      `The schema file \`${path}\` is not valid YAML, at line ${line}, column ${col}: ${nameBareSymbols(error.message)}.`,
       path,
     );
   }

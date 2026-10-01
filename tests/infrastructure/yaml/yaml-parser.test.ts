@@ -52,6 +52,9 @@ describe("YamlDocumentParser", () => {
       }
     })();
     expect(error).toBeInstanceOf(YamlParseError);
-    expect((error as YamlParseError).position).toEqual({ line: 2, column: 4 });
+    expect(error).toMatchObject({
+      message: expect.not.stringMatching(/line|\n/) as unknown,
+      position: { line: 2, column: 4, lineText: "b: c: d" },
+    });
   });
 });

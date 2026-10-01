@@ -67,25 +67,50 @@
 /* --- Form --------------------------------------------------------------------------------------- */
 
 .ekphrasis-form-header {
-  margin-bottom: var(--size-4-4);
+  margin-bottom: var(--size-4-6);
 }
 
 .ekphrasis-form-title {
   font-size: var(--h2-size);
   font-weight: var(--h2-weight);
+  margin-bottom: var(--size-4-2);
 }
 
 .ekphrasis-form-binding,
 .ekphrasis-empty,
 .ekphrasis-alternative,
-.ekphrasis-extra-heading {
+.ekphrasis-extra-heading,
+.ekphrasis-option-description {
   color: var(--text-muted);
   font-size: var(--font-ui-small);
 }
 
+.ekphrasis-option-description {
+  margin-top: var(--size-2-2);
+}
+
+/* Warnings about the schema, framed like a warning callout of the theme. */
 .ekphrasis-schema-issues {
-  color: var(--text-warning);
+  margin-bottom: var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-left: 3px solid rgb(var(--color-orange-rgb));
+  border-radius: var(--radius-s);
+  background-color: rgba(var(--color-orange-rgb), 0.1);
   font-size: var(--font-ui-small);
+}
+
+.ekphrasis-schema-issues-title {
+  color: rgb(var(--color-orange-rgb));
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-schema-issues ul {
+  margin: var(--size-2-2) 0 0;
+  padding-left: var(--size-4-4);
+}
+
+.ekphrasis-issue-path {
+  margin-right: var(--size-4-2);
 }
 
 .ekphrasis-field {
@@ -116,12 +141,36 @@
   color: var(--text-accent);
 }
 
-.ekphrasis-lock {
+/* The lock symbol is a button; the theme styles of buttons are reset so only its icon shows. */
+.ekphrasis-lock,
+.ekphrasis-lock:hover {
+  display: inline-flex;
+  align-self: center;
+  height: auto;
+  margin: 0;
+  padding: 0;
   color: var(--text-faint);
-  font-size: var(--font-ui-smaller);
-  border: 1px solid var(--background-modifier-border);
-  border-radius: var(--radius-s);
-  padding: 0 var(--size-2-1);
+  background: none;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ekphrasis-lock svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.ekphrasis-lock:hover,
+.ekphrasis-lock[aria-expanded="true"] {
+  color: var(--text-accent);
+}
+
+/* The note of a lock spans the label and the content of its row. */
+.ekphrasis-lock-note {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
 }
 
 .ekphrasis-control {
@@ -145,7 +194,6 @@ textarea.ekphrasis-control {
 }
 
 .ekphrasis-group-heading {
-  font-weight: var(--font-semibold);
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
@@ -154,8 +202,14 @@ textarea.ekphrasis-control {
 }
 
 .ekphrasis-extra-entries {
-  margin-top: var(--size-4-2);
+  margin-top: var(--size-4-4);
+  padding-top: var(--size-4-2);
+  border-top: 1px solid var(--background-modifier-border);
   opacity: 0.85;
+}
+
+.ekphrasis-extra-heading {
+  margin-bottom: var(--size-4-2);
 }
 
 .ekphrasis-message {
@@ -167,4 +221,41 @@ textarea.ekphrasis-control {
 .ekphrasis-message-title {
   font-size: var(--h3-size);
   color: var(--text-normal);
+}
+
+.ekphrasis-message-detail {
+  color: var(--text-normal);
+}
+
+.ekphrasis-message-actions {
+  margin-top: var(--size-4-4);
+}
+
+/* The faulty line of a parse error, with a caret under the column; left-aligned so the caret
+   stays under its character. */
+.ekphrasis-source-excerpt {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  text-align: left;
+  margin: 0 auto var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-radius: var(--radius-s);
+  background-color: var(--background-secondary);
+  font-family: var(--font-monospace);
+  font-size: var(--code-size);
+}
+
+/* --- Settings tab --------------------------------------------------------------------------- */
+
+.ekphrasis-labelled-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-1);
+}
+
+.ekphrasis-labelled-input label {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
 }

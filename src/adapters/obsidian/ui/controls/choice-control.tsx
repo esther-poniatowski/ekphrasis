@@ -14,16 +14,24 @@ export function ChoiceControl({ field, readOnly }: ControlProps<ScalarField>): J
   const index = field.options.findIndex((option) => option.value === field.value);
   const outside = field.value !== null && index < 0;
   const selected = index >= 0 ? String(index) : outside ? "outside" : UNSET;
+  // A dropdown shows option tooltips on no platform reliably, so the description of the selected
+  // option is displayed below it.
+  const description = index >= 0 ? (field.options[index]?.description ?? null) : null;
   return (
-    <select class="ekphrasis-control dropdown" value={selected} disabled={readOnly}>
-      {field.value === null && <option value={UNSET} />}
-      {outside && <option value="outside">{`${formatScalar(field.value)} (not admitted)`}</option>}
-      {field.options.map((option, position) => (
-        <option key={position} value={String(position)} title={option.description ?? undefined}>
-          {optionLabel(option)}
-        </option>
-      ))}
-    </select>
+    <>
+      <select class="ekphrasis-control dropdown" value={selected} disabled={readOnly}>
+        {field.value === null && <option value={UNSET} />}
+        {outside && (
+          <option value="outside">{`${formatScalar(field.value)} (not admitted)`}</option>
+        )}
+        {field.options.map((option, position) => (
+          <option key={position} value={String(position)}>
+            {optionLabel(option)}
+          </option>
+        ))}
+      </select>
+      {description !== null && <div class="ekphrasis-option-description">{description}</div>}
+    </>
   );
 }
 

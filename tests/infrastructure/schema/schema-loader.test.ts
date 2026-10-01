@@ -37,7 +37,7 @@ describe("FileSchemaLoader", () => {
     const loading = new FileSchemaLoader(files).load("a.json");
 
     await expect(loading).rejects.toThrow(SchemaLoadError);
-    await expect(loading).rejects.toThrow('"missing.json", referenced from "a.json",');
+    await expect(loading).rejects.toThrow("`missing.json`, referenced from `a.json`,");
   });
 
   it("reports malformed JSON and YAML", async () => {

@@ -62,6 +62,20 @@ describe("form model", () => {
     expect(root.extraEntries).toEqual([{ id: "other", key: "other", text: "[1, 2]" }]);
   });
 
+  it("reads a declared key with spaces, and keeps the keys admitted by a pattern verbatim", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: { empty_hint: { type: "string" }, "foil-set": { type: "string" } },
+        additionalProperties: { type: "string" },
+      },
+      "damping-ratio: x\n",
+    );
+    expect(fieldAt(model.root, "empty_hint").label).toBe("empty hint");
+    expect(fieldAt(model.root, "foil-set").label).toBe("foil set");
+    expect(fieldAt(model.root, "damping-ratio").label).toBe("damping-ratio");
+  });
+
   it("builds the items of sequences and the entries of keyed records", () => {
     const model = build(
       {
@@ -160,7 +174,7 @@ describe("form model", () => {
     );
     expect(fieldAt(model.root, "a").kind).toBe("text");
     expect(model.schemaIssues).toEqual([
-      { path: "a", message: 'The keyword x-kind names no field kind: "formula".' },
+      { path: "a", message: "The keyword `x-kind` names no field kind: `formula`." },
     ]);
   });
 

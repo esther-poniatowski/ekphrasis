@@ -8,10 +8,12 @@
  * identifier mangling in minified production bundles.
  */
 
-/** Position in a source text (1-based line and column). */
+/** Position in a source text (1-based line and column), with the text of that line. */
 export interface SourcePosition {
   readonly line: number;
   readonly column: number;
+  /** Text of the line at `line`, without its line break, so a message can quote it. */
+  readonly lineText: string;
 }
 
 /** Base class of all expected failures raised by the plugin. */

@@ -8,6 +8,7 @@ import type { FormModel, SchemaBinding } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
 import { FormContext } from "./form-context";
+import { InlineText } from "./inline-text";
 import { FieldList } from "./sections/field-list";
 
 export interface FormPanelProps {
@@ -40,33 +41,54 @@ export function FormPanel({
     case "unbound":
       return (
         <Message title="No schema" onOpenSource={onOpenSource}>
-          This file is bound to no schema, so it has no form. To bind it, write the line{" "}
-          <code># yaml-language-server: $schema=path/to/schema.yaml</code> at the top of the file,
-          or add a path rule in the settings of ekphrasis.
+          <p>
+            This file is bound to no schema, so it has no form. To bind it, write the line{" "}
+            <code># yaml-language-server: $schema=path/to/schema.yaml</code> at the top of the file,
+            or add a path rule in the settings of ekphrasis.
+          </p>
         </Message>
       );
     case "invalid-binding":
       return (
         <Message title="Schema not found" onOpenSource={onOpenSource}>
-          {`The ${state.source === "modeline" ? "modeline" : "path rule"} names the schema `}
-          <code>{state.reference}</code>
-          {`, but ${state.reason}.`}
+          <p>
+            {`The ${state.source === "modeline" ? "modeline" : "path rule"} names the schema `}
+            <code>{state.reference}</code>
+            {`, but ${state.reason}.`}
+          </p>
         </Message>
       );
     case "parse-error": {
       const position = state.error.position;
-      const where = position ? ` at line ${position.line}, column ${position.column}` : "";
       return (
         <Message title="Invalid YAML" onOpenSource={onOpenSource}>
-          {`The text of the file fails to parse${where}: ${state.error.message}`}
+          <p>
+            {position
+              ? `The text of the file fails to parse at line ${position.line}, column ${position.column}:`
+              : "The text of the file fails to parse:"}
+          </p>
+          <p class="ekphrasis-message-detail">
+            <InlineText text={state.error.message} />
+          </p>
+          {position && (
+            <pre class="ekphrasis-source-excerpt">
+              {`${position.line} | ${position.lineText}\n`}
+              {`${" ".repeat(String(position.line).length + 3 + position.column - 1)}^`}
+            </pre>
+          )}
         </Message>
       );
     }
     case "schema-error":
       return (
         <Message title="Schema not loaded" onOpenSource={onOpenSource}>
-          {`The schema ${state.binding.schemaPath}, named by ${BINDING_SOURCES[state.binding.source]}, `}
-          {`could not be loaded. ${state.error.message}`}
+          <p>
+            The schema <code>{state.binding.schemaPath}</code>
+            {`, named by ${BINDING_SOURCES[state.binding.source]}, could not be loaded:`}
+          </p>
+          <p class="ekphrasis-message-detail">
+            <InlineText text={state.error.message} />
+          </p>
         </Message>
       );
   }
@@ -85,17 +107,24 @@ function FormRoot({
       <div class="ekphrasis-form-header">
         {model.title !== null && <div class="ekphrasis-form-title">{model.title}</div>}
         <div class="ekphrasis-form-binding">
-          {`Schema ${binding.schemaPath}, named by ${BINDING_SOURCES[binding.source]}.`}
+          Schema <code>{binding.schemaPath}</code>
+          {`, named by ${BINDING_SOURCES[binding.source]}.`}
         </div>
       </div>
       {model.schemaIssues.length > 0 && (
-        <ul class="ekphrasis-schema-issues">
-          {model.schemaIssues.map((issue, index) => (
-            <li key={index}>
-              {issue.path === "" ? issue.message : `${issue.path}: ${issue.message}`}
-            </li>
-          ))}
-        </ul>
+        <div class="ekphrasis-schema-issues" role="alert">
+          <div class="ekphrasis-schema-issues-title">Schema warnings</div>
+          <ul>
+            {model.schemaIssues.map((issue, index) => (
+              <li key={index}>
+                <code class="ekphrasis-issue-path">
+                  {issue.path === "" ? "(root)" : issue.path}
+                </code>
+                <InlineText text={issue.message} />
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       {root.mismatch === null &&
       (root.kind === "group" || root.kind === "keyed-table" || root.kind === "keyed-records") ? (
@@ -119,10 +148,12 @@ function Message({
   return (
     <div class="ekphrasis-message">
       <div class="ekphrasis-message-title">{title}</div>
-      <p>{children}</p>
-      <button class="mod-cta" onClick={onOpenSource}>
-        Open the source view
-      </button>
+      {children}
+      <div class="ekphrasis-message-actions">
+        <button class="mod-cta" onClick={onOpenSource}>
+          Open the source view
+        </button>
+      </div>
     </div>
   );
 }

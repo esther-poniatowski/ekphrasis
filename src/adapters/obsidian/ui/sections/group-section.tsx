@@ -5,15 +5,17 @@
 import type { JSX } from "preact";
 import type { MappingField } from "../../../../domain";
 import type { ControlProps } from "../control-registry";
-import { FieldLabel } from "../field-label";
+import { FieldLabel, LockNote, useLockDisclosure } from "../field-label";
 import { FieldList } from "./field-list";
 
 export function GroupSection({ field }: ControlProps<MappingField>): JSX.Element {
+  const disclosure = useLockDisclosure();
   return (
     <section class="ekphrasis-group" data-path={field.id} data-kind={field.kind}>
       <div class="ekphrasis-group-heading">
-        <FieldLabel field={field} />
+        <FieldLabel field={field} disclosure={disclosure} />
       </div>
+      <LockNote field={field} disclosure={disclosure} />
       <div class="ekphrasis-group-body">
         {field.kind === "alternatives" && <AlternativeLine field={field} />}
         <FieldList field={field} />

@@ -20,7 +20,10 @@ export interface FieldBase {
   /** Printed field path, unique in the model, so it keys the control of the field. */
   readonly id: string;
   readonly path: YamlPath;
-  /** Title of the schema, else the key, else the position of the item. */
+  /**
+   * Title of the schema, else the key (read with spaces for a declared property), else the
+   * position of the item.
+   */
   readonly label: string;
   readonly description: string | null;
   readonly examples: readonly JsonValue[];

@@ -1,7 +1,7 @@
 /**
  * Settings tab: the path rules that bind instances without a modeline to their schemas.
  */
-import { PluginSettingTab, Setting, type App, type Plugin } from "obsidian";
+import { PluginSettingTab, Setting, type App, type Plugin, type TextComponent } from "obsidian";
 import type { EkphrasisSettings } from "../../application";
 import type { PathRule } from "../../domain";
 
@@ -48,13 +48,13 @@ export class EkphrasisSettingTab extends PluginSettingTab {
     new Setting(this.containerEl)
       .setName(`Rule ${index + 1}`)
       .addText((text) =>
-        text
+        labelInput(text, "Glob pattern")
           .setPlaceholder("records/**/*.yml")
           .setValue(rule.pattern)
           .onChange((pattern) => this.replaceRule(index, { ...this.ruleAt(index), pattern })),
       )
       .addText((text) =>
-        text
+        labelInput(text, "Schema path")
           .setPlaceholder("schemas/record.schema.yaml")
           .setValue(rule.schema)
           .onChange((schema) => this.replaceRule(index, { ...this.ruleAt(index), schema })),
@@ -95,4 +95,13 @@ export class EkphrasisSettingTab extends PluginSettingTab {
   private async setRules(pathRules: readonly PathRule[]): Promise<void> {
     await this.host.updateSettings({ ...this.host.settings, pathRules });
   }
+}
+
+/** Places a label above the input of `text`, naming the role of the input. */
+function labelInput(text: TextComponent, label: string): TextComponent {
+  const wrapper = createDiv({ cls: "ekphrasis-labelled-input" });
+  text.inputEl.replaceWith(wrapper);
+  wrapper.createEl("label", { text: label });
+  wrapper.appendChild(text.inputEl);
+  return text;
 }

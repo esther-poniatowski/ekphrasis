@@ -47,7 +47,7 @@ export function parseFieldPath(text: string): PatternSegment[] {
   const segments: PatternSegment[] = [];
   let index = 0;
   const fail = (reason: string): never => {
-    throw new FieldPathError(`Invalid field path "${text}" at offset ${index}: ${reason}.`);
+    throw new FieldPathError(`Invalid field path \`${text}\` at offset ${index}: ${reason}.`);
   };
   while (index < text.length) {
     const char = text[index];

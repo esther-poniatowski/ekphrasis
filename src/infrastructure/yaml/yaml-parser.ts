@@ -4,10 +4,11 @@
  * The `yaml` library is selected for its concrete syntax tree: it preserves scalar styles,
  * comments and source ranges, which source-preserving writes require.
  */
-import { isAlias, isMap, isScalar, isSeq, parseDocument, type Document } from "yaml";
+import { isAlias, isMap, isScalar, isSeq, LineCounter, parseDocument, type Document } from "yaml";
 import type { DocumentParser } from "../../application";
 import type { ScalarNode, ScalarStyle, SourceRange, YamlNode } from "../../domain";
 import { YamlParseError } from "../../errors";
+import { nameBareSymbols } from "../library-messages";
 
 /** Mapping from the scalar types of the `yaml` library to domain styles. */
 const STYLES: Readonly<Record<string, ScalarStyle>> = {
@@ -22,13 +23,15 @@ const EMPTY: ScalarNode = { kind: "scalar", value: null, style: "plain", range: 
 
 export class YamlDocumentParser implements DocumentParser {
   parse(source: string): YamlNode {
-    const document = parseDocument(source);
+    // Without pretty errors, the message holds no position and no excerpt of the source, so
+    // the view displays each of them once, in a form of its own.
+    const lines = new LineCounter();
+    const document = parseDocument(source, { prettyErrors: false, lineCounter: lines });
     const [error] = document.errors;
     if (error) {
-      const position = error.linePos?.[0];
-      throw position
-        ? new YamlParseError(error.message, { line: position.line, column: position.col })
-        : new YamlParseError(error.message);
+      const { line, col } = lines.linePos(error.pos[0]);
+      const lineText = source.split(/\r?\n/)[line - 1] ?? "";
+      throw new YamlParseError(nameBareSymbols(error.message), { line, column: col, lineText });
     }
     return new TreeConverter(document).convert(document.contents);
   }
