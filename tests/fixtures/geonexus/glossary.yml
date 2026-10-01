@@ -1,0 +1,36 @@
+# Synthetic instance reproducing the constructs of a geonexus glossary.
+# constructs: placeholders written '{{UPPERCASE}}', maps keyed by kebab-case identifiers,
+# sequences of flow mappings, the alternatives `term` and `undeclared`, flow sequences of
+# single-quoted strings, LaTeX in single quotes, trailing comments aligned in one column
+
+schema_version: 1
+id: pendulum-dynamics # kebab-case; unique among the glossaries
+
+terms:
+  damping-ratio:
+    label: damping ratio
+    gloss: 'the ratio of the damping coefficient to its critical value, written $\zeta = \gamma / 2\omega_0$'
+    category: noun
+    frames: ["~ of {system}", "~ below one"]
+    confusions:
+      - {
+          term: damping-coefficient,
+          distinction: the ratio is dimensionless whereas the coefficient is a rate,
+        }
+      - {
+          undeclared: quality factor,
+          distinction: the quality factor is inversely proportional to the ratio,
+        }
+  natural-frequency:
+    label: "{{PREFERRED TERM OR PHRASE}}"
+    gloss: "{{ONE-SENTENCE MEANING OF THE TERM}}"
+    category: "{{CATEGORY}}" # noun | verb | adjective
+    frames: []
+
+forbidden:
+  swing-rate:
+    label: swing rate
+    replace_with:
+      - term: natural-frequency
+        when: "{{CONDITION FOR THIS REPLACEMENT}}" # optional
+    reason: the phrase mixes the frequency of the free motion with the frequency of the forcing

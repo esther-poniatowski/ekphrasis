@@ -1,0 +1,14 @@
+# Generic YAML constructs that resolve one node from several places: anchors, aliases and merges.
+# constructs: an anchored scalar and its alias, an anchored mapping merged with `<<`, an alias
+# in a flow sequence, an anchor on a quoted scalar
+
+defaults: &defaults
+  unit: radian
+  precision: 3
+nominal: &nominal 9.81
+quoted: &label "damped pendulum"
+case:
+  <<: *defaults
+  gravity: *nominal
+  precision: 4
+labels: [*label, other label]

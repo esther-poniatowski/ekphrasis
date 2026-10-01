@@ -1,0 +1,14 @@
+# GENERATED FILE - DO NOT EDIT.
+# Synthetic stand-in for the vocabulary file that gnomon generates from its registries.
+# constructs: a generated file that the form must never edit, nested lists of plain scalars
+
+epistemic_aim:
+  - description
+  - exploration
+  - prediction
+  - explanation
+  - modal-knowledge
+  - model-knowledge
+status:
+  question: [posed, refined, answered, abandoned]
+  target-system: [draft, provisional, stabilized]

@@ -1,0 +1,80 @@
+# Synthetic schema reproducing the constructs of a geonexus glossary schema.
+# constructs: `$ref` across files, `additionalProperties: false`, `schema_version` fixed by
+# `const`, admitted values as `oneOf` of `{const, description}`, `oneOf` alternatives between
+# `term` and `undeclared`, maps keyed by kebab-case identifiers, the project keyword `x-checks`
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: glossary.schema.yaml
+title: Glossary
+description: >-
+  A glossary fixes the vocabulary of one project. It declares the admitted terms with their
+  meanings, and the forbidden terms with their replacements.
+type: object
+additionalProperties: false
+required: [schema_version, id, terms, forbidden]
+properties:
+  schema_version:
+    const: 1
+  id:
+    $ref: "common.schema.yaml#/$defs/id"
+  terms:
+    type: object
+    propertyNames: { $ref: "common.schema.yaml#/$defs/id" }
+    additionalProperties: { $ref: "#/$defs/term" }
+  forbidden:
+    type: object
+    propertyNames: { $ref: "common.schema.yaml#/$defs/id" }
+    additionalProperties: { $ref: "#/$defs/forbidden" }
+
+$defs:
+  term:
+    type: object
+    additionalProperties: false
+    required: [label, gloss, category]
+    properties:
+      label: { $ref: "common.schema.yaml#/$defs/label" }
+      gloss: { $ref: "common.schema.yaml#/$defs/gloss" }
+      category:
+        oneOf:
+          - { const: noun, description: A term naming an object or a quantity }
+          - { const: verb, description: A term naming a process or an operation }
+          - { const: adjective, description: A term naming a property }
+      frames:
+        type: array
+        items: { type: string }
+      confusions:
+        type: array
+        items: { $ref: "#/$defs/confusion" }
+  confusion:
+    type: object
+    required: [distinction]
+    oneOf:
+      - required: [term]
+      - required: [undeclared]
+    properties:
+      term: { type: string }
+      undeclared: { type: string }
+      distinction: { $ref: "common.schema.yaml#/$defs/gloss" }
+  forbidden:
+    type: object
+    additionalProperties: false
+    required: [label, replace_with, reason]
+    properties:
+      label: { $ref: "common.schema.yaml#/$defs/label" }
+      replace_with:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          properties:
+            term: { type: string }
+            when: { type: string }
+      reason: { $ref: "common.schema.yaml#/$defs/gloss" }
+
+x-checks:
+  - kind: unique-across
+    paths: [terms, forbidden]
+    detail: an identifier is unique across the terms and the forbidden terms
+  - kind: sorted-keys
+    paths: [terms, forbidden]
+    blocking: false

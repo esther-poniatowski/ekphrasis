@@ -1,0 +1,66 @@
+# Synthetic record reproducing the constructs of a gnomon question record.
+# constructs: placeholders in uppercase (plain and double-quoted), the unfilled value `open`,
+# prose longer than 400 characters in one double-quoted line, LaTeX in single quotes, flow
+# sequences and flow mappings, references `system.TOPIC#SYMBOL`, the conditional field
+# `task.epistemic_aim`, a map `maturity` keyed by dotted field paths, null and empty values
+
+title: "Onset of sustained oscillation in a driven damped pendulum"
+statement: "Across driven damped pendulums with a periodic forcing of fixed frequency, which bounds on the ratio of forcing amplitude to damping are necessary, sufficient, or both for a sustained periodic oscillation to replace the decay towards rest? The contrast is with a decay to the rest state and with an aperiodic motion. Which sufficient bounds remain valid as the forcing frequency approaches the natural frequency of the pendulum, and which require the small-angle approximation?" # restate the fields
+id: quest.pendulum.sustained-oscillation
+type: question
+status: posed # posed | refined | answered | abandoned
+subject:
+  target_system: system.pendulum-driven-damped
+  phenomenon: phen.pendulum.sustained-oscillation
+  contrast:
+    locus: other-outcome # other-outcome | other-system | other-condition | none
+    foil_set:
+      - name: "decay to rest"
+        symbol: decay
+        expression: ["A <= 0"]
+        reading: "The amplitude of the oscillation decreases to zero, as without forcing."
+      - name: "aperiodic motion"
+        symbol: aperiodic
+        expression: ["A > 0", "lyap > 0"]
+        reading: "The motion stays bounded away from rest but never repeats."
+    compatibility: derived
+    foil_status: open # observed | counterfactual | not-applicable
+  domain:
+    restrictions:
+      - name: "NAME OF THE RESTRICTION"
+        of: system.pendulum-driven-damped#gamma
+        restriction:
+        values: "SET EXPRESSION OVER DECLARED SYMBOLS"
+        justification: "WHY THE QUESTION IS PUT ONLY UNDER THE RESTRICTION"
+    limit: null # the question concerns no limit system
+
+task:
+  epistemic_aim: explanation # description | exploration | prediction | explanation | modal-knowledge
+  requested_relation: open
+  modal_strength: necessary
+  admissible_explanans:
+    compositional: [system.pendulum-driven-damped#bob, system.pendulum-driven-damped#rod]
+    substrate: independent
+    justification: "The bounds concern the forcing and the damping only."
+  required_accuracy:
+    standard: numeric-bound
+    outputs_to_match:
+      - target: phen.pendulum.sustained-oscillation#A
+        tolerance:
+          metric: '\left| A_{\mathrm{answer}} - A_{\mathrm{target}} \right| / A_{\mathrm{target}}'
+          bound: "10^{-2}"
+        justification: "WHY THE QUESTION DEMANDS THAT THE ANSWER REPRODUCE THIS OUTPUT"
+  proof_obligations: []
+
+virtues:
+  - virtue: generality
+    standing: preferred
+    check: { verdict: pending, evidence: "" }
+  - virtue: open
+    standing: open
+    check: { verdict: pending, evidence: "", note: 'a\b' }
+
+maturity:
+  subject.contrast.locus: stabilized
+  task.epistemic_aim: provisional
+  task.required_accuracy.outputs_to_match: open

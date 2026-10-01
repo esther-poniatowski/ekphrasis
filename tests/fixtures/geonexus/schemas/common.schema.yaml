@@ -1,0 +1,22 @@
+# Synthetic schema of the definitions shared across geonexus schemas.
+# constructs: JSON Schema 2020-12 written in YAML, `$defs` referenced from another file,
+# patterns with lookbehind, folded descriptions
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: common.schema.yaml
+title: Common definitions
+$defs:
+  id:
+    type: string
+    pattern: "^[a-z0-9]+(-[a-z0-9]+)*$"
+    description: A stable kebab-case key, so that renaming a label leaves every reference valid.
+  label:
+    type: string
+    pattern: '^\S(?:[^\n]*[^.\s])?$'
+    description: >-
+      A plain-text name on one line, without surrounding spaces and without a final
+      period.
+  gloss:
+    type: string
+    pattern: '^(?![^\n]*(?<!\be\.g)\.\s+[A-Z])[^\n]*[^.\s]$'
+    description: A single sentence on one line, closing without a period.

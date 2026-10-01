@@ -1,0 +1,15 @@
+# Synthetic configuration reproducing the binding of geonexus records to their schemas.
+# constructs: path patterns in flow sequences of single-quoted globs, nested maps of file types,
+# flow sequences of plain paths
+
+glossary:
+  file_types:
+    glossary:
+      gloss: the terms and forbidden terms of a project
+      schema: glossary.schema.yaml
+      paths: ["**/glossary.yml", "**/*.glossary.yml"]
+    notation:
+      gloss: the symbols of a project
+      schema: notation.schema.yaml
+      paths: ["**/notation.yml"]
+  gloss_files: [config/vocabulary.yaml, config/checks.yaml]

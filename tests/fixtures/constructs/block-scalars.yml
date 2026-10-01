@@ -1,0 +1,25 @@
+# Generic YAML constructs that a splice alters most easily: block scalars and trailing comments.
+# constructs: literal and folded block scalars with each chomping indicator, an explicit
+# indentation indicator, a comment on the header line, blank lines inside a block, a block
+# scalar followed by a comment line, and a document end marker
+
+literal: |
+  First line of a literal block.
+    An indented line, kept as typed.
+
+  A line after a blank line.
+literal_strip: |- # comment on the header line
+  Text without a final line break.
+literal_keep: |+
+  Text keeping its trailing blank lines.
+
+folded: >
+  A folded paragraph whose lines
+  join into one line.
+folded_strip: >-
+  Another folded paragraph.
+indented: |2
+    Text whose first line is indented beyond the indentation indicator.
+# a comment line after the block scalar
+last: plain value # comment after a plain value
+...

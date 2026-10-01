@@ -1,0 +1,57 @@
+# Synthetic record reproducing the constructs of a gnomon target-system record.
+# constructs: record tables (sequences of mappings), flow sequences of symbols, empty flow
+# sequences, single-quoted LaTeX, comments after values, aligned trailing comments
+
+title: "Driven damped pendulums"
+id: system.pendulum-driven-damped
+type: target-system
+status: provisional
+target_type: possible-systems
+
+reference_class:
+  name: "planar pendulums with viscous damping and a periodic torque"
+  selection_criteria: []
+
+variants: # small-angle and full nonlinear models
+  - name: "small-angle pendulum"
+    symbol: linear
+    differentiation: "The restoring torque is linear in the angle, so the motion is a forced harmonic oscillation."
+  - name: "nonlinear pendulum"
+    symbol: nonlinear
+    differentiation: "The restoring torque follows the sine of the angle."
+
+constituents:
+  - name: "bob"
+    symbol: bob
+    extent: "single"
+  - name: "rod"
+    symbol: rod
+    extent: "single"
+
+index_sets:
+  - name: "time"
+    symbol: t
+    extent: "interval(reals)"
+    structure: interval
+
+variables:
+  - name: "angle from the vertical"
+    symbol: theta
+    determined: within
+    signature: [bob, t]
+    values: "interval(-pi, pi)"
+    expression: null # declared directly
+    shared: false
+  - name: "damping coefficient"
+    symbol: gamma
+    determined: outside
+    signature: []
+    values: "nonneg(reals)"
+    expression: '\gamma = c / (m \ell^2)'
+    shared: true
+
+laws:
+  - name: "equation of motion"
+    symbol: motion
+    expression: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F \cos(\Omega t)'
+    holds: open
