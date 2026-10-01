@@ -18,6 +18,7 @@ The documentation of ekphrasis specifies an Obsidian plugin that fills YAML reco
 - [Agent prompts](prompts/_index.md): to delegate a review or another recurring task on the project to an AI agent.
 - [Documentation conventions](documentation-conventions.md): to write a new note and register it in this documentation.
 - [Roadmap](../TODO.md): to know which features are implemented and which steps remain open.
+- [Handoff](handoff.md): to resume the implementation in a new agent session, with the state, constraints and facts left by the previous session.
 
 A feature can be described by three kinds of note, one per folder:
 

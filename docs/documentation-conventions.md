@@ -43,6 +43,7 @@ Each tag of the vocabulary names one category of note:
 | `decision` | Architecture decision record |
 | `conventions` | Rules for writing the documentation |
 | `prompt` | Instructions for an AI agent |
+| `handoff` | State of the work carried between agent sessions |
 
 ^tag-vocabulary
 
