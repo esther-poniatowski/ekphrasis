@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Python checkers
-status: proposed
+status: accepted
 ---
 # Python checkers
 
@@ -39,3 +39,20 @@ One persistent Python process per vault runs the custom checkers. The process is
 - Every value exchanged with a checker must be representable in JSON.
 - A command restarts the process after a module changes, and a timeout bounds each call.
 - A rule family shared by several projects, such as the resolution of references across files, should become a predefined checker declared in the schema. The Python process then serves the rules specific to one project.
+
+## Verification
+
+The decision holds on the desktop application, as the spike on the Python process confirmed on 2026-10-01 in a test vault. The spike started an interpreter through `child_process`, with the runner script passed as a string to the option `-c`. Then, the plugin and the process exchanged JSON messages, one per line. Four results bear on the decision:
+
+- The interpreter of a conda environment answered its first message 29 to 70 ms after the start, and each later message in at most 0.2 ms.
+- Closing the vault and quitting Obsidian both stopped the process. In both cases, the process exited because its standard input reached its end, and the plugin never sent its termination signal.
+- The command `python3` resolved to the interpreter of the Apple command-line tools, version 3.9.6, whereas a terminal of the same computer resolves it to another interpreter. An application started from the Dock does not inherit the search path of the shell.
+- A path naming no interpreter failed at the start with the error `ENOENT`, which reports a missing file.
+
+Three constraints follow for the milestone *Custom checkers*:
+
+- The runner script must exit when its standard input ends, since ekphrasis cannot rely on its own cleanup to stop the process when the vault closes.
+- The settings must resolve the interpreter to an absolute path. A conda environment named in the settings must likewise be resolved to the path of its interpreter, since the command `conda` may be absent from the search path of the application.
+- A failed start must be reported to the user with the interpreter path, so that an `ENOENT` reads as a wrong path in the settings.
+
+The bundle can carry the runner script as a string. Therefore, the risk on packaging recorded in the implementation plan is resolved.

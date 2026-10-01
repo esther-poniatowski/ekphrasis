@@ -5,18 +5,19 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Toolchain and spikes
 
 - [ ] **Tooling**: commit a lock file, so that `npm ci` passes in continuous integration.
-- [ ] **Tooling**: add `preact`, compile JSX with the import source `preact`, cover the files `.tsx` in the TypeScript, ESLint and Vitest configurations, and forbid `preact` outside the adapters layer.
-- [ ] **Tooling**: retire the reading view, the Markdown projection and the code block `yaml-view`, and keep the parser adapter that reports source ranges.
-- [ ] **YAML instances**: confirm in a test vault how Obsidian behaves when another enabled plugin registers the extension `.yaml` or `.yml`.
-- [ ] **Validation**: confirm that Ajv compiles a schema with keywords prefixed `x-` inside Obsidian.
-- [ ] **Saving**: confirm on the fixtures that a splice through the syntax tree of the `yaml` library preserves every untouched byte.
-- [ ] **Form view**: measure the rendering of one hundred Markdown values and one hundred formulas in one view.
-- [ ] **Custom checkers**: confirm that a desktop plugin starts a Python process, exchanges one message, and stops the process when the vault closes.
-- [ ] **Tooling**: write the fixtures reproducing the constructs of the consumer projects, and the optional corpus test reading their records.
+- [x] **Tooling**: add `preact`, compile JSX with the import source `preact`, cover the files `.tsx` in the TypeScript, ESLint and Vitest configurations, and forbid `preact` outside the adapters layer. (2026-10-01)
+- [x] **Tooling**: retire the reading view, the Markdown projection and the code block `yaml-view`, and keep the parser adapter that reports source ranges. (2026-10-01)
+- [x] **YAML instances**: confirm in a test vault how Obsidian behaves when another enabled plugin registers the extension `.yaml` or `.yml`. (2026-10-01)
+- [x] **Validation**: confirm that Ajv compiles a schema with keywords prefixed `x-` inside Obsidian. (2026-10-01)
+- [x] **Saving**: confirm on the fixtures that a splice through the syntax tree of the `yaml` library preserves every untouched byte. (2026-10-01)
+- [x] **Form view**: measure the rendering of one hundred Markdown values and one hundred formulas in one view. (2026-10-01)
+- [x] **Custom checkers**: confirm that a desktop plugin starts a Python process, exchanges one message, and stops the process when the vault closes. (2026-10-01)
+- [x] **Tooling**: write the fixtures reproducing the constructs of the consumer projects, and the optional corpus test reading their records. (2026-10-01)
 
 ## Bound form
 
 - [ ] **YAML instances**: register the extensions `.yaml` and `.yml` for the view of ekphrasis, and open a file bound to no schema in the source view.
+- [ ] **YAML instances**: catch a registration refused because another plugin owns the extension, report it in a notice, and provide the command *Open in ekphrasis*.
 - [ ] **YAML instances**: resolve the schema of an instance from its modeline, and else from the path rules of the settings.
 - [ ] **Schemas**: load schemas written in JSON or in YAML, and resolve the keyword `$ref` across files.
 - [ ] **Field kinds**: derive the kind of each field from the keyword `x-kind`, and else from the standard keywords.
@@ -55,7 +56,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 - [ ] **Form view**: display the instructions and the examples of a field on demand.
 - [ ] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian.
-- [ ] **Form view**: render first the fields that enter the visible area of a long instance.
+- [ ] **Form view**: render first the fields that enter the visible area of a long instance, in batches that yield to input between them.
 - [ ] **Form view**: display the keys outside the schema in a read-only area.
 - [ ] **Outline**: display the entries of the active instance, and move the form to the field of a clicked entry.
 - [ ] **Outline**: mark the entries with issues, and restrict the outline to them on demand.

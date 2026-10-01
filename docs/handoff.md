@@ -11,25 +11,24 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The documentation specifies the target design in full, and no code of that design exists yet. The current code implements the earlier reading renderer, and retiring that code is the third step of the first milestone.
+The current milestone is *Toolchain and spikes*. Every spike has a recorded verdict, and each step of the milestone is checked in the [roadmap](../TODO.md) except the lock file. Two actions remain:
 
-The next milestone is *Toolchain and spikes*. Its steps divide by who can perform them:
+- **Lock file**: `package-lock.json` exists and `npm ci` passes on it locally, but the roadmap step requires a committed lock file. The user chose to commit later, together with the scaffolding.
+- **Retirement of the spike plugin**: the folder `spikes/`, the build target `spikes` of `config/tools/esbuild.config.mjs`, the scripts `build:spikes` and `dev:spikes`, the paths `spikes/src` of the lint and format scripts and of `tsconfig.json`, and the entry `spikes/main.js` of the ESLint ignores are deleted together. The folder has never been committed, so the user decides whether a commit keeps it in the history before the deletion.
 
-- **Agent alone**: the tooling steps, the fixtures with the optional corpus test, and the spike on byte preservation, which runs as a unit test.
-- **Agent with the user**: the four spikes that need a running Obsidian (extension conflict, Ajv inside Obsidian, rendering time, Python process). The agent writes the spike code and step-by-step instructions, the user runs them in a test vault, and the agent records each verdict in the decision record named by the plan.
-
-The tooling steps come first, since every spike needs a build.
+The next milestone is *Bound form*. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
 ## Environment
 
-- Node 22 is expected, as the version file `.nvmrc` fixes. No `node_modules` folder and no lock file exist, so the step `npm ci` of continuous integration fails until a lock file is committed.
-- The first `npm install` changes the environment, so it requires the approval of the user.
-- The scaffolding of the project has never been committed: `package.json`, `manifest.json`, `tsconfig.json`, `src/`, `tests/`, `config/`, `scripts/` and the example vault are untracked. Committing them is a separate commit, to be agreed with the user before the first code commit.
+- Node 22 is expected, as the version file `.nvmrc` fixes. The dependencies are installed in `node_modules/`.
+- The npm cache `~/.npm` holds files owned by root, so `npm install` fails with `EACCES`. Until the user repairs the cache, every npm command that downloads takes the option `--cache` pointing to a folder of the session scratchpad.
+- The project has never been committed beyond its documentation: `package.json`, `package-lock.json`, `manifest.json`, `tsconfig.json`, `src/`, `tests/`, `config/`, `scripts/`, `spikes/` and the example vault are untracked. The user decides when to commit them. The deletion of the tracked note `examples/vault/example-note.md`, which demonstrated the retired code block, is staged.
 - The prose linter runs through `/Users/eresther/miniconda3/bin/conda run -n hermeneia hermeneia lint <path>`.
+- The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=/Users/eresther/Documents/projects/gnomon npm test`.
 
 ## Constructs of the consumer projects
 
-The fixtures must reproduce the constructs below in synthetic records. Records of the consumer projects are never copied into this public repository: the optional corpus test reads them from a folder named by an environment variable, and is skipped when the variable is unset.
+The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and the header comment of each fixture lists the constructs that it covers. Records of the consumer projects are never copied into this public repository: the optional corpus test reads them from the folder named by `EKPHRASIS_CORPUS`, and is skipped when the variable is unset.
 
 **gnomon** (`/Users/eresther/Documents/projects/gnomon/`):
 
@@ -55,31 +54,31 @@ The fixtures must reproduce the constructs below in synthetic records. Records o
 - **Layers**: the [layers and dependency rule](architecture/layers.md) applies, and `preact` is admitted in the adapters layer only.
 - **Git**: commits land on `main`, without a new branch, in the format of the commit template `.gitmessage`.
 - **Consumer projects**: they are read, never modified. The accepted decision of geonexus that names the suffix `.yaml.md` is updated by the user.
-- **Changelog**: the unreleased section lists the reading view as added, so retiring the renderer must update `CHANGELOG.md`.
+- **Spike plugin**: no module of `src/` imports from `spikes/`, so that deleting the folder leaves the plugin intact.
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Two further questions belong to the first milestone:
-
-- the name of the environment variable that locates the corpus;
-- whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question belongs to the first milestone: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
 
 ## Provenance
 
 - The constructs of the consumer projects come from a read-only survey of both repositories, made on 2026-09-30.
 - The interface technology of the form plugins comes from their GitHub repositories, as read on 2026-10-01 and recorded in the [assessment of form plugins](references/existing-plugins-forms.md#^interface-technology).
-- The signatures of the Obsidian API were read in `obsidian.d.ts` of the repository `obsidianmd/obsidian-api`: `MarkdownRenderer.render(app, markdown, el, sourcePath, component)`, `renderMath(source, display)` returning an element, `registerExtensions(extensions, viewType)`, and `TextFileView` with `requestSave`.
-- The syntax-tree functions of the `yaml` library (`keepSourceTokens`, `CST.setScalarValue`, `CST.stringify`) and the class `Ajv2020` come from their official documentation.
+- The signatures of the Obsidian API were read in `obsidian.d.ts` of the repository `obsidianmd/obsidian-api`, and checked against the installed package `obsidian` 1.13.1: `MarkdownRenderer.render(app, markdown, el, sourcePath, component)`, `renderMath(source, display)` returning an element, `registerExtensions(extensions, viewType)`, and `TextFileView` with `requestSave`.
+- The syntax-tree functions of the `yaml` library (`keepSourceTokens`, `CST.setScalarValue`, `CST.stringify`) and the class `Ajv2020` come from their official documentation, and were checked against the declarations of the installed versions (`yaml` 2.9.1, `ajv` 8.20.0, `preact` 11.0.0).
 
 ## Decision log
 
-The design decisions and their rationale are recorded in the [architecture decisions](adr/_index.md), and the order of construction in the implementation plan. Three decisions about the work itself are recorded here:
+The design decisions and their rationale are recorded in the [architecture decisions](adr/_index.md), and the order of construction in the implementation plan. Five decisions about the work itself are recorded here:
 
 - **One session per milestone**: each session ends on a verified state (exit criterion met, roadmap checked, commit made), so that the next session starts from the repository rather than from a conversation.
 - **Synthetic fixtures**: the records of the consumer projects stay outside this public repository.
+- **Separate spike plugin**: the spikes that need Obsidian form the disposable plugin `ekphrasis-spikes`, built from `spikes/`, so that the plugin of `src/` holds no spike code.
+- **Corpus variable**: the environment variable `EKPHRASIS_CORPUS` names one folder, and several projects can be gathered in it by symbolic links.
 - **Spike verdicts in decision records**: each verdict changes the status of its record from proposed to accepted, or reopens the decision before the milestone that depends on it.
 
 ## Warnings
 
 - The file `obsidian.d.ts` exceeds the length that web fetching tools process, and their summaries of it have returned invented signatures. Read the file through `gh api -H "Accept: application/vnd.github.raw" repos/obsidianmd/obsidian-api/contents/obsidian.d.ts`, filtered with `grep`.
-- The parser of the current code returns an empty node for aliases. A fixture with YAML anchors and aliases must therefore be part of the spike on byte preservation.
+- The parser adapter `src/infrastructure/yaml-parser.ts` returns an empty node for aliases, so the form model of the milestone *Bound form* must resolve aliases or mark them read-only. The fixture `tests/fixtures/constructs/anchors.yml` holds anchors, aliases and a merge key.
+- Saving must respect three constraints found by the spike on byte preservation, as recorded in the [decision on source-preserving writes](adr/source-preserving-writes.md). For instance, filling an empty value requires an insertion after its key.

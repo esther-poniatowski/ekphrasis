@@ -13,6 +13,15 @@ An instance is a YAML file holding one record of a schema, which ekphrasis opens
 
 An instance is a file with the extension `.yaml` or `.yml`, holding one YAML document. Ekphrasis registers both extensions in Obsidian, so these files appear in the file explorer and open in the view of ekphrasis. A file bound to a schema opens in the [form view](form-view.md). A file bound to no schema opens in the source view, since every form derives from a schema. The choice of standalone files is recorded in the decision on [plain YAML instances](../adr/plain-yaml-instances.md).
 
+## Extension conflict
+
+Obsidian assigns each extension to the first plugin that registers it, as the [conflict on extensions](../adr/plain-yaml-instances.md#^extension-conflict) records. Therefore, another enabled plugin, such as YAML Editor or YAML Databases, can own `.yaml` or `.yml` before ekphrasis loads. Ekphrasis still loads in that case, and keeps the form reachable by two means:
+
+- a notice states which extensions another plugin owns, and names YAML Editor and YAML Databases as the plugins known to register them;
+- the command *Open in ekphrasis* opens the active YAML file in the view of ekphrasis, whichever plugin owns its extension.
+
+The error raised by Obsidian names no owner, so the notice cannot name the plugin actually enabled.
+
 ## Schema binding
 
 Each instance is bound to at most one [schema](schemas.md), taken from the first of two sources that names a schema:

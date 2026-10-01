@@ -13,7 +13,7 @@ Ekphrasis installs into the plugin folder of a vault by one of three routes: a p
 
 The plugin requires Obsidian 1.5.0 or later. Two further conditions apply to the vault:
 
-- The vault must not enable another plugin that opens the files with the extension `.yaml` or `.yml`, such as YAML Editor or YAML Databases, because of the [conflict on these extensions](../adr/plain-yaml-instances.md#^extension-conflict).
+- The vault must not enable another plugin that opens the files with the extension `.yaml` or `.yml`, such as YAML Editor or YAML Databases, because of the [conflict on these extensions](../adr/plain-yaml-instances.md#^extension-conflict). When such a plugin is enabled, a notice reports the conflict at startup, and the command *Open in ekphrasis* still opens a YAML file in the form.
 - Custom checkers require the desktop application of Obsidian and a Python interpreter declared in the settings of the plugin, as specified for [custom checkers](../features/custom-checkers.md).
 
 ## Installation from a release

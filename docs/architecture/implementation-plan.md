@@ -127,7 +127,7 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 **Exit criterion.** One existing checker of each consumer project runs from a schema rule and reports at the correct field.
 
-**Risk.** A community plugin is distributed as three files (bundle, manifest, style sheet), so the runner script cannot ship as a file of its own. The bundle must embed the script as a string, and pass it to the interpreter at start.
+**Risk.** A community plugin is distributed as three files (bundle, manifest, style sheet), so the runner script cannot ship as a file of its own. The bundle must embed the script as a string, and pass it to the interpreter at start. The spike on the Python process confirmed this route, as the decision on [Python checkers](../adr/python-checkers.md) records.
 
 ### Schema editor
 
@@ -147,7 +147,7 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 ## Dependencies
 
-The runtime dependencies are fixed by the decision records: `yaml`, `preact`, a JSON Schema validator for draft 2020-12, and the YAML language mode of CodeMirror 6. Two further choices remain open until their milestone:
+The runtime dependencies are fixed by the decision records: `yaml`, `preact`, the JSON Schema validator `ajv` in its build for draft 2020-12, and the YAML language mode of CodeMirror 6. The first three are installed. Ajv was verified inside Obsidian with the option `strictSchema` disabled, as the decision on the [schema dialect](../adr/json-schema-dialect.md) records. Two further choices remain open until their milestone:
 
 - validating the keyword `format` requires an extension of the validator, such as `ajv-formats`, since Ajv does not validate formats by itself;
 - matching path rules requires a glob matcher, such as `picomatch`, unless the patterns of the settings are restricted to a form that the domain can match itself.

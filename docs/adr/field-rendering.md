@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Field rendering
-status: proposed
+status: accepted
 ---
 # Field rendering
 
@@ -31,5 +31,15 @@ A field of kind `markdown-line` or `markdown` renders its value through the Mark
 
 ## Consequences
 
-- A form with many rendered fields makes many calls to the renderers. Therefore, the form renders first the fields that enter the visible area.
+- A form with many rendered fields makes many calls to the renderers, and each call blocks input for a few milliseconds. Therefore, the form renders first the fields that enter the visible area, in batches that yield to input between them.
 - The Markdown renderer wraps inline content in a paragraph, so a field of kind `markdown-line` must display that paragraph inline.
+
+## Verification
+
+The decision holds, as the spike on rendering time measured on 2026-10-01 in a test vault. One view rendered 100 Markdown values and 100 display formulas. Each value had a Preact component of its own, which passed its container to a renderer of Obsidian. Three runs gave three results:
+
+- The 200 values rendered within 430 to 590 ms per run, about 2 to 3 ms per value.
+- Each run held two long tasks, matching its two phases: the formulas blocked input for 180 to 240 ms, and the Markdown values for 240 to 340 ms.
+- MathJax loaded in 37 ms at its first use in a session, and in about 2 ms afterwards.
+
+Therefore, the form view must not render all its values in one task. A batch of about fifteen values keeps each task under 50 ms, the duration beyond which the browser counts a task as blocking input. The spike used short synthetic values on one computer, without the post-processors of other plugins. Therefore, the size of a batch must be adjusted on the records of the consumer projects, where some prose values exceed 400 characters.
