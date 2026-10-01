@@ -101,6 +101,29 @@ Two consequences for the design follow from the coverage:
 - Every form plugin assessed here writes into notes or returns values to a script, whereas the records served by ekphrasis are standalone YAML files. Therefore, none of these plugins fills these records by itself, independently of its controls.
 - Ekphrasis requires both phases covered separately by Modal Forms and Meta Bind: capture at creation, by the [requirement on guided creation](../requirements.md#^guided-creation), and continuous editing, by the [requirement on progressive saving](../requirements.md#^progressive-saving).
 
+## Interface technology
+
+The source repositories of the seven plugins show how each builds its interface. The table below records the interface technology and the validation library declared in the package manifest of each repository, as read on 2026-10-01:
+
+| Plugin | Interface | Validation library | Evidence in the repository |
+| --- | --- | --- | --- |
+| Meta Bind | Svelte | Zod | 63 Svelte components; Svelte compiled through Vite |
+| Modal Forms | Svelte | Valibot | 39 Svelte components; Svelte compiled through esbuild, with `svelte-check` |
+| Metadata Menu | Plain DOM | none declared | No component framework; DOM helpers of Obsidian (`createEl`, `Setting`), and CodeMirror packages for its editors |
+| Note From Form | Plain DOM | Ajv, draft 2020-12 | No component framework; a JSON Schema compiled by Ajv when the plugin loads |
+| Oxill Forms | Plain DOM | none declared | No component framework and no runtime dependency |
+| Form Builder | Plain DOM | none declared | No component framework and no runtime dependency |
+| Forms (Sorin Mircea) | Plain DOM | none declared | No component framework; Supabase client for the external service |
+
+^interface-technology
+
+Four observations follow from the repositories:
+
+- The two plugins with the largest documented adoption, Meta Bind and Modal Forms, build their interfaces with Svelte. The five others build them with the DOM helpers of Obsidian.
+- No plugin examined uses Preact or React.
+- Note From Form compiles a JSON Schema with Ajv at runtime. This use indicates that the code generation of Ajv runs inside Obsidian, as evidence from a third-party plugin only.
+- Modal Forms embeds a renderer of Obsidian in a component: its Markdown block creates an Obsidian `Component`, renders into its own element, and unloads that `Component` when the Svelte component is destroyed.
+
 ## Sources
 
 - [Modal Forms — GitHub](https://github.com/danielo515/obsidian-modal-form)
@@ -116,3 +139,9 @@ Two consequences for the design follow from the coverage:
 - [Meta Bind Docs](https://www.moritzjung.dev/obsidian-meta-bind-plugin-docs)
 - [Meta Bind — Issue #278](https://github.com/mProjectsCode/obsidian-meta-bind-plugin/issues/278)
 - [#metadata tag — ObsidianStats](https://www.obsidianstats.com/tags/metadata)
+- [Meta Bind — GitHub](https://github.com/mProjectsCode/obsidian-meta-bind-plugin)
+- [Metadata Menu — GitHub](https://github.com/mdelobelle/metadatamenu)
+- [Note From Form — GitHub](https://github.com/ArhiChief/obsidian-note-from-form)
+- [Oxill Forms — GitHub](https://github.com/oxilldat/oxill-forms)
+- [Forms — GitHub](https://github.com/sorinmircea/obsidian-forms-plugin)
+- [Modal Forms — Markdown block component](https://github.com/danielo515/obsidian-modal-form/blob/master/src/views/components/Form/MarkdownBlock.svelte)

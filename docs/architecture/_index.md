@@ -11,3 +11,4 @@ The architecture of ekphrasis separates the code that builds and edits the form 
 
 - [Layers and dependency rule](layers.md): to place a new module in the layer whose admitted dependencies include every import of the module.
 - [Form pipeline](form-pipeline.md): to trace a control of the form, or a change of the file, back to the stage that produced it.
+- [Implementation plan](implementation-plan.md): to know the order of the milestones, the modules created by each milestone, and the criterion that completes it.

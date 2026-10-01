@@ -32,8 +32,10 @@ An edited value keeps its scalar style whenever that style can represent the new
 | --- | --- |
 | At least one line break | Literal block scalar, introduced by a vertical bar |
 | A backslash, as in most formulas | Single-quoted scalar |
-| Text that a YAML parser reads back unchanged when written plain | Plain scalar |
+| Text that a YAML parser reads back unchanged when written plain at the position of the value | Plain scalar |
 | Any other text, such as a value holding a [reserved construction](#^reserved-constructions) or read as a number, a boolean or the null value | Single-quoted scalar |
+
+The test for a plain scalar applies at the position of the value. Inside a flow collection, written between brackets or braces, a plain scalar admits none of the characters `,`, `[`, `]`, `{` and `}`. Therefore, the value `a, b` is written plain in a block mapping, and single-quoted in a flow mapping.
 
 A single-quoted scalar keeps each backslash as a character, whereas a double-quoted scalar reads a backslash as the start of an escape sequence. Inside a single-quoted scalar, each single quote of the value is doubled.
 

@@ -31,7 +31,7 @@ The motivation and the approach of the plugin are developed in the [project over
 - [ ] **Progressive saving**: each edit is saved without a submission step, and changes only the edited value, as specified for [saving](docs/features/saving.md).
 - [ ] **Schema editor**: schemas and their versions are created and modified through a form, in the [schema editor](docs/features/schema-editor.md).
 
-A feature is checked once every step of that feature is checked in the [roadmap](TODO.md).
+A feature is checked once every step labelled with that feature is checked in the [roadmap](TODO.md).
 
 ---
 

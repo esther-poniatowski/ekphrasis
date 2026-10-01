@@ -31,9 +31,11 @@ One persistent Python process per vault runs the custom checkers. The process is
 | One process per call | Each call runs in isolation | Each call pays the start of the interpreter and the imports of the modules |
 | One persistent process, with messages over its standard streams | The imports are paid once, and each call is answered within the running process | Runs on desktop only, and a modified module takes effect after a restart of the process |
 | Local server started by the user | Serves checkers written in any language | One more service must be started and secured |
+| Checkers written in JavaScript or TypeScript, run inside the plugin | Runs on mobile and at each commit, with no interpreter to configure | Every rule that a project already checks in Python must be written again, and the two implementations can diverge; loading checker code from the vault also executes code, so registration is still required |
 
 ## Consequences
 
 - Custom checkers run on desktop only. The manifest keeps the plugin available on mobile, where the form view works and the custom checkers are skipped.
 - Every value exchanged with a checker must be representable in JSON.
 - A command restarts the process after a module changes, and a timeout bounds each call.
+- A rule family shared by several projects, such as the resolution of references across files, should become a predefined checker declared in the schema. The Python process then serves the rules specific to one project.

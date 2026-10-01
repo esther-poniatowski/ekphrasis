@@ -13,7 +13,7 @@ Each architecture decision record fixes one design choice, binding on every subs
 - the options weighed against these constraints;
 - the consequences of the choice.
 
-Seven records are registered:
+Eight records are registered:
 
 - [Plain YAML instances](plain-yaml-instances.md): to know why instances are standalone YAML files rather than notes.
 - [Schema binding](schema-binding.md): to know why a modeline comment, and else a path rule, selects the schema of an instance.
@@ -22,3 +22,4 @@ Seven records are registered:
 - [Python checkers](python-checkers.md): to know why custom checkers run in one persistent Python process, and why they run on desktop only.
 - [Source view](source-view.md): to know why the YAML text is edited in an editor supplied by ekphrasis.
 - [Field rendering](field-rendering.md): to know why Markdown and LaTeX values render through the renderer of Obsidian.
+- [Form interface framework](form-interface-framework.md): to know why the form view and the outline are built with Preact, rather than with plain DOM components or Svelte.
