@@ -15,10 +15,10 @@ Each architecture decision record fixes one design choice, binding on every subs
 
 Seven records are registered:
 
-- [Markdown projection](markdown-projection.md): to know why the display derives from generated Markdown, and why each block renders into a container of its own.
-- [YAML data in notes](yaml-note-container.md): to know why YAML data lives in notes with the suffix `.yaml.md` rather than in standalone files.
-- [Key-path references](key-path-references.md): to know why a link designates a key by its path, and how references survive changes of the keys.
-- [Anchor declaration](anchor-declaration.md), superseded: to know why labels in comments were considered and then abandoned.
-- [Editing in the native editor](native-editor-editing.md): to know why the editing mode reuses the Markdown editor of Obsidian.
-- [Presentation in view specifications](view-specification-notes.md): to know why presentation lives in dedicated notes rather than in schema annotations.
-- [Correspondence forms](correspondence-forms.md): to know why correspondences use ordinary YAML collections rather than a dedicated table syntax.
+- [Plain YAML instances](plain-yaml-instances.md): to know why instances are standalone YAML files rather than notes.
+- [Schema binding](schema-binding.md): to know why a modeline comment, and else a path rule, selects the schema of an instance.
+- [Schema dialect](json-schema-dialect.md): to know why schemas are written in JSON Schema with keywords prefixed `x-`, rather than in a dedicated form format.
+- [Source-preserving writes](source-preserving-writes.md): to know why a commit splices text into the source range of the edited node.
+- [Python checkers](python-checkers.md): to know why custom checkers run in one persistent Python process, and why they run on desktop only.
+- [Source view](source-view.md): to know why the YAML text is edited in an editor supplied by ekphrasis.
+- [Field rendering](field-rendering.md): to know why Markdown and LaTeX values render through the renderer of Obsidian.

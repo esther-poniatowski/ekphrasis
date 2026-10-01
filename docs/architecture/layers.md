@@ -7,13 +7,13 @@ aliases:
 ---
 # Layers and dependency rule
 
-Four layers divide the source code of ekphrasis, and each layer depends only on the layers closer to the domain. The domain layer depends on no library and on no host application. The projection into Markdown lies in the domain, so the projection runs outside Obsidian, as the testability constraint of the [Markdown projection](../adr/markdown-projection.md) requires. From the domain outward, the four layers are the following:
+Four layers divide the source code of ekphrasis, and each layer depends only on the layers closer to the domain. The domain layer depends on no library and on no host application. The form model and the text of each commit are computed in the domain, so unit tests cover them outside Obsidian. From the domain outward, the four layers are the following:
 
 | Layer | Folder | Responsibility | Admitted dependencies |
 | --- | --- | --- | --- |
-| Domain | `src/domain/` | Tree of a YAML body, presentation specification of a node, projection into Markdown, renderers | None |
-| Application | `src/application/` | Ports, chain of specification sources, use cases, model of the settings | Domain |
-| Infrastructure | `src/infrastructure/` | Port implementations that call third-party libraries (e.g. the YAML parser) | Domain, application |
+| Domain | `src/domain/` | Form model built from a schema and an instance, field kinds, field paths, unfilled values, predefined checkers, issues, scalar styles and text of an edited node | None |
+| Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), model of the settings | Domain |
+| Infrastructure | `src/infrastructure/` | Port implementations that call third-party libraries or Node (e.g. the YAML parser, the JSON Schema validator, the Python process) | Domain, application |
 | Adapters | `src/adapters/` | Composition root, and every module that calls the API of Obsidian (e.g. views, commands, settings tab) | All layers |
 
 The dependency rule is enforced by the ESLint configuration `config/tools/eslint.config.mjs`, so an import that breaks the rule fails the lint check. The same check forbids the API of Obsidian in every layer except the adapters, and the YAML parser in the domain and application layers. Any other library is excluded from the domain by convention only, since no lint rule forbids such a library.
@@ -25,16 +25,18 @@ Two files of the folder `src/` lie outside the four layer folders:
 
 ## Features across layers
 
-The code of each feature is divided according to whether it calls the API of Obsidian. The parts that call this API lie in the adapters layer, since no other layer admits this API, and the other parts lie in the inner layers. Some features have parts on one side only. Each feature is planned to split across the layers as follows:
+The code of each feature is divided according to whether it calls the API of Obsidian. The parts that call this API lie in the adapters layer, since no other layer admits this API, and the other parts lie in the inner layers. Each feature is planned to split across the layers as follows:
 
 | Feature | Domain | Application | Infrastructure | Adapters |
 | --- | --- | --- | --- | --- |
-| [YAML notes](../features/file-format.md) | — | — | Split of the frontmatter from the body | Reading mode in place of the Markdown view |
-| [Key paths](../features/key-paths.md) | Parser of key paths, matching of paths and patterns against the tree | — | — | — |
-| [Default presentation](../features/default-presentation.md) | Built-in renderers | Heuristic source of specifications | — | — |
-| [View specifications](../features/view-specifications.md) | Specification of a node | Chain of specification sources, port for vault files | Parser of view specification notes | Vault access behind the port, folder rules in the settings tab |
-| [Correspondence tables](../features/correspondence-tables.md) | Table renderer, escape of vertical bars in cells | — | — | — |
-| [Key references](../features/references.md) | Rewrite of the key paths of a link after a rename | — | — | Scroll to the designated key, suggestions of key paths, rename command, report of broken references |
-| [Links](../features/links.md) | — | — | — | Handler of followed links |
-| [Embedding](../features/embedding.md) | — | — | — | Processor of the code block |
-| [Reading and editing modes](../features/editing.md) | — | — | — | Editor extension, control that switches modes |
+| [YAML instances](../features/instance-files.md) | — | Resolution of the schema, from the modeline and else from the path rules | Reading of the modeline | Registration of the extensions, path rules in the settings tab |
+| [Schemas](../features/schemas.md) | Model of a field schema: kind, rules, unfilled values | Port for loading schemas | Loader of JSON and YAML schemas, resolution of `$ref` | — |
+| [Field kinds](../features/field-kinds.md) | Derivation of the kind of each field | — | — | One control per kind |
+| [Field paths](../features/field-paths.md) | Parser of field paths, matching of paths against the instance | — | — | — |
+| [Instance creation](../features/instance-creation.md) | Skeleton of a new instance | Use case that creates an instance | — | Commands, choice of the schema and of the path |
+| [Form view](../features/form-view.md) | Form model | Use case that opens a form | — | Form view, rendered values, source view |
+| [Outline](../features/outline.md) | — | — | — | Outline view |
+| [Saving](../features/saving.md) | Scalar style and text of an edited node | Use case that commits an edit, port for the YAML document | Splice into the source text, check by parsing again | Writes through the vault, reaction to changes from outside |
+| [Validation](../features/validation.md) | Unfilled values, predefined checkers, issues | Order of checks, port for the schema validator | JSON Schema validator | Display of issues |
+| [Custom checkers](../features/custom-checkers.md) | — | Port for the checker runner | Python process and its message protocol | Interpreter and modules in the settings tab |
+| [Schema editor](../features/schema-editor.md) | — | Meta-schema of the schema dialect | — | Preview panel, command *Create schema* |

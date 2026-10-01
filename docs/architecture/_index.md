@@ -7,7 +7,7 @@ aliases:
 ---
 # Architecture
 
-The architecture of ekphrasis separates the code that transforms a YAML body into Markdown from the code that connects the result to Obsidian.
+The architecture of ekphrasis separates the code that builds and edits the form model from the code that connects the form to Obsidian. The notes describe the target architecture, whereas the [roadmap](../../TODO.md) records which modules exist.
 
 - [Layers and dependency rule](layers.md): to place a new module in the layer whose admitted dependencies include every import of the module.
-- [Rendering pipeline](rendering-pipeline.md): to trace a rendered block back to the stage that produced that block.
+- [Form pipeline](form-pipeline.md): to trace a control of the form, or a change of the file, back to the stage that produced it.

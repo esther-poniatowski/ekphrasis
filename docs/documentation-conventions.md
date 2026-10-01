@@ -19,7 +19,7 @@ tags:
   - feature
 index: "[Features](docs/features/_index.md)"
 aliases:
-  - Key references
+  - Field paths
 ---
 ```
 
@@ -52,10 +52,10 @@ Each folder carries an index file `_index.md` that registers every file of the f
 
 ## Cross-references
 
-A cross-reference is a relative Markdown link carrying the extension `.md`, so that the link resolves both in Obsidian and on the repository page. To cite one statement, a cross-reference appends a block anchor to the path. This anchor is declared at the end of the target line. The link below targets the anchor of the requirement on atomic references:
+A cross-reference is a relative Markdown link carrying the extension `.md`, so that the link resolves both in Obsidian and on the repository page. To cite one statement, a cross-reference appends a block anchor to the path. This anchor is declared at the end of the target line. The link below targets the anchor of the requirement on source preservation:
 
 ```markdown
-the [atomic references](../requirements.md#^atomic-references)
+the [source preservation](../requirements.md#^source-preservation)
 ```
 
 Link text names the object found at the target, never the file name. When a note or an anchor is renamed, every inbound link must be updated in the same change.

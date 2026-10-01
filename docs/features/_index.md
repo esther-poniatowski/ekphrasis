@@ -7,14 +7,16 @@ aliases:
 ---
 # Features
 
-Each feature of ekphrasis is specified in one note, by the syntax accepted in a YAML note and by the behaviour of the plugin. Each note states the target behaviour of its feature, whereas the steps already implemented are checked in the [roadmap](../../TODO.md). The notes are listed in dependency order.
+Each feature of ekphrasis is specified in one note, by the syntax accepted in a schema or an instance and by the behaviour of the plugin. Each note states the target behaviour of its feature, whereas the steps already implemented are checked in the [roadmap](../../TODO.md). The notes are listed in dependency order.
 
-- [YAML notes](file-format.md): to create a YAML note, and to know which of its parts Obsidian indexes.
-- [Key paths](key-paths.md): to designate a key of a YAML note, in a link, in a view specification or in a program.
-- [Default presentation](default-presentation.md): to predict the display of a key covered by no view specification.
-- [View specifications](view-specifications.md): to declare how the keys of a family of YAML notes display, without modifying the data.
-- [Correspondence tables](correspondence-tables.md): to encode a correspondence between vocabularies so that it renders as a table.
-- [Key references](references.md): to link a key of a YAML note from any note, and to keep such links valid when keys change.
-- [Links](links.md): to write a link inside a value, and to know how its target resolves.
-- [Embedding](embedding.md): to display a YAML note, or a single key of that note, inside another note.
-- [Reading and editing modes](editing.md): to switch between the rendered display and the YAML source of a note.
+- [YAML instances](instance-files.md): to store a record in a YAML file, and to bind that file to its schema.
+- [Schemas](schemas.md): to declare the fields of a record type, their defaults, their instructions and their required or conditional status.
+- [Field kinds](field-kinds.md): to choose the control through which each field is filled.
+- [Field paths](field-paths.md): to designate a field of an instance in a rule, in an issue or in a checker.
+- [Instance creation](instance-creation.md): to create a new instance from a schema, and to predict the skeleton written into the file.
+- [Form view](form-view.md): to fill an instance, display the instructions of a field, and switch to the YAML text.
+- [Outline](outline.md): to navigate a long instance, and to find the fields that remain missing or invalid.
+- [Saving](saving.md): to predict how each edit changes the YAML file, and which parts of the file stay unchanged.
+- [Validation](validation.md): to declare validity rules in a schema, and to interpret the issues reported.
+- [Custom checkers](custom-checkers.md): to implement a rule in Python, register it, and invoke it from a schema.
+- [Schema editor](schema-editor.md): to create and modify schemas through a form, and to manage their versions.

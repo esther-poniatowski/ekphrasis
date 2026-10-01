@@ -7,26 +7,34 @@ aliases:
 ---
 # Requirements
 
-The requirements of ekphrasis are the properties needed from the plugin by a project that stores rich content in YAML notes. Each YAML note of such a project serves [two readers](overview.md): a person reads the content of the values, and a program reads the data. To justify a design choice, feature notes and decision records cite a requirement by its block anchor.
+The requirements of ekphrasis are the properties needed from the plugin by a project that fills YAML records against schemas. Each instance in such a project serves [two readers](overview.md): a person fills and reads the values through a form, and a program reads the data. To justify a design choice, feature notes and decision records cite a requirement by its block anchor.
 
-## Readability
+## Filling
 
-- **Structural presentation**: nested mappings and sequences must display as sections, lists and tables, in place of indented source text. ^structural-presentation
-- **Rich content**: string values must render as Obsidian Markdown, including its block constructs (e.g. callouts, lists, tables) and LaTeX formulas in inline and display form. ^rich-content
-- **Correspondence tables**: a correspondence between the terms of several vocabularies must render as a table, with one row for each tuple of related terms. ^correspondence-tables
+- **Guided creation**: a command must create a new instance of a schema, with default values filled, and with every field that requires an explicit choice left unfilled. ^guided-creation
+- **Typed controls**: each field must be edited through a control suited to its kind, from single words and choices to Markdown paragraphs, LaTeX formulas, lists and tables. ^typed-controls
+- **Instructions on demand**: the instructions and the examples of each field must be displayable at the field, and hidden otherwise. ^instructions-on-demand
+- **Rendered content**: Markdown and LaTeX values must display as Obsidian renders them in a note. ^rendered-content
 
 ## Navigation
 
-- **Atomic references**: each key must be addressable from any note, from any other YAML note, and from a program that reads the data. ^atomic-references
-- **Markdown links**: values must accept Markdown links as well as wikilinks, resolved as in a note of the same folder. ^markdown-links
-- **Vault indexing**: YAML notes must take part in the search, the backlinks and the link graph of the vault. ^vault-indexing
+- **Visible structure**: keys must be distinguished from the areas holding the values, and each nested group must be collapsible. ^visible-structure
+- **Outline**: a side panel must display the structure of the instance, and a click on an entry of that panel must move the form to the field. ^outline
+
+## Validation
+
+- **Declared rules**: validity rules must be declarable in the schema at four scopes: one field, the whole instance, a relation between fields, and a condition on other fields. ^declared-rules
+- **Custom checkers**: a rule beyond the predefined checkers must be implementable in Python and registered in the plugin. ^custom-checkers
+- **Visible issues**: each missing or invalid field must be highlighted in the form and in the outline. ^visible-issues
 
 ## Integrity
 
-- **Single source**: the YAML text must remain the only source, so the plugin must never rewrite it. Therefore, every construct of the source stays unchanged in the file (e.g. comments, YAML anchors, scalar styles). ^single-source
-- **Machine readability**: every construct required by the plugin must leave the data unchanged for a standard YAML parser. ^machine-readability
+- **Progressive saving**: every edit must be saved without a submission step, including an edit that leaves the instance incomplete or invalid. ^progressive-saving
+- **Machine readability**: an instance must remain an ordinary YAML file, read by a standard YAML parser without preprocessing. ^machine-readability
+- **Source preservation**: an edit must change only the edited value, so the comments, the key order, the scalar styles and the other values stay unchanged in the file. ^source-preservation
+- **Source access**: the YAML text of an instance must remain editable within Obsidian. ^source-access
 
-## Authoring
+## Schema authoring
 
-- **In-place editing**: YAML notes must be editable within Obsidian, with YAML syntax highlighting. ^in-place-editing
-- **Customizable presentation**: the presentation of each key must be configurable without modifying the data, and reusable across YAML notes. ^customizable-presentation
+- **Schema editor**: an interactive editor must create and modify schemas, including the kind, the rules and the instructions of each field. ^schema-editor
+- **Schema versions**: successive versions of a schema must be managed, so that each instance remains checkable against the version for which it was written. ^schema-versions
