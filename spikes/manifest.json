@@ -1,9 +1,0 @@
-{
-  "id": "ekphrasis-spikes",
-  "name": "Ekphrasis spikes",
-  "version": "0.0.0",
-  "minAppVersion": "1.5.0",
-  "description": "Disposable spikes that test the premises of ekphrasis inside Obsidian.",
-  "author": "Esther Poniatowski",
-  "isDesktopOnly": true
-}

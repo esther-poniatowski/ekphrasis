@@ -12,13 +12,11 @@
   },
   "scripts": {
     "dev": "node config/tools/esbuild.config.mjs",
-    "dev:spikes": "node config/tools/esbuild.config.mjs --target=spikes",
     "build": "tsc --noEmit && node config/tools/esbuild.config.mjs production",
-    "build:spikes": "node config/tools/esbuild.config.mjs production --target=spikes",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint --config config/tools/eslint.config.mjs src tests spikes/src",
-    "format": "prettier --config config/tools/prettier.json --write src tests spikes/src",
-    "format:check": "prettier --config config/tools/prettier.json --check src tests spikes/src",
+    "lint": "eslint --config config/tools/eslint.config.mjs src tests",
+    "format": "prettier --config config/tools/prettier.json --write src tests",
+    "format:check": "prettier --config config/tools/prettier.json --check src tests",
     "test": "vitest run --config config/tools/vitest.config.ts",
     "test:watch": "vitest --config config/tools/vitest.config.ts",
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json"

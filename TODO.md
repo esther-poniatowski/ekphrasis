@@ -4,7 +4,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Toolchain and spikes
 
-- [ ] **Tooling**: commit a lock file, so that `npm ci` passes in continuous integration.
+- [x] **Tooling**: commit a lock file, so that `npm ci` passes in continuous integration. (2026-10-01)
 - [x] **Tooling**: add `preact`, compile JSX with the import source `preact`, cover the files `.tsx` in the TypeScript, ESLint and Vitest configurations, and forbid `preact` outside the adapters layer. (2026-10-01)
 - [x] **Tooling**: retire the reading view, the Markdown projection and the code block `yaml-view`, and keep the parser adapter that reports source ranges. (2026-10-01)
 - [x] **YAML instances**: confirm in a test vault how Obsidian behaves when another enabled plugin registers the extension `.yaml` or `.yml`. (2026-10-01)

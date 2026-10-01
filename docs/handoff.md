@@ -11,10 +11,7 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The current milestone is *Toolchain and spikes*. Every spike has a recorded verdict, and each step of the milestone is checked in the [roadmap](../TODO.md) except the lock file. Two actions remain:
-
-- **Lock file**: `package-lock.json` exists and `npm ci` passes on it locally, but the roadmap step requires a committed lock file. The user chose to commit later, together with the scaffolding.
-- **Retirement of the spike plugin**: the folder `spikes/`, the build target `spikes` of `config/tools/esbuild.config.mjs`, the scripts `build:spikes` and `dev:spikes`, the paths `spikes/src` of the lint and format scripts and of `tsconfig.json`, and the entry `spikes/main.js` of the ESLint ignores are deleted together. The folder has never been committed, so the user decides whether a commit keeps it in the history before the deletion.
+The milestone *Toolchain and spikes* is complete, and every step is checked in the [roadmap](../TODO.md). Every spike has a recorded verdict, and the spike plugin is retired. Its code remains in the history, in the commit `test: Add spike plugin for Obsidian premises`. Continuous integration has not run yet, so the first push confirms that `npm ci` passes on the committed lock file.
 
 The next milestone is *Bound form*. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
@@ -22,7 +19,7 @@ The next milestone is *Bound form*. Each decision record verified by a spike sta
 
 - Node 22 is expected, as the version file `.nvmrc` fixes. The dependencies are installed in `node_modules/`.
 - The npm cache `~/.npm` holds files owned by root, so `npm install` fails with `EACCES`. Until the user repairs the cache, every npm command that downloads takes the option `--cache` pointing to a folder of the session scratchpad.
-- The project has never been committed beyond its documentation: `package.json`, `package-lock.json`, `manifest.json`, `tsconfig.json`, `src/`, `tests/`, `config/`, `scripts/`, `spikes/` and the example vault are untracked. The user decides when to commit them. The deletion of the tracked note `examples/vault/example-note.md`, which demonstrated the retired code block, is staged.
+- The folder `.obsidian/` at the repository root holds the settings of the user for reading the repository as a vault. It stays uncommitted.
 - The prose linter runs through `/Users/eresther/miniconda3/bin/conda run -n hermeneia hermeneia lint <path>`.
 - The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=/Users/eresther/Documents/projects/gnomon npm test`.
 
@@ -54,7 +51,6 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 - **Layers**: the [layers and dependency rule](architecture/layers.md) applies, and `preact` is admitted in the adapters layer only.
 - **Git**: commits land on `main`, without a new branch, in the format of the commit template `.gitmessage`.
 - **Consumer projects**: they are read, never modified. The accepted decision of geonexus that names the suffix `.yaml.md` is updated by the user.
-- **Spike plugin**: no module of `src/` imports from `spikes/`, so that deleting the folder leaves the plugin intact.
 
 ## Open questions
 
@@ -73,7 +69,7 @@ The design decisions and their rationale are recorded in the [architecture decis
 
 - **One session per milestone**: each session ends on a verified state (exit criterion met, roadmap checked, commit made), so that the next session starts from the repository rather than from a conversation.
 - **Synthetic fixtures**: the records of the consumer projects stay outside this public repository.
-- **Separate spike plugin**: the spikes that need Obsidian form the disposable plugin `ekphrasis-spikes`, built from `spikes/`, so that the plugin of `src/` holds no spike code.
+- **Disposable spike plugin**: a spike that needs a running Obsidian runs in a separate plugin, deleted once its verdict is recorded, so that `src/` holds no spike code.
 - **Corpus variable**: the environment variable `EKPHRASIS_CORPUS` names one folder, and several projects can be gathered in it by symbolic links.
 - **Spike verdicts in decision records**: each verdict changes the status of its record from proposed to accepted, or reopens the decision before the milestone that depends on it.
 

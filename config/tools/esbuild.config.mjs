@@ -9,7 +9,6 @@
 //
 //   production       single minified build; without it, watch mode with inline sourcemaps
 //   --target=plugin  the ekphrasis plugin, written to `main.js` at the repository root (default)
-//   --target=spikes  the disposable spike plugin, written to `spikes/main.js`
 //
 // Notes
 // -----
@@ -22,12 +21,6 @@ import esbuild from "esbuild";
 /** Build targets: each one is a plugin folder holding its own `manifest.json`. */
 const TARGETS = {
   plugin: { entryPoints: ["src/main.ts"], outfile: "main.js" },
-  // The spikes bundle fixtures of `tests/fixtures/` as text, hence the text loaders.
-  spikes: {
-    entryPoints: ["spikes/src/main.ts"],
-    outfile: "spikes/main.js",
-    loader: { ".yaml": "text", ".yml": "text" },
-  },
 };
 
 const args = process.argv.slice(2);
