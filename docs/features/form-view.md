@@ -13,7 +13,7 @@ The form view displays an instance bound to a schema as a form, in which each fi
 
 The fields of the instance appear in the order of the schema. Each field occupies one row with three parts:
 
-- the label, taken from the keyword `title` or else from the key, and marked when the field is required;
+- the label, taken from the keyword `title` or else from the key, and marked when the field is required. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written;
 - the control of its [kind](field-kinds.md), placed in a content area whose background sets it apart from the label;
 - a status marker, showing whether the field is filled, missing or invalid.
 
@@ -33,7 +33,7 @@ Each missing or invalid field is highlighted, and its messages display below its
 
 ## Locked values
 
-A field can display a value written elsewhere in the file: a value reached through an alias, such as `*nominal`, or merged from another mapping by the key `<<`. The text of such a value lies at its anchor, outside the field. Therefore, the field is marked as locked and stays read-only. The value is edited at its anchor, or in the source view.
+A field can display a value written elsewhere in the file: a value reached through an alias, such as `*nominal`, or merged from another mapping by the key `<<`. The text of such a value lies at its anchor, outside the field. Therefore, the field stays read-only, and a circled question mark follows its label. A click on that symbol reveals, under the field, where the value is edited: at its anchor, or in the merged mapping.
 
 ## Keys outside the schema
 

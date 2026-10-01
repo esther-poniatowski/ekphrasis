@@ -16,3 +16,4 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Binding of each instance to its schema, by a modeline or by the path rules of the settings tab.
 - Loading of schemas written in JSON or in YAML, with references across files.
 - Form model, with the kind of each field declared by `x-kind` or derived from the standard keywords, and one control per scalar kind.
+- Labels of declared properties without a title, read with their underscores and hyphens as spaces.

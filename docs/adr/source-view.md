@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Source view
-status: proposed
+status: accepted
 ---
 # Source view
 
@@ -34,3 +34,7 @@ Ekphrasis supplies a source view: a CodeMirror 6 editor with a YAML language mod
 
 - Obsidian supplies the core packages of CodeMirror 6 without a YAML language, so the YAML language mode is bundled with the plugin. Therefore, the bundler configuration must exclude the package of that language mode from the packages treated as external.
 - Completion and diagnostics drawn from the schema remain open for subsequent work.
+
+## Verification
+
+The decision holds inside Obsidian, as a manual test in a test vault confirmed on 2026-10-02. The source view displayed the YAML text with line numbers and highlighting, and supported indentation and undo. One header button and one command switched it with the form view in the same tab. Each edit made in the source view was saved to the file.

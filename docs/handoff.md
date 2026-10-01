@@ -13,19 +13,24 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 The milestone *Bound form* is complete, and every step is checked in the [roadmap](../TODO.md). Its exit criterion is verified by the [acceptance test of the bound form](../tests/acceptance/bound-form.test.ts). Each record of the fixtures opens with the schema named by its modeline or by a path rule, and each scalar displays in the control of its kind. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-One check of the milestone remains open, and it comes first in the next session. The adapters are type-checked, linted and bundled, but no running Obsidian has loaded them yet (instance view, source editor, extension registration, commands, settings tab). The plugin must be loaded in the example vault, following the [development loop](../CONTRIBUTING.md), to confirm three behaviours:
+The adapters were checked inside Obsidian on 2026-10-02, against the 39 items of a test protocol, and every item passed. The items covered five behaviours:
 
-- a bound file opens as a form, and an unbound file opens in the source view;
-- the header button and the command *Toggle form and source view* switch the two views, and an edit in the source view is saved;
-- with YAML Editor enabled first, the notice appears and the command *Open in ekphrasis* opens the active file.
+- the control of each scalar kind;
+- the switch between the form view and the source view;
+- the binding by modeline and by path rule;
+- the error messages;
+- the conflict with YAML Editor.
 
-The next milestone is *Saving of scalars*. The form stays read-only through the constant `FORM_EDITABLE` of the [instance view](../src/adapters/obsidian/views/instance-view.ts). That milestone must replace the constant by the commits. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
+The presentation defects reported during that check were corrected, and the corrections passed a second check in Obsidian on 2026-10-02.
+
+The next milestone is *Saving of scalars*. The form stays read-only through the constant `FORM_EDITABLE` of the [instance view](../src/adapters/obsidian/views/instance-view.ts). That milestone must replace the constant by the commits. Until then, a dropdown stays disabled, so its list of options cannot be opened. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
 ## Environment
 
 - Node 22 is expected, as the version file `.nvmrc` fixes. The dependencies are installed in `node_modules/`.
 - The npm cache `~/.npm` holds files owned by root, so `npm install` fails with `EACCES`. Until the user repairs the cache, every npm command that downloads takes the option `--cache` pointing to a folder of the session scratchpad.
 - The folder `.obsidian/` at the repository root holds the settings of the user for reading the repository as a vault. It stays uncommitted.
+- A test vault for manual checks lies in `examples/test-vault/`, excluded from git by `.git/info/exclude`, so it exists on this machine only. Its plugin folder links to the bundle of the repository, and its note `test-protocol.md` holds the checklist of the milestone *Bound form*. Obsidian refuses a vault whose path contains a hidden folder, so the vault must stay outside folders whose names start with a dot.
 - The prose linter runs through `conda run -n hermeneia hermeneia lint <path>`, with the conda executable of the user.
 - The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=<gnomon> npm test`.
 
@@ -83,6 +88,7 @@ The design decisions and their rationale are recorded in the [architecture decis
 ## Warnings
 
 - The file `obsidian.d.ts` exceeds the length that web fetching tools process, and their summaries of it have returned invented signatures. Read the file through `gh api -H "Accept: application/vnd.github.raw" repos/obsidianmd/obsidian-api/contents/obsidian.d.ts`, filtered with `grep`.
+- No tooltip displayed on the lock badges of the form during the manual test, whether written by the attribute `title`, by `aria-label`, or by the function `setTooltip` of Obsidian. The cause is not diagnosed. Therefore, the form explains a lock by a note that a click on its symbol reveals, as the [field label](../src/adapters/obsidian/ui/field-label.tsx) implements. Any later explanation on demand, such as the instructions of the milestone *Guidance and navigation*, must not depend on hover, since touch devices have none.
 - A field reached through an alias or a merge key carries a lock in the [form model](../src/domain/form/model.ts), since the text of its value lies at the anchor. A commit must never write at a locked field.
 - The package `@codemirror/commands` is pinned to 6.10.2, because its later versions require `@codemirror/state` 6.6 or later, whereas Obsidian 1.13 supplies 6.5.0. A second copy of `@codemirror/state` in `node_modules/` breaks the identity checks between editor extensions. Therefore, after any upgrade of a CodeMirror package, the command `npm ls @codemirror/state` must list a single version.
 - Saving must respect three constraints found by the spike on byte preservation, as recorded in the [decision on source-preserving writes](adr/source-preserving-writes.md). For instance, filling an empty value requires an insertion after its key.
