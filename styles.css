@@ -4,3 +4,167 @@
  * All selectors are scoped under `.ekphrasis-*` classes to avoid collisions with themes and other
  * plugins. Colors and spacing rely on Obsidian CSS variables so that themes apply transparently.
  * ============================================================================================== */
+
+/* --- Instance view ------------------------------------------------------------------------------ */
+
+.ekphrasis-view {
+  padding: 0;
+}
+
+.ekphrasis-form-container {
+  padding: var(--size-4-4) var(--size-4-6);
+  max-width: var(--file-line-width);
+  margin: 0 auto;
+}
+
+.ekphrasis-source-container {
+  height: 100%;
+}
+
+.ekphrasis-source-container .cm-editor {
+  height: 100%;
+  font-family: var(--font-monospace);
+  font-size: var(--code-size);
+}
+
+.ekphrasis-source-container .cm-gutters {
+  background-color: var(--background-primary);
+  color: var(--text-faint);
+  border-right: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-source-container .cm-activeLine,
+.ekphrasis-source-container .cm-activeLineGutter {
+  background-color: var(--background-secondary);
+}
+
+/* Tokens named by the `classHighlighter` of Lezer, coloured with the code variables of the theme. */
+.ekphrasis-source-container .tok-propertyName {
+  color: var(--code-property);
+}
+.ekphrasis-source-container .tok-string {
+  color: var(--code-string);
+}
+.ekphrasis-source-container .tok-number,
+.ekphrasis-source-container .tok-bool,
+.ekphrasis-source-container .tok-null {
+  color: var(--code-value);
+}
+.ekphrasis-source-container .tok-comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.ekphrasis-source-container .tok-keyword,
+.ekphrasis-source-container .tok-meta,
+.ekphrasis-source-container .tok-labelName {
+  color: var(--code-keyword);
+}
+.ekphrasis-source-container .tok-punctuation,
+.ekphrasis-source-container .tok-operator {
+  color: var(--code-punctuation);
+}
+
+/* --- Form --------------------------------------------------------------------------------------- */
+
+.ekphrasis-form-header {
+  margin-bottom: var(--size-4-4);
+}
+
+.ekphrasis-form-title {
+  font-size: var(--h2-size);
+  font-weight: var(--h2-weight);
+}
+
+.ekphrasis-form-binding,
+.ekphrasis-empty,
+.ekphrasis-alternative,
+.ekphrasis-extra-heading {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-schema-issues {
+  color: var(--text-warning);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-field {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) 3fr;
+  gap: var(--size-4-3);
+  align-items: start;
+  padding: var(--size-4-1) 0;
+}
+
+.ekphrasis-field-label {
+  display: flex;
+  gap: var(--size-2-2);
+  align-items: baseline;
+  padding-top: var(--size-4-1);
+  color: var(--text-normal);
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-field-content {
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  padding: var(--size-2-2);
+  min-width: 0;
+}
+
+.ekphrasis-required {
+  color: var(--text-accent);
+}
+
+.ekphrasis-lock {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: 0 var(--size-2-1);
+}
+
+.ekphrasis-control {
+  width: 100%;
+}
+
+textarea.ekphrasis-control {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.ekphrasis-yaml-text {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: var(--font-monospace);
+  font-size: var(--code-size);
+}
+
+.ekphrasis-group {
+  margin: var(--size-4-2) 0;
+}
+
+.ekphrasis-group-heading {
+  font-weight: var(--font-semibold);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-group-body {
+  padding-left: var(--size-4-4);
+}
+
+.ekphrasis-extra-entries {
+  margin-top: var(--size-4-2);
+  opacity: 0.85;
+}
+
+.ekphrasis-message {
+  padding: var(--size-4-6);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.ekphrasis-message-title {
+  font-size: var(--h3-size);
+  color: var(--text-normal);
+}
