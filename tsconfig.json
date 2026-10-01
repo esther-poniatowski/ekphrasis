@@ -1,0 +1,40 @@
+// =================================================================================================
+// TypeScript Configuration for Ekphrasis
+//
+// Kept at the repository root (rather than in `config/tools/`) because editors, ESLint's type-aware
+// rules and `tsc` resolve it from the root by default. Type checking only: emission is delegated to
+// esbuild (see `config/tools/esbuild.config.mjs`).
+//
+// Single source of the JSX settings: esbuild and Vitest (through Vite) read `jsx` and
+// `jsxImportSource` from this file, so the three compilers emit the same Preact calls.
+// =================================================================================================
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["DOM", "ES2020"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "importHelpers": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "baseUrl": ".",
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "spikes/src/**/*.ts",
+    "spikes/src/**/*.tsx",
+    "config/tools/*.ts"
+  ]
+}

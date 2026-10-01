@@ -1,0 +1,11 @@
+# Development tool names
+esbuild
+vitest
+eslint
+tseslint
+prettier
+nvmrc
+Obsidian
+MathJax
+CodeMirror
+Lezer

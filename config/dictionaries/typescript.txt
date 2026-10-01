@@ -1,0 +1,9 @@
+# TypeScript and JavaScript language terms
+tsconfig
+tslib
+esnext
+cjs
+mjs
+readonly
+keyof
+typeof

@@ -16,7 +16,7 @@ Four layers divide the source code of ekphrasis, and each layer depends only on 
 | Infrastructure | `src/infrastructure/` | Port implementations that call third-party libraries or Node (e.g. the YAML parser, the JSON Schema validator, the Python process) | Domain, application |
 | Adapters | `src/adapters/` | Composition root, and every module that calls the API of Obsidian (e.g. views, commands, settings tab) | All layers |
 
-The dependency rule is enforced by the ESLint configuration `config/tools/eslint.config.mjs`, so an import that breaks the rule fails the lint check. The same check forbids the API of Obsidian in every layer except the adapters, and the YAML parser in the domain and application layers. Any other library is excluded from the domain by convention only, since no lint rule forbids such a library.
+The dependency rule is enforced by the ESLint configuration `config/tools/eslint.config.mjs`, so an import that breaks the rule fails the lint check. The same check forbids the API of Obsidian and the interface library Preact in every layer except the adapters, and the YAML parser in the domain and application layers. Any other library is excluded from the domain by convention only, since no lint rule forbids such a library.
 
 Two files of the folder `src/` lie outside the four layer folders:
 

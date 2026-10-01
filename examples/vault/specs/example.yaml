@@ -1,0 +1,18 @@
+# Example record for manual testing in the development vault.
+# Presentation hints are declared in `.obsidian/yaml-schemas/model.schema.json`, not here.
+model:
+  name: Variational autoencoder
+  summary: |
+    Latent-variable generative model trained by maximizing the **evidence lower bound**.
+    See [[notes/variational-inference]] for background.
+
+    > [!note]
+    > The encoder parameterizes an approximate posterior $q_\phi(z \mid x)$.
+  objective: '\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_\phi(z \mid x)}\left[\log p_\theta(x \mid z)\right] - D_{\mathrm{KL}}\left(q_\phi(z \mid x) \,\Vert\, p(z)\right)'
+  components:
+    - encoder
+    - decoder
+    - prior
+  hyperparameters:
+    latent_dim: 32
+    learning_rate: 0.001

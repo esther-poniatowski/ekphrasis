@@ -1,0 +1,6 @@
+/* =================================================================================================
+ * Styles for Ekphrasis
+ *
+ * All selectors are scoped under `.ekphrasis-*` classes to avoid collisions with themes and other
+ * plugins. Colors and spacing rely on Obsidian CSS variables so that themes apply transparently.
+ * ============================================================================================== */

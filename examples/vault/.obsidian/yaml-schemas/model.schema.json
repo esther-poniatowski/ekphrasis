@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "model.schema.json",
+  "title": "Model specification",
+  "type": "object",
+  "properties": {
+    "model": {
+      "type": "object",
+      "x-label": "Model",
+      "required": ["name", "summary"],
+      "properties": {
+        "name": { "type": "string", "x-render": "inline" },
+        "summary": { "type": "string", "x-render": "markdown" },
+        "objective": { "type": "string", "x-render": "math", "x-label": "Objective" },
+        "components": {
+          "type": "array",
+          "items": { "type": "string" },
+          "x-render": "list"
+        },
+        "hyperparameters": {
+          "type": "object",
+          "x-render": "table",
+          "x-collapsed": true,
+          "additionalProperties": { "type": ["number", "string"] }
+        }
+      }
+    }
+  }
+}
