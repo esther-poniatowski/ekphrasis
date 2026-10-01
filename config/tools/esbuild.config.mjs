@@ -12,11 +12,31 @@
 //
 // Notes
 // -----
-// Modules provided by the Obsidian runtime (obsidian, electron, CodeMirror, Lezer) are marked as
-// external and must never be bundled. JSX settings are read from `tsconfig.json`.
+// Modules provided by the Obsidian runtime are marked as external and must never be bundled: a
+// second copy of a CodeMirror core package would break the identity checks of its extensions.
+// The list is explicit rather than a wildcard over `@codemirror/*` and `@lezer/*`, because the
+// YAML language mode (`@codemirror/lang-yaml`, `@lezer/yaml`) is absent from the runtime and must
+// be bundled. JSX settings are read from `tsconfig.json`.
 // =================================================================================================
 import { builtinModules } from "node:module";
 import esbuild from "esbuild";
+
+/** Packages that Obsidian supplies at run time. */
+const RUNTIME_PACKAGES = [
+  "obsidian",
+  "electron",
+  "@codemirror/autocomplete",
+  "@codemirror/collab",
+  "@codemirror/commands",
+  "@codemirror/language",
+  "@codemirror/lint",
+  "@codemirror/search",
+  "@codemirror/state",
+  "@codemirror/view",
+  "@lezer/common",
+  "@lezer/highlight",
+  "@lezer/lr",
+];
 
 /** Build targets: each one is a plugin folder holding its own `manifest.json`. */
 const TARGETS = {
@@ -34,7 +54,7 @@ if (!target) {
 const context = await esbuild.context({
   ...target,
   bundle: true,
-  external: ["obsidian", "electron", "@codemirror/*", "@lezer/*", ...builtinModules],
+  external: [...RUNTIME_PACKAGES, ...builtinModules],
   format: "cjs",
   target: "es2020",
   logLevel: "info",

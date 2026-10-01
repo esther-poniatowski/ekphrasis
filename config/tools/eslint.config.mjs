@@ -9,7 +9,7 @@
 //     application    -> domain
 //     infrastructure -> domain, application
 //     adapters       -> all layers (composition root, Obsidian integration, Preact components)
-//   The host libraries `obsidian` and `preact` are admitted in the adapters layer only.
+//   The host libraries `obsidian`, `preact` and CodeMirror are admitted in the adapters layer only.
 // =================================================================================================
 import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
@@ -20,7 +20,7 @@ const rootDir = fileURLToPath(new URL("../..", import.meta.url));
  * Libraries bound to the host interface, forbidden in every layer except the adapters. Each
  * pattern follows the gitignore syntax, so `preact` also matches `preact/hooks`.
  */
-const HOST_LIBRARIES = ["obsidian", "preact"];
+const HOST_LIBRARIES = ["obsidian", "preact", "@codemirror/*", "@lezer/*"];
 
 /** Globs of the source files of one layer, TypeScript and TSX alike. */
 const layer = (name) => [`src/${name}/**/*.ts`, `src/${name}/**/*.tsx`];
