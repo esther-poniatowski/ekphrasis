@@ -1,0 +1,93 @@
+# Synthetic schema of a gnomon target-system record, written for ekphrasis: gnomon itself
+# declares its records by templates and Python checkers, without a JSON Schema.
+# constructs: tables derived from sequences of scalar mappings, records derived from a nested
+# list column, the kinds `label`, `markdown-line` and `latex` declared by `x-kind`, a `const`
+# record type, the unfilled value `open`
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: target-system.schema.yaml
+title: Target system
+type: object
+required: [title, id, type, status, target_type, reference_class]
+x-unfilled: [open]
+properties:
+  title:
+    type: string
+    x-kind: markdown-line
+    description: Name of the class of systems, as a noun phrase.
+  id:
+    type: string
+    x-kind: label
+    pattern: '^system\.[a-z0-9-]+$'
+  type:
+    const: target-system
+  status:
+    enum: [draft, provisional, stabilized]
+  target_type:
+    oneOf:
+      - {
+          const: actual-system,
+          title: Actual system,
+          description: One system observed in the world,
+        }
+      - {
+          const: possible-systems,
+          title: Possible systems,
+          description: A class of systems defined by criteria,
+        }
+  reference_class:
+    type: object
+    properties:
+      name: { type: string }
+      selection_criteria:
+        type: array
+        items: { type: string }
+  variants:
+    type: array
+    items: { $ref: "#/$defs/entity" }
+  constituents:
+    type: array
+    items: { $ref: "#/$defs/entity" }
+  index_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        symbol: { type: string, x-kind: label }
+        extent: { type: string }
+        structure: { enum: [interval, discrete, open] }
+  variables:
+    type: array
+    items:
+      type: object
+      required: [name, symbol]
+      properties:
+        name: { type: string }
+        symbol: { type: string, x-kind: label }
+        determined: { enum: [within, outside, open] }
+        signature:
+          type: array
+          items: { type: string, x-kind: label }
+        values: { type: string }
+        expression: { type: [string, "null"], x-kind: latex }
+        shared: { type: boolean }
+  laws:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        symbol: { type: string, x-kind: label }
+        expression: { type: string, x-kind: latex }
+        holds: { type: string }
+
+$defs:
+  entity:
+    type: object
+    required: [name, symbol]
+    properties:
+      name: { type: string }
+      symbol: { type: string, x-kind: label }
+      differentiation: { type: string, x-kind: markdown-line }
+      extent: { type: string }

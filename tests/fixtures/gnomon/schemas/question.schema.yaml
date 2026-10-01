@@ -1,0 +1,122 @@
+# Synthetic schema of a gnomon question record, written for ekphrasis: gnomon itself declares
+# its records by templates and Python checkers, without a JSON Schema.
+# constructs: nested groups, choices as `enum` and as `oneOf` of `const` values with titles,
+# records with nested flow sequences and flow mappings, a map keyed by dotted field paths with
+# values admitted by `additionalProperties`, a nullable field, the conditional rule of the
+# epistemic aim written with `if` and `then`, the unfilled value `open`
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: question.schema.yaml
+title: Question
+type: object
+required: [title, statement, id, type, status, subject, task]
+x-unfilled: [open]
+properties:
+  title:
+    type: string
+    x-kind: markdown-line
+  statement:
+    type: string
+    x-kind: markdown
+    description: The question in full sentences, with its contrast and its domain.
+    examples: ["Which bounds on the forcing are sufficient for a sustained oscillation?"]
+  id:
+    type: string
+    x-kind: label
+  type:
+    const: question
+  status:
+    enum: [posed, refined, answered, abandoned]
+  subject:
+    type: object
+    required: [target_system, phenomenon]
+    properties:
+      target_system: { type: string, x-kind: label }
+      phenomenon: { type: string, x-kind: label }
+      contrast:
+        type: object
+        properties:
+          locus: { enum: [other-outcome, other-system, other-condition, none, open] }
+          foil_set:
+            type: array
+            items:
+              type: object
+              properties:
+                name: { type: string }
+                symbol: { type: string, x-kind: label }
+                expression: { type: array, items: { type: string, x-kind: latex } }
+                reading: { type: string, x-kind: markdown-line }
+          compatibility: { enum: [derived, stipulated, open] }
+          foil_status: { enum: [observed, counterfactual, not-applicable, open] }
+      domain:
+        type: object
+        properties:
+          restrictions:
+            type: array
+            items:
+              type: object
+              properties:
+                name: { type: string }
+                of: { type: string, x-kind: label }
+                restriction: { type: [string, "null"] }
+                values: { type: string }
+                justification: { type: string, x-kind: markdown-line }
+          limit: { type: [string, "null"] }
+  task:
+    type: object
+    required: [epistemic_aim]
+    properties:
+      epistemic_aim:
+        oneOf:
+          - { const: description, title: Description }
+          - { const: exploration, title: Exploration }
+          - { const: prediction, title: Prediction }
+          - { const: explanation, title: Explanation }
+          - { const: modal-knowledge, title: Modal knowledge }
+      requested_relation: { enum: [necessary, sufficient, both, open] }
+      modal_strength: { enum: [necessary, possible, open] }
+      admissible_explanans:
+        type: object
+        properties:
+          compositional: { type: array, items: { type: string, x-kind: label } }
+          substrate: { enum: [dependent, independent, open] }
+          justification: { type: string, x-kind: markdown-line }
+      required_accuracy:
+        type: object
+        properties:
+          standard: { enum: [qualitative, numeric-bound, open] }
+          outputs_to_match:
+            type: array
+            items:
+              type: object
+              properties:
+                target: { type: string, x-kind: label }
+                tolerance:
+                  type: object
+                  properties:
+                    metric: { type: string, x-kind: latex }
+                    bound: { type: string, x-kind: latex }
+                justification: { type: string, x-kind: markdown-line }
+      proof_obligations: { type: array, items: { type: string } }
+    if:
+      required: [epistemic_aim]
+      properties:
+        epistemic_aim: { const: explanation }
+    then:
+      required: [admissible_explanans]
+  virtues:
+    type: array
+    items:
+      type: object
+      properties:
+        virtue: { enum: [generality, simplicity, precision, open] }
+        standing: { enum: [required, preferred, open] }
+        check:
+          type: object
+          properties:
+            verdict: { enum: [pending, met, unmet] }
+            evidence: { type: string }
+            note: { type: string, x-kind: latex }
+  maturity:
+    type: object
+    additionalProperties: { enum: [open, provisional, stabilized] }

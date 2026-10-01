@@ -2,9 +2,10 @@
  * Ports of the application layer.
  *
  * Interfaces through which the application consumes capabilities implemented in outer layers
- * (dependency inversion): parsing (infrastructure) and host file access (adapters).
+ * (dependency inversion): parsing and schema loading (infrastructure), and host file access
+ * (adapters).
  */
-import type { YamlNode } from "../domain";
+import type { SchemaSet, YamlNode } from "../domain";
 
 /** Converts a source text into the domain tree; raises `YamlParseError` on invalid input. */
 export interface DocumentParser {
@@ -13,5 +14,14 @@ export interface DocumentParser {
 
 /** Read access to text files of the host (e.g. JSON Schemas stored in the vault). */
 export interface FileSource {
+  /** Text of the file at the vault path `path`, or `null` when no such file exists. */
   read(path: string): Promise<string | null>;
+}
+
+/**
+ * Loads a schema file with every schema file that its references reach; raises `SchemaError`
+ * when a file is missing or malformed, or when a reference designates no schema.
+ */
+export interface SchemaLoader {
+  load(path: string): Promise<SchemaSet>;
 }

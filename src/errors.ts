@@ -30,3 +30,26 @@ export class YamlParseError extends EkphrasisError {
     super(message);
   }
 }
+
+/** Base class of the failures to load or interpret a schema, located by the schema file. */
+export class SchemaError extends EkphrasisError {
+  override name = "SchemaError";
+
+  constructor(
+    message: string,
+    /** Vault path of the schema file at fault. */
+    readonly schemaPath: string,
+  ) {
+    super(message);
+  }
+}
+
+/** Raised when a schema file is missing, unreadable, or not a JSON or YAML object. */
+export class SchemaLoadError extends SchemaError {
+  override name = "SchemaLoadError";
+}
+
+/** Raised when a `$ref` of a schema designates no loaded schema, or loops without progress. */
+export class SchemaReferenceError extends SchemaError {
+  override name = "SchemaReferenceError";
+}

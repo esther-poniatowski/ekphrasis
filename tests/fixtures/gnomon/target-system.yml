@@ -1,6 +1,8 @@
+# yaml-language-server: $schema=schemas/target-system.schema.yaml
 # Synthetic record reproducing the constructs of a gnomon target-system record.
-# constructs: record tables (sequences of mappings), flow sequences of symbols, empty flow
-# sequences, single-quoted LaTeX, comments after values, aligned trailing comments
+# constructs: a modeline binding the record to its schema, record tables (sequences of
+# mappings), flow sequences of symbols, empty flow sequences, single-quoted LaTeX, comments after
+# values, aligned trailing comments
 
 title: "Driven damped pendulums"
 id: system.pendulum-driven-damped

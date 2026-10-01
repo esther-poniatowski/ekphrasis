@@ -46,4 +46,23 @@ export interface SequenceNode extends BaseNode {
   readonly items: readonly YamlNode[];
 }
 
-export type YamlNode = ScalarNode | MappingNode | SequenceNode;
+/**
+ * Alias such as `*name`, with the node of its anchor. The target is `null` when the anchor is
+ * undefined, or when the alias refers to one of its own ancestors (a recursive structure).
+ *
+ * The alias keeps its own range: the text of the anchored node lies elsewhere, so a commit at
+ * the alias must not reach the target, and the form displays the target as locked.
+ */
+export interface AliasNode extends BaseNode {
+  readonly kind: "alias";
+  readonly name: string;
+  readonly target: YamlNode | null;
+}
+
+export type YamlNode = ScalarNode | MappingNode | SequenceNode | AliasNode;
+
+/** Value of a scalar node. */
+export type ScalarValue = ScalarNode["value"];
+
+/** Key of a mapping entry that merges the entries of other mappings into its own mapping. */
+export const MERGE_KEY = "<<";
