@@ -20,14 +20,14 @@ The next milestone is *Bound form*. Each decision record verified by a spike sta
 - Node 22 is expected, as the version file `.nvmrc` fixes. The dependencies are installed in `node_modules/`.
 - The npm cache `~/.npm` holds files owned by root, so `npm install` fails with `EACCES`. Until the user repairs the cache, every npm command that downloads takes the option `--cache` pointing to a folder of the session scratchpad.
 - The folder `.obsidian/` at the repository root holds the settings of the user for reading the repository as a vault. It stays uncommitted.
-- The prose linter runs through `/Users/eresther/miniconda3/bin/conda run -n hermeneia hermeneia lint <path>`.
-- The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=/Users/eresther/Documents/projects/gnomon npm test`.
+- The prose linter runs through `conda run -n hermeneia hermeneia lint <path>`, with the conda executable of the user.
+- The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=<gnomon> npm test`.
 
 ## Constructs of the consumer projects
 
-The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and the header comment of each fixture lists the constructs that it covers. Records of the consumer projects are never copied into this public repository: the optional corpus test reads them from the folder named by `EKPHRASIS_CORPUS`, and is skipped when the variable is unset.
+The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and the header comment of each fixture lists the constructs that it covers. Records of the consumer projects are never copied into this public repository: the optional corpus test reads them from the folder named by `EKPHRASIS_CORPUS`, and is skipped when the variable is unset. The local folders of the two projects are written `<gnomon>` and `<geonexus>`, and the user provides their locations on request.
 
-**gnomon** (`/Users/eresther/Documents/projects/gnomon/`):
+**gnomon** (`<gnomon>`):
 
 - records with the extension `.yml`, and no JSON Schema: the constraints live in the templates of `src/gnomon/data/templates/`, in the registries `vocabularies.yml` and `requirements.yml`, and in the Python checkers of `src/gnomon/completeness.py` and `src/gnomon/vocabulary.py`;
 - the unfilled value `open`, admitted by every closed field, and placeholders in uppercase, sometimes double-quoted;
@@ -37,7 +37,7 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 - the conditional rule `unmet_by_aim`, in which `task.epistemic_aim` decides the required fields;
 - the generated file `vocabulary.yml`, which must never be edited.
 
-**geonexus** (`/Users/eresther/Documents/research/geonexus/`):
+**geonexus** (`<geonexus>`):
 
 - schemas in JSON Schema 2020-12 written in YAML, in `utils/schemas/`, with `$ref` across files, `additionalProperties: false`, admitted values as `oneOf` of `{const, description}`, and the project keyword `x-checks`;
 - binding by path patterns in `config/checks.yaml`, and the field `schema_version` fixed by `const`;
