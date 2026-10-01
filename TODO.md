@@ -16,15 +16,15 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Bound form
 
-- [ ] **YAML instances**: register the extensions `.yaml` and `.yml` for the view of ekphrasis, and open a file bound to no schema in the source view.
-- [ ] **YAML instances**: catch a registration refused because another plugin owns the extension, report it in a notice, and provide the command *Open in ekphrasis*.
-- [ ] **YAML instances**: resolve the schema of an instance from its modeline, and else from the path rules of the settings.
-- [ ] **Schemas**: load schemas written in JSON or in YAML, and resolve the keyword `$ref` across files.
-- [ ] **Field kinds**: derive the kind of each field from the keyword `x-kind`, and else from the standard keywords.
-- [ ] **Form view**: build the form model from the schema and the parsed instance.
-- [ ] **Form view**: display one control per scalar kind.
-- [ ] **Form view**: bundle a YAML language mode, exclude it from the external packages of the bundler, and host the source view in the view of ekphrasis.
-- [ ] **Form view**: switch between the form view and the source view, by a header button and a command.
+- [x] **YAML instances**: register the extensions `.yaml` and `.yml` for the view of ekphrasis, and open a file bound to no schema in the source view. (2026-10-01)
+- [x] **YAML instances**: catch a registration refused because another plugin owns the extension, report it in a notice, and provide the command *Open in ekphrasis*. (2026-10-01)
+- [x] **YAML instances**: resolve the schema of an instance from its modeline, and else from the path rules of the settings. (2026-10-01)
+- [x] **Schemas**: load schemas written in JSON or in YAML, and resolve the keyword `$ref` across files. (2026-10-01)
+- [x] **Field kinds**: derive the kind of each field from the keyword `x-kind`, and else from the standard keywords. (2026-10-01)
+- [x] **Form view**: build the form model from the schema and the parsed instance. (2026-10-01)
+- [x] **Form view**: display one control per scalar kind. (2026-10-01)
+- [x] **Form view**: bundle a YAML language mode, exclude it from the external packages of the bundler, and host the source view in the view of ekphrasis. (2026-10-01)
+- [x] **Form view**: switch between the form view and the source view, by a header button and a command. (2026-10-01)
 
 ## Saving of scalars
 

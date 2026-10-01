@@ -31,7 +31,7 @@ Each instance is bound to at most one [schema](schemas.md), taken from the first
 
 ^binding-sources
 
-The path in a modeline is resolved from the folder of the instance, as the YAML language server resolves it. When several path rules match one file, the first matching rule in the order of the settings applies. The instance below is bound to its schema by a modeline:
+The path in a modeline is resolved from the folder of the instance, as the YAML language server resolves it. Schemas are read from the vault only. Therefore, a modeline naming a URL or a path outside the vault binds the file to no schema, and the form view reports the reference. The instance below is bound to its schema by a modeline:
 
 ```yaml
 # yaml-language-server: $schema=../schemas/question.schema.yaml
@@ -40,7 +40,19 @@ status: posed
 statement: 'Why does the flatness of $\delta u$ grow as the scale decreases?'
 ```
 
-The modeline is a comment, so a YAML parser ignores it and the data stays unchanged. Editors running the YAML language server read the same line, so the schema also drives completion outside Obsidian. Path rules suit a project whose folder layout already determines the record type of each file, since they require no line in the files. The two sources are weighed in the decision on [schema binding](../adr/schema-binding.md).
+The modeline is a comment, so a YAML parser ignores it and the data stays unchanged. Editors running the YAML language server read the same line, so the schema also drives completion outside Obsidian. Path rules suit a project whose folder layout already determines the record type of each file, since they require no line in the files. Each rule pairs a glob pattern with the path of a schema, and both are written from the vault root. The pattern must match the whole path of the file, and it admits five constructions:
+
+| Construction | Matched text |
+| --- | --- |
+| `*` | Any characters inside one folder name or file name |
+| `?` | One character inside one name |
+| `**`, as a whole segment | Zero or more folders |
+| `{a,b}` | Either alternative, which may itself hold braces |
+| `[a-z]`, `[!a-z]` | One character inside the class, or outside it |
+
+^glob-syntax
+
+For example, the pattern `**/{glossary,*.glossary}.yml` matches both `glossary.yml` and `terms/pendulum.glossary.yml`. When several path rules match one file, the first matching rule in the order of the settings applies. A rule still missing its pattern or its schema binds no file. The two sources are weighed in the decision on [schema binding](../adr/schema-binding.md).
 
 ## Reading by programs
 

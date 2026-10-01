@@ -31,9 +31,17 @@ A field of kind `markdown-line`, `markdown` or `latex` displays its value render
 
 Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A group containing an issue carries a marker in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
 
+## Locked values
+
+A field can display a value written elsewhere in the file: a value reached through an alias, such as `*nominal`, or merged from another mapping by the key `<<`. The text of such a value lies at its anchor, outside the field. Therefore, the field is marked as locked and stays read-only. The value is edited at its anchor, or in the source view.
+
 ## Keys outside the schema
 
 A key present in the file and absent from the schema displays as YAML text in a read-only area at the end of its group. Such a key can be edited in the source view only. When the schema forbids additional properties, the key also raises an issue.
+
+## Schema defects
+
+A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
 
 ## Source view
 

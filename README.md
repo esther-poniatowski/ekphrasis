@@ -111,6 +111,9 @@ For academic use, the GitHub feature "Cite this repository" generates citations 
 
 - **[Obsidian API](https://github.com/obsidianmd/obsidian-api)**: interface between the plugin and Obsidian.
 - **[yaml](https://eemeli.org/yaml/)**: YAML parser that preserves comments, scalar styles and source ranges.
+- **[Preact](https://preactjs.com/)**: interface library of the form view.
+- **[Ajv](https://ajv.js.org/)**: JSON Schema validator for draft 2020-12.
+- **[CodeMirror YAML mode](https://github.com/codemirror/lang-yaml)**: YAML language mode of the source view.
 
 ---
 

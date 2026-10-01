@@ -32,7 +32,8 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Domain | `src/domain/paths/` | Parser and printer of field paths, matching of wildcards, resolution of relative paths |
 | Domain | `src/domain/validation/` | Issues, unfilled values, predefined checkers, order of checks |
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
-| Domain | `src/domain/binding/` | Reading of the modeline, matching of path rules |
+| Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
+| Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
 | Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), settings |
 | Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, splice of text edits, confirmation by parsing again |
 | Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |
@@ -147,7 +148,6 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 ## Dependencies
 
-The runtime dependencies are fixed by the decision records: `yaml`, `preact`, the JSON Schema validator `ajv` in its build for draft 2020-12, and the YAML language mode of CodeMirror 6. The first three are installed. Ajv was verified inside Obsidian with the option `strictSchema` disabled, as the decision on the [schema dialect](../adr/json-schema-dialect.md) records. Two further choices remain open until their milestone:
+The runtime dependencies are fixed by the decision records: `yaml`, `preact`, the JSON Schema validator `ajv` in its build for draft 2020-12, and the YAML language mode of CodeMirror 6. All four are installed. Ajv was verified inside Obsidian with the option `strictSchema` disabled, as the decision on the [schema dialect](../adr/json-schema-dialect.md) records. The YAML language mode `@codemirror/lang-yaml` is bundled with the plugin, whereas Obsidian supplies the core packages of CodeMirror at run time. Therefore, the bundler names those core packages one by one as external, and a wildcard over `@codemirror/*` must not replace that list.
 
-- validating the keyword `format` requires an extension of the validator, such as `ajv-formats`, since Ajv does not validate formats by itself;
-- matching path rules requires a glob matcher, such as `picomatch`, unless the patterns of the settings are restricted to a form that the domain can match itself.
+Path rules are matched by a glob matcher of the domain, so that the domain keeps no dependency. The matcher accepts the [glob syntax of path rules](../features/instance-files.md#^glob-syntax). One further choice remains open until the milestone *Validation*: the extension of the validator for the keyword `format`, such as `ajv-formats`. Ajv does not validate formats by itself.

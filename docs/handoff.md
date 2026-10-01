@@ -11,9 +11,15 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The milestone *Toolchain and spikes* is complete, and every step is checked in the [roadmap](../TODO.md). Every spike has a recorded verdict, and the spike plugin is retired. Its code remains in the history, in the commit `test: Add spike plugin for Obsidian premises`. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`, and its continuous integration passed on 2026-10-01, including `npm ci` on the committed lock file.
+The milestone *Bound form* is complete, and every step is checked in the [roadmap](../TODO.md). Its exit criterion is verified by the [acceptance test of the bound form](../tests/acceptance/bound-form.test.ts). Each record of the fixtures opens with the schema named by its modeline or by a path rule, and each scalar displays in the control of its kind. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The next milestone is *Bound form*. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
+One check of the milestone remains open, and it comes first in the next session. The adapters are type-checked, linted and bundled, but no running Obsidian has loaded them yet (instance view, source editor, extension registration, commands, settings tab). The plugin must be loaded in the example vault, following the [development loop](../CONTRIBUTING.md), to confirm three behaviours:
+
+- a bound file opens as a form, and an unbound file opens in the source view;
+- the header button and the command *Toggle form and source view* switch the two views, and an edit in the source view is saved;
+- with YAML Editor enabled first, the notice appears and the command *Open in ekphrasis* opens the active file.
+
+The next milestone is *Saving of scalars*. The form stays read-only through the constant `FORM_EDITABLE` of the [instance view](../src/adapters/obsidian/views/instance-view.ts). That milestone must replace the constant by the commits. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
 ## Environment
 
@@ -61,6 +67,7 @@ The open decisions are recorded where they are settled: the roadmap steps openin
 - The constructs of the consumer projects come from a read-only survey of both repositories, made on 2026-09-30.
 - The interface technology of the form plugins comes from their GitHub repositories, as read on 2026-10-01 and recorded in the [assessment of form plugins](references/existing-plugins-forms.md#^interface-technology).
 - The signatures of the Obsidian API were read in `obsidian.d.ts` of the repository `obsidianmd/obsidian-api`, and checked against the installed package `obsidian` 1.13.1: `MarkdownRenderer.render(app, markdown, el, sourcePath, component)`, `renderMath(source, display)` returning an element, `registerExtensions(extensions, viewType)`, and `TextFileView` with `requestSave`.
+- The packages that Obsidian supplies at run time, named as external by the bundler, come from the esbuild configuration of the repository `obsidianmd/obsidian-sample-plugin`, as read on 2026-10-01.
 - The syntax-tree functions of the `yaml` library (`keepSourceTokens`, `CST.setScalarValue`, `CST.stringify`) and the class `Ajv2020` come from their official documentation, and were checked against the declarations of the installed versions (`yaml` 2.9.1, `ajv` 8.20.0, `preact` 11.0.0).
 
 ## Decision log
@@ -76,5 +83,6 @@ The design decisions and their rationale are recorded in the [architecture decis
 ## Warnings
 
 - The file `obsidian.d.ts` exceeds the length that web fetching tools process, and their summaries of it have returned invented signatures. Read the file through `gh api -H "Accept: application/vnd.github.raw" repos/obsidianmd/obsidian-api/contents/obsidian.d.ts`, filtered with `grep`.
-- The parser adapter `src/infrastructure/yaml-parser.ts` returns an empty node for aliases, so the form model of the milestone *Bound form* must resolve aliases or mark them read-only. The fixture `tests/fixtures/constructs/anchors.yml` holds anchors, aliases and a merge key.
+- A field reached through an alias or a merge key carries a lock in the [form model](../src/domain/form/model.ts), since the text of its value lies at the anchor. A commit must never write at a locked field.
+- The package `@codemirror/commands` is pinned to 6.10.2, because its later versions require `@codemirror/state` 6.6 or later, whereas Obsidian 1.13 supplies 6.5.0. A second copy of `@codemirror/state` in `node_modules/` breaks the identity checks between editor extensions. Therefore, after any upgrade of a CodeMirror package, the command `npm ls @codemirror/state` must list a single version.
 - Saving must respect three constraints found by the spike on byte preservation, as recorded in the [decision on source-preserving writes](adr/source-preserving-writes.md). For instance, filling an empty value requires an insertion after its key.
