@@ -1,0 +1,6 @@
+# Files excluded from Prettier, passed through `--ignore-path` by the scripts `format` and
+# `format:check`. Prettier resolves these paths from this folder. The manual test records and
+# protocols keep their exact text: some records are invalid YAML on purpose, and the protocols
+# hold the notes written during each run.
+../../node_modules/
+../../tests/manual/

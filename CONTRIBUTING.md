@@ -128,6 +128,7 @@ The folder `config/tools/` holds the settings of the development tools:
 | `esbuild.config.mjs` | esbuild | Bundle the plugin into `main.js` |
 | `eslint.config.mjs` | ESLint | Declare the linting rules and the architectural boundaries |
 | `prettier.json` | Prettier | Declare the formatting rules |
+| `prettier.ignore` | Prettier | Exclude the manual test records and protocols from formatting |
 | `vitest.config.ts` | Vitest | Configure test discovery and coverage |
 
 ### Spell-checking dictionaries
