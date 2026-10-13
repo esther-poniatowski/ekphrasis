@@ -33,7 +33,7 @@ Each commit replaces the text at the source range of the edited node by the new 
 ## Consequences
 
 - The parser must report the source range of each node, including the ranges of block scalars and of flow collections.
-- After each splice, ekphrasis parses the new text and compares the parsed value with the committed value. When the two differ, the commit is not written, and an error is reported at the field.
+- After each splice, ekphrasis parses the new text and compares the parsed document with the expected document: the committed value at the edited field, and every other value unchanged. When the two differ, the commit is not written, and an error is reported at the field.
 - Ekphrasis selects scalar styles in the domain layer, so unit tests check the selected styles without Obsidian.
 
 ## Verification
@@ -54,4 +54,10 @@ Three constraints follow for the milestone *Saving of scalars*:
 - `CST.setScalarValue` must be told where the scalar stands: as an implicit key, inside a flow collection, or as a value after a key. The caller derives these flags from the ancestors of the node.
 - A value that the style of its token cannot represent must be written with an explicit scalar type, so the domain layer must still select the style of each value.
 
-Inserting and removing keys, items and rows remains unverified until the milestone *Collections*.
+The milestone *Saving of scalars* meets the three constraints in the [plan of commits](../../src/domain/edit/commit-plan.ts):
+
+- a bare key receives its value after its colon, and a block scalar keeps its header on the line of the key;
+- the domain derives the context of each scalar from its parent, and the writer converts that context into the flags of `CST.setScalarValue`;
+- the domain selects the style of every written value, and the writer passes it as an explicit scalar type.
+
+The [golden test of byte preservation](../../tests/acceptance/saving.test.ts) also verifies inserting and removing keys of block mappings. Keys of flow mappings, items and rows remain unverified until the milestone *Collections*.

@@ -28,12 +28,12 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Saving of scalars
 
-- [ ] **Saving**: commit a control when it loses the focus, when typing pauses for the delay of the settings, and at each change of a dropdown, a toggle or a checkbox.
-- [ ] **Saving**: splice the text of a committed value into the source range of its node, and confirm the committed value by parsing the new text.
-- [ ] **Saving**: select the scalar style of each new or edited value.
-- [ ] **Saving**: insert the key of an absent optional field at its first edit, with the indentation of its siblings.
-- [ ] **Saving**: remove the key of a cleared optional field, and write the unfilled value of a cleared required field.
-- [ ] **Saving**: parse the file again after a change made outside, and keep the text of the focused control.
+- [x] **Saving**: commit a control when it loses the focus, when typing pauses for the delay of the settings, and at each change of a dropdown, a toggle or a checkbox. (2026-10-13)
+- [x] **Saving**: splice the text of a committed value into the source range of its node, and confirm the committed value by parsing the new text. (2026-10-13)
+- [x] **Saving**: select the scalar style of each new or edited value. (2026-10-13)
+- [x] **Saving**: insert the key of an absent optional field at its first edit, with the indentation of its siblings. (2026-10-13)
+- [x] **Saving**: remove the key of a cleared optional field, and write the unfilled value of a cleared required field. (2026-10-13)
+- [x] **Saving**: parse the file again after a change made outside, and keep the text of the focused control. (2026-10-13)
 
 ## Validation
 

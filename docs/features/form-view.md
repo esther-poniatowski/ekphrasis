@@ -19,6 +19,10 @@ The fields of the instance appear in the order of the schema. Each field occupie
 
 A group opens a section headed by its label, and the fields of the group are indented under that heading. Each group and each collection can be collapsed and expanded, one at a time, or all at once by the commands *Collapse all* and *Expand all*. When the form opens, the keyword `x-collapsed` of the schema fixes which of them are folded. The layout thereby satisfies the [requirement on visible structure](../requirements.md#^visible-structure).
 
+## Text and focus
+
+The text of the form can be selected and copied, including the labels, the schema path and the messages. When the author returns to the view, the focus returns to the field that held it last, unless the click that returns to the view focuses another field.
+
 ## Instructions and examples
 
 A help button beside each label displays the instructions and the examples of the field below that label, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. An empty control displays the first example as placeholder text.
@@ -50,4 +54,4 @@ The source view displays the YAML text of the instance in an editor with YAML sy
 - a button in the header of the view;
 - the command *Toggle form and source view*.
 
-Both views edit the same file, so each view displays the edits of the other after a switch. When the text fails to parse, the form view displays the parse error with its line and its column, and offers to open the source view. The editor of the source view is supplied by ekphrasis, as the decision on the [source view](../adr/source-view.md) records.
+Both views edit the same file, so each view displays the edits of the other after a switch. When the text fails to parse, the form view displays the parse error with its line and its column, and offers to open the source view. A form displayed before the error stays visible under the error, as specified for [changes from outside](saving.md). The editor of the source view is supplied by ekphrasis, as the decision on the [source view](../adr/source-view.md) records.

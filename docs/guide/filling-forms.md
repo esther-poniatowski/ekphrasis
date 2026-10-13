@@ -21,7 +21,7 @@ The new file opens in the form view, with the content specified under [instance 
 
 ## Filling the fields
 
-Each field is filled in its control, and each change is saved into the file as specified for [saving](../features/saving.md). Therefore, the author can close the file at any point and resume later. Four aids of the [form view](../features/form-view.md) help the author fill the fields:
+Each field is filled in its control, and each change is saved into the file as specified for [saving](../features/saving.md). A text field saves its value when it loses the focus, or when typing pauses for the *commit delay* set in the settings of ekphrasis. Therefore, the author can close the file at any point and resume later. Four aids of the [form view](../features/form-view.md) help the author fill the fields:
 
 - the help button beside a label displays the instructions and the examples of the field;
 - a Markdown or LaTeX value displays rendered, and a click on it opens its text for editing;

@@ -15,11 +15,11 @@ The form pipeline turns the text of an instance into a form, and turns each comm
 4. **Validation** attaches the issues of the checks to the fields of the model.
 5. **Presentation** builds the controls of the form view and the entries of the outline from the model.
 
-A commit runs three further stages, and the last stage restarts the pipeline:
+A commit runs three further stages, after which the form model is rebuilt from the new text:
 
-1. The domain computes the new text of the edited node, with its scalar style and its indentation.
-2. The infrastructure splices that text into the source range of the node, and parses the result to confirm the committed value, as the decision on [source-preserving writes](../adr/source-preserving-writes.md) requires.
-3. The adapters write the new text through the vault. Once the file changes, the pipeline restarts at parsing.
+1. The domain plans the edits of the source text: the place of each edit, and the scalar style and the indentation of each written value.
+2. The infrastructure writes the text of each scalar and splices it. The application then parses the new text, and compares its document with the document that the domain expects, as the decision on [source-preserving writes](../adr/source-preserving-writes.md) requires.
+3. The adapters write the confirmed text through the vault. The model is rebuilt from the parsed document with the schemas already loaded, so the next commit applies to the new text at once.
 
 Only presentation and writing depend on Obsidian.
 

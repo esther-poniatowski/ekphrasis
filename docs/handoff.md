@@ -11,19 +11,13 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The milestone *Bound form* is complete, and every step is checked in the [roadmap](../TODO.md). Its exit criterion is verified by the [acceptance test of the bound form](../tests/acceptance/bound-form.test.ts). Each record of the fixtures opens with the schema named by its modeline or by a path rule, and each scalar displays in the control of its kind. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
+The milestones *Bound form* and *Saving of scalars* are complete, and every step of both is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The adapters were checked inside Obsidian on 2026-10-02, against the 39 items of a test protocol, and every item passed. The items covered five behaviours:
+The exit criterion of *Saving of scalars* is verified by the [golden test of byte preservation](../tests/acceptance/saving.test.ts) on every bound fixture, and by the test of the [draft of a text control](../tests/adapters/text-draft.test.ts): a focused field keeps its text through a change made outside. The protocol `saving-protocol.md` of the test vault passed inside Obsidian on 2026-10-13. Its *Third check* changes the file through delayed shell commands: a manual test of a change made outside must keep the focus in Obsidian, since leaving the window commits the focused field.
 
-- the control of each scalar kind;
-- the switch between the form view and the source view;
-- the binding by modeline and by path rule;
-- the error messages;
-- the conflict with YAML Editor.
+The next milestone is *Validation*.
 
-The presentation defects reported during that check were corrected, and the corrections passed a second check in Obsidian on 2026-10-02.
-
-The next milestone is *Saving of scalars*. The form stays read-only through the constant `FORM_EDITABLE` of the [instance view](../src/adapters/obsidian/views/instance-view.ts). That milestone must replace the constant by the commits. Until then, a dropdown stays disabled, so its list of options cannot be opened. Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
+Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
 ## Environment
 
@@ -74,6 +68,7 @@ The open decisions are recorded where they are settled: the roadmap steps openin
 - The signatures of the Obsidian API were read in `obsidian.d.ts` of the repository `obsidianmd/obsidian-api`, and checked against the installed package `obsidian` 1.13.1: `MarkdownRenderer.render(app, markdown, el, sourcePath, component)`, `renderMath(source, display)` returning an element, `registerExtensions(extensions, viewType)`, and `TextFileView` with `requestSave`.
 - The packages that Obsidian supplies at run time, named as external by the bundler, come from the esbuild configuration of the repository `obsidianmd/obsidian-sample-plugin`, as read on 2026-10-01.
 - The syntax-tree functions of the `yaml` library (`keepSourceTokens`, `CST.setScalarValue`, `CST.stringify`) and the class `Ajv2020` come from their official documentation, and were checked against the declarations of the installed versions (`yaml` 2.9.1, `ajv` 8.20.0, `preact` 11.0.0).
+- The indentation of a new scalar token was read in the source of `CST.createScalarToken` (`node_modules/yaml/dist/parse/cst-scalar.js`, `yaml` 2.9.1): its option `indent` sets the indentation of the content, whereas `CST.setScalarValue` adds two spaces to the indentation of the token for a value after a key. Both write with `lineWidth: -1`, so no value is folded.
 
 ## Decision log
 
@@ -91,4 +86,5 @@ The design decisions and their rationale are recorded in the [architecture decis
 - No tooltip displayed on the lock badges of the form during the manual test, whether written by the attribute `title`, by `aria-label`, or by the function `setTooltip` of Obsidian. The cause is not diagnosed. Therefore, the form explains a lock by a note that a click on its symbol reveals, as the [field label](../src/adapters/obsidian/ui/field-label.tsx) implements. Any later explanation on demand, such as the instructions of the milestone *Guidance and navigation*, must not depend on hover, since touch devices have none.
 - A field reached through an alias or a merge key carries a lock in the [form model](../src/domain/form/model.ts), since the text of its value lies at the anchor. A commit must never write at a locked field.
 - The package `@codemirror/commands` is pinned to 6.10.2, because its later versions require `@codemirror/state` 6.6 or later, whereas Obsidian 1.13 supplies 6.5.0. A second copy of `@codemirror/state` in `node_modules/` breaks the identity checks between editor extensions. Therefore, after any upgrade of a CodeMirror package, the command `npm ls @codemirror/state` must list a single version.
-- Saving must respect three constraints found by the spike on byte preservation, as recorded in the [decision on source-preserving writes](adr/source-preserving-writes.md). For instance, filling an empty value requires an insertion after its key.
+- Every edit of the source text goes through the [plan of commits](../src/domain/edit/commit-plan.ts) and the [commit service](../src/application/commit-service.ts). The commit service confirms each edit by parsing the new text. A commit applies only to the text from which its form model was built, so the [instance session](../src/application/instance-session.ts) queues the commits made while a text loads or fails to parse. The milestone *Collections* must extend the plan, and keep these two paths.
+- The plan refuses two edits until the milestone *Collections*: adding or removing a key of a flow mapping, and clearing an item. Each refusal reason is listed in `REFUSALS` of the plan, and the golden test accepts only those reasons.

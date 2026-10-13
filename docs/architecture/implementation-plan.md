@@ -34,8 +34,8 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
 | Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
 | Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
-| Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), settings |
-| Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, splice of text edits, confirmation by parsing again |
+| Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), session of an open instance, settings |
+| Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, writer of scalar texts, splice of text edits |
 | Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |
 | Infrastructure | `src/infrastructure/python/` | Python process, message protocol, embedded runner script |
 | Adapters | `src/adapters/obsidian/views/` | Instance view hosting the form and the source view, outline view |
