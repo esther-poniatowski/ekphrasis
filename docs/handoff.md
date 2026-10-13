@@ -13,9 +13,14 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 The milestones *Bound form* and *Saving of scalars* are complete, and every step of both is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The exit criterion of *Saving of scalars* is verified by the [golden test of byte preservation](../tests/acceptance/saving.test.ts) on every bound fixture, and by the test of the [draft of a text control](../tests/adapters/text-draft.test.ts): a focused field keeps its text through a change made outside. The [protocol of saving](../tests/manual/protocols/saving.md) passed inside Obsidian on 2026-10-13. Its *Third check* changes the file through delayed shell commands: a manual test of a change made outside must keep the focus in Obsidian, since leaving the window commits the focused field.
+The milestone *Validation* is implemented, and awaits its manual check. Three of its six steps are checked in the roadmap, and three stay open:
 
-The next milestone is *Validation*.
+- the display of issues and the command *Validate instance* stay open until the [protocol of validation](../tests/manual/protocols/validation.md) passes inside Obsidian. The user runs it in the test vault, already built by `npm run test-vault`;
+- the evaluation of checkers for the rule families shared across files stays open: the [implementation plan](architecture/implementation-plan.md) recommends a milestone *Rules across files* after *Custom checkers*. That milestone awaits the decision of the user.
+
+The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
+
+The next step is the run of the protocol of validation. Once it passes, its two steps are checked, and the next milestone is *Collections*.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
@@ -58,7 +63,11 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question belongs to the first milestone: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Three further questions await the user:
+
+- whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder;
+- whether to install `ajv-formats`, so that the keyword `format` is checked; until then the validator is created with `validateFormats` disabled;
+- whether to add the milestone *Rules across files*, recommended by the implementation plan for references, uniqueness across files and acyclicity.
 
 ## Provenance
 
@@ -67,6 +76,8 @@ The open decisions are recorded where they are settled: the roadmap steps openin
 - The signatures of the Obsidian API were read in `obsidian.d.ts` of the repository `obsidianmd/obsidian-api`, and checked against the installed package `obsidian` 1.13.1: `MarkdownRenderer.render(app, markdown, el, sourcePath, component)`, `renderMath(source, display)` returning an element, `registerExtensions(extensions, viewType)`, and `TextFileView` with `requestSave`.
 - The packages that Obsidian supplies at run time, named as external by the bundler, come from the esbuild configuration of the repository `obsidianmd/obsidian-sample-plugin`, as read on 2026-10-01.
 - The syntax-tree functions of the `yaml` library (`keepSourceTokens`, `CST.setScalarValue`, `CST.stringify`) and the class `Ajv2020` come from their official documentation, and were checked against the declarations of the installed versions (`yaml` 2.9.1, `ajv` 8.20.0, `preact` 11.0.0).
+- The order of the errors of Ajv (`ajv` 8.20.0) was observed on 2026-10-13, with three results. The errors of the alternatives of a `oneOf` immediately precede the error of the keyword. An error inside a `$ref` carries the schema path of the referenced document. A key rejected by `propertyNames` yields an error with the field `propertyName`.
+- The rule `by_aim` of gnomon was read in `src/gnomon/data/requirements.yml` and `unmet_by_aim` of `src/gnomon/completeness.py` on 2026-10-13: `null`, `[]`, `{}` and `open` count as unfilled.
 - The indentation of a new scalar token was read in the source of `CST.createScalarToken` (`node_modules/yaml/dist/parse/cst-scalar.js`, `yaml` 2.9.1): its option `indent` sets the indentation of the content, whereas `CST.setScalarValue` adds two spaces to the indentation of the token for a value after a key. Both write with `lineWidth: -1`, so no value is folded.
 
 ## Decision log
@@ -81,6 +92,10 @@ The design decisions and their rationale are recorded in the [architecture decis
 
 ## Warnings
 
+- A manual test of a change made outside must keep the focus in Obsidian, since leaving the window commits the focused field. The *Third check* of the [protocol of saving](../tests/manual/protocols/saving.md) changes the file through delayed shell commands for this reason.
+- Every form state carries the report of the [validation service](../src/application/validation-service.ts), since the form service and the commit service validate each model that they build. A new path that builds a form state must validate it as well. The milestone *Custom checkers* must add its results to that report, and run them from the command *Validate instance*.
+- The merge of the alternatives of a `oneOf` relies on the order of the errors of Ajv, recorded under *Provenance*. After an upgrade of Ajv, the tests of the [conversion of validator errors](../tests/domain/validation/validator-errors.test.ts) and the [acceptance test of validation](../tests/acceptance/validation.test.ts) must still pass.
+- MathJax loads after the plugin, so the checker `latex` reports no issue on a form validated before MathJax is ready. The next commit or the command *Validate instance* then reports the formula.
 - The file `obsidian.d.ts` exceeds the length that web fetching tools process, and their summaries of it have returned invented signatures. Read the file through `gh api -H "Accept: application/vnd.github.raw" repos/obsidianmd/obsidian-api/contents/obsidian.d.ts`, filtered with `grep`.
 - No tooltip displayed on the lock badges of the form during the manual test, whether written by the attribute `title`, by `aria-label`, or by the function `setTooltip` of Obsidian. The cause is not diagnosed. Therefore, the form explains a lock by a note that a click on its symbol reveals, as the [field label](../src/adapters/obsidian/ui/field-label.tsx) implements. Any later explanation on demand, such as the instructions of the milestone *Guidance and navigation*, must not depend on hover, since touch devices have none.
 - A field reached through an alias or a merge key carries a lock in the [form model](../src/domain/form/model.ts), since the text of its value lies at the anchor. A commit must never write at a locked field.
