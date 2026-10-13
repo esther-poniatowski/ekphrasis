@@ -1,0 +1,66 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: validation.schema.yaml
+title: Validation
+description: A schema exercising each kind of issue of the milestone Validation.
+type: object
+additionalProperties: false
+required: [title, status, count, aim]
+x-unfilled: [open]
+x-rules:
+  - check: required-when
+    field: tolerance
+    when: { field: aim, equals: prediction }
+  - check: forbidden-when
+    field: tolerance
+    when: { field: aim, equals: description }
+    severity: warning
+  - check: compare
+    left: start
+    operator: "<="
+    right: end
+  - check: spell-check
+if:
+  required: [aim]
+  properties:
+    aim: { const: explanation }
+then:
+  required: [explanans]
+properties:
+  title: { type: string, x-kind: markdown-line }
+  summary:
+    type: string
+    x-rules:
+      - { check: word-count, max: 5, severity: warning }
+      - { check: inline-markdown }
+  id: { type: string, x-kind: label }
+  status: { enum: [posed, answered, open] }
+  count: { type: integer, minimum: 1 }
+  category:
+    x-kind: text
+    oneOf:
+      - { const: noun, title: Noun }
+      - { const: verb, title: Verb }
+  code: { type: string, pattern: "^[a-z]+$" }
+  formula:
+    type: string
+    x-kind: latex
+    x-rules: [{ check: latex }]
+  aim: { enum: [description, prediction, explanation] }
+  tolerance: { type: number }
+  start: { type: string }
+  end: { type: string }
+  detail:
+    type: object
+    properties:
+      kind: { enum: [a, b] }
+      note: { type: string }
+    if:
+      required: [kind]
+      properties:
+        kind: { const: b }
+    then:
+      required: [note]
+  symbols:
+    type: array
+    x-rules: [{ check: unique-by }]
+    items: { type: string, x-kind: label }

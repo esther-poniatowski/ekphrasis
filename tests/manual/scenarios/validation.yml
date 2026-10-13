@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=validation.schema.yaml
+# Manual test record of the milestone Validation.
+title: |
+  first line
+  second line
+summary: "A summary that holds more than five words."
+id: two words
+status: open
+count: 0
+category: adjective
+code: Bad1
+formula: '\frac{a'
+aim: prediction
+start: 2026-10-13
+end: 2026-10-01
+detail:
+  kind: b
+symbols: [alpha, beta, alpha]
+extra: 1
