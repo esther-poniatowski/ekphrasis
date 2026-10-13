@@ -1,15 +1,18 @@
 /**
- * Read-only area listing the keys of a mapping outside its schema, as YAML text. Such keys are
- * edited in the source view only.
+ * Read-only area listing the keys of a mapping outside its schema, as YAML text, each with its
+ * issues. Such keys are edited in the source view only.
  */
 import type { JSX } from "preact";
 import type { ExtraEntry } from "../../../../domain";
+import { useFormContext } from "../form-context";
+import { IssueList } from "../issue-list";
 
 export function ExtraEntries({
   entries,
 }: {
   readonly entries: readonly ExtraEntry[];
 }): JSX.Element | null {
+  const { issues } = useFormContext();
   if (entries.length === 0) return null;
   return (
     <div class="ekphrasis-extra-entries">
@@ -18,6 +21,7 @@ export function ExtraEntries({
         <div key={entry.id} class="ekphrasis-field" data-path={entry.id}>
           <div class="ekphrasis-field-label">{entry.key}</div>
           <pre class="ekphrasis-field-content ekphrasis-yaml-text">{entry.text}</pre>
+          <IssueList issues={issues.at(entry.id)} />
         </div>
       ))}
     </div>

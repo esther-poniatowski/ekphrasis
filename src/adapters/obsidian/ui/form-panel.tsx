@@ -5,15 +5,19 @@
  * While the text of the file loads again, or fails to parse, the latest form stays displayed and
  * editable, so the text typed in a control survives a change made outside. A text that fails to
  * parse adds a notice above the form: the commits made meanwhile wait for a text that parses.
+ *
+ * The issues of validation display at their fields. The top of the form counts them, and lists
+ * those whose path designates no field of the form.
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { FormReady, SessionSnapshot } from "../../../application";
-import type { FormModel, SchemaBinding } from "../../../domain";
+import { IssueIndex, type SchemaBinding, type SchemaIssue } from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
 import { FormContext, type FormContextValue } from "./form-context";
 import { InlineText } from "./inline-text";
+import { countPhrase, IssueList } from "./issue-list";
 import { FieldList } from "./sections/field-list";
 
 export interface FormPanelProps {
@@ -93,23 +97,28 @@ function EditableForm({
   readonly form: FormReady;
   readonly notice: JSX.Element | null;
 }): JSX.Element {
+  const issues = IssueIndex.of(form.model, form.report.issues);
   return (
-    <FormContext.Provider value={{ registry, commit, commitDelay, errors: snapshot.errors }}>
-      <FormRoot model={form.model} binding={form.binding} notice={notice} />
+    <FormContext.Provider
+      value={{ registry, commit, commitDelay, errors: snapshot.errors, issues }}
+    >
+      <FormRoot form={form} issues={issues} notice={notice} />
     </FormContext.Provider>
   );
 }
 
 function FormRoot({
-  model,
-  binding,
+  form,
+  issues,
   notice,
 }: {
-  readonly model: FormModel;
-  readonly binding: SchemaBinding;
+  readonly form: FormReady;
+  readonly issues: IssueIndex;
   readonly notice: JSX.Element | null;
 }): JSX.Element {
+  const { model, binding } = form;
   const { root } = model;
+  const schemaIssues: readonly SchemaIssue[] = [...model.schemaIssues, ...form.report.schemaIssues];
   return (
     <div class="ekphrasis-form">
       <div class="ekphrasis-form-header">
@@ -120,11 +129,11 @@ function FormRoot({
         </div>
       </div>
       {notice}
-      {model.schemaIssues.length > 0 && (
+      {schemaIssues.length > 0 && (
         <div class="ekphrasis-schema-issues" role="alert">
           <div class="ekphrasis-schema-issues-title">Schema warnings</div>
           <ul>
-            {model.schemaIssues.map((issue, index) => (
+            {schemaIssues.map((issue, index) => (
               <li key={index}>
                 <code class="ekphrasis-issue-path">
                   {issue.path === "" ? "(root)" : issue.path}
@@ -133,6 +142,14 @@ function FormRoot({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {issues.issues.length > 0 && (
+        <div class="ekphrasis-issue-summary">
+          <div class="ekphrasis-issue-summary-title">
+            {`Validation: ${countPhrase(issues.errors, issues.warnings)}.`}
+          </div>
+          <IssueList issues={issues.unplaced} withPaths />
         </div>
       )}
       {root.mismatch === null &&

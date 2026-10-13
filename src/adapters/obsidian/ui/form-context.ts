@@ -1,10 +1,10 @@
 /**
  * Context shared by the components of one form: the registry of controls, the commit of a value,
- * the commit delay, and the reasons of the refused commits.
+ * the commit delay, the reasons of the refused commits, and the issues of validation.
  */
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
-import type { ScalarValue, YamlPath } from "../../../domain";
+import type { IssueIndex, ScalarValue, YamlPath } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 
 export interface FormContextValue {
@@ -15,6 +15,8 @@ export interface FormContextValue {
   readonly commitDelay: number;
   /** Reasons of the refused commits, by printed field path. */
   readonly errors: ReadonlyMap<string, string>;
+  /** Issues of the instance, placed at their fields. */
+  readonly issues: IssueIndex;
 }
 
 export const FormContext = createContext<FormContextValue | null>(null);

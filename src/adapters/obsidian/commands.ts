@@ -9,6 +9,7 @@ import { InstanceView } from "./views/instance-view";
 export const COMMANDS = {
   openInEkphrasis: { id: "open-in-ekphrasis", name: "Open in ekphrasis" },
   toggleView: { id: "toggle-form-source", name: "Toggle form and source view" },
+  validate: { id: "validate-instance", name: "Validate instance" },
 } as const;
 
 export function registerCommands(plugin: Plugin): void {
@@ -36,6 +37,17 @@ export function registerCommands(plugin: Plugin): void {
       const view = workspace.getActiveViewOfType(InstanceView);
       if (view === null) return false;
       if (!checking) view.toggleMode();
+      return true;
+    },
+  });
+
+  // Validates the active instance again, and reports the count of its issues.
+  plugin.addCommand({
+    ...COMMANDS.validate,
+    checkCallback: (checking) => {
+      const view = workspace.getActiveViewOfType(InstanceView);
+      if (view === null) return false;
+      if (!checking) void view.validate();
       return true;
     },
   });

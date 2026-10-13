@@ -25,9 +25,11 @@ import {
   type FormService,
   type SessionHost,
 } from "../../../application";
+import { IssueIndex } from "../../../domain";
 import { ICONS, INSTANCE_VIEW_TYPE, isYamlExtension } from "../constants";
 import type { ControlRegistry } from "../ui/control-registry";
 import { FormPanel } from "../ui/form-panel";
+import { countPhrase } from "../ui/issue-list";
 import { SourceEditor } from "./source-editor";
 
 export type ViewMode = "form" | "source";
@@ -147,6 +149,26 @@ export class InstanceView extends TextFileView implements SessionHost {
       // reload must not, since another pane of the same file then holds the focus.
       this.editor?.focus();
     }
+  }
+
+  /**
+   * Runs the form pipeline again, validation included, in the form view, then reports the count
+   * of the issues in a notice and scrolls to the first issue displayed.
+   */
+  async validate(): Promise<void> {
+    if (this.chosenMode !== "form") {
+      this.chosenMode = "form";
+      this.app.workspace.requestSaveLayout();
+    }
+    await this.refresh();
+    const state = this.session.snapshot.state;
+    if (state?.status !== "form") {
+      new Notice("Ekphrasis: the instance has no form, so it was not validated.");
+      return;
+    }
+    const issues = IssueIndex.of(state.model, state.report.issues);
+    new Notice(`Ekphrasis: ${countPhrase(issues.errors, issues.warnings)}.`);
+    this.formEl.querySelector(".ekphrasis-issues")?.scrollIntoView({ block: "center" });
   }
 
   /** Whether the displayed form was built from the schema file at `path`. */

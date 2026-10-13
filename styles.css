@@ -196,6 +196,56 @@
   font-size: var(--font-ui-small);
 }
 
+/* Issues of validation, below the control of their field or the heading of their group. */
+.ekphrasis-issues {
+  grid-column: 1 / -1;
+  margin: var(--size-2-1) 0;
+  padding-left: var(--size-4-4);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-issue.mod-error {
+  color: var(--text-error);
+}
+
+.ekphrasis-issue.mod-warning {
+  color: rgb(var(--color-orange-rgb));
+}
+
+/* The content of a field with issues is marked on its left edge, in the colour of the most
+   severe issue. */
+.ekphrasis-field[data-issue="error"] > .ekphrasis-field-content {
+  box-shadow: inset 3px 0 0 var(--text-error);
+}
+
+.ekphrasis-field[data-issue="warning"] > .ekphrasis-field-content {
+  box-shadow: inset 3px 0 0 rgb(var(--color-orange-rgb));
+}
+
+/* Count of the issues within a group, beside its label. */
+.ekphrasis-issue-count {
+  margin-left: auto;
+  padding: 0 var(--size-4-2);
+  border-radius: var(--radius-s);
+  color: var(--text-error);
+  background-color: rgba(var(--color-red-rgb), 0.1);
+  font-size: var(--font-ui-smaller);
+}
+
+/* Count of the issues of the instance, with the issues that no field displays. */
+.ekphrasis-issue-summary {
+  margin-bottom: var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-left: 3px solid var(--text-error);
+  border-radius: var(--radius-s);
+  background-color: rgba(var(--color-red-rgb), 0.1);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-issue-summary-title {
+  font-weight: var(--font-semibold);
+}
+
 .ekphrasis-control {
   width: 100%;
 }
@@ -217,6 +267,8 @@ textarea.ekphrasis-control {
 }
 
 .ekphrasis-group-heading {
+  display: flex;
+  align-items: baseline;
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
