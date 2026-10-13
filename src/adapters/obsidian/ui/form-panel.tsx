@@ -147,7 +147,7 @@ function FormRoot({
       {issues.issues.length > 0 && (
         <div class="ekphrasis-issue-summary">
           <div class="ekphrasis-issue-summary-title">
-            {`Validation: ${countPhrase(issues.errors, issues.warnings)}.`}
+            {`Validation: ${countPhrase(issues.counts)}.`}
           </div>
           <IssueList issues={issues.unplaced} withPaths />
         </div>

@@ -167,7 +167,7 @@ export class InstanceView extends TextFileView implements SessionHost {
       return;
     }
     const issues = IssueIndex.of(state.model, state.report.issues);
-    new Notice(`Ekphrasis: ${countPhrase(issues.errors, issues.warnings)}.`);
+    new Notice(`Ekphrasis: ${countPhrase(issues.counts)}.`);
     this.formEl.querySelector(".ekphrasis-issues")?.scrollIntoView({ block: "center" });
   }
 

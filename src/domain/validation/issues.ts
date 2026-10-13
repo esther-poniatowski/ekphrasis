@@ -25,6 +25,17 @@ export interface Issue {
   readonly message: string;
 }
 
+/**
+ * Mark under which an issue displays: a missing field and an invalid value take different marks,
+ * so an author can finish filling before correcting; a warning takes its own mark.
+ */
+export type IssueMark = "missing" | "invalid" | "warning";
+
+export function markOf(item: Issue): IssueMark {
+  if (item.severity === "warning") return "warning";
+  return item.missing ? "missing" : "invalid";
+}
+
 /** Builds an issue, printing its path. */
 export function issue(
   path: YamlPath,
@@ -83,12 +94,11 @@ export class IssueIndex {
     return this.issues.filter((item) => startsWith(item.path, path)).length;
   }
 
-  get errors(): number {
-    return this.issues.filter((item) => item.severity === "error").length;
-  }
-
-  get warnings(): number {
-    return this.issues.filter((item) => item.severity === "warning").length;
+  /** Number of issues under each mark. */
+  get counts(): Readonly<Record<IssueMark, number>> {
+    const counts = { missing: 0, invalid: 0, warning: 0 };
+    for (const item of this.issues) counts[markOf(item)] += 1;
+    return counts;
   }
 }
 

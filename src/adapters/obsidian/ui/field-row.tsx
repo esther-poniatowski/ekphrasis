@@ -6,7 +6,7 @@ import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../domain";
 import { FieldLabel, LockNote, useLockDisclosure } from "./field-label";
 import { useFormContext } from "./form-context";
-import { IssueList, severityOf } from "./issue-list";
+import { fieldMark, IssueList } from "./issue-list";
 
 export function FieldRow({
   field,
@@ -21,7 +21,7 @@ export function FieldRow({
   const disclosure = useLockDisclosure();
   const issues = useFormContext().issues.at(field.id);
   return (
-    <div class="ekphrasis-field" data-path={field.id} data-issue={severityOf(issues) ?? undefined}>
+    <div class="ekphrasis-field" data-path={field.id} data-issue={fieldMark(issues) ?? undefined}>
       <FieldLabel field={field} disclosure={disclosure} />
       <div class="ekphrasis-field-content">{children}</div>
       <LockNote field={field} disclosure={disclosure} />

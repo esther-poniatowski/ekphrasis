@@ -204,18 +204,26 @@
   font-size: var(--font-ui-small);
 }
 
-.ekphrasis-issue.mod-error {
+.ekphrasis-issue.mod-invalid {
   color: var(--text-error);
+}
+
+/* A missing field takes the accent colour of the required marker, apart from invalid values. */
+.ekphrasis-issue.mod-missing {
+  color: var(--text-accent);
 }
 
 .ekphrasis-issue.mod-warning {
   color: rgb(var(--color-orange-rgb));
 }
 
-/* The content of a field with issues is marked on its left edge, in the colour of the most
-   severe issue. */
-.ekphrasis-field[data-issue="error"] > .ekphrasis-field-content {
+/* The content of a field with issues is marked on its left edge, in the colour of its mark. */
+.ekphrasis-field[data-issue="invalid"] > .ekphrasis-field-content {
   box-shadow: inset 3px 0 0 var(--text-error);
+}
+
+.ekphrasis-field[data-issue="missing"] > .ekphrasis-field-content {
+  box-shadow: inset 3px 0 0 var(--text-accent);
 }
 
 .ekphrasis-field[data-issue="warning"] > .ekphrasis-field-content {

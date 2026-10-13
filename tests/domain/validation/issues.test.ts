@@ -34,10 +34,10 @@ describe("issue index", () => {
     expect(index.unplaced.map(({ id }) => id)).toEqual(["task.tolerance", ""]);
   });
 
-  it("counts the issues under a path, and the issues of each severity", () => {
+  it("counts the issues under a path, and the issues of each mark", () => {
     expect(index.countWithin(["task"])).toBe(3);
     expect(index.countWithin(["ta"])).toBe(0);
     expect(index.countWithin([])).toBe(5);
-    expect([index.errors, index.warnings]).toEqual([4, 1]);
+    expect(index.counts).toEqual({ missing: 1, invalid: 3, warning: 1 });
   });
 });

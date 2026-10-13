@@ -29,7 +29,15 @@ export {
 } from "./schema/validator-documents";
 export { UnfilledValues, jsonEquals } from "./validation/unfilled";
 export { InstanceData, instanceValue, pruneUnfilled } from "./validation/instance-data";
-export { IssueIndex, issue, MISSING_MESSAGE, type Issue, type Severity } from "./validation/issues";
+export {
+  IssueIndex,
+  issue,
+  markOf,
+  MISSING_MESSAGE,
+  type Issue,
+  type IssueMark,
+  type Severity,
+} from "./validation/issues";
 export {
   issuesFromValidatorErrors,
   pathOfPointer,
