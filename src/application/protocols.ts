@@ -2,14 +2,23 @@
  * Ports of the application layer.
  *
  * Interfaces through which the application consumes capabilities implemented in outer layers
- * (dependency inversion): parsing and schema loading (infrastructure), and host file access
- * (adapters).
+ * (dependency inversion): parsing, editing and schema loading (infrastructure), and host file
+ * access (adapters).
  */
-import type { SchemaSet, YamlNode } from "../domain";
+import type { SchemaSet, SourceEdit, YamlNode } from "../domain";
 
 /** Converts a source text into the domain tree; raises `YamlParseError` on invalid input. */
 export interface DocumentParser {
   parse(source: string): YamlNode;
+}
+
+/**
+ * Applies the edits planned by the domain to a source text: writes the text of each scalar in its
+ * selected style, and splices it, leaving every other character unchanged.
+ */
+export interface DocumentEditor {
+  /** Text of `source` after `edits`, which must not overlap. */
+  apply(source: string, edits: readonly SourceEdit[]): string;
 }
 
 /** Read access to text files of the host (e.g. JSON Schemas stored in the vault). */

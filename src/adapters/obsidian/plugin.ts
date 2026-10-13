@@ -4,12 +4,13 @@
  */
 import { debounce, Notice, Plugin, type TAbstractFile } from "obsidian";
 import {
+  CommitService,
   DEFAULT_SETTINGS,
   FormService,
   parseSettings,
   type EkphrasisSettings,
 } from "../../application";
-import { FileSchemaLoader, YamlDocumentParser } from "../../infrastructure";
+import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../infrastructure";
 import { COMMANDS, registerCommands } from "./commands";
 import { INSTANCE_VIEW_TYPE, YAML_EXTENSIONS } from "./constants";
 import { refusalNotice, registerExtensions } from "./extension-registration";
@@ -35,13 +36,19 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
 
   override async onload(): Promise<void> {
     this.settings = parseSettings(await this.loadData());
+    const parser = new YamlDocumentParser();
+    const settings = (): EkphrasisSettings => this.settings;
     const forms = new FormService(
-      new YamlDocumentParser(),
+      parser,
       new FileSchemaLoader(new VaultFileSource(this.app.vault)),
-      () => this.settings,
+      settings,
     );
+    const commits = new CommitService(parser, new YamlSourceEditor());
     const registry = createDefaultRegistry();
-    this.registerView(INSTANCE_VIEW_TYPE, (leaf) => new InstanceView(leaf, { forms, registry }));
+    this.registerView(
+      INSTANCE_VIEW_TYPE,
+      (leaf) => new InstanceView(leaf, { forms, commits, registry, settings }),
+    );
 
     const refused = registerExtensions(YAML_EXTENSIONS, (extensions) =>
       this.registerExtensions(extensions, INSTANCE_VIEW_TYPE),

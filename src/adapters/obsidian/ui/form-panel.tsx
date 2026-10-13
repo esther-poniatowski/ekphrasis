@@ -1,21 +1,26 @@
 /**
  * Content of the form view: the form of a bound instance, or the message explaining why the
  * pipeline stopped before the form, with a way to the source view.
+ *
+ * While the text of the file loads again, or fails to parse, the latest form stays displayed and
+ * editable, so the text typed in a control survives a change made outside. A text that fails to
+ * parse adds a notice above the form: the commits made meanwhile wait for a text that parses.
  */
 import type { ComponentChildren, JSX } from "preact";
-import type { FormState } from "../../../application";
+import type { FormReady, SessionSnapshot } from "../../../application";
 import type { FormModel, SchemaBinding } from "../../../domain";
+import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
-import { FormContext } from "./form-context";
+import { FormContext, type FormContextValue } from "./form-context";
 import { InlineText } from "./inline-text";
 import { FieldList } from "./sections/field-list";
 
 export interface FormPanelProps {
-  /** Outcome of opening the instance, or `null` while it is computed. */
-  readonly state: FormState | null;
+  readonly snapshot: SessionSnapshot;
   readonly registry: ControlRegistry;
-  readonly readOnly: boolean;
+  readonly commit: FormContextValue["commit"];
+  readonly commitDelay: number;
   readonly onOpenSource: () => void;
 }
 
@@ -24,20 +29,18 @@ const BINDING_SOURCES: Readonly<Record<SchemaBinding["source"], string>> = {
   "path-rule": "a path rule",
 };
 
-export function FormPanel({
-  state,
-  registry,
-  readOnly,
-  onOpenSource,
-}: FormPanelProps): JSX.Element {
+export function FormPanel(props: FormPanelProps): JSX.Element {
+  const { snapshot, onOpenSource } = props;
+  const { state, form } = snapshot;
+  if (form !== null && (state === null || state.status === "parse-error")) {
+    const notice =
+      state === null ? null : <SuspendedNotice error={state.error} onOpenSource={onOpenSource} />;
+    return <EditableForm {...props} form={form} notice={notice} />;
+  }
   if (state === null) return <div class="ekphrasis-message">Loading the form…</div>;
   switch (state.status) {
     case "form":
-      return (
-        <FormContext.Provider value={{ registry, readOnly }}>
-          <FormRoot model={state.model} binding={state.binding} />
-        </FormContext.Provider>
-      );
+      return <EditableForm {...props} form={state} notice={null} />;
     case "unbound":
       return (
         <Message title="No schema" onOpenSource={onOpenSource}>
@@ -58,27 +61,12 @@ export function FormPanel({
           </p>
         </Message>
       );
-    case "parse-error": {
-      const position = state.error.position;
+    case "parse-error":
       return (
         <Message title="Invalid YAML" onOpenSource={onOpenSource}>
-          <p>
-            {position
-              ? `The text of the file fails to parse at line ${position.line}, column ${position.column}:`
-              : "The text of the file fails to parse:"}
-          </p>
-          <p class="ekphrasis-message-detail">
-            <InlineText text={state.error.message} />
-          </p>
-          {position && (
-            <pre class="ekphrasis-source-excerpt">
-              {`${position.line} | ${position.lineText}\n`}
-              {`${" ".repeat(String(position.line).length + 3 + position.column - 1)}^`}
-            </pre>
-          )}
+          <ParseErrorDetail error={state.error} />
         </Message>
       );
-    }
     case "schema-error":
       return (
         <Message title="Schema not loaded" onOpenSource={onOpenSource}>
@@ -94,12 +82,32 @@ export function FormPanel({
   }
 }
 
+function EditableForm({
+  form,
+  notice,
+  snapshot,
+  registry,
+  commit,
+  commitDelay,
+}: FormPanelProps & {
+  readonly form: FormReady;
+  readonly notice: JSX.Element | null;
+}): JSX.Element {
+  return (
+    <FormContext.Provider value={{ registry, commit, commitDelay, errors: snapshot.errors }}>
+      <FormRoot model={form.model} binding={form.binding} notice={notice} />
+    </FormContext.Provider>
+  );
+}
+
 function FormRoot({
   model,
   binding,
+  notice,
 }: {
   readonly model: FormModel;
   readonly binding: SchemaBinding;
+  readonly notice: JSX.Element | null;
 }): JSX.Element {
   const { root } = model;
   return (
@@ -111,6 +119,7 @@ function FormRoot({
           {`, named by ${BINDING_SOURCES[binding.source]}.`}
         </div>
       </div>
+      {notice}
       {model.schemaIssues.length > 0 && (
         <div class="ekphrasis-schema-issues" role="alert">
           <div class="ekphrasis-schema-issues-title">Schema warnings</div>
@@ -155,5 +164,50 @@ function Message({
         </button>
       </div>
     </div>
+  );
+}
+
+/** Notice above a form whose file text fails to parse: commits wait for a text that parses. */
+function SuspendedNotice({
+  error,
+  onOpenSource,
+}: {
+  readonly error: YamlParseError;
+  readonly onOpenSource: () => void;
+}): JSX.Element {
+  return (
+    <div class="ekphrasis-suspended" role="alert">
+      <ParseErrorDetail error={error} />
+      <p>
+        The form shows the last text that parsed. Its edits are kept, and are saved once the text
+        parses again.
+      </p>
+      <div class="ekphrasis-message-actions">
+        <button onClick={onOpenSource}>Open the source view</button>
+      </div>
+    </div>
+  );
+}
+
+/** Position, message and excerpt of a parse error. */
+function ParseErrorDetail({ error }: { readonly error: YamlParseError }): JSX.Element {
+  const position = error.position;
+  return (
+    <>
+      <p>
+        {position
+          ? `The text of the file fails to parse at line ${position.line}, column ${position.column}:`
+          : "The text of the file fails to parse:"}
+      </p>
+      <p class="ekphrasis-message-detail">
+        <InlineText text={error.message} />
+      </p>
+      {position && (
+        <pre class="ekphrasis-source-excerpt">
+          {`${position.line} | ${position.lineText}\n`}
+          {`${" ".repeat(String(position.line).length + 3 + position.column - 1)}^`}
+        </pre>
+      )}
+    </>
   );
 }

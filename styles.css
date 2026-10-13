@@ -15,6 +15,8 @@
   padding: var(--size-4-4) var(--size-4-6);
   max-width: var(--file-line-width);
   margin: 0 auto;
+  /* Obsidian disables text selection in its interface, so labels and messages could not be copied. */
+  user-select: text;
 }
 
 .ekphrasis-source-container {
@@ -99,6 +101,20 @@
   font-size: var(--font-ui-small);
 }
 
+/* Notice above a form whose file text fails to parse: commits wait for a text that parses. */
+.ekphrasis-suspended {
+  margin-bottom: var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-left: 3px solid rgb(var(--color-red-rgb));
+  border-radius: var(--radius-s);
+  background-color: rgba(var(--color-red-rgb), 0.1);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-suspended p {
+  margin: var(--size-2-2) 0;
+}
+
 .ekphrasis-schema-issues-title {
   color: rgb(var(--color-orange-rgb));
   font-weight: var(--font-semibold);
@@ -170,6 +186,13 @@
 .ekphrasis-lock-note {
   grid-column: 1 / -1;
   color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+/* Reason of a refused commit, below the control of its field. */
+.ekphrasis-commit-error {
+  grid-column: 1 / -1;
+  color: var(--text-error);
   font-size: var(--font-ui-small);
 }
 

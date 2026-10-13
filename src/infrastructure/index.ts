@@ -5,4 +5,5 @@
  * dependency on the Obsidian API: host resources are reached through the `FileSource` port.
  */
 export { YamlDocumentParser } from "./yaml/yaml-parser";
+export { YamlSourceEditor } from "./yaml/yaml-source-editor";
 export { FileSchemaLoader } from "./schema/schema-loader";

@@ -21,7 +21,11 @@ export interface SourceRange {
 export type ScalarStyle = "plain" | "single-quoted" | "double-quoted" | "literal" | "folded";
 
 interface BaseNode {
-  /** Source range, or `null` for nodes absent from the source (e.g. empty values). */
+  /**
+   * Source range, or `null` for a node that the parser could not locate. An empty value, written
+   * as a bare key, has an empty range; the range of a block scalar includes its header and its
+   * final line break.
+   */
   readonly range: SourceRange | null;
 }
 
@@ -33,15 +37,25 @@ export interface ScalarNode extends BaseNode {
 
 export interface MappingEntry {
   readonly key: string;
+  /** Source range of the key, which locates the line of the entry for insertions and removals. */
+  readonly keyRange: SourceRange | null;
   readonly value: YamlNode;
 }
 
-export interface MappingNode extends BaseNode {
+/**
+ * Collection written between brackets or braces, whose entries are separated by commas rather
+ * than placed on lines of their own.
+ */
+interface CollectionNode extends BaseNode {
+  readonly flow: boolean;
+}
+
+export interface MappingNode extends CollectionNode {
   readonly kind: "mapping";
   readonly entries: readonly MappingEntry[];
 }
 
-export interface SequenceNode extends BaseNode {
+export interface SequenceNode extends CollectionNode {
   readonly kind: "sequence";
   readonly items: readonly YamlNode[];
 }

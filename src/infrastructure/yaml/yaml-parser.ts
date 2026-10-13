@@ -4,7 +4,18 @@
  * The `yaml` library is selected for its concrete syntax tree: it preserves scalar styles,
  * comments and source ranges, which source-preserving writes require.
  */
-import { isAlias, isMap, isScalar, isSeq, LineCounter, parseDocument, type Document } from "yaml";
+import {
+  CST,
+  isAlias,
+  isMap,
+  isNode,
+  isScalar,
+  isSeq,
+  LineCounter,
+  parseDocument,
+  Parser,
+  type Document,
+} from "yaml";
 import type { DocumentParser } from "../../application";
 import type { ScalarNode, ScalarStyle, SourceRange, YamlNode } from "../../domain";
 import { YamlParseError } from "../../errors";
@@ -29,12 +40,36 @@ export class YamlDocumentParser implements DocumentParser {
     const document = parseDocument(source, { prettyErrors: false, lineCounter: lines });
     const [error] = document.errors;
     if (error) {
-      const { line, col } = lines.linePos(error.pos[0]);
+      const offset = unclosedBracketBefore(source, error.pos[0]) ?? error.pos[0];
+      const { line, col } = lines.linePos(offset);
       const lineText = source.split(/\r?\n/)[line - 1] ?? "";
       throw new YamlParseError(nameBareSymbols(error.message), { line, column: col, lineText });
     }
     return new TreeConverter(document).convert(document.contents);
   }
+}
+
+/**
+ * Offset of the opening bracket or brace of the innermost flow collection that starts before
+ * `offset` and is never closed, or `null` when every flow collection before `offset` is closed.
+ *
+ * The parser detects an unclosed flow collection only where the text after it stops fitting,
+ * usually on a later line, so its error position would point away from the missing bracket.
+ */
+function unclosedBracketBefore(source: string, offset: number): number | null {
+  let found: number | null = null;
+  for (const token of new Parser().parse(source)) {
+    if (token.type !== "document") continue;
+    CST.visit(token, (item) => {
+      for (const node of [item.key, item.value]) {
+        if (node?.type !== "flow-collection" || node.start.offset >= offset) continue;
+        const closing = node.start.source === "[" ? "]" : "}";
+        const closed = node.end.some((end) => end.source === closing);
+        if (!closed && (found === null || node.start.offset > found)) found = node.start.offset;
+      }
+    });
+  }
+  return found;
 }
 
 /** Converts the nodes of one parsed document into domain nodes, resolving its aliases. */
@@ -67,8 +102,10 @@ class TreeConverter {
       return {
         kind: "mapping",
         range: toRange(node.range),
+        flow: node.flow === true,
         entries: node.items.map((pair) => ({
           key: toKey(isScalar(pair.key) ? pair.key.value : pair.key),
+          keyRange: isNode(pair.key) ? toRange(pair.key.range) : null,
           value: this.convert(pair.value),
         })),
       };
@@ -77,6 +114,7 @@ class TreeConverter {
       return {
         kind: "sequence",
         range: toRange(node.range),
+        flow: node.flow === true,
         items: node.items.map((item) => this.convert(item)),
       };
     }

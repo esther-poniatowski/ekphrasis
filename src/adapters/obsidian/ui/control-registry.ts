@@ -14,6 +14,7 @@ import {
   type MappingKind,
   type ScalarField,
   type ScalarKind,
+  type ScalarValue,
   type SequenceField,
   type SequenceKind,
 } from "../../../domain";
@@ -24,7 +25,12 @@ export interface ControlProps<F> {
   readonly readOnly: boolean;
 }
 
-export type ScalarControl = ComponentType<ControlProps<ScalarField>>;
+export interface ScalarControlProps extends ControlProps<ScalarField> {
+  /** Commits `value` at the field; the value `null` clears the field. */
+  readonly onCommit: (value: ScalarValue) => void;
+}
+
+export type ScalarControl = ComponentType<ScalarControlProps>;
 export type MappingControl = ComponentType<ControlProps<MappingField>>;
 export type SequenceControl = ComponentType<ControlProps<SequenceField>>;
 

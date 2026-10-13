@@ -36,6 +36,11 @@ export class MemoryFileSource implements FileSource {
 export const FIXTURE_RULES: readonly PathRule[] = [
   { pattern: "gnomon/question.yml", schema: "gnomon/schemas/question.schema.yaml" },
   { pattern: "**/{glossary,*.glossary}.yml", schema: "geonexus/schemas/glossary.schema.yaml" },
+  { pattern: "constructs/anchors.yml", schema: "constructs/schemas/anchors.schema.yaml" },
+  {
+    pattern: "constructs/block-scalars.yml",
+    schema: "constructs/schemas/block-scalars.schema.yaml",
+  },
 ];
 
 /** Source expected to bind each fixture record; every other fixture is unbound. */
@@ -43,4 +48,6 @@ export const FIXTURE_BINDINGS: Readonly<Record<string, BindingSource>> = {
   "gnomon/question.yml": "path-rule",
   "gnomon/target-system.yml": "modeline",
   "geonexus/glossary.yml": "path-rule",
+  "constructs/anchors.yml": "path-rule",
+  "constructs/block-scalars.yml": "path-rule",
 };

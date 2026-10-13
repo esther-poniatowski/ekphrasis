@@ -33,6 +33,14 @@ export class YamlParseError extends EkphrasisError {
   }
 }
 
+/**
+ * Raised when planned edits cannot be applied to a source text: no scalar token starts at the
+ * offset of a rewrite, or two edits overlap. The text is then left unchanged.
+ */
+export class SourceEditError extends EkphrasisError {
+  override name = "SourceEditError";
+}
+
 /** Base class of the failures to load or interpret a schema, located by the schema file. */
 export class SchemaError extends EkphrasisError {
   override name = "SchemaError";

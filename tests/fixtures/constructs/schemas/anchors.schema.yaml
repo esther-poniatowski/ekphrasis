@@ -1,0 +1,21 @@
+# Synthetic schema binding the fixture of anchors, so that the golden test of byte preservation
+# edits its values through the form, and finds the values reached through an alias or a merge
+# key locked.
+# constructs: a group reused by a merge key, a number reused by an alias, a list of labels
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: anchors.schema.yaml
+type: object
+$defs:
+  settings:
+    type: object
+    properties:
+      unit: { type: string }
+      gravity: { type: number }
+      precision: { type: integer }
+properties:
+  defaults: { $ref: "#/$defs/settings" }
+  nominal: { type: number }
+  quoted: { type: string }
+  case: { $ref: "#/$defs/settings" }
+  labels: { type: array, items: { type: string } }

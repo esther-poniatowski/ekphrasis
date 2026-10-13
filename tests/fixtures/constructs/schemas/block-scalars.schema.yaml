@@ -1,0 +1,15 @@
+# Synthetic schema binding the fixture of block scalars, so that the golden test of byte
+# preservation edits its values through the form.
+# constructs: optional prose fields of kind `markdown`, and one optional plain field
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: block-scalars.schema.yaml
+type: object
+properties:
+  literal: { type: string, x-kind: markdown }
+  literal_strip: { type: string, x-kind: markdown }
+  literal_keep: { type: string, x-kind: markdown }
+  folded: { type: string, x-kind: markdown }
+  folded_strip: { type: string, x-kind: markdown }
+  indented: { type: string, x-kind: markdown }
+  last: { type: string }

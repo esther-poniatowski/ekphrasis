@@ -1,28 +1,40 @@
 /**
- * Dropdown, for the kind `choice`. Each option displays its title, else its value, and its
- * description as a tooltip. A value outside the admitted values, such as a placeholder, is
- * added as a marked option, so the dropdown never hides what the file holds.
+ * Dropdown, for the kind `choice`, committing at each change. Each option displays its title,
+ * else its value, and the description of the selected option displays below the dropdown. A
+ * value outside the admitted values, such as a placeholder, is added as a marked option, so the
+ * dropdown never hides what the file holds; the empty option clears the field.
  */
 import type { JSX } from "preact";
-import type { ControlProps } from "../control-registry";
-import type { ChoiceOption, ScalarField } from "../../../../domain";
+import type { ScalarControlProps } from "../control-registry";
+import type { ChoiceOption } from "../../../../domain";
 import { formatScalar } from "./scalar-format";
 
 const UNSET = "";
+const OUTSIDE = "outside";
 
-export function ChoiceControl({ field, readOnly }: ControlProps<ScalarField>): JSX.Element {
+export function ChoiceControl({ field, readOnly, onCommit }: ScalarControlProps): JSX.Element {
   const index = field.options.findIndex((option) => option.value === field.value);
   const outside = field.value !== null && index < 0;
-  const selected = index >= 0 ? String(index) : outside ? "outside" : UNSET;
+  const selected = index >= 0 ? String(index) : outside ? OUTSIDE : UNSET;
   // A dropdown shows option tooltips on no platform reliably, so the description of the selected
   // option is displayed below it.
   const description = index >= 0 ? (field.options[index]?.description ?? null) : null;
   return (
     <>
-      <select class="ekphrasis-control dropdown" value={selected} disabled={readOnly}>
-        {field.value === null && <option value={UNSET} />}
+      <select
+        class="ekphrasis-control dropdown"
+        value={selected}
+        disabled={readOnly}
+        onChange={(event) => {
+          const choice = event.currentTarget.value;
+          if (choice === OUTSIDE) return;
+          const option = choice === UNSET ? undefined : field.options[Number(choice)];
+          onCommit(option === undefined ? null : option.value);
+        }}
+      >
+        <option value={UNSET} />
         {outside && (
-          <option value="outside">{`${formatScalar(field.value)} (not admitted)`}</option>
+          <option value={OUTSIDE}>{`${formatScalar(field.value)} (not admitted)`}</option>
         )}
         {field.options.map((option, position) => (
           <option key={position} value={String(position)}>

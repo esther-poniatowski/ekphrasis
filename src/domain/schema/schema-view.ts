@@ -84,6 +84,15 @@ export class SchemaView {
     return this.keyword("uniqueItems")?.value === true;
   }
 
+  /**
+   * Values of the keyword `x-unfilled`, counted as unfilled in addition to the null value. The
+   * keyword is read at the root schema, and its non-scalar entries are ignored.
+   */
+  get unfilledValues(): readonly JsonScalar[] {
+    const values = this.keyword("x-unfilled")?.value;
+    return Array.isArray(values) ? (values as readonly JsonValue[]).filter(isJsonScalar) : [];
+  }
+
   // --- Subschemas --------------------------------------------------------------------------------
 
   /** Properties declared under the keyword `properties`, in their written order. */

@@ -41,7 +41,7 @@ describe("FormService", () => {
     );
     expect((await forms.open("q.yml", "id: x\n")).status).toBe("unbound");
 
-    settings = { pathRules: [{ pattern: "*.yml", schema: "s.yaml" }] };
+    settings = { ...DEFAULT_SETTINGS, pathRules: [{ pattern: "*.yml", schema: "s.yaml" }] };
     expect((await forms.open("q.yml", "id: x\n")).status).toBe("form");
   });
 

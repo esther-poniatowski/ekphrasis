@@ -41,6 +41,45 @@ describe("YamlDocumentParser", () => {
     });
   });
 
+  it("reports the range of each key, and whether each collection is written in flow style", () => {
+    const text = "block:\n  - a\nflow: {k: [1]}\nbare:\n";
+    const root = parser.parse(text);
+    if (root.kind !== "mapping") throw new Error("expected a mapping");
+    const [block, flow, bare] = root.entries;
+    expect(root.flow).toBe(false);
+    expect(block?.keyRange && text.slice(block.keyRange.start, block.keyRange.end)).toBe("block");
+    expect(block?.value).toMatchObject({ kind: "sequence", flow: false });
+    expect(flow?.value).toMatchObject({
+      kind: "mapping",
+      flow: true,
+      entries: [{ key: "k", value: { kind: "sequence", flow: true } }],
+    });
+    // An empty value has an empty range, placed after the colon of its key.
+    const afterColon = text.indexOf("bare:") + "bare:".length;
+    expect(bare?.value).toMatchObject({
+      kind: "scalar",
+      value: null,
+      range: { start: afterColon, end: afterColon },
+    });
+  });
+
+  it("places the error of an unclosed bracket at the bracket, not where the parser detects it", () => {
+    const positionOf = (text: string): unknown => {
+      try {
+        parser.parse(text);
+      } catch (error) {
+        return error instanceof YamlParseError ? error.position : error;
+      }
+      return null;
+    };
+    expect(positionOf("title: x\ndraft: [false\nstatus: posed # c\n")).toEqual({
+      line: 2,
+      column: 8,
+      lineText: "draft: [false",
+    });
+    expect(positionOf("a: {b: [1, 2}\nc: 3\n")).toMatchObject({ line: 1, column: 8 });
+  });
+
   it("raises a positioned YamlParseError on invalid input", () => {
     expect(() => parser.parse("key: [1, 2\n")).toThrow(YamlParseError);
     const error = ((): unknown => {

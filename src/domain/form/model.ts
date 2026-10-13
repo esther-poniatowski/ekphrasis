@@ -6,7 +6,7 @@
  * outline refer to one field through the same path, and unit tests build it without Obsidian.
  */
 import type { ScalarValue, YamlNode, YamlPath } from "../model";
-import type { JsonValue } from "../schema/json";
+import type { JsonScalar, JsonValue } from "../schema/json";
 import type { ChoiceOption, MappingKind, ScalarKind, SequenceKind } from "./kinds";
 
 /**
@@ -83,5 +83,7 @@ export interface FormModel {
   /** Title of the root schema. */
   readonly title: string | null;
   readonly root: Field;
+  /** Values that the schema counts as unfilled besides the null value, in their written order. */
+  readonly unfilled: readonly JsonScalar[];
   readonly schemaIssues: readonly SchemaIssue[];
 }

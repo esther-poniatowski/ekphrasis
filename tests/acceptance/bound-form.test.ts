@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
-import { FormService } from "../../src/application";
+import { DEFAULT_SETTINGS, FormService } from "../../src/application";
 import { isScalarKind, type YamlNode } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { allFields } from "../support/form-fields";
@@ -16,7 +16,7 @@ const parser = new YamlDocumentParser();
 const forms = new FormService(
   parser,
   new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT)),
-  () => ({ pathRules: FIXTURE_RULES }),
+  () => ({ ...DEFAULT_SETTINGS, pathRules: FIXTURE_RULES }),
 );
 const registry = createDefaultRegistry();
 

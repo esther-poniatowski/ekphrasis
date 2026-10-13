@@ -4,8 +4,7 @@
 import { ControlRegistry } from "./control-registry";
 import { BooleanControl } from "./controls/boolean-control";
 import { ChoiceControl } from "./controls/choice-control";
-import { NumberControl } from "./controls/number-control";
-import { TextControl } from "./controls/text-control";
+import { NumberControl, TextControl } from "./controls/text-control";
 import { TextareaControl } from "./controls/textarea-control";
 import { GroupSection } from "./sections/group-section";
 import { SequenceSection } from "./sections/sequence-section";

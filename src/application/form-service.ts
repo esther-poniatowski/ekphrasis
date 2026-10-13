@@ -8,6 +8,7 @@ import {
   type BindingSource,
   type FormModel,
   type SchemaBinding,
+  type SchemaSet,
   type YamlNode,
 } from "../domain";
 import { SchemaError, YamlParseError } from "../errors";
@@ -38,13 +39,18 @@ export type FormState =
       readonly error: SchemaError;
       readonly schemaPaths: readonly string[];
     }
-  | {
-      readonly status: "form";
-      readonly binding: SchemaBinding;
-      readonly model: FormModel;
-      /** Vault paths of the schema files read, so a change of one of them reopens the form. */
-      readonly schemaPaths: readonly string[];
-    };
+  | FormReady;
+
+/** Outcome of a pipeline that reached the form, built from one text of the instance. */
+export interface FormReady {
+  readonly status: "form";
+  readonly binding: SchemaBinding;
+  readonly model: FormModel;
+  /** Schemas of the model, kept so that a commit rebuilds the model without reloading them. */
+  readonly schemas: SchemaSet;
+  /** Vault paths of the schema files read, so a change of one of them reopens the form. */
+  readonly schemaPaths: readonly string[];
+}
 
 export class FormService {
   constructor(
@@ -72,7 +78,7 @@ export class FormService {
     try {
       const schemas = await this.schemas.load(binding.schemaPath);
       const model = buildFormModel(schemas, tree, text);
-      return { status: "form", binding, model, schemaPaths: schemas.paths };
+      return { status: "form", binding, model, schemas, schemaPaths: schemas.paths };
     } catch (error) {
       if (!(error instanceof SchemaError)) throw error;
       const schemaPaths = [...new Set([binding.schemaPath, error.schemaPath])];

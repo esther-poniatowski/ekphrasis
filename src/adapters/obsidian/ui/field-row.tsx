@@ -1,6 +1,6 @@
 /**
- * Row of a field: its label, marked when the field is required or locked, and the content area
- * holding its control.
+ * Row of a field: its label, marked when the field is required or locked, the content area
+ * holding its control, and the reason of a refused commit.
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../domain";
@@ -8,9 +8,12 @@ import { FieldLabel, LockNote, useLockDisclosure } from "./field-label";
 
 export function FieldRow({
   field,
+  error = null,
   children,
 }: {
   readonly field: Field;
+  /** Reason of the last refused commit at the field, or `null`. */
+  readonly error?: string | null;
   readonly children: ComponentChildren;
 }): JSX.Element {
   const disclosure = useLockDisclosure();
@@ -19,6 +22,11 @@ export function FieldRow({
       <FieldLabel field={field} disclosure={disclosure} />
       <div class="ekphrasis-field-content">{children}</div>
       <LockNote field={field} disclosure={disclosure} />
+      {error !== null && (
+        <div class="ekphrasis-commit-error" role="alert">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

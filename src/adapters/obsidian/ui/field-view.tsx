@@ -7,8 +7,8 @@ import { FieldRow } from "./field-row";
 import { useFormContext } from "./form-context";
 
 export function FieldView({ field }: { readonly field: Field }): JSX.Element {
-  const { registry, readOnly } = useFormContext();
-  const locked = readOnly || field.lock !== null;
+  const { registry, commit, errors } = useFormContext();
+  const locked = field.lock !== null;
   if (field.mismatch !== null) {
     return (
       <FieldRow field={field}>
@@ -39,8 +39,12 @@ export function FieldView({ field }: { readonly field: Field }): JSX.Element {
     default: {
       const Control = registry.scalar(field.kind);
       return (
-        <FieldRow field={field}>
-          <Control field={field} readOnly={locked} />
+        <FieldRow field={field} error={errors.get(field.id) ?? null}>
+          <Control
+            field={field}
+            readOnly={locked}
+            onCommit={(value) => commit(field.path, value)}
+          />
         </FieldRow>
       );
     }

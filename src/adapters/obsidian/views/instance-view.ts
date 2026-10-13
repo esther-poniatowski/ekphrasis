@@ -2,14 +2,29 @@
  * View of an instance: hosts the form view and the source view of one YAML file, and switches
  * between them.
  *
- * The view extends `TextFileView`, which holds the text of the file in `data` and writes it back
- * on `requestSave`. Each load of the text, including a reload after a change made outside, runs
- * the form pipeline again. A file bound to no schema opens in the source view, since every form
- * derives from a schema; a mode chosen by the author holds until another file opens.
+ * The view extends `TextFileView`, which loads the text of the file through `setViewData` and
+ * saves the text returned by `getViewData`. The text and the form state belong to the session of
+ * the instance: each load of the text, including a reload after a change made outside, runs the
+ * form pipeline again, and each commit of the form writes the file at once. A file bound to no
+ * schema opens in the source view, since every form derives from a schema; a mode chosen by the
+ * author holds until another file opens.
  */
-import { Notice, setIcon, TextFileView, type ViewStateResult, type WorkspaceLeaf } from "obsidian";
+import {
+  Notice,
+  setIcon,
+  TextFileView,
+  type TFile,
+  type ViewStateResult,
+  type WorkspaceLeaf,
+} from "obsidian";
 import { h, render } from "preact";
-import type { FormService, FormState } from "../../../application";
+import {
+  InstanceSession,
+  type CommitService,
+  type EkphrasisSettings,
+  type FormService,
+  type SessionHost,
+} from "../../../application";
 import { ICONS, INSTANCE_VIEW_TYPE, isYamlExtension } from "../constants";
 import type { ControlRegistry } from "../ui/control-registry";
 import { FormPanel } from "../ui/form-panel";
@@ -20,25 +35,26 @@ export type ViewMode = "form" | "source";
 /** Collaborators of the view, supplied by the plugin. */
 export interface InstanceViewServices {
   readonly forms: FormService;
+  readonly commits: CommitService;
   readonly registry: ControlRegistry;
+  readonly settings: () => EkphrasisSettings;
 }
-
-/**
- * Whether the form accepts edits. Commits are implemented in the milestone *Saving of scalars*,
- * so the form stays read-only until then.
- */
-const FORM_EDITABLE = false;
 
 const isViewMode = (value: unknown): value is ViewMode => value === "form" || value === "source";
 
-export class InstanceView extends TextFileView {
-  private formState: FormState | null = null;
+export class InstanceView extends TextFileView implements SessionHost {
+  private readonly session: InstanceSession;
   /** Mode chosen by the author for the open file, or `null` to follow the binding. */
   private chosenMode: ViewMode | null = null;
   /** Mode restored from the workspace, applied when its file loads. */
   private restoredMode: ViewMode | null = null;
-  /** Counter of pipeline runs, so the result of a superseded run is discarded. */
-  private generation = 0;
+  /**
+   * Counter of the files loaded, which keys the form: the controls of another file are new
+   * components, so no text typed for one file is committed to the next.
+   */
+  private fileCount = 0;
+  /** Element of the form that held the focus last, restored when the author returns. */
+  private lastFocused: HTMLElement | null = null;
   private editor: SourceEditor | null = null;
   private readonly formEl: HTMLElement;
   private readonly sourceEl: HTMLElement;
@@ -49,9 +65,14 @@ export class InstanceView extends TextFileView {
     private readonly services: InstanceViewServices,
   ) {
     super(leaf);
+    this.session = new InstanceSession(services.forms, services.commits, this);
     this.contentEl.addClass("ekphrasis-view");
     this.formEl = this.contentEl.createDiv({ cls: "ekphrasis-form-container" });
     this.sourceEl = this.contentEl.createDiv({ cls: "ekphrasis-source-container" });
+    this.formEl.addEventListener("focusin", (event) => {
+      const target = event.target as Node | null;
+      if (target?.instanceOf(HTMLElement)) this.lastFocused = target;
+    });
     this.modeAction = this.addAction(ICONS.sourceView, "Open the source view", () =>
       this.toggleMode(),
     );
@@ -71,30 +92,46 @@ export class InstanceView extends TextFileView {
 
   /** Mode displayed: the chosen one, else the source view for an unbound file, else the form. */
   get mode(): ViewMode {
-    return this.chosenMode ?? (this.formState?.status === "unbound" ? "source" : "form");
+    const unbound = this.session.snapshot.state?.status === "unbound";
+    return this.chosenMode ?? (unbound ? "source" : "form");
   }
 
   getViewData(): string {
-    return this.data;
+    return this.session.text;
   }
 
   setViewData(data: string, clear: boolean): void {
-    this.data = data;
     if (clear) {
+      this.session.reset();
+      this.fileCount += 1;
+      this.lastFocused = null;
       this.chosenMode = this.restoredMode;
       this.restoredMode = null;
-      this.formState = null;
-      // Displays the loading message, or the restored source view, while the pipeline runs.
-      this.display();
     }
+    this.session.setText(data);
+    this.data = data;
+    // Displays the loading message, or the restored source view, while the pipeline runs.
+    if (clear) this.display();
     this.editor?.setText(data, clear);
     void this.refresh();
   }
 
   clear(): void {
+    this.session.reset();
     this.data = "";
-    this.formState = null;
     this.editor?.setText("", true);
+  }
+
+  /** Writes the text produced by commits of the form to the file. */
+  write(text: string): void {
+    this.data = text;
+    this.editor?.setText(text, false);
+    void this.save();
+  }
+
+  /** Displays the new snapshot of the session. */
+  changed(): void {
+    this.display();
   }
 
   /** Switches between the form view and the source view. */
@@ -102,13 +139,19 @@ export class InstanceView extends TextFileView {
     this.chosenMode = this.mode === "form" ? "source" : "form";
     this.app.workspace.requestSaveLayout();
     // The text may have changed in the source view, so the form is rebuilt from it.
-    if (this.chosenMode === "form") void this.refresh();
-    else this.display();
+    if (this.chosenMode === "form") {
+      void this.refresh();
+    } else {
+      this.display();
+      // Only a switch asked by the author moves the focus. A display that follows a commit or a
+      // reload must not, since another pane of the same file then holds the focus.
+      this.editor?.focus();
+    }
   }
 
   /** Whether the displayed form was built from the schema file at `path`. */
   dependsOn(path: string): boolean {
-    const state = this.formState;
+    const state = this.session.snapshot.state;
     return state !== null && "schemaPaths" in state && state.schemaPaths.includes(path);
   }
 
@@ -116,19 +159,14 @@ export class InstanceView extends TextFileView {
   async refresh(): Promise<void> {
     const file = this.file;
     if (file === null) return;
-    const generation = ++this.generation;
-    let state: FormState | null;
     try {
-      state = await this.services.forms.open(file.path, this.data);
+      await this.session.refresh(file.path);
     } catch (error) {
       console.error("ekphrasis: the form could not be built.", error);
       new Notice("Ekphrasis: the form could not be built; the developer console holds the error.");
-      state = null;
       this.chosenMode = "source";
+      this.display();
     }
-    if (generation !== this.generation) return;
-    this.formState = state;
-    this.display();
   }
 
   override getState(): Record<string, unknown> {
@@ -141,6 +179,38 @@ export class InstanceView extends TextFileView {
       if (isViewMode(mode)) this.restoredMode = mode;
     }
     await super.setState(state, result);
+  }
+
+  /**
+   * Removes the form before the file is saved and released: a control removed with text not yet
+   * committed commits it, so the text reaches this file rather than the next one.
+   */
+  protected override async onOpen(): Promise<void> {
+    await super.onOpen();
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", (leaf) => this.restoreFocus(leaf)),
+    );
+  }
+
+  /**
+   * Returns the focus to the field that held it last, when the author comes back to this view.
+   * The check runs after the click that activated the view, so a field focused by that click
+   * keeps the focus.
+   */
+  private restoreFocus(leaf: WorkspaceLeaf | null): void {
+    if (leaf !== this.leaf || this.mode !== "form") return;
+    window.setTimeout(() => {
+      const target = this.lastFocused;
+      const active = this.contentEl.ownerDocument.activeElement;
+      if (target?.isConnected && !this.contentEl.contains(active)) {
+        target.focus({ preventScroll: true });
+      }
+    }, 0);
+  }
+
+  override async onUnloadFile(file: TFile): Promise<void> {
+    render(null, this.formEl);
+    await super.onUnloadFile(file);
   }
 
   protected override async onClose(): Promise<void> {
@@ -160,11 +230,17 @@ export class InstanceView extends TextFileView {
       mode === "form" ? "Open the source view" : "Open the form view",
     );
     if (mode === "form") {
+      const fileCount = this.fileCount;
       render(
         h(FormPanel, {
-          state: this.formState,
+          key: fileCount,
+          snapshot: this.session.snapshot,
           registry: this.services.registry,
-          readOnly: !FORM_EDITABLE,
+          // A commit from a control of a previous file is dropped rather than applied here.
+          commit: (path, value) => {
+            if (fileCount === this.fileCount) this.session.commit({ path, value });
+          },
+          commitDelay: this.services.settings().commitDelay,
           onOpenSource: () => {
             if (this.mode === "form") this.toggleMode();
           },
@@ -178,11 +254,11 @@ export class InstanceView extends TextFileView {
 
   private showEditor(): void {
     if (this.editor === null) {
-      this.editor = new SourceEditor(this.sourceEl, this.data, (text) => {
+      this.editor = new SourceEditor(this.sourceEl, this.session.text, (text) => {
+        this.session.setText(text);
         this.data = text;
         this.requestSave();
       });
     }
-    this.editor.focus();
   }
 }

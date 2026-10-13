@@ -17,7 +17,13 @@ describe("settings", () => {
     ]);
   });
 
-  it.each([[null], [undefined], ["text"], [{ pathRules: "x" }]])(
+  it("keeps a commit delay within the limits, and else takes the default", () => {
+    expect(parseSettings({ commitDelay: 2000 }).commitDelay).toBe(2000);
+    expect(parseSettings({ commitDelay: 10 }).commitDelay).toBe(DEFAULT_SETTINGS.commitDelay);
+    expect(parseSettings({ commitDelay: "2000" }).commitDelay).toBe(DEFAULT_SETTINGS.commitDelay);
+  });
+
+  it.each([[null], [undefined], ["text"], [{ pathRules: "x", commitDelay: 1e9 }]])(
     "falls back to the defaults for %s",
     (raw) => {
       expect(parseSettings(raw)).toEqual(DEFAULT_SETTINGS);

@@ -1,14 +1,20 @@
 /**
- * Context shared by the components of one form: the registry of controls, and whether the form
- * accepts edits.
+ * Context shared by the components of one form: the registry of controls, the commit of a value,
+ * the commit delay, and the reasons of the refused commits.
  */
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
+import type { ScalarValue, YamlPath } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 
 export interface FormContextValue {
   readonly registry: ControlRegistry;
-  readonly readOnly: boolean;
+  /** Commits `value` at the field of path `path`; the value `null` clears the field. */
+  readonly commit: (path: YamlPath, value: ScalarValue) => void;
+  /** Pause of typing, in milliseconds, after which a text control commits. */
+  readonly commitDelay: number;
+  /** Reasons of the refused commits, by printed field path. */
+  readonly errors: ReadonlyMap<string, string>;
 }
 
 export const FormContext = createContext<FormContextValue | null>(null);

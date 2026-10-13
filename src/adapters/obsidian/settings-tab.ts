@@ -1,8 +1,9 @@
 /**
- * Settings tab: the path rules that bind instances without a modeline to their schemas.
+ * Settings tab: the commit delay of the form, and the path rules that bind instances without a
+ * modeline to their schemas.
  */
 import { PluginSettingTab, Setting, type App, type Plugin, type TextComponent } from "obsidian";
-import type { EkphrasisSettings } from "../../application";
+import { COMMIT_DELAY_LIMITS, type EkphrasisSettings } from "../../application";
 import type { PathRule } from "../../domain";
 
 /** Owner of the settings, which stores them and applies them to the open views. */
@@ -23,6 +24,21 @@ export class EkphrasisSettingTab extends PluginSettingTab {
   override display(): void {
     const { containerEl } = this;
     containerEl.empty();
+    new Setting(containerEl)
+      .setName("Commit delay")
+      .setDesc(
+        "Pause of typing, in milliseconds, after which a text field of the form saves its " +
+          "value. A field also saves its value when it loses the focus.",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(COMMIT_DELAY_LIMITS.min, COMMIT_DELAY_LIMITS.max, COMMIT_DELAY_LIMITS.step)
+          .setValue(this.host.settings.commitDelay)
+          .setDynamicTooltip()
+          .onChange((commitDelay) =>
+            this.host.updateSettings({ ...this.host.settings, commitDelay }),
+          ),
+      );
     new Setting(containerEl)
       .setName("Path rules")
       .setDesc(

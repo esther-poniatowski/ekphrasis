@@ -6,6 +6,7 @@
  * `src/infrastructure/yaml/`, built in the milestone *Saving of scalars*.
  */
 import { Composer, CST, isCollection, isPair, Parser, Scalar, visit, type Document } from "yaml";
+import { collectComments } from "../support/yaml-comments";
 
 /** One scalar of a parsed text, with the position flags that `CST.setScalarValue` requires. */
 export interface ScalarSite {
@@ -68,20 +69,6 @@ function listSites(documents: readonly Document.Parsed[]): ScalarSite[] {
     });
   }
   return sites;
-}
-
-/** Collects the text of every comment token, in source order. */
-function collectComments(token: unknown, into: string[] = []): string[] {
-  if (Array.isArray(token)) {
-    for (const item of token) collectComments(item, into);
-  } else if (typeof token === "object" && token !== null) {
-    const record = token as Record<string, unknown>;
-    if (record["type"] === "comment" && typeof record["source"] === "string") {
-      into.push(record["source"]);
-    }
-    for (const value of Object.values(record)) collectComments(value, into);
-  }
-  return into;
 }
 
 /**

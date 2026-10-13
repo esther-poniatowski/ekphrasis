@@ -65,7 +65,12 @@ class FormModelBuilder {
       required: true,
       lock: null,
     });
-    return { title: schema.title, root, schemaIssues: this.issues };
+    return {
+      title: schema.title,
+      root,
+      unfilled: schema.unfilledValues,
+      schemaIssues: this.issues,
+    };
   }
 
   private field(site: FieldSite): Field {
@@ -235,7 +240,7 @@ function isNullValue(node: YamlNode | null): boolean {
 function effectiveEntries(mapping: MappingNode, lock: FieldLock | null): EffectiveEntry[] {
   const entries: EffectiveEntry[] = [];
   const seen = new Set<string>();
-  const add = (entry: MappingEntry, entryLock: FieldLock | null): void => {
+  const add = (entry: Pick<MappingEntry, "key" | "value">, entryLock: FieldLock | null): void => {
     if (seen.has(entry.key)) return;
     seen.add(entry.key);
     entries.push({ key: entry.key, value: entry.value, lock: entryLock });
