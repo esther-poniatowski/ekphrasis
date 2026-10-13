@@ -37,6 +37,6 @@ The code of each feature is divided according to whether it calls the API of Obs
 | [Form view](../features/form-view.md) | Form model | Use case that opens a form | — | Form view, rendered values, source view |
 | [Outline](../features/outline.md) | — | — | — | Outline view |
 | [Saving](../features/saving.md) | Scalar styles, plan of the edits of a commit, expected document | Use case that commits an edit and confirms it by parsing again, session of an open instance, port for the document editor | Text of each scalar, splice into the source text | Commit triggers of the controls, writes through the vault, reaction to changes from outside |
-| [Validation](../features/validation.md) | Unfilled values, predefined checkers, issues | Order of checks, port for the schema validator | JSON Schema validator | Display of issues |
+| [Validation](../features/validation.md) | Unfilled values, conversion of the errors of the validator to field paths, predefined checkers, paths of rules, issues | Order of checks, port for the schema validator | JSON Schema validator | Display of issues, command *Validate instance*, rendering of formulas for the checker `latex` |
 | [Custom checkers](../features/custom-checkers.md) | — | Port for the checker runner | Python process and its message protocol | Interpreter and modules in the settings tab |
 | [Schema editor](../features/schema-editor.md) | — | Meta-schema of the schema dialect | — | Preview panel, command *Create schema* |

@@ -37,10 +37,10 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Validation
 
-- [ ] **Validation**: report unfilled required fields as missing before any other check.
-- [ ] **Validation**: validate instances with a JSON Schema validator for draft 2020-12 that accepts the keywords prefixed `x-`, and convert its error locations into field paths.
-- [ ] **Validation**: implement the predefined checkers, and resolve the relative field paths of relational and conditional rules.
-- [ ] **Validation**: evaluate predefined checkers for the rule families shared by the consumer projects (references across files, uniqueness, acyclicity), declared in the schema, so that custom checkers serve project-specific rules only.
+- [x] **Validation**: report unfilled required fields as missing before any other check. (2026-10-13)
+- [x] **Validation**: validate instances with a JSON Schema validator for draft 2020-12 that accepts the keywords prefixed `x-`, and convert its error locations into field paths. (2026-10-13)
+- [x] **Validation**: implement the predefined checkers, and resolve the relative field paths of relational and conditional rules. (2026-10-13)
+- [ ] **Validation**: evaluate predefined checkers for the rule families shared by the consumer projects (references across files, uniqueness, acyclicity), declared in the schema, so that custom checkers serve project-specific rules only. Evaluated on 2026-10-13: these checkers need an index of the vault, so the [implementation plan](docs/architecture/implementation-plan.md) recommends a milestone of their own. That milestone awaits the decision of the maintainer.
 - [ ] **Validation**: display the issues at their fields and in the headings of the groups containing them.
 - [ ] **Validation**: provide the command *Validate instance*.
 

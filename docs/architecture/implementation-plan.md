@@ -28,13 +28,13 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Layer | Folder | Modules |
 | --- | --- | --- |
 | Domain | `src/domain/form/` | Form model, field kinds and their derivation, identifiers of sequence items |
-| Domain | `src/domain/schema/` | Interpretation of a JSON Schema object: properties, required fields, conditions, keywords prefixed `x-` |
-| Domain | `src/domain/paths/` | Parser and printer of field paths, matching of wildcards, resolution of relative paths |
-| Domain | `src/domain/validation/` | Issues, unfilled values, predefined checkers, order of checks |
+| Domain | `src/domain/schema/` | Interpretation of a JSON Schema object: properties, required fields, conditions, keywords prefixed `x-`; schema documents prepared for the validator |
+| Domain | `src/domain/paths/` | Parser and printer of field paths |
+| Domain | `src/domain/validation/` | Issues and their placement, unfilled values, conversion of the errors of the validator to field paths, predefined checkers, expansion of the relative paths of rules |
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
 | Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
 | Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
-| Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), session of an open instance, settings |
+| Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating in the order of checks), session of an open instance, settings |
 | Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, writer of scalar texts, splice of text edits |
 | Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |
 | Infrastructure | `src/infrastructure/python/` | Python process, message protocol, embedded runner script |
@@ -94,6 +94,21 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 **Risk.** The validator reports locations as JSON Pointers, and an error on a missing property points to the parent object. Both must be converted to the field path of the missing field.
 
+**Evaluation of shared rule families.** The three families shared by the consumer projects reach beyond one instance:
+
+- a reference of gnomon, such as `system.TOPIC#SYMBOL`, designates a symbol declared in another record;
+- geonexus requires identifiers unique across the glossaries of a vault;
+- acyclicity holds over the graph of such references.
+
+Therefore, a predefined checker of these families must rely on an index of the vault, with four parts:
+
+- a port that reads every instance bound to a schema;
+- an index of the declared identifiers, kept current through the changes, renames and deletions of files;
+- the invalidation of the issues of every instance that depends on a changed file;
+- a validation that runs after the commit, since the index reads other files.
+
+These four parts amount to a milestone, so the checkers of these families are left out of *Validation*. The recommended route is a milestone *Rules across files*, placed after *Custom checkers*. A check across files reads other files after the commit, so its results arrive late, and may concern a text already superseded. The milestone *Custom checkers* settles these two points for the Python checkers, and the new milestone can reuse that solution. The new milestone would build the index, and on it the checkers of references, of uniqueness across files and of acyclicity. Until then, the custom checkers of each project carry these rules, and the checker `unique-by` covers uniqueness within one sequence.
+
 ### Collections
 
 **Goal.** Every collection kind can be displayed and edited, including insertions, removals and reorderings.
@@ -150,4 +165,4 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 The runtime dependencies are fixed by the decision records: `yaml`, `preact`, the JSON Schema validator `ajv` in its build for draft 2020-12, and the YAML language mode of CodeMirror 6. All four are installed. Ajv was verified inside Obsidian with the option `strictSchema` disabled, as the decision on the [schema dialect](../adr/json-schema-dialect.md) records. The YAML language mode `@codemirror/lang-yaml` is bundled with the plugin, whereas Obsidian supplies the core packages of CodeMirror at run time. Therefore, the bundler names those core packages one by one as external, and a wildcard over `@codemirror/*` must not replace that list.
 
-Path rules are matched by a glob matcher of the domain, so that the domain keeps no dependency. The matcher accepts the [glob syntax of path rules](../features/instance-files.md#^glob-syntax). One further choice remains open until the milestone *Validation*: the extension of the validator for the keyword `format`, such as `ajv-formats`. Ajv does not validate formats by itself.
+Path rules are matched by a glob matcher of the domain, so that the domain keeps no dependency. The matcher accepts the [glob syntax of path rules](../features/instance-files.md#^glob-syntax). Ajv validates the keyword `format` only through its extension `ajv-formats`. That extension is not installed, since each new dependency awaits the approval of the maintainer. Until then, the validator is created with `validateFormats` disabled, so a declared format raises no issue.

@@ -7,7 +7,7 @@ aliases:
 ---
 # Field paths
 
-A field path designates one node of an instance, starting from the root of the document, except in a relational or conditional rule, where it starts from the group that declares the rule. Four features share the same syntax:
+A field path designates one node of an instance, starting from the root of the document, except in a rule, where it starts from the field that declares the rule. Four features share the same syntax:
 
 - the [issues](validation.md), to locate the field that fails a check;
 - the relational and conditional [rules](validation.md), to name the fields that they relate;

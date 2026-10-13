@@ -55,11 +55,11 @@ then:
   required: [tolerance]
 ```
 
-The keyword `required` inside the condition is needed, since a condition on an absent property holds vacuously in JSON Schema.
+The keyword `required` inside the condition is needed, since a condition on an absent property holds vacuously in JSON Schema. Validation reports a field required by a condition at that field, as for any required field. When the required field lies in a group absent from the instance, the keyword `required` designates the group instead. The rule `required-when` of [validation](validation.md) designates the field itself, even inside an absent group, at the cost of a rule checked by ekphrasis only.
 
 ## Unfilled values
 
-A field holding the null value counts as unfilled. A schema may declare further unfilled values by the keyword `x-unfilled` at its root, such as the value `open` by which some projects mark a field left open deliberately. Validation reports an unfilled required field as missing, following the [order of checks](validation.md#^unfilled-first). ^unfilled-values
+A field holding the null value counts as unfilled. A schema may declare further unfilled values by the keyword `x-unfilled` at its root, such as the value `open` by which some projects mark a field left open deliberately, or the empty sequence `[]`. A declared value may be any JSON value, and a field counts as unfilled when its value equals one of them. Validation reports an unfilled required field as missing, following the [order of checks](validation.md#^unfilled-first). ^unfilled-values
 
 ## Keywords of ekphrasis
 
@@ -70,7 +70,7 @@ Ekphrasis adds five keywords, each prefixed by `x-`:
 | `x-kind` | Any field | Name of a [field kind](field-kinds.md) | Control through which the field is filled |
 | `x-rules` | Any field, or the root | Sequence of rule declarations | [Rules](validation.md) checked in addition to the standard keywords |
 | `x-collapsed` | Group or collection | `true` or `false` | Whether the field is folded when the form opens |
-| `x-unfilled` | Root | Sequence of values | Values counted as unfilled, in addition to the null value |
+| `x-unfilled` | Root | Sequence of JSON values | Values counted as unfilled, in addition to the null value |
 | `x-version` | Root | Version identifier | [Version](schema-editor.md#^schema-version) of the schema |
 
 Ekphrasis ignores every other keyword prefixed by `x-`. Therefore, a project can keep extension keywords of its own in the same schema, for the checkers that read them.

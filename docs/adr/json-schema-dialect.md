@@ -45,3 +45,11 @@ The decision holds inside Obsidian with Ajv, the validator for draft 2020-12 add
 - On the synthetic glossary, the unfilled placeholder of one field yields four errors at the same instance path: one per rejected alternative of a `oneOf`, and one for the `oneOf` itself.
 
 Therefore, the milestone *Validation* must merge the errors of one `oneOf` into one issue per field path. Moreover, an unfilled value must be reported as missing before these errors, as the order of checks requires.
+
+The milestone *Validation* meets these constraints in the [validation service](../../src/application/validation-service.ts) and the [conversion of validator errors](../../src/domain/validation/validator-errors.ts):
+
+- the option `strict` of the [Ajv validator](../../src/infrastructure/schema/ajv-validator.ts) is disabled, and with it `strictSchema` and the other strict checks of Ajv;
+- the errors of the alternatives of one `oneOf` merge into one issue, and its message lists the admitted values when each alternative fixes a value by `const`;
+- the unfilled entries are removed from the value given to Ajv, so an unfilled required field fails the keyword `required` only, and is reported as missing.
+
+The [acceptance test of validation](../../tests/acceptance/validation.test.ts) verifies the merge on the placeholder of the glossary fixture: one issue replaces the four errors of the spike.

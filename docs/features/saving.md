@@ -53,7 +53,7 @@ Rich content frequently holds seven constructions misread in a plain scalar, sin
 
 ## Cleared values
 
-Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first [unfilled value](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place.
+Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place.
 
 ## Refused commits
 

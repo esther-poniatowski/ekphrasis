@@ -33,7 +33,9 @@ A field of kind `markdown-line`, `markdown` or `latex` displays its value render
 
 ## Issues
 
-Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A group containing an issue carries a marker in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
+Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A missing field takes the accent colour of the required marker, and an invalid value the colour of errors. A group containing an issue carries the number of its issues in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
+
+The top of the form counts the missing fields, the invalid values and the warnings of the instance. The top of the form also lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a field required by a condition outside the properties of the schema.
 
 ## Locked values
 
@@ -45,7 +47,7 @@ A key present in the file and absent from the schema displays as YAML text in a 
 
 ## Schema defects
 
-A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
+A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. Two defects found by [validation](validation.md) are reported in the same place: a malformed rule declaration, and a schema refused by the validator. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
 
 ## Source view
 
