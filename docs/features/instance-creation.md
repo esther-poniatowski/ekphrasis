@@ -24,7 +24,7 @@ The skeleton holds three elements:
 
 - a modeline that binds the file to its schema, unless a path rule of the settings already binds the chosen path;
 - every field with a default value, holding that value;
-- every required field without a default value, holding the first [unfilled value](schemas.md#^unfilled-values) of the schema, or else the null value.
+- every required field without a default value, holding the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value.
 
 Optional fields without a default value stay absent from the file, although the form displays them. The first edit of such a field writes its key. In the file, the keys follow the order of the schema, so the file reads in the order of the form. The schema below, stored in the file `schemas/question.schema.yaml`, declares three required fields and one optional field, and gives a default value to one required field:
 
