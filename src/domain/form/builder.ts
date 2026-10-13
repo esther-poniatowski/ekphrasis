@@ -1,12 +1,13 @@
 /**
  * Construction of the form model from a schema set and the parsed tree of an instance.
  */
-import type { MappingEntry, MappingNode, YamlNode, YamlPath } from "../model";
-import { MERGE_KEY } from "../model";
+import type { YamlNode, YamlPath } from "../model";
 import { printFieldPath } from "../paths/field-path";
 import type { PropertySchema } from "../schema/schema-view";
 import { SchemaView } from "../schema/schema-view";
+import type { JsonValue } from "../schema/json";
 import type { SchemaSet } from "../schema/schema-set";
+import { effectiveEntries, resolveAliases } from "./entries";
 import {
   choiceOptions,
   isMappingKind,
@@ -41,13 +42,6 @@ interface FieldSite {
   readonly schema: SchemaView | null;
   readonly node: YamlNode | null;
   readonly required: boolean;
-  readonly lock: FieldLock | null;
-}
-
-/** Entry of a mapping after the expansion of merge keys. */
-interface EffectiveEntry {
-  readonly key: string;
-  readonly value: YamlNode;
   readonly lock: FieldLock | null;
 }
 
@@ -96,6 +90,7 @@ class FormModelBuilder {
 
   private base(site: FieldSite, fits: boolean): FieldBase {
     return {
+      rules: this.rulesOf(site),
       id: printFieldPath(site.path),
       path: site.path,
       label: site.label,
@@ -192,6 +187,18 @@ class FormModelBuilder {
     return { ...this.base(site, sequence !== null || isNullValue(site.node)), kind, items };
   }
 
+  /** Entries of the keyword `x-rules` of the field; a value other than a sequence is reported. */
+  private rulesOf(site: FieldSite): readonly JsonValue[] {
+    const rules = site.schema?.rules ?? null;
+    if (rules === null) return [];
+    if (Array.isArray(rules)) return rules as readonly JsonValue[];
+    this.issues.push({
+      path: printFieldPath(site.path),
+      message: "The keyword `x-rules` must hold a sequence of rule declarations.",
+    });
+    return [];
+  }
+
   private textOf(node: YamlNode | null): string {
     return node?.range ? this.source.slice(node.range.start, node.range.end) : "";
   }
@@ -207,20 +214,6 @@ function keyLabel(key: string): string {
   return label === "" ? key : label;
 }
 
-/** Follows aliases to their targets; a value reached through an alias is locked. */
-function resolveAliases(
-  node: YamlNode | null,
-  lock: FieldLock | null,
-): { node: YamlNode | null; lock: FieldLock | null } {
-  let current = node;
-  let currentLock = lock;
-  while (current?.kind === "alias") {
-    current = current.target;
-    currentLock = "alias";
-  }
-  return { node: current, lock: currentLock };
-}
-
 /** Kind displaying a value that no schema describes, from the shape of the value. */
 function kindOfNode(node: YamlNode | null): FieldKind {
   if (node?.kind === "mapping") return "group";
@@ -231,39 +224,6 @@ function kindOfNode(node: YamlNode | null): FieldKind {
 /** Whether `node` is absent or holds the null value, which fits every kind. */
 function isNullValue(node: YamlNode | null): boolean {
   return node === null || (node.kind === "scalar" && node.value === null);
-}
-
-/**
- * Entries of `mapping`, with the entries merged by the key `<<` appended when their key is not
- * written directly. A merged entry is locked, since its text lies in the merged mapping.
- */
-function effectiveEntries(mapping: MappingNode, lock: FieldLock | null): EffectiveEntry[] {
-  const entries: EffectiveEntry[] = [];
-  const seen = new Set<string>();
-  const add = (entry: Pick<MappingEntry, "key" | "value">, entryLock: FieldLock | null): void => {
-    if (seen.has(entry.key)) return;
-    seen.add(entry.key);
-    entries.push({ key: entry.key, value: entry.value, lock: entryLock });
-  };
-  for (const entry of mapping.entries) if (entry.key !== MERGE_KEY) add(entry, lock);
-  for (const entry of mapping.entries) {
-    if (entry.key !== MERGE_KEY) continue;
-    for (const source of mergeSources(entry.value)) {
-      for (const merged of effectiveEntries(source, "merge")) {
-        add({ key: merged.key, value: merged.value }, lock ?? "merge");
-      }
-    }
-  }
-  return entries;
-}
-
-/** Mappings merged by the value of a key `<<`: one alias, or a sequence of aliases. */
-function mergeSources(value: YamlNode): MappingNode[] {
-  const nodes = value.kind === "sequence" ? value.items : [value];
-  return nodes.flatMap((node) => {
-    const target = resolveAliases(node, null).node;
-    return target?.kind === "mapping" ? [target] : [];
-  });
 }
 
 /**

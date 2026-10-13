@@ -21,14 +21,16 @@ import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../sr
 import { DirectoryFileSource, FIXTURE_BINDINGS, FIXTURE_RULES } from "../support/fixture-vault";
 import { commentsOf } from "../support/yaml-comments";
 import { FIXTURES_ROOT, readYamlFiles } from "../support/yaml-files";
+import { createValidation } from "../support/validation";
 
 const parser = new YamlDocumentParser();
 const forms = new FormService(
   parser,
   new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT)),
+  createValidation(),
   () => ({ ...DEFAULT_SETTINGS, pathRules: FIXTURE_RULES }),
 );
-const commits = new CommitService(parser, new YamlSourceEditor());
+const commits = new CommitService(parser, new YamlSourceEditor(), createValidation());
 
 const records = readYamlFiles(FIXTURES_ROOT).filter(
   ({ name }) => FIXTURE_BINDINGS[name.split("\\").join("/")] !== undefined,

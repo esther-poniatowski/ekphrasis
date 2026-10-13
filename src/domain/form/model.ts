@@ -6,7 +6,7 @@
  * outline refer to one field through the same path, and unit tests build it without Obsidian.
  */
 import type { ScalarValue, YamlNode, YamlPath } from "../model";
-import type { JsonScalar, JsonValue } from "../schema/json";
+import type { JsonValue } from "../schema/json";
 import type { ChoiceOption, MappingKind, ScalarKind, SequenceKind } from "./kinds";
 
 /**
@@ -36,6 +36,8 @@ export interface FieldBase {
    * kind `text`, or `null` when the shape fits. Such a value is displayed as text, read-only.
    */
   readonly mismatch: string | null;
+  /** Entries of the keyword `x-rules` of the schema of the field, checked when validating. */
+  readonly rules: readonly JsonValue[];
 }
 
 export interface ScalarField extends FieldBase {
@@ -84,6 +86,6 @@ export interface FormModel {
   readonly title: string | null;
   readonly root: Field;
   /** Values that the schema counts as unfilled besides the null value, in their written order. */
-  readonly unfilled: readonly JsonScalar[];
+  readonly unfilled: readonly JsonValue[];
   readonly schemaIssues: readonly SchemaIssue[];
 }

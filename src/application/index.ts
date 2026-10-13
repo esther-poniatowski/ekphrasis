@@ -4,7 +4,14 @@
  * The application layer depends on the domain layer only; outer capabilities are consumed
  * through the ports declared in `protocols`.
  */
-export type { DocumentEditor, DocumentParser, FileSource, SchemaLoader } from "./protocols";
+export type {
+  DocumentEditor,
+  DocumentParser,
+  FileSource,
+  InstanceValidator,
+  SchemaLoader,
+  SchemaValidator,
+} from "./protocols";
 export {
   COMMIT_DELAY_LIMITS,
   DEFAULT_SETTINGS,
@@ -19,3 +26,4 @@ export {
   type SessionHost,
   type SessionSnapshot,
 } from "./instance-session";
+export { ValidationService, type ValidationReport } from "./validation-service";

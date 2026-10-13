@@ -1,6 +1,6 @@
 /**
- * Use case that opens a form: runs the stages of parsing, binding and modelling of the form
- * pipeline on the text of an instance, and reports the first stage that fails.
+ * Use case that opens a form: runs the stages of parsing, binding, modelling and validation of
+ * the form pipeline on the text of an instance, and reports the first stage that fails.
  */
 import {
   buildFormModel,
@@ -14,6 +14,7 @@ import {
 import { SchemaError, YamlParseError } from "../errors";
 import type { DocumentParser, SchemaLoader } from "./protocols";
 import type { EkphrasisSettings } from "./settings";
+import type { ValidationReport, ValidationService } from "./validation-service";
 
 /** Outcome of opening an instance, one variant per stage that can stop the pipeline. */
 export type FormState =
@@ -46,6 +47,8 @@ export interface FormReady {
   readonly status: "form";
   readonly binding: SchemaBinding;
   readonly model: FormModel;
+  /** Issues of the instance, checked against the schemas of the model. */
+  readonly report: ValidationReport;
   /** Schemas of the model, kept so that a commit rebuilds the model without reloading them. */
   readonly schemas: SchemaSet;
   /** Vault paths of the schema files read, so a change of one of them reopens the form. */
@@ -56,6 +59,7 @@ export class FormService {
   constructor(
     private readonly parser: DocumentParser,
     private readonly schemas: SchemaLoader,
+    private readonly validation: ValidationService,
     private readonly settings: () => EkphrasisSettings,
   ) {}
 
@@ -78,7 +82,8 @@ export class FormService {
     try {
       const schemas = await this.schemas.load(binding.schemaPath);
       const model = buildFormModel(schemas, tree, text);
-      return { status: "form", binding, model, schemas, schemaPaths: schemas.paths };
+      const report = this.validation.validate(schemas, model, tree);
+      return { status: "form", binding, model, report, schemas, schemaPaths: schemas.paths };
     } catch (error) {
       if (!(error instanceof SchemaError)) throw error;
       const schemaPaths = [...new Set([binding.schemaPath, error.schemaPath])];

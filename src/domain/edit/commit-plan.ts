@@ -9,8 +9,8 @@
  * - a value at an absent key: the key is inserted after the preceding key in the order of the
  *   schema, with the indentation of its siblings, and with the absent keys above it;
  * - a cleared optional field: its key is removed, and the comments of its lines are kept;
- * - a cleared required field: the first unfilled value of the schema is written, or else the
- *   value is erased, leaving the key with an empty value.
+ * - a cleared required field: the first scalar among the unfilled values of the schema is
+ *   written, or else the value is erased, leaving the key with an empty value.
  *
  * Keys of a collection written between brackets or braces, and items of a sequence, are added and
  * removed from the milestone *Collections* onward, so such commits are refused with a reason.
@@ -45,6 +45,7 @@ import {
   type TextPart,
 } from "./source-edit";
 import { SourceText } from "./source-text";
+import { isJsonScalar } from "../schema/json";
 
 /** Value committed at the field of path `path`; the value `null` clears the field. */
 export interface ScalarCommit {
@@ -147,7 +148,7 @@ class CommitPlanner {
       const onlyKey = field.node !== null && entries.length === 1;
       return onlyKey ? { kind: "empty" } : { kind: "remove" };
     }
-    const [unfilled = null] = this.model.unfilled;
+    const unfilled = this.model.unfilled.find(isJsonScalar) ?? null;
     return unfilled === null ? { kind: "empty" } : { kind: "value", value: unfilled };
   }
 

@@ -1,7 +1,8 @@
 /**
  * Use case that commits an edit of the form: plans the edits of the source text in the domain,
  * applies them through the document editor, and confirms them by parsing the new text, as the
- * decision on source-preserving writes requires.
+ * decision on source-preserving writes requires. The form model of the new text is validated
+ * again, so the issues follow each commit.
  *
  * The confirmation compares the whole parsed document with the tree that the domain expects, so
  * a commit is written only when the edited value reads back as committed and every other value
@@ -17,6 +18,7 @@ import {
 import { EkphrasisError } from "../errors";
 import type { FormReady } from "./form-service";
 import type { DocumentEditor, DocumentParser } from "./protocols";
+import type { ValidationService } from "./validation-service";
 
 export type CommitResult =
   /** The new text, with the form state rebuilt from it. */
@@ -34,6 +36,7 @@ export class CommitService {
   constructor(
     private readonly parser: DocumentParser,
     private readonly editor: DocumentEditor,
+    private readonly validation: ValidationService,
   ) {}
 
   /** Commits `commit` on `text`, whose form state is `state`. */
@@ -52,6 +55,7 @@ export class CommitService {
     }
     if (!sameContent(tree, plan.expected)) return { status: "refused", reason: UNCONFIRMED };
     const model = buildFormModel(state.schemas, tree, next);
-    return { status: "written", text: next, state: { ...state, model } };
+    const report = this.validation.validate(state.schemas, model, tree);
+    return { status: "written", text: next, state: { ...state, model, report } };
   }
 }

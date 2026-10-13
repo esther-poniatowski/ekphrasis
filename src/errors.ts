@@ -63,3 +63,8 @@ export class SchemaLoadError extends SchemaError {
 export class SchemaReferenceError extends SchemaError {
   override name = "SchemaReferenceError";
 }
+
+/** Raised when the validator refuses to compile a schema, for instance for an invalid pattern. */
+export class SchemaCompileError extends SchemaError {
+  override name = "SchemaCompileError";
+}

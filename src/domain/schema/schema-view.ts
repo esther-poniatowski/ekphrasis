@@ -86,11 +86,20 @@ export class SchemaView {
 
   /**
    * Values of the keyword `x-unfilled`, counted as unfilled in addition to the null value. The
-   * keyword is read at the root schema, and its non-scalar entries are ignored.
+   * keyword is read at the root schema; an entry may be any JSON value, such as an empty
+   * sequence.
    */
-  get unfilledValues(): readonly JsonScalar[] {
+  get unfilledValues(): readonly JsonValue[] {
     const values = this.keyword("x-unfilled")?.value;
-    return Array.isArray(values) ? (values as readonly JsonValue[]).filter(isJsonScalar) : [];
+    return Array.isArray(values) ? (values as readonly JsonValue[]) : [];
+  }
+
+  /**
+   * Value of the keyword `x-rules`, unchecked, or `null` when it is absent. A well-formed value
+   * is a sequence of rule declarations.
+   */
+  get rules(): JsonValue | null {
+    return this.keyword("x-rules")?.value ?? null;
   }
 
   // --- Subschemas --------------------------------------------------------------------------------

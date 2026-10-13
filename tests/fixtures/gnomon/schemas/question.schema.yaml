@@ -2,15 +2,33 @@
 # its records by templates and Python checkers, without a JSON Schema.
 # constructs: nested groups, choices as `enum` and as `oneOf` of `const` values with titles,
 # records with nested flow sequences and flow mappings, a map keyed by dotted field paths with
-# values admitted by `additionalProperties`, a nullable field, the conditional rule of the
-# epistemic aim written with `if` and `then`, the unfilled value `open`
+# values admitted by `additionalProperties`, a nullable field, the unfilled values `open`, `[]`
+# and `{}`, the conditional rule of gnomon in which the epistemic aim decides the required fields
+# (its entries for the question record, from `by_aim` of `requirements.yml`), written with
+# `required-when` at the root
 
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: question.schema.yaml
 title: Question
 type: object
 required: [title, statement, id, type, status, subject, task]
-x-unfilled: [open]
+x-unfilled: [open, [], {}]
+x-rules:
+  - check: required-when
+    field: task.required_accuracy.outputs_to_match
+    when: { field: task.epistemic_aim, equals: prediction }
+  - check: required-when
+    field: subject.contrast.foil_set
+    when: { field: task.epistemic_aim, equals: explanation }
+  - check: required-when
+    field: task.requested_relation
+    when: { field: task.epistemic_aim, equals: explanation }
+  - check: required-when
+    field: task.modal_strength
+    when: { field: task.epistemic_aim, equals: modal-knowledge }
+  - check: required-when
+    field: task.proof_obligations
+    when: { field: task.epistemic_aim, equals: modal-knowledge }
 properties:
   title:
     type: string
@@ -73,6 +91,7 @@ properties:
           - { const: prediction, title: Prediction }
           - { const: explanation, title: Explanation }
           - { const: modal-knowledge, title: Modal knowledge }
+          - { const: model-knowledge, title: Model knowledge }
       requested_relation: { enum: [necessary, sufficient, both, open] }
       modal_strength: { enum: [necessary, possible, open] }
       admissible_explanans:
@@ -98,12 +117,6 @@ properties:
                     bound: { type: string, x-kind: latex }
                 justification: { type: string, x-kind: markdown-line }
       proof_obligations: { type: array, items: { type: string } }
-    if:
-      required: [epistemic_aim]
-      properties:
-        epistemic_aim: { const: explanation }
-    then:
-      required: [admissible_explanans]
   virtues:
     type: array
     items:

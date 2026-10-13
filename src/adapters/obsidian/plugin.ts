@@ -8,9 +8,15 @@ import {
   DEFAULT_SETTINGS,
   FormService,
   parseSettings,
+  ValidationService,
   type EkphrasisSettings,
 } from "../../application";
-import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../infrastructure";
+import {
+  AjvSchemaValidator,
+  FileSchemaLoader,
+  YamlDocumentParser,
+  YamlSourceEditor,
+} from "../../infrastructure";
 import { COMMANDS, registerCommands } from "./commands";
 import { INSTANCE_VIEW_TYPE, YAML_EXTENSIONS } from "./constants";
 import { refusalNotice, registerExtensions } from "./extension-registration";
@@ -38,12 +44,14 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     this.settings = parseSettings(await this.loadData());
     const parser = new YamlDocumentParser();
     const settings = (): EkphrasisSettings => this.settings;
+    const validation = new ValidationService(new AjvSchemaValidator());
     const forms = new FormService(
       parser,
       new FileSchemaLoader(new VaultFileSource(this.app.vault)),
+      validation,
       settings,
     );
-    const commits = new CommitService(parser, new YamlSourceEditor());
+    const commits = new CommitService(parser, new YamlSourceEditor(), validation);
     const registry = createDefaultRegistry();
     this.registerView(
       INSTANCE_VIEW_TYPE,

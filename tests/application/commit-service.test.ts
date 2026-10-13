@@ -15,9 +15,10 @@ import {
 } from "../../src/domain";
 import { YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
 import { schemaSet } from "../support/schemas";
+import { createValidation } from "../support/validation";
 
 const parser = new YamlDocumentParser();
-const commits = new CommitService(parser, new YamlSourceEditor());
+const commits = new CommitService(parser, new YamlSourceEditor(), createValidation());
 
 const SCHEMA: JsonValue = {
   type: "object",
@@ -50,11 +51,13 @@ const SCHEMA: JsonValue = {
 
 function state(text: string, schema: JsonValue = SCHEMA): FormReady {
   const schemas = schemaSet({ "s.json": schema });
-  const model = buildFormModel(schemas, parser.parse(text), text);
+  const tree = parser.parse(text);
+  const model = buildFormModel(schemas, tree, text);
   return {
     status: "form",
     binding: { schemaPath: "s.json", source: "modeline", reference: "s.json" },
     model,
+    report: createValidation().validate(schemas, model, tree),
     schemas,
     schemaPaths: schemas.paths,
   };
@@ -264,7 +267,7 @@ describe("refused commits", () => {
 
   it("refuses a new text that does not read back as the expected tree", () => {
     const corrupting: DocumentEditor = { apply: (source) => source.replace("posed", "answered") };
-    const service = new CommitService(parser, corrupting);
+    const service = new CommitService(parser, corrupting, createValidation());
     const text = "title: a\nstatus: posed\n";
     expect(service.commit(state(text), text, { path: ["title"], value: "b" })).toEqual({
       status: "refused",
@@ -274,7 +277,7 @@ describe("refused commits", () => {
 
   it("refuses a new text that fails to parse", () => {
     const breaking: DocumentEditor = { apply: (source) => `${source}[` };
-    const service = new CommitService(parser, breaking);
+    const service = new CommitService(parser, breaking, createValidation());
     const text = "title: a\nstatus: posed\n";
     expect(service.commit(state(text), text, { path: ["title"], value: "b" })).toEqual({
       status: "refused",

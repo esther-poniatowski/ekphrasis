@@ -65,6 +65,20 @@ export class SchemaSet {
     return [this.rootPath, ...[...this.documents.keys()].filter((path) => path !== this.rootPath)];
   }
 
+  /** Parsed root of the document at the vault path `path`, or `undefined` when not loaded. */
+  document(path: string): JsonValue | undefined {
+    return this.documents.get(path);
+  }
+
+  /**
+   * Vault path of the loaded document designated by `target`, a vault path or the `$id` of a
+   * document, or `null` when no loaded document matches.
+   */
+  documentPath(target: string): string | null {
+    if (this.documents.has(target)) return target;
+    return this.identifiers.get(target) ?? null;
+  }
+
   get root(): LocatedSchema {
     return { value: this.documents.get(this.rootPath) ?? true, document: this.rootPath };
   }
@@ -105,9 +119,7 @@ export class SchemaSet {
     const path =
       target.document === null
         ? from
-        : this.documents.has(target.document)
-          ? target.document
-          : (this.identifiers.get(target.document) ?? fail("designates no loaded schema file"));
+        : (this.documentPath(target.document) ?? fail("designates no loaded schema file"));
     const root = this.documents.get(path) ?? fail("designates no loaded schema file");
     const value =
       target.fragment === "" || target.fragment.startsWith("/")

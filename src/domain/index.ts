@@ -22,3 +22,23 @@ export * from "./edit/source-edit";
 export { valueFromText } from "./edit/input-value";
 export { expectedTree, sameContent, type CommitEffect } from "./edit/expected-tree";
 export { planCommit, REFUSALS, type CommitPlan, type ScalarCommit } from "./edit/commit-plan";
+export {
+  validatorDocuments,
+  documentUri,
+  type ValidatorDocument,
+} from "./schema/validator-documents";
+export { UnfilledValues, jsonEquals } from "./validation/unfilled";
+export { InstanceData, instanceValue, pruneUnfilled } from "./validation/instance-data";
+export { IssueIndex, issue, MISSING_MESSAGE, type Issue, type Severity } from "./validation/issues";
+export {
+  issuesFromValidatorErrors,
+  pathOfPointer,
+  type ValidatorError,
+} from "./validation/validator-errors";
+export {
+  NO_HOST,
+  RuleDeclarationError,
+  type Checker,
+  type CheckerEnvironment,
+} from "./validation/rules/declaration";
+export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";

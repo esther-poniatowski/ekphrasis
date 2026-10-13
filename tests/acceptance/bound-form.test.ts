@@ -11,11 +11,13 @@ import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { allFields } from "../support/form-fields";
 import { DirectoryFileSource, FIXTURE_BINDINGS, FIXTURE_RULES } from "../support/fixture-vault";
 import { FIXTURES_ROOT, readYamlFiles } from "../support/yaml-files";
+import { createValidation } from "../support/validation";
 
 const parser = new YamlDocumentParser();
 const forms = new FormService(
   parser,
   new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT)),
+  createValidation(),
   () => ({ ...DEFAULT_SETTINGS, pathRules: FIXTURE_RULES }),
 );
 const registry = createDefaultRegistry();

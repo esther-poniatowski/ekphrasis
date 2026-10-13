@@ -10,6 +10,7 @@ import { REFUSALS, type Field } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
 import { fieldAt } from "../support/form-fields";
+import { createValidation } from "../support/validation";
 
 const SCHEMA = [
   "type: object",
@@ -40,12 +41,13 @@ function session(): { session: InstanceSession; host: RecordingHost } {
   const forms = new FormService(
     parser,
     new FileSchemaLoader(new MemoryFileSource({ "s.yaml": SCHEMA })),
+    createValidation(),
     () => ({ ...DEFAULT_SETTINGS, pathRules: [{ pattern: "*.yml", schema: "s.yaml" }] }),
   );
   const host = new RecordingHost();
   const instance = new InstanceSession(
     forms,
-    new CommitService(parser, new YamlSourceEditor()),
+    new CommitService(parser, new YamlSourceEditor(), createValidation()),
     host,
   );
   return { session: instance, host };

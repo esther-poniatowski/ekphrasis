@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, FormService, type EkphrasisSettings } from "../../src/application";
 import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
+import { createValidation } from "../support/validation";
 
 const SCHEMA = "type: object\nproperties:\n  id: { type: string }\n";
 
@@ -12,6 +13,7 @@ function service(
   return new FormService(
     new YamlDocumentParser(),
     new FileSchemaLoader(new MemoryFileSource(files)),
+    createValidation(),
     () => settings,
   );
 }
@@ -37,6 +39,7 @@ describe("FormService", () => {
     const forms = new FormService(
       new YamlDocumentParser(),
       new FileSchemaLoader(new MemoryFileSource({ "s.yaml": SCHEMA })),
+      createValidation(),
       () => settings,
     );
     expect((await forms.open("q.yml", "id: x\n")).status).toBe("unbound");

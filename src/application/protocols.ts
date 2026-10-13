@@ -5,7 +5,7 @@
  * (dependency inversion): parsing, editing and schema loading (infrastructure), and host file
  * access (adapters).
  */
-import type { SchemaSet, SourceEdit, YamlNode } from "../domain";
+import type { JsonValue, SchemaSet, SourceEdit, ValidatorError, YamlNode } from "../domain";
 
 /** Converts a source text into the domain tree; raises `YamlParseError` on invalid input. */
 export interface DocumentParser {
@@ -33,4 +33,18 @@ export interface FileSource {
  */
 export interface SchemaLoader {
   load(path: string): Promise<SchemaSet>;
+}
+
+/** Validator of instances against the schemas of one schema set, compiled once. */
+export interface InstanceValidator {
+  /** Errors of `instance`, in the order of the validator. */
+  validate(instance: JsonValue): readonly ValidatorError[];
+}
+
+/**
+ * Compiles a schema set for a JSON Schema validator of draft 2020-12 that accepts the keywords
+ * prefixed `x-`; raises `SchemaCompileError` when the validator refuses a schema.
+ */
+export interface SchemaValidator {
+  compile(schemas: SchemaSet): InstanceValidator;
 }

@@ -7,3 +7,4 @@
 export { YamlDocumentParser } from "./yaml/yaml-parser";
 export { YamlSourceEditor } from "./yaml/yaml-source-editor";
 export { FileSchemaLoader } from "./schema/schema-loader";
+export { AjvSchemaValidator } from "./schema/ajv-validator";
