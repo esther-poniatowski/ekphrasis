@@ -36,7 +36,7 @@ The validator locates each error of a standard keyword at a node of the instance
 - the failures of the alternatives of one `oneOf` or `anyOf` merge into one issue, and its message lists the admitted values when each alternative fixes a value by `const` or `enum`;
 - the failure of an `if` is reported through the keywords of its `then` or its `else` only.
 
-The keyword `format` is not checked, since the validator checks formats only through an extension not yet included in the plugin. When the validator refuses a schema, for instance for a pattern that is no valid regular expression, the refusal is reported as a [schema defect](form-view.md), and the rules still run.
+The keyword `format` is checked for the formats of JSON Schema, such as `date`, `date-time`, `email` and `uri`, and a date must also lie in its calendar range. A format unknown to the validator is ignored. When the validator refuses a schema, for instance for a pattern that is no valid regular expression, the refusal is reported as a [schema defect](form-view.md), and the rules still run.
 
 ## Rule declarations
 

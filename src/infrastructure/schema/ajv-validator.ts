@@ -3,10 +3,11 @@
  *
  * The options follow the decision on the schema dialect and the spike on Ajv: `strict` is
  * disabled, so the keywords prefixed `x-` compile, and every error is collected. The keyword
- * `format` is not checked, since Ajv validates formats only through the extension
- * `ajv-formats`, which the dependencies do not include.
+ * `format` is checked through the extension `ajv-formats`, in its full mode. Since `strict` is
+ * disabled, a format unknown to that extension is ignored instead of refusing the schema.
  */
 import Ajv2020, { type AnySchema, type ErrorObject, type Options } from "ajv/dist/2020";
+import addFormats from "ajv-formats";
 import type { InstanceValidator, SchemaValidator } from "../../application";
 import {
   asJsonValue,
@@ -23,7 +24,6 @@ import { nameBareSymbols } from "../library-messages";
 const OPTIONS: Options = {
   strict: false,
   allErrors: true,
-  validateFormats: false,
   logger: false,
 };
 
@@ -32,6 +32,7 @@ export class AjvSchemaValidator implements SchemaValidator {
   compile(schemas: SchemaSet): InstanceValidator {
     // One Ajv instance per schema set, so documents of two sets never share a registry.
     const ajv = new Ajv2020(OPTIONS);
+    addFormats(ajv);
     try {
       for (const document of validatorDocuments(schemas)) {
         ajv.addSchema(document.schema as AnySchema, document.uri);

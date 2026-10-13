@@ -39,9 +39,18 @@ describe("Ajv validator", () => {
     ]);
   });
 
-  it("does not check the keyword `format`", () => {
+  it("checks the keyword `format`, including the range of a date", () => {
     const compiled = validator.compile(schemaSet({ "s.json": { type: "string", format: "date" } }));
-    expect(compiled.validate("not a date")).toEqual([]);
+    expect(compiled.validate("2026-10-13")).toEqual([]);
+    expect(compiled.validate("not a date")).toMatchObject([{ keyword: "format", pointer: "" }]);
+    expect(compiled.validate("2026-02-30")).toMatchObject([{ keyword: "format" }]);
+  });
+
+  it("ignores a format unknown to the validator", () => {
+    const compiled = validator.compile(
+      schemaSet({ "s.json": { type: "string", format: "kebab" } }),
+    );
+    expect(compiled.validate("any text")).toEqual([]);
   });
 
   it("raises a compile error for a schema that declares another draft", () => {

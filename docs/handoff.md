@@ -63,10 +63,9 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Three further questions await the user:
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Two further questions await the user:
 
 - whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder;
-- whether to install `ajv-formats`, so that the keyword `format` is checked; until then the validator is created with `validateFormats` disabled;
 - whether to add the milestone *Rules across files*, recommended by the implementation plan for references, uniqueness across files and acyclicity.
 
 ## Provenance
