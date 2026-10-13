@@ -77,6 +77,23 @@ describe("checkers of texts", () => {
   });
 });
 
+describe("rules implied by field kinds", () => {
+  it("admits one word in a label, and one line in a line of Markdown", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        id: { type: "string", "x-kind": "label" },
+        title: { type: "string", "x-kind": "markdown-line" },
+      },
+    };
+    expect(check(schema, "id: two words\ntitle: |\n  first\n  second\n").issues).toEqual([
+      expect.objectContaining({ id: "id", checker: "label", missing: false }),
+      expect.objectContaining({ id: "title", checker: "markdown-line" }),
+    ]);
+    expect(check(schema, "id: one-word\ntitle: 'One *line*'\n").issues).toEqual([]);
+  });
+});
+
 describe("checkers of sequences", () => {
   const items = { type: "array", items: { type: "object" } };
 
