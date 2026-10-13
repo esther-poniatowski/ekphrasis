@@ -1,7 +1,7 @@
 /**
  * Predefined checkers of field scope that read a text: `word-count`, `sentence-count`,
  * `inline-markdown` and `latex`. Each checks the value of the field that declares it, and skips
- * a value other than a text, which the keyword `type` checks.
+ * a value other than a text, since the keyword `type` reports such a value.
  */
 import type { BoundRule, Checker, RuleArguments, RuleContext } from "./declaration";
 

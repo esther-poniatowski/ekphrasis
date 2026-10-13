@@ -16,7 +16,7 @@ export const OBSIDIAN_CHECKER_ENVIRONMENT: CheckerEnvironment = {
       if (error === null) return null;
       return error.getAttribute("data-mjx-error") ?? error.textContent ?? "unknown error";
     } catch (error) {
-      // MathJax loads after the plugin, so a formula checked before it reports nothing.
+      // MathJax loads after the plugin, so a formula checked before MathJax is ready reports no error.
       console.warn("ekphrasis: a formula could not be checked.", error);
       return null;
     }

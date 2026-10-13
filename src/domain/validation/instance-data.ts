@@ -87,7 +87,7 @@ export class InstanceData {
   /**
    * Concrete paths designated by `pattern` from `base`. A key or a position designates its node
    * even when the instance lacks it, so a rule can name an absent field; a wildcard expands over
-   * the items or the keys present, and over nothing when the node has another shape.
+   * the items or the keys present, and over no node when the node has another shape.
    */
   expand(base: YamlPath, pattern: readonly PatternSegment[]): YamlPath[] {
     let paths: YamlPath[] = [base];

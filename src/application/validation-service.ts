@@ -33,7 +33,7 @@ import type { InstanceValidator, SchemaValidator } from "./protocols";
 export interface ValidationReport {
   readonly issues: readonly Issue[];
   /**
-   * Defects of the schema found while validating: a schema that the validator refuses, and
+   * Defects of the schema found while validating: a schema refused by the validator, and
    * rule declarations that are malformed or name no checker.
    */
   readonly schemaIssues: readonly SchemaIssue[];

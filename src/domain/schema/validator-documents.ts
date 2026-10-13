@@ -2,9 +2,9 @@
  * Schema documents prepared for a JSON Schema validator.
  *
  * Ekphrasis resolves a relative `$ref` from the folder of the referencing file, whereas a
- * validator resolves it from the `$id` of the enclosing schema, which a project may set to any
- * URI. Each document is therefore given to the validator under a URI derived from its vault
- * path, with every `$ref` rewritten to the absolute URI of the schema that ekphrasis resolves.
+ * validator resolves it from the `$id` of the enclosing schema, and a project may set that `$id`
+ * to any URI. Therefore, each document is given to the validator under a URI derived from its
+ * vault path, with every `$ref` rewritten to the absolute URI of the schema resolved by ekphrasis.
  * The validator then reaches the same schema as the form model for every reference.
  */
 import { isJsonObject, type JsonValue } from "./json";
@@ -27,8 +27,8 @@ export function documentUri(path: string): string {
 
 /**
  * Documents of `schemas`, root first, each with its root `$id` set to its URI, every nested
- * `$id` removed, and every `$ref` absolute. A nested `$id` would change the base URI of its
- * subschema, which the resolution of ekphrasis ignores.
+ * `$id` removed, and every `$ref` absolute. For the validator, a nested `$id` changes the base
+ * URI of its subschema, whereas the resolution of ekphrasis ignores nested identifiers.
  */
 export function validatorDocuments(schemas: SchemaSet): ValidatorDocument[] {
   return schemas.paths.map((path) => ({
