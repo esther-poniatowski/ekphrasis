@@ -1,0 +1,9 @@
+{
+  "pathRules": [
+    {
+      "pattern": "gnomon/question.yml",
+      "schema": "gnomon/schemas/question.schema.yaml"
+    }
+  ],
+  "commitDelay": 1000
+}

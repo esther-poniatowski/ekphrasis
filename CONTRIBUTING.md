@@ -65,6 +65,17 @@ To test each source change in Obsidian, the plugin is loaded from the repository
 3. Open the example vault `examples/vault` in Obsidian, and enable the plugin.
 4. Reload the plugin after each rebuild, either by toggling it off and on, or by installing the "Hot Reload" plugin in the development vault.
 
+### Manual tests in Obsidian
+
+To verify a milestone inside Obsidian, a protocol of the [manual tests](tests/manual/_index.md) runs in a test vault built from versioned files only. The command below builds the vault in `examples/test-vault/`, or resets it before a new run:
+
+```sh
+npm run build
+npm run test-vault
+```
+
+The vault receives fresh copies of the test fixtures and of the scenario records, the settings of the protocols, and links to the plugin bundle. Its folder `protocols` links to the versioned protocols, so the ticks and observations written in Obsidian are recorded in the repository. Obsidian refuses a vault whose path contains a hidden folder, so the repository must not lie inside a folder whose name starts with a dot.
+
 ### Quality checks
 
 To verify a change, each quality check runs through one npm command:

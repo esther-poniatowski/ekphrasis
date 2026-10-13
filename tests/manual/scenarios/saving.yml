@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=saving.schema.yaml
+# Manual test record of the milestone Saving of scalars.
+title: plain title # comment after a plain value
+prose: "One line of prose in double quotes." # restate the question
+formula: '\alpha + \beta'
+note: # write the note here
+remark: optional remark # kept when the key is removed
+count: 3
+draft: false
+status: posed # posed | answered | open
+subject:
+  system: pendulum
+check: { verdict: pending, evidence: "" }
+tags: [alpha, beta]
+nominal: &g 9.81
+copy: *g

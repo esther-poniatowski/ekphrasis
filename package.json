@@ -19,6 +19,7 @@
     "format:check": "prettier --config config/tools/prettier.json --check src tests",
     "test": "vitest run --config config/tools/vitest.config.ts",
     "test:watch": "vitest --config config/tools/vitest.config.ts",
+    "test-vault": "node scripts/test-vault.mjs",
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json"
   },
   "dependencies": {

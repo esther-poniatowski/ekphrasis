@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=showcase.schema.yaml
+id: broken
+title: A record whose text fails to parse
+tags: [alpha, beta
+count: 3

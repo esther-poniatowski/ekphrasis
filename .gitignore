@@ -25,6 +25,9 @@ coverage/
 ## Tool Caches
 .eslintcache
 
+## Test Vault (built by `npm run test-vault` from `tests/manual/` and `tests/fixtures/`)
+examples/test-vault/
+
 ## Example Vault (keep only the shared schemas)
 examples/vault/.obsidian/*
 !examples/vault/.obsidian/yaml-schemas/

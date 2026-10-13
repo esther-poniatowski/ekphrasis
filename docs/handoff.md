@@ -13,7 +13,7 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 The milestones *Bound form* and *Saving of scalars* are complete, and every step of both is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The exit criterion of *Saving of scalars* is verified by the [golden test of byte preservation](../tests/acceptance/saving.test.ts) on every bound fixture, and by the test of the [draft of a text control](../tests/adapters/text-draft.test.ts): a focused field keeps its text through a change made outside. The protocol `saving-protocol.md` of the test vault passed inside Obsidian on 2026-10-13. Its *Third check* changes the file through delayed shell commands: a manual test of a change made outside must keep the focus in Obsidian, since leaving the window commits the focused field.
+The exit criterion of *Saving of scalars* is verified by the [golden test of byte preservation](../tests/acceptance/saving.test.ts) on every bound fixture, and by the test of the [draft of a text control](../tests/adapters/text-draft.test.ts): a focused field keeps its text through a change made outside. The [protocol of saving](../tests/manual/protocols/saving.md) passed inside Obsidian on 2026-10-13. Its *Third check* changes the file through delayed shell commands: a manual test of a change made outside must keep the focus in Obsidian, since leaving the window commits the focused field.
 
 The next milestone is *Validation*.
 
@@ -22,9 +22,8 @@ Each decision record verified by a spike states the constraints that the later m
 ## Environment
 
 - Node 22 is expected, as the version file `.nvmrc` fixes. The dependencies are installed in `node_modules/`.
-- The npm cache `~/.npm` holds files owned by root, so `npm install` fails with `EACCES`. Until the user repairs the cache, every npm command that downloads takes the option `--cache` pointing to a folder of the session scratchpad.
 - The folder `.obsidian/` at the repository root holds the settings of the user for reading the repository as a vault. It stays uncommitted.
-- A test vault for manual checks lies in `examples/test-vault/`, excluded from git by `.git/info/exclude`, so it exists on this machine only. Its plugin folder links to the bundle of the repository, and its note `test-protocol.md` holds the checklist of the milestone *Bound form*. Obsidian refuses a vault whose path contains a hidden folder, so the vault must stay outside folders whose names start with a dot.
+- The protocols of the [manual tests](../tests/manual/_index.md) run in the test vault `examples/test-vault/`, built or reset by `npm run test-vault` as the [contribution guidelines](../CONTRIBUTING.md) describe. A new milestone that needs a manual check adds its protocol to `tests/manual/protocols/`, and its records to `tests/manual/scenarios/`. The vault itself is ignored by git. The YAML Editor plugin, needed for the test of the extension conflict, is installed in the vault by hand, and the script keeps it across rebuilds.
 - The prose linter runs through `conda run -n hermeneia hermeneia lint <path>`, with the conda executable of the user.
 - The corpus test reads every YAML file under the folder named by `EKPHRASIS_CORPUS`, for instance `EKPHRASIS_CORPUS=<gnomon> npm test`.
 

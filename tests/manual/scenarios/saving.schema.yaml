@@ -1,0 +1,35 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: saving.schema.yaml
+title: Saving
+description: A schema exercising each kind of commit of the milestone Saving of scalars.
+type: object
+required: [title, status, count]
+x-unfilled: [open]
+properties:
+  title: { type: string }
+  prose: { type: string, x-kind: markdown }
+  formula: { type: string, x-kind: latex }
+  note: { type: string, x-kind: markdown }
+  remark: { type: string }
+  summary: { type: string, x-kind: markdown-line }
+  count: { type: integer }
+  weight: { type: number }
+  draft: { type: boolean }
+  status: { enum: [posed, answered, open] }
+  subject:
+    type: object
+    properties:
+      system: { type: string }
+      contrast:
+        type: object
+        properties:
+          locus: { type: string }
+  check:
+    type: object
+    properties:
+      verdict: { enum: [pending, met, unmet] }
+      evidence: { type: string }
+      note: { type: string }
+  tags: { type: array, items: { type: string, x-kind: label } }
+  nominal: { type: number }
+  copy: { type: number }

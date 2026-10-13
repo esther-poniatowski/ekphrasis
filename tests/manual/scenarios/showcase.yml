@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=showcase.schema.yaml
+# Manual test record: every scalar control, and the edge cases of the form.
+id: showcase-1
+title:
+summary: 'Inline **Markdown** with $x^2$'
+notes: |
+  First paragraph of a Markdown value.
+
+  Second paragraph.
+formula: '\int_0^1 x \, dx'
+count: 3
+draft: true
+status: final
+category: adjective # not an admitted value
+odd: a field whose x-kind names no kind
+shape: # a mapping where the schema declares a string
+  nested: value
+defaults: &defaults # key outside the schema
+  unit: radian
+  precision: 3
+nominal: &g 9.81 # key outside the schema
+settings:
+  <<: *defaults
+  gravity: *g
+  precision: 4
+tags: [alpha, beta]

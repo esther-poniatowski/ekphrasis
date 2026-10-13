@@ -1,0 +1,30 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: showcase.schema.yaml
+title: Showcase edited
+description: A schema exercising every scalar control and the edge cases of the form.
+type: object
+required: [id, title]
+additionalProperties: false
+properties:
+  id: { type: string, x-kind: label, title: Identifier }
+  title: { type: string }
+  summary: { type: string, x-kind: markdown-line }
+  notes: { type: string, x-kind: markdown }
+  formula: { type: string, x-kind: latex }
+  count: { type: integer }
+  draft: { type: boolean }
+  status:
+    oneOf:
+      - { const: draft, title: Draft, description: Not yet reviewed }
+      - { const: final, title: Final, description: Reviewed and closed }
+  category: { enum: [noun, verb] }
+  empty_hint: { type: string, examples: ["An example displayed as placeholder"] }
+  odd: { type: string, x-kind: formula }
+  shape: { type: string }
+  settings:
+    type: object
+    properties:
+      unit: { type: string }
+      precision: { type: number }
+      gravity: { type: number }
+  tags: { type: array, items: { type: string, x-kind: label } }
