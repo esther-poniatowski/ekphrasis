@@ -88,7 +88,7 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 **Goal.** Missing and invalid fields are highlighted after each commit.
 
-**Modules.** Unfilled values, mapping of the errors of the validator to field paths, predefined checkers, relative paths of rules, display of issues, command *Validate instance*. Candidate predefined checkers cover the rule families shared by the consumer projects: references across files, uniqueness and acyclicity.
+**Modules.** Unfilled values, mapping of the errors of the validator to field paths, predefined checkers, relative paths of rules, display of issues, command *Validate instance*.
 
 **Exit criterion.** The conditional rule of gnomon, in which the epistemic aim of a question decides the required fields, is expressed in a schema and reported correctly on the fixtures.
 
@@ -107,7 +107,9 @@ Therefore, a predefined checker of these families must rely on an index of the v
 - the invalidation of the issues of every instance that depends on a changed file;
 - a validation that runs after the commit, since the index reads other files.
 
-These four parts amount to a milestone, so the checkers of these families are left out of *Validation*. The recommended route is a milestone *Rules across files*, placed after *Custom checkers*. A check across files reads other files after the commit, so its results arrive late, and may concern a text already superseded. The milestone *Custom checkers* settles these two points for the Python checkers, and the new milestone can reuse that solution. The new milestone would build the index, and on it the checkers of references, of uniqueness across files and of acyclicity. Until then, the custom checkers of each project carry these rules, and the checker `unique-by` covers uniqueness within one sequence.
+These four parts amount to a milestone. Moreover, such an index serves more than the forms, for instance backlinks between records, renames, or the check of a whole project outside Obsidian. Therefore, the maintainer decided on 2026-10-19 that the rules across files run as [custom checkers](../features/custom-checkers.md), and that no milestone of their own is added. Each project already implements these rules in Python, and a custom checker can read the files neighbouring its instance, so the form reuses those implementations. The checker `unique-by` covers uniqueness within one sequence. ^rules-across-files
+
+The decision reopens when a field kind for references, suggesting the identifiers declared in other records, is adopted. Such a kind needs an index inside the form, and a decision record must then choose between a module of ekphrasis and a separate plugin.
 
 ### Collections
 

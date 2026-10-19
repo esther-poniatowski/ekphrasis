@@ -109,6 +109,8 @@ The key `key` of a checker of sequences is a field path written from each item, 
 
 A condition `when` names a field under the key `field`, and applies one test to its value: `equals: VALUE`, `in: [VALUES]`, `filled: true` or `unfilled: true`. A relational or conditional checker declared at the root of the schema acts on the whole instance, so its field paths start from the root.
 
+The predefined checkers read one instance only. A rule that reads other files, such as the resolution of references across records, is implemented as a [custom checker](custom-checkers.md).
+
 ### Paths with wildcards
 
 A relational or conditional rule relates a subject path, at which the issue is reported (`left`, `field`), to a reference path (`right`, the field of `when`). The two paths expand together: a wildcard in the prefix shared by both paths binds the same item in both. The rule below requires the symbol of each foil that has a name:

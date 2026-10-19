@@ -38,7 +38,7 @@ One persistent Python process per vault runs the custom checkers. The process is
 - Custom checkers run on desktop only. The manifest keeps the plugin available on mobile, where the form view works and the custom checkers are skipped.
 - Every value exchanged with a checker must be representable in JSON.
 - A command restarts the process after a module changes, and a timeout bounds each call.
-- A rule family shared by several projects, such as the resolution of references across files, should become a predefined checker declared in the schema. The Python process then serves the rules specific to one project.
+- A rule that spans several files, such as the resolution of references across records, runs as a custom checker, which reads the files neighbouring its instance. The [evaluation of rules across files](../architecture/implementation-plan.md#^rules-across-files) records why ekphrasis adds no predefined checker of that kind.
 
 ## Verification
 

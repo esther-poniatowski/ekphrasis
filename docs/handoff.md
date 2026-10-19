@@ -13,10 +13,7 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 The milestones *Bound form* and *Saving of scalars* are complete, and every step of both is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The milestone *Validation* is implemented, and awaits its manual check. Three of its six steps are checked in the roadmap, and three stay open:
-
-- the display of issues and the command *Validate instance* stay open until the [protocol of validation](../tests/manual/protocols/validation.md) passes inside Obsidian. The user runs it in the test vault, already built by `npm run test-vault`;
-- the evaluation of checkers for the rule families shared across files stays open: the [implementation plan](architecture/implementation-plan.md) recommends a milestone *Rules across files* after *Custom checkers*. That milestone awaits the decision of the user.
+The milestone *Validation* is implemented, and awaits its manual check. Four of its six steps are checked in the roadmap. The display of issues and the command *Validate instance* stay open until the [protocol of validation](../tests/manual/protocols/validation.md) passes inside Obsidian. The user runs it in the test vault, built by `npm run test-vault`. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
 
 The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
 
@@ -63,10 +60,7 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Two further questions await the user:
-
-- whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder;
-- whether to add the milestone *Rules across files*, recommended by the implementation plan for references, uniqueness across files and acyclicity.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
 
 ## Provenance
 
