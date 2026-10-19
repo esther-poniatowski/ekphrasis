@@ -330,6 +330,13 @@ textarea.ekphrasis-control {
   color: var(--text-normal);
 }
 
+/* A list inside a centred message keeps its items aligned on the left. */
+.ekphrasis-message-list {
+  display: inline-block;
+  margin: 0;
+  text-align: left;
+}
+
 .ekphrasis-message-actions {
   margin-top: var(--size-4-4);
 }

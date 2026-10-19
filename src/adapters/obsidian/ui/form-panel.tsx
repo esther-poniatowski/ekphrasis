@@ -47,12 +47,15 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
       return <EditableForm {...props} form={state} notice={null} />;
     case "unbound":
       return (
-        <Message title="No schema" onOpenSource={onOpenSource}>
-          <p>
-            This file is bound to no schema, so it has no form. To bind it, write the line{" "}
-            <code># yaml-language-server: $schema=path/to/schema.yaml</code> at the top of the file,
-            or add a path rule in the settings of ekphrasis.
-          </p>
+        <Message title="This file is bound to no schema" onOpenSource={onOpenSource}>
+          <p>To display it as a form, bind it to a schema in one of two ways:</p>
+          <ul class="ekphrasis-message-list">
+            <li>
+              write the line <code># yaml-language-server: $schema=path/to/schema.yaml</code> at the
+              top of the file;
+            </li>
+            <li>add a path rule in the settings of ekphrasis.</li>
+          </ul>
         </Message>
       );
     case "invalid-binding":
