@@ -16,7 +16,7 @@
  * removed from the milestone *Collections* onward, so such commits are refused with a reason.
  */
 import { EkphrasisError } from "../../errors";
-import { isScalarKind } from "../form/kinds";
+import { isScalarKind, isSingleLineKind } from "../form/kinds";
 import type { Field, FormModel, MappingField, ScalarField } from "../form/model";
 import { fieldChain } from "../form/navigation";
 import type {
@@ -181,7 +181,10 @@ class CommitPlanner {
           if (entry === null || context === "flow") return refuse(REFUSALS.unlocated);
           return { edits: this.fill(entry, target.value, indent), effect };
         }
-        const scalar = this.scalarText(target.value, context, node.style, indent);
+        // A single-line kind drops a block style, so its one line is written plain or quoted.
+        const current =
+          isSingleLineKind(field.kind) && isBlockStyle(node.style) ? null : node.style;
+        const scalar = this.scalarText(target.value, context, current, indent);
         return { edits: [{ kind: "rewrite", offset: range.start, scalar }], effect };
       }
       case "empty":

@@ -17,6 +17,11 @@ export const SCALAR_KINDS = [
   "choice",
 ] as const;
 
+/**
+ * Scalar kinds whose value holds one line, so that a commit never writes it as a block scalar.
+ */
+export const SINGLE_LINE_KINDS = ["label", "text", "markdown-line", "latex"] as const;
+
 /** Collection kinds whose value is a mapping. */
 export const MAPPING_KINDS = ["group", "keyed-table", "keyed-records", "alternatives"] as const;
 
@@ -33,6 +38,7 @@ const includes = <T extends string>(list: readonly T[], name: string): name is T
   (list as readonly string[]).includes(name);
 
 export const isScalarKind = (name: string): name is ScalarKind => includes(SCALAR_KINDS, name);
+export const isSingleLineKind = (name: string): boolean => includes(SINGLE_LINE_KINDS, name);
 export const isMappingKind = (name: string): name is MappingKind => includes(MAPPING_KINDS, name);
 export const isSequenceKind = (name: string): name is SequenceKind =>
   includes(SEQUENCE_KINDS, name);

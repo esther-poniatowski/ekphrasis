@@ -126,6 +126,18 @@ describe("commit of a present value", () => {
     ).toBe("title: a\nstatus: posed\nnote: | # c\n  one\n  two\nend: 1\n");
   });
 
+  it("writes a single-line kind plain or single-quoted when its value was a block scalar", () => {
+    expect(written("title: |-\n  old\nstatus: posed\n", ["title"], "One title")).toBe(
+      "title: One title\nstatus: posed\n",
+    );
+    expect(written("title: >\n  old\nstatus: posed\n", ["title"], "a: b")).toBe(
+      "title: 'a: b'\nstatus: posed\n",
+    );
+    expect(written("title: a\nstatus: posed\nformula: |\n  x\n", ["formula"], "\\gamma")).toBe(
+      "title: a\nstatus: posed\nformula: '\\gamma'\n",
+    );
+  });
+
   it("keeps a block scalar with its header comment", () => {
     const text = "title: a\nstatus: posed\nnote: |- # h\n  old\n  text\nend: 1\n";
     expect(written(text, ["note"], "new")).toBe(
