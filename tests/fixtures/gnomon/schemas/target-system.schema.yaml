@@ -56,7 +56,7 @@ properties:
         name: { type: string }
         symbol: { type: string, x-kind: label }
         extent: { type: string }
-        structure: { enum: [interval, discrete, open] }
+        structure: { enum: [interval, discrete] }
   variables:
     type: array
     items:
@@ -65,7 +65,7 @@ properties:
       properties:
         name: { type: string }
         symbol: { type: string, x-kind: label }
-        determined: { enum: [within, outside, open] }
+        determined: { enum: [within, outside] }
         signature:
           type: array
           items: { type: string, x-kind: label }

@@ -38,12 +38,21 @@ export interface FieldBase {
   readonly mismatch: string | null;
   /** Entries of the keyword `x-rules` of the schema of the field, checked when validating. */
   readonly rules: readonly JsonValue[];
+  /**
+   * Whether the value counts as unfilled: absent, the null value, or a value of the keyword
+   * `x-unfilled`. The control of an unfilled field displays no value, whatever the file holds.
+   */
+  readonly unfilled: boolean;
 }
 
 export interface ScalarField extends FieldBase {
   readonly kind: ScalarKind;
+  /** Value written in the file, or `null` when the instance holds no such key. */
   readonly value: ScalarValue;
-  /** Admitted values of a field of kind `choice`; empty for the other kinds. */
+  /**
+   * Admitted values of a field of kind `choice`, without the unfilled values, which the empty
+   * option stands for; empty for the other kinds.
+   */
   readonly options: readonly ChoiceOption[];
 }
 

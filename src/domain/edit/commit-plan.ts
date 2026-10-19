@@ -46,6 +46,7 @@ import {
 } from "./source-edit";
 import { SourceText } from "./source-text";
 import { isJsonScalar } from "../schema/json";
+import { UnfilledValues } from "../validation/unfilled";
 
 /** Value committed at the field of path `path`; the value `null` clears the field. */
 export interface ScalarCommit {
@@ -274,7 +275,7 @@ class CommitPlanner {
       if (node.flow) return refuse(REFUSALS.flow);
       return { edits: this.insertInto(owner, node, keys, value), effect };
     }
-    if (node?.kind === "scalar" && node.value === null) {
+    if (node?.kind === "scalar" && new UnfilledValues(this.model.unfilled).has(node.value)) {
       return { edits: this.insertUnderEmpty(chain, anchor, node, keys, value), effect };
     }
     return refuse(REFUSALS.unlocated);
@@ -313,8 +314,9 @@ class CommitPlanner {
   }
 
   /**
-   * Inserts `keys` under the empty value `node` of the field `chain[anchor]`, which becomes a
-   * block mapping: the null token, if any, is erased, and the keys follow on the next lines.
+   * Inserts `keys` under the unfilled value `node` of the field `chain[anchor]`, which becomes a
+   * block mapping: the token of the value, if any, is erased, and the keys follow on the next
+   * lines.
    */
   private insertUnderEmpty(
     chain: readonly Field[],

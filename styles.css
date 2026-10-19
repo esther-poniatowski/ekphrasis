@@ -258,6 +258,12 @@
   width: 100%;
 }
 
+/* Mark of an unfilled value beside a toggle, which has no empty state. */
+.ekphrasis-unfilled-mark {
+  margin-left: var(--size-4-2);
+  color: var(--text-faint);
+}
+
 textarea.ekphrasis-control {
   resize: vertical;
   font-family: inherit;

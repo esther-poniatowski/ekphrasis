@@ -139,6 +139,43 @@ describe("form model", () => {
     expect(fieldAt(model.root, "group").mismatch).toBe("open");
   });
 
+  it("marks the unfilled values, drops them from the options, and fits them to collections", () => {
+    const model = build(
+      {
+        type: "object",
+        "x-unfilled": ["open", []],
+        properties: {
+          status: { enum: ["posed", "open", "answered"] },
+          title: { type: "string" },
+          note: { type: "string" },
+          count: { type: "integer" },
+          group: { type: "object", properties: { a: { type: "string" } } },
+          list: { type: "array", items: { type: "string" } },
+        },
+      },
+      "status: open\ntitle: open\nnote: open ended\ncount:\ngroup: open\nlist: []\n",
+    );
+    const scalar = (id: string): unknown => {
+      const field = fieldAt(model.root, id);
+      return "value" in field ? [field.value, field.unfilled] : null;
+    };
+    expect(["status", "title", "note", "count"].map(scalar)).toEqual([
+      ["open", true],
+      ["open", true],
+      ["open ended", false],
+      [null, true],
+    ]);
+    const status = fieldAt(model.root, "status");
+    expect("options" in status && status.options.map((option) => option.value)).toEqual([
+      "posed",
+      "answered",
+    ]);
+    expect(fieldAt(model.root, "group").mismatch).toBeNull();
+    expect(fieldAt(model.root, "group.a")).toMatchObject({ node: null, unfilled: true });
+    expect(fieldAt(model.root, "list")).toMatchObject({ mismatch: null, unfilled: true });
+    expect(model.root.unfilled).toBe(false);
+  });
+
   it("selects the alternative whose required keys are present", () => {
     const model = build(
       {

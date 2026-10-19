@@ -115,7 +115,7 @@ describe("defects of the schema", () => {
     ]);
   });
 
-  it("reports a required property without a field", () => {
+  it("reports a required property without a field, and an unfilled value admitted by a field", () => {
     const schema: JsonValue = {
       type: "object",
       required: ["ghost"],
@@ -125,6 +125,7 @@ describe("defects of the schema", () => {
     for (const text of ["status: posed\n", ""]) {
       expect(validate(schema, text).schemaIssues.map(({ path }) => path)).toEqual([
         "ghost",
+        "status",
       ]);
     }
   });

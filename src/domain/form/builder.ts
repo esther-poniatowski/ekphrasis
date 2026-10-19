@@ -7,6 +7,7 @@ import type { PropertySchema } from "../schema/schema-view";
 import { SchemaView } from "../schema/schema-view";
 import type { JsonValue } from "../schema/json";
 import type { SchemaSet } from "../schema/schema-set";
+import { UnfilledValues } from "../validation/unfilled";
 import { effectiveEntries, resolveAliases } from "./entries";
 import {
   choiceOptions,
@@ -47,10 +48,12 @@ interface FieldSite {
 
 class FormModelBuilder {
   private readonly issues: SchemaIssue[] = [];
+  private unfilled = new UnfilledValues([]);
 
   constructor(private readonly source: string) {}
 
   build(schema: SchemaView, tree: YamlNode): FormModel {
+    this.unfilled = new UnfilledValues(schema.unfilledValues);
     const root = this.field({
       path: [],
       label: schema.title ?? "",
@@ -100,17 +103,20 @@ class FormModelBuilder {
       node: site.node,
       lock: site.lock,
       mismatch: fits ? null : this.textOf(site.node),
+      unfilled: this.isUnfilled(site.node),
     };
   }
 
   private scalarField(site: FieldSite, kind: ScalarKind): ScalarField {
     const node = site.node;
     const scalar = node === null || node.kind === "scalar";
+    const value = node?.kind === "scalar" ? node.value : null;
+    const options = kind === "choice" && site.schema ? (choiceOptions(site.schema) ?? []) : [];
     return {
       ...this.base(site, scalar),
       kind,
-      value: node?.kind === "scalar" ? node.value : null,
-      options: kind === "choice" && site.schema ? (choiceOptions(site.schema) ?? []) : [],
+      value,
+      options: options.filter((option) => !this.unfilled.has(option.value)),
     };
   }
 
@@ -162,7 +168,7 @@ class FormModelBuilder {
       }
     }
     return {
-      ...this.base(site, mapping !== null || isNullValue(site.node)),
+      ...this.base(site, mapping !== null || this.isUnfilledScalar(site.node)),
       kind,
       children,
       extraEntries,
@@ -184,7 +190,11 @@ class FormModelBuilder {
         lock: site.lock,
       }),
     );
-    return { ...this.base(site, sequence !== null || isNullValue(site.node)), kind, items };
+    return {
+      ...this.base(site, sequence !== null || this.isUnfilledScalar(site.node)),
+      kind,
+      items,
+    };
   }
 
   /** Entries of the keyword `x-rules` of the field; a value other than a sequence is reported. */
@@ -197,6 +207,21 @@ class FormModelBuilder {
       message: "The keyword `x-rules` must hold a sequence of rule declarations.",
     });
     return [];
+  }
+
+  /** Whether `node` is absent or holds an unfilled scalar, which fits every kind. */
+  private isUnfilledScalar(node: YamlNode | null): boolean {
+    return node === null || (node.kind === "scalar" && this.unfilled.has(node.value));
+  }
+
+  /**
+   * Whether `node` holds an unfilled value: an unfilled scalar, or an empty collection that the
+   * schema declares unfilled, such as `[]`.
+   */
+  private isUnfilled(node: YamlNode | null): boolean {
+    if (node?.kind === "sequence" && node.items.length === 0) return this.unfilled.has([]);
+    if (node?.kind === "mapping" && node.entries.length === 0) return this.unfilled.has({});
+    return this.isUnfilledScalar(node);
   }
 
   private textOf(node: YamlNode | null): string {
@@ -219,11 +244,6 @@ function kindOfNode(node: YamlNode | null): FieldKind {
   if (node?.kind === "mapping") return "group";
   if (node?.kind === "sequence") return "list";
   return "text";
-}
-
-/** Whether `node` is absent or holds the null value, which fits every kind. */
-function isNullValue(node: YamlNode | null): boolean {
-  return node === null || (node.kind === "scalar" && node.value === null);
 }
 
 /**

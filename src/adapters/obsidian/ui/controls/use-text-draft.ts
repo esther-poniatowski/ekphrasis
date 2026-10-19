@@ -5,6 +5,7 @@
 import { useEffect, useReducer, useRef, useState } from "preact/hooks";
 import { valueFromText, type ScalarField, type ScalarValue } from "../../../../domain";
 import { useFormContext } from "../form-context";
+import { displayedValue } from "./scalar-format";
 import { TextDraft } from "./text-draft";
 
 /** Handlers and text of a control bound to its draft. */
@@ -21,15 +22,16 @@ export function useTextDraft(
   onCommit: (value: ScalarValue) => void,
 ): TextDraftBinding {
   const { commitDelay } = useFormContext();
+  // The draft follows the displayed value, so an unfilled value displays as an empty control.
   const [draft] = useState(
-    () => new TextDraft(field.value, (text) => valueFromText(field.kind, text)),
+    () => new TextDraft(displayedValue(field), (text) => valueFromText(field.kind, text)),
   );
   const [, rerender] = useReducer((count: number) => count + 1, 0);
   const timer = useRef<number | undefined>(undefined);
   const commit = useRef(onCommit);
   commit.current = onCommit;
 
-  draft.update(field.value);
+  draft.update(displayedValue(field));
 
   const flush = (): void => {
     window.clearTimeout(timer.current);

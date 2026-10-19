@@ -9,10 +9,12 @@
  * 3. The rules of the keyword `x-rules` run on the filled fields.
  *
  * A schema set is compiled once, at its first validation, and reused for every commit. The
- * defects of the schema that no instance affects, such as a required property absent from the
- * properties, are found once as well, and reported with every validation.
+ * defects of the schema that no instance affects are found once as well, and reported with
+ * every validation: a required property absent from the properties, and a value declared
+ * unfilled but admitted by a field.
  */
 import {
+  admittedUnfilledValues,
   checkRules,
   InstanceData,
   issue,
@@ -38,8 +40,8 @@ export interface ValidationReport {
   readonly issues: readonly Issue[];
   /**
    * Defects of the schema found while validating: a schema refused by the validator, a required
-   * property absent from the properties, and rule declarations that are malformed or name no
-   * checker.
+   * property absent from the properties, a value declared unfilled but admitted by a field, and
+   * rule declarations that are malformed or name no checker.
    */
   readonly schemaIssues: readonly SchemaIssue[];
 }
@@ -87,7 +89,7 @@ export class ValidationService {
     let defects = this.defects.get(schemas);
     if (defects === undefined) {
       const root = SchemaView.root(schemas);
-      defects = undeclaredRequirements(root);
+      defects = [...undeclaredRequirements(root), ...admittedUnfilledValues(root)];
       this.defects.set(schemas, defects);
     }
     return defects;

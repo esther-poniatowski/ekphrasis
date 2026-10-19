@@ -54,7 +54,7 @@ properties:
       contrast:
         type: object
         properties:
-          locus: { enum: [other-outcome, other-system, other-condition, none, open] }
+          locus: { enum: [other-outcome, other-system, other-condition, none] }
           foil_set:
             type: array
             items:
@@ -64,8 +64,8 @@ properties:
                 symbol: { type: string, x-kind: label }
                 expression: { type: array, items: { type: string, x-kind: latex } }
                 reading: { type: string, x-kind: markdown-line }
-          compatibility: { enum: [derived, stipulated, open] }
-          foil_status: { enum: [observed, counterfactual, not-applicable, open] }
+          compatibility: { enum: [derived, stipulated] }
+          foil_status: { enum: [observed, counterfactual, not-applicable] }
       domain:
         type: object
         properties:
@@ -92,18 +92,18 @@ properties:
           - { const: explanation, title: Explanation }
           - { const: modal-knowledge, title: Modal knowledge }
           - { const: model-knowledge, title: Model knowledge }
-      requested_relation: { enum: [necessary, sufficient, both, open] }
-      modal_strength: { enum: [necessary, possible, open] }
+      requested_relation: { enum: [necessary, sufficient, both] }
+      modal_strength: { enum: [necessary, possible] }
       admissible_explanans:
         type: object
         properties:
           compositional: { type: array, items: { type: string, x-kind: label } }
-          substrate: { enum: [dependent, independent, open] }
+          substrate: { enum: [dependent, independent] }
           justification: { type: string, x-kind: markdown-line }
       required_accuracy:
         type: object
         properties:
-          standard: { enum: [qualitative, numeric-bound, open] }
+          standard: { enum: [qualitative, numeric-bound] }
           outputs_to_match:
             type: array
             items:
@@ -122,8 +122,8 @@ properties:
     items:
       type: object
       properties:
-        virtue: { enum: [generality, simplicity, precision, open] }
-        standing: { enum: [required, preferred, open] }
+        virtue: { enum: [generality, simplicity, precision] }
+        standing: { enum: [required, preferred] }
         check:
           type: object
           properties:
@@ -132,4 +132,4 @@ properties:
             note: { type: string, x-kind: latex }
   maturity:
     type: object
-    additionalProperties: { enum: [open, provisional, stabilized] }
+    additionalProperties: { enum: [provisional, stabilized] }

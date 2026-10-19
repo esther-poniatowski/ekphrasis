@@ -138,6 +138,12 @@ describe("commit of a present value", () => {
     );
   });
 
+  it("inserts a key under a group holding an unfilled value, erasing that value", () => {
+    expect(written("title: a\nstatus: posed\ncheck: open\n", ["check", "verdict"], "kept")).toBe(
+      "title: a\nstatus: posed\ncheck:\n  verdict: kept\n",
+    );
+  });
+
   it("keeps a block scalar with its header comment", () => {
     const text = "title: a\nstatus: posed\nnote: |- # h\n  old\n  text\nend: 1\n";
     expect(written(text, ["note"], "new")).toBe(
