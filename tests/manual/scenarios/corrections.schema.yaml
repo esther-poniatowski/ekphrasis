@@ -1,0 +1,40 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: corrections.schema.yaml
+title: Corrections
+description: A schema exercising the corrections made after the check of Validation.
+type: object
+required: [title, status, aim, ghost]
+x-unfilled: [open]
+x-rules:
+  - check: required-when
+    field: tolerance
+    when: { field: aim, equals: prediction }
+  - check: forbidden-when
+    field: tolerance
+    when: { field: aim, equals: description }
+    severity: warning
+  - check: forbidden-when
+    field: bounds
+    when: { field: aim, equals: description }
+if:
+  required: [aim]
+  properties:
+    aim: { const: explanation }
+then:
+  required: [explanans]
+properties:
+  title: { type: string, x-kind: markdown-line }
+  status: { enum: [posed, answered] }
+  summary:
+    type: string
+    examples: ["One sentence stating the result."]
+  done: { type: boolean }
+  count: { type: integer }
+  level: { enum: [low, high, open] }
+  aim: { enum: [description, prediction, explanation] }
+  tolerance: { type: number }
+  bounds:
+    type: object
+    properties:
+      lower: { type: number }
+      upper: { type: number }

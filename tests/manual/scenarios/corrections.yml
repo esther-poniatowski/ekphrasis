@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=corrections.schema.yaml
+# Manual test record of the corrections made after the check of Validation.
+title: |-
+  A title written as a block scalar
+status: open
+summary: open
+done: open
+count: open
+level: low
+aim: description
