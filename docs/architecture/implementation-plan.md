@@ -94,6 +94,8 @@ The instance view extends the `TextFileView` class of Obsidian, which holds the 
 
 **Risk.** The validator reports locations as JSON Pointers, and an error on a missing property points to the parent object. Both must be converted to the field path of the missing field.
 
+**Corrections.** The manual check of 2026-10-19 passed, and the observations of the user gave six corrections, listed in the [roadmap](../../TODO.md) and carried out before *Collections*: two defects, three changes of the presentation, and the plain style of single-line kinds.
+
 **Evaluation of shared rule families.** The three families shared by the consumer projects reach beyond one instance:
 
 - a reference of gnomon, such as `system.TOPIC#SYMBOL`, designates a symbol declared in another record;

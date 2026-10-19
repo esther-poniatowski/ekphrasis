@@ -17,7 +17,7 @@ The [protocol of validation](../tests/manual/protocols/validation.md) passed ins
 
 The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
 
-The next milestone is *Collections*. Its first step is a decision of the user: whether an edit inside a flow collection keeps the flow form or converts the collection to block form.
+The next work is the section *Corrections after the check of Validation* of the roadmap, which the user approved on 2026-10-19 after triaging the observations of the protocol. The milestone *Collections* follows it. Its first step awaits a decision of the user: whether an edit inside a flow collection keeps the flow form or converts the collection to block form.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 

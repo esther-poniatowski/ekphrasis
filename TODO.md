@@ -44,6 +44,15 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Validation**: display the issues at their fields and in the headings of the groups containing them. (2026-10-19)
 - [x] **Validation**: provide the command *Validate instance*. (2026-10-19)
 
+## Corrections after the check of Validation
+
+- [ ] **Form view**: reproduce by a test, then correct, the options of a dropdown displayed twice after its value changes.
+- [ ] **Validation**: report as a schema defect each property required by the keyword `required` or by a condition but absent from the properties of the schema, naming that property.
+- [ ] **Form view**: display every unfilled value as an empty control marked `—`, whatever value the file holds, and warn when a schema declares as unfilled a value that it admits for a field.
+- [ ] **Form view**: reflect the conditional rules in the controls: disable a field forbidden by the current values, and mark as required a field required by them.
+- [ ] **Form view**: lay out the message of a file bound to no schema as a heading followed by the list of the two ways of binding it.
+- [ ] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar.
+
 ## Collections
 
 - [ ] **Field kinds**: display one control per collection kind, including the tables and the alternatives.
@@ -51,6 +60,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Saving**: decide whether an edit inside a flow collection keeps its flow form or converts the collection to block form, and implement the insertion and removal of entries with their separating commas.
 - [ ] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings.
 - [ ] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*.
+- [ ] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group.
 
 ## Guidance and navigation
 
@@ -60,6 +70,8 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Form view**: display the keys outside the schema in a read-only area.
 - [ ] **Outline**: display the entries of the active instance, and move the form to the field of a clicked entry.
 - [ ] **Outline**: mark the entries with issues, and restrict the outline to them on demand.
+- [ ] **Form view**: display the counts of the summary at the top of the form as a list, one line per kind of issue, with the fields of each kind reachable from it.
+- [ ] **Outline**: provide a search that moves the form to a field, and displays its instructions.
 
 ## Instance creation
 

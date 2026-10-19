@@ -26,7 +26,7 @@ The new text is spliced into the source range of the edited node, as the decisio
 
 ## Scalar styles
 
-An edited value keeps its scalar style whenever that style can represent the new value. A quoted style represents one line only, since the YAML writer folds each line break of a quoted scalar into a blank line. A number or a boolean is always written plain. Otherwise, and for a string written for the first time, ekphrasis selects the style from the content of the value:
+An edited value keeps its scalar style whenever that style can represent the new value. A field of a single-line kind (`label`, `text`, `markdown-line` or `latex`) never keeps a block style: its value is written in the style selected below, plain whenever the test for a plain scalar holds. A quoted style represents one line only, since the YAML writer folds each line break of a quoted scalar into a blank line. A number or a boolean is always written plain. Otherwise, and for a string written for the first time, ekphrasis selects the style from the content of the value:
 
 | Content of the value | Scalar style |
 | --- | --- |
