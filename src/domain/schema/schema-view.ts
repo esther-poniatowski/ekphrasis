@@ -80,6 +80,21 @@ export class SchemaView {
     );
   }
 
+  /**
+   * Keys of the keyword `dependentRequired`, each with the keys that its presence requires, in
+   * their written order.
+   */
+  get dependentRequired(): ReadonlyMap<string, readonly string[]> {
+    const entry = this.keyword("dependentRequired")?.value;
+    if (!isJsonObject(entry)) return new Map();
+    return new Map(
+      Object.entries(entry).map(([key, keys]) => [
+        key,
+        Array.isArray(keys) ? keys.filter((name) => typeof name === "string") : [],
+      ]),
+    );
+  }
+
   get uniqueItems(): boolean {
     return this.keyword("uniqueItems")?.value === true;
   }
@@ -126,6 +141,33 @@ export class SchemaView {
     return (entry.value as readonly JsonValue[]).map((value) =>
       SchemaView.at(this.set, { value, document: entry.document }),
     );
+  }
+
+  /** Subschemas of the keywords `then` and `else`, each with the name of its keyword. */
+  branches(): { readonly keyword: "then" | "else"; readonly schema: SchemaView }[] {
+    return (["then", "else"] as const).flatMap((keyword) => {
+      const schema = this.subschema(keyword);
+      return schema === null ? [] : [{ keyword, schema }];
+    });
+  }
+
+  /** Subschemas of the keyword `allOf`, in their written order. */
+  allOf(): SchemaView[] {
+    const entry = this.keyword("allOf");
+    if (entry === undefined || !Array.isArray(entry.value)) return [];
+    return (entry.value as readonly JsonValue[]).map((value) =>
+      SchemaView.at(this.set, { value, document: entry.document }),
+    );
+  }
+
+  /**
+   * Object that identifies the subschema across the views reaching it, or `null` for a
+   * subschema written as a boolean. A subschema written as a bare `$ref` is identified with the
+   * schema it references, so a recursive schema is recognized when it is reached again.
+   */
+  get identity(): object | null {
+    const own = this.layers.find((layer) => Object.keys(layer.keywords).length > 0);
+    return (own ?? this.layers.at(-1))?.written ?? null;
   }
 
   /**

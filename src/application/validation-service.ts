@@ -8,7 +8,9 @@
  * 2. The standard keywords of JSON Schema check the remaining values, through the validator.
  * 3. The rules of the keyword `x-rules` run on the filled fields.
  *
- * A schema set is compiled once, at its first validation, and reused for every commit.
+ * A schema set is compiled once, at its first validation, and reused for every commit. The
+ * defects of the schema that no instance affects, such as a required property absent from the
+ * properties, are found once as well, and reported with every validation.
  */
 import {
   checkRules,
@@ -18,6 +20,8 @@ import {
   MISSING_MESSAGE,
   NO_HOST,
   pruneUnfilled,
+  SchemaView,
+  undeclaredRequirements,
   UnfilledValues,
   type CheckerEnvironment,
   type FormModel,
@@ -33,14 +37,16 @@ import type { InstanceValidator, SchemaValidator } from "./protocols";
 export interface ValidationReport {
   readonly issues: readonly Issue[];
   /**
-   * Defects of the schema found while validating: a schema refused by the validator, and
-   * rule declarations that are malformed or name no checker.
+   * Defects of the schema found while validating: a schema refused by the validator, a required
+   * property absent from the properties, and rule declarations that are malformed or name no
+   * checker.
    */
   readonly schemaIssues: readonly SchemaIssue[];
 }
 
 export class ValidationService {
   private readonly compiled = new WeakMap<SchemaSet, InstanceValidator | SchemaCompileError>();
+  private readonly defects = new WeakMap<SchemaSet, readonly SchemaIssue[]>();
 
   constructor(
     private readonly validator: SchemaValidator,
@@ -50,17 +56,18 @@ export class ValidationService {
   /** Report of the instance `tree`, whose form model under `schemas` is `model`. */
   validate(schemas: SchemaSet, model: FormModel, tree: YamlNode): ValidationReport {
     const data = InstanceData.fromTree(tree, new UnfilledValues(model.unfilled));
+    const defects = this.defectsOf(schemas);
     const rootUnfilled = data.unfilled.has(data.value);
     if (rootUnfilled && !("children" in model.root)) {
       return {
         issues: [issue([], "required", MISSING_MESSAGE, { missing: true })],
-        schemaIssues: [],
+        schemaIssues: defects,
       };
     }
     // An empty instance is validated as an empty mapping, so each required field is reported.
     const instance: JsonValue = rootUnfilled ? {} : pruneUnfilled(data.value, data.unfilled);
 
-    const schemaIssues: SchemaIssue[] = [];
+    const schemaIssues: SchemaIssue[] = [...defects];
     let standard: Issue[] = [];
     const validator = this.validatorOf(schemas);
     if (validator instanceof SchemaCompileError) {
@@ -74,6 +81,16 @@ export class ValidationService {
       issues: [...standard, ...withoutRepeatedMissing(standard, rules.issues)],
       schemaIssues: [...schemaIssues, ...rules.problems],
     };
+  }
+
+  private defectsOf(schemas: SchemaSet): readonly SchemaIssue[] {
+    let defects = this.defects.get(schemas);
+    if (defects === undefined) {
+      const root = SchemaView.root(schemas);
+      defects = undeclaredRequirements(root);
+      this.defects.set(schemas, defects);
+    }
+    return defects;
   }
 
   private validatorOf(schemas: SchemaSet): InstanceValidator | SchemaCompileError {

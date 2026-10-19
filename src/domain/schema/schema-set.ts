@@ -26,6 +26,8 @@ export interface LocatedSchema {
 export interface SchemaLayer {
   readonly keywords: JsonObject;
   readonly document: string;
+  /** Object written in the document, `$ref` included, which identifies the layer. */
+  readonly written: JsonObject;
 }
 
 /** Bound on the length of a chain of `$ref`, beyond which the chain counts as a loop. */
@@ -97,7 +99,7 @@ export class SchemaSet {
       if (current.value === false) return null;
       if (!isJsonObject(current.value)) return layers;
       const { $ref: reference, ...keywords } = current.value;
-      layers.push({ keywords, document: current.document });
+      layers.push({ keywords, document: current.document, written: current.value });
       if (typeof reference !== "string") return layers;
       current = this.locate(reference, current.document);
     }

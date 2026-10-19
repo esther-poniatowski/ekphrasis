@@ -50,3 +50,4 @@ export {
   type CheckerEnvironment,
 } from "./validation/rules/declaration";
 export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";
+export { undeclaredRequirements } from "./validation/undeclared-requirements";

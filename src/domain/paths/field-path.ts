@@ -38,6 +38,18 @@ export function printFieldPath(path: YamlPath): string {
     .join("");
 }
 
+/** Prints a path that may hold wildcards, such as the path of a subschema of items. */
+export function printPatternPath(path: readonly PatternSegment[]): string {
+  return path
+    .map((segment, index) => {
+      if (segment === ANY_ITEM) return "[*]";
+      if (segment === ANY_KEY) return index === 0 ? "*" : ".*";
+      const printed = printFieldPath([segment]);
+      return index === 0 || printed.startsWith("[") ? printed : `.${printed}`;
+    })
+    .join("");
+}
+
 /**
  * Parses a path, with its wildcards; the empty text designates the root.
  *

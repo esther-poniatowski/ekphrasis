@@ -115,6 +115,20 @@ describe("defects of the schema", () => {
     ]);
   });
 
+  it("reports a required property without a field", () => {
+    const schema: JsonValue = {
+      type: "object",
+      required: ["ghost"],
+      "x-unfilled": ["open"],
+      properties: { status: { enum: ["posed", "open"] } },
+    };
+    for (const text of ["status: posed\n", ""]) {
+      expect(validate(schema, text).schemaIssues.map(({ path }) => path)).toEqual([
+        "ghost",
+      ]);
+    }
+  });
+
   it("compiles a schema set once", () => {
     let compilations = 0;
     const counting: SchemaValidator = {
