@@ -47,11 +47,11 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Corrections after the check of Validation
 
 - [ ] **Form view**: reproduce by a test, then correct, the options of a dropdown displayed twice after its value changes.
-- [ ] **Validation**: report as a schema defect each property required by the keyword `required` or by a condition but absent from the properties of the schema, naming that property.
+- [x] **Validation**: report as a schema defect each property required by the keyword `required` or by a condition but absent from the properties of the schema, naming that property. (2026-10-19)
 - [ ] **Form view**: display every unfilled value as an empty control marked `—`, whatever value the file holds, and warn when a schema declares as unfilled a value that it admits for a field.
 - [ ] **Form view**: reflect the conditional rules in the controls: disable a field forbidden by the current values, and mark as required a field required by them.
 - [ ] **Form view**: lay out the message of a file bound to no schema as a heading followed by the list of the two ways of binding it.
-- [ ] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar.
+- [x] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar. (2026-10-19)
 
 ## Collections
 

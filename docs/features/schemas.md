@@ -61,6 +61,8 @@ The keyword `required` inside the condition is needed, since a condition on an a
 
 A field holding the null value counts as unfilled. A schema may declare further unfilled values by the keyword `x-unfilled` at its root, such as the value `open` by which some projects mark a field left open deliberately, or the empty sequence `[]`. A declared value may be any JSON value, and a field counts as unfilled when its value equals one of them. Validation reports an unfilled required field as missing, following the [order of checks](validation.md#^unfilled-first). ^unfilled-values
 
+The form displays every unfilled value as an empty control, as the [form view](form-view.md#^unfilled-display) specifies. Therefore, no field may enumerate a value of `x-unfilled` among its answers, since the author could never choose that value. The form reports such a field as a defect of the schema.
+
 ## Keywords of ekphrasis
 
 Ekphrasis adds five keywords, each prefixed by `x-`:

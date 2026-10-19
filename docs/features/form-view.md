@@ -13,7 +13,7 @@ The form view displays an instance bound to a schema as a form, in which each fi
 
 The fields of the instance appear in the order of the schema. Each field occupies one row with three parts:
 
-- the label, taken from the keyword `title` or else from the key, and marked when the field is required. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written;
+- the label, taken from the keyword `title` or else from the key, and marked when the schema requires the field, or when a [conditional rule](#^conditional-controls) requires it under the current values. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written;
 - the control of its [kind](field-kinds.md), placed in a content area whose background sets it apart from the label;
 - a status marker, showing whether the field is filled, missing or invalid.
 
@@ -25,17 +25,36 @@ The text of the form can be selected and copied, including the labels, the schem
 
 ## Instructions and examples
 
-A help button beside each label displays the instructions and the examples of the field below that label, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. An empty control displays the first example as placeholder text.
+A help button beside each label displays the instructions and the examples of the field below that label, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. An empty control displays the first example as placeholder text, after the mark `—` of an [unfilled value](#^unfilled-display).
 
 ## Rendered values
 
 A field of kind `markdown-line`, `markdown` or `latex` displays its value rendered as in a note, as the [requirement on rendered content](../requirements.md#^rendered-content) demands. A click on the rendered value opens the control on the text of the value, and leaving the control renders the value again. The values render through the renderers of Obsidian, as the decision on [field rendering](../adr/field-rendering.md) records. Therefore, links, callouts and formulas display as in any note.
 
+## Unfilled values
+
+The control of a field displays no value when the field holds an [unfilled value](schemas.md#^unfilled-values): the null value, or any value of the keyword `x-unfilled`, such as `open`. Therefore, the author never reads an unfilled value as an answer. Each control marks its empty state by the sign `—`: ^unfilled-display
+
+- a text control displays `—` as placeholder text, followed by the first example of the field when the field has one;
+- a dropdown selects its empty option, labelled `—`, and lists no unfilled value among its options;
+- a toggle has no empty state, so it displays turned off and followed by `—`.
+
+The file keeps its unfilled value, and a cleared required field receives the first unfilled value of the schema, as specified for [cleared values](saving.md#^cleared-values).
+
 ## Issues
 
 Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A missing field takes the accent colour of the required marker, and an invalid value the colour of errors. A group containing an issue carries the number of its issues in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
 
-The top of the form counts the missing fields, the invalid values and the warnings of the instance. The top of the form also lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a field required by a condition outside the properties of the schema.
+The top of the form counts the missing fields, the invalid values and the warnings of the instance. The top of the form also lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a required property absent from the properties of its group. The same property is also reported as a defect of the schema.
+
+## Conditional rules
+
+Two rules of [validation](validation.md) also act on the controls: `required-when` and `forbidden-when`. Therefore, the author sees which fields the current values require or forbid, without discovering the rules by trial. Each rule acts while its condition holds under the current values: ^conditional-controls
+
+- a field required by a rule `required-when` is marked as required, like a field required by the schema;
+- an unfilled field forbidden by a rule `forbidden-when` is disabled and greyed, together with the fields inside it. A note below the field states the condition, such as *This field stays unfilled while `aim` equals `description`.*
+
+When a forbidden field still holds a value, the field stays editable, since a disabled control cannot clear its value. Its issue displays below its control, in the colour of its severity. Once its value is cleared, the field is disabled. The standard keywords `if`, `then`, `else` and `dependentRequired` change no control: their conditions are reported as issues only.
 
 ## Locked values
 
@@ -47,7 +66,14 @@ A key present in the file and absent from the schema displays as YAML text in a 
 
 ## Schema defects
 
-A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. Two defects found by [validation](validation.md) are reported in the same place: a malformed rule declaration, and a schema refused by the validator. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
+A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. Four defects found by [validation](validation.md) are reported in the same place:
+
+- a malformed rule declaration;
+- a schema refused by the validator;
+- a required property absent from the properties of its group and of the alternatives of its group, since the form displays no field for it. The property may be required by a rule `required-when`, or by a keyword `required` or `dependentRequired` applying to the group, such as one inside a branch `then`;
+- a value of the keyword `x-unfilled` enumerated by a field, through `enum`, `const` or a `oneOf` of `const` values, since the form displays that value as an empty control.
+
+The last two defects concern the schema alone, so each is reported once per field schema. Its path holds `[*]` for the items of a sequence, and `*` for the entries of a mapping. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
 
 ## Source view
 

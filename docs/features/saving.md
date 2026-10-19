@@ -22,11 +22,11 @@ A commit changes only the text of the edited value, as the [requirement on sourc
 - the scalar style and the quoting of the other values;
 - the blank lines and the indentation.
 
-The new text is spliced into the source range of the edited node, as the decision on [source-preserving writes](../adr/source-preserving-writes.md) records. A field written by its first edit is inserted after the preceding field in the order of the schema, with the indentation of its siblings. When no preceding field is present, the field is inserted before the following one. The absent groups that contain the field are inserted with the field, each indented by two spaces under its parent. When a field is written as a bare key, such as `restriction:`, its value is inserted after the colon, before any comment of that line. A block scalar written there keeps its header on the line of the key, and its lines start on the next line.
+The new text is spliced into the source range of the edited node, as the decision on [source-preserving writes](../adr/source-preserving-writes.md) records. A field written by its first edit is inserted after the preceding field in the order of the schema, with the indentation of its siblings. When no preceding field is present, the field is inserted before the following one. The absent groups that contain the field are inserted with the field, each indented by two spaces under its parent. When a field is written as a bare key, such as `restriction:`, its value is inserted after the colon, before any comment of that line. A block scalar written there keeps its header on the line of the key, and its lines start on the next line. When the group of the field holds an unfilled value, as in `check: open`, that value is erased. The field is written below the key of the group, in place of that value.
 
 ## Scalar styles
 
-An edited value keeps its scalar style whenever that style can represent the new value. A field of a single-line kind (`label`, `text`, `markdown-line` or `latex`) never keeps a block style: its value is written in the style selected below, plain whenever the test for a plain scalar holds. A quoted style represents one line only, since the YAML writer folds each line break of a quoted scalar into a blank line. A number or a boolean is always written plain. Otherwise, and for a string written for the first time, ekphrasis selects the style from the content of the value:
+An edited value keeps its scalar style whenever that style can represent the new value. A field of a single-line kind (`label`, `text`, `markdown-line` or `latex`) never keeps a block style. Its value is written in the style selected for a new string: plain, or single-quoted when the value holds a backslash or fails the test for a plain scalar. A quoted style represents one line only, since the YAML writer folds each line break of a quoted scalar into a blank line. A number or a boolean is always written plain. Otherwise, and for a string written for the first time, ekphrasis selects the style from the content of the value:
 
 | Content of the value | Scalar style |
 | --- | --- |
@@ -53,7 +53,7 @@ Rich content frequently holds seven constructions misread in a plain scalar, sin
 
 ## Cleared values
 
-Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place.
+Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place. ^cleared-values
 
 ## Refused commits
 

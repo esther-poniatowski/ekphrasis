@@ -28,3 +28,14 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Unfilled values of any JSON form under `x-unfilled`, such as the empty sequence `[]`.
 - Issues displayed at their fields, counted in the headings of groups and at the top of the form, with missing fields marked apart from invalid values.
 - Command *Validate instance*, with a notice counting the issues of each kind.
+- Schema defects for a required property absent from the properties of its group, and for a value of `x-unfilled` that a field enumerates.
+- Every unfilled value, the null value or a value of `x-unfilled`, displayed as an empty control marked `—`.
+- Conditional rules reflected in the controls: a field required by `required-when` is marked as required, and an unfilled field forbidden by `forbidden-when` is disabled, with a note stating the condition.
+
+### Changed
+
+- Message of a file bound to no schema, laid out as a heading followed by the list of the two ways of binding it.
+
+### Fixed
+
+- Value of a single-line kind written plain or single-quoted, instead of keeping the block style of the previous value.

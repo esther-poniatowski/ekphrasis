@@ -107,7 +107,7 @@ The checker `inline-markdown` recognizes a block construct by the start of a lin
 
 The key `key` of a checker of sequences is a field path written from each item, such as `symbol`. The checker `compare` orders numbers by value and texts character by character, so dates written as `YYYY-MM-DD` compare in time order; its operators `=` and `!=` also compare other values. Every predefined checker skips an unfilled value. Each checker also skips a value whose type differs from the type read by the checker, since the keyword `type` reports that value.
 
-A condition `when` names a field under the key `field`, and applies one test to its value: `equals: VALUE`, `in: [VALUES]`, `filled: true` or `unfilled: true`. A relational or conditional checker declared at the root of the schema acts on the whole instance, so its field paths start from the root.
+A condition `when` names a field under the key `field`, and applies one test to its value: `equals: VALUE`, `in: [VALUES]`, `filled: true` or `unfilled: true`. A relational or conditional checker declared at the root of the schema acts on the whole instance, so its field paths start from the root. The form view also reflects the checkers `required-when` and `forbidden-when` in its controls, as specified for [conditional rules](form-view.md#^conditional-controls).
 
 The predefined checkers read one instance only. A rule that reads other files, such as the resolution of references across records, is implemented as a [custom checker](custom-checkers.md).
 
