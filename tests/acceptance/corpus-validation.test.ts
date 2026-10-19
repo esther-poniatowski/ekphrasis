@@ -9,7 +9,9 @@
  *   computed here from the registry itself.
  * - geonexus (`config/checks.yaml`): each schema of a file type compiles, and each record bound
  *   to it by its path patterns is validated without failure; the issues found, and the records
- *   whose text fails to parse, are printed.
+ *   whose text fails to parse, are printed. The file types are read from the registry
+ *   `specs/vocabulary/file-types.yml`, or else from the key `glossary.file_types` of
+ *   `config/checks.yaml`, where geonexus declared them before 2026-10-16.
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -36,6 +38,7 @@ const validation = new ValidationService(new AjvSchemaValidator());
 
 const REGISTRY = "src/gnomon/data/requirements.yml";
 const CHECKS = "config/checks.yaml";
+const FILE_TYPES = "specs/vocabulary/file-types.yml";
 const has = (path: string): boolean =>
   corpusRoot !== undefined && existsSync(join(corpusRoot, path));
 
@@ -92,11 +95,14 @@ interface FileType {
 
 describe.skipIf(!has(CHECKS))(`geonexus corpus named by ${CORPUS_VARIABLE}`, () => {
   const root = corpusRoot ?? "";
+  const registry = readCorpusYaml(FILE_TYPES) as JsonValue;
   const checks = readCorpusYaml(CHECKS) as JsonValue;
-  const types =
-    isJsonObject(checks) && isJsonObject(checks["glossary"])
-      ? (checks["glossary"]["file_types"] as unknown as Record<string, FileType>)
-      : {};
+  const declared = isJsonObject(registry)
+    ? registry["file_types"]
+    : isJsonObject(checks) && isJsonObject(checks["glossary"])
+      ? checks["glossary"]["file_types"]
+      : undefined;
+  const types = (isJsonObject(declared) ? declared : {}) as unknown as Record<string, FileType>;
   const files = has(CHECKS) ? readYamlFiles(root) : [];
   const loader = new FileSchemaLoader(new DirectoryFileSource(root));
 
