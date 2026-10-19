@@ -11,7 +11,15 @@
 import type { JsonValue } from "../../schema/json";
 import { commonPrefixLength, hasWildcard } from "../instance-data";
 import { jsonEquals } from "../unfilled";
-import type { BoundRule, Checker, Finding, RuleArguments, RulePath } from "./declaration";
+import type {
+  BoundRule,
+  Checker,
+  Constraint,
+  Finding,
+  RuleArguments,
+  RuleContext,
+  RulePath,
+} from "./declaration";
 
 function code(value: JsonValue | undefined): string {
   return `\`${typeof value === "string" ? value : JSON.stringify(value ?? null)}\``;
@@ -142,8 +150,13 @@ function parseCondition(args: RuleArguments): Condition {
   }
 }
 
-/** Checker of a field that must be filled, or unfilled, whenever a condition holds. */
+/**
+ * Checker of a field that must be filled, or unfilled, whenever a condition holds. Its bound rule
+ * states a constraint at each field whose condition holds, and an issue at each such field that
+ * does not comply.
+ */
 function conditional(name: string, required: boolean): Checker {
+  const effect = required ? "required" : "forbidden";
   return {
     name,
     bind(args): BoundRule {
@@ -151,27 +164,25 @@ function conditional(name: string, required: boolean): Checker {
       const condition = parseCondition(args);
       requireBoundReference(args, field, condition.path);
       args.finish();
-      return ({ base, data }) =>
+      const constraints = ({ base, data }: RuleContext): Constraint[] =>
         data
           .pairs(base, field.segments, condition.path.segments)
-          .flatMap(({ subject, reference }): Finding[] => {
-            if (!condition.holds(data.at(reference), data.isFilled(reference))) return [];
-            if (data.isFilled(subject) === required) return [];
-            return required
-              ? [
-                  {
-                    path: subject,
-                    message: `This field is required when ${condition.statement}.`,
-                    missing: true,
-                  },
-                ]
-              : [
-                  {
-                    path: subject,
-                    message: `This field must stay unfilled when ${condition.statement}.`,
-                  },
-                ];
-          });
+          .filter(({ reference }) => condition.holds(data.at(reference), data.isFilled(reference)))
+          .map(({ subject }) => ({ path: subject, effect, condition: condition.statement }));
+      const check = (context: RuleContext): Finding[] =>
+        constraints(context).flatMap(({ path }): Finding[] => {
+          if (context.data.isFilled(path) === required) return [];
+          return required
+            ? [
+                {
+                  path,
+                  message: `This field is required when ${condition.statement}.`,
+                  missing: true,
+                },
+              ]
+            : [{ path, message: `This field must stay unfilled when ${condition.statement}.` }];
+        });
+      return Object.assign(check, { constraints });
     },
   };
 }

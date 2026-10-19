@@ -17,6 +17,7 @@ import {
   type BoundRule,
   type Checker,
   type CheckerEnvironment,
+  type Constraint,
   type RuleDeclaration,
 } from "./declaration";
 import { RELATIONAL_CHECKERS } from "./relational-checkers";
@@ -45,6 +46,8 @@ const IMPLICIT_RULES: Readonly<Partial<Record<FieldKind, { rejects: RegExp; mess
 
 export interface RuleReport {
   readonly issues: readonly Issue[];
+  /** Constraints of the conditional rules whose condition holds, in the order of the fields. */
+  readonly constraints: readonly Constraint[];
   /** Malformed declarations, each reported at the first field that declares it. */
   readonly problems: readonly SchemaIssue[];
 }
@@ -64,6 +67,7 @@ export function checkRules(
   // each declaration binds once, keyed by its value in the schema.
   const bindings = new Map<JsonValue, Binding>();
   const issues: Issue[] = [];
+  const constraints: Constraint[] = [];
   const problems = new Map<string, SchemaIssue>();
 
   const bind = (raw: JsonValue): Binding => {
@@ -95,7 +99,9 @@ export function checkRules(
         }
       } else if (filled) {
         const { declaration, rule } = binding;
-        for (const finding of rule({ base: field.path, data, environment })) {
+        const context = { base: field.path, data, environment };
+        constraints.push(...(rule.constraints?.(context) ?? []));
+        for (const finding of rule(context)) {
           issues.push(
             issue(finding.path, declaration.check, declaration.message ?? finding.message, {
               severity: declaration.severity,
@@ -116,5 +122,5 @@ export function checkRules(
   };
 
   visit(root);
-  return { issues, problems: [...problems.values()] };
+  return { issues, constraints, problems: [...problems.values()] };
 }

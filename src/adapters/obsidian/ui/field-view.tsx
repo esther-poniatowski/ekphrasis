@@ -1,14 +1,20 @@
 /**
  * Display of one field of the form model, through the control registered for its kind.
+ *
+ * A field forbidden by a rule `forbidden-when` under the current values is disabled while it is
+ * unfilled. A forbidden field that still holds a value stays editable, so the author can clear
+ * it, and its issue displays like any other; once cleared, the field is disabled.
  */
 import type { JSX } from "preact";
 import type { Field } from "../../../domain";
+import { useDisabling } from "./disabled-note";
 import { FieldRow } from "./field-row";
 import { useFormContext } from "./form-context";
 
 export function FieldView({ field }: { readonly field: Field }): JSX.Element {
   const { registry, commit, errors } = useFormContext();
-  const locked = field.lock !== null;
+  const disabled = useDisabling(field) !== null;
+  const locked = field.lock !== null || disabled;
   if (field.mismatch !== null) {
     return (
       <FieldRow field={field}>

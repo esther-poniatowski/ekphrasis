@@ -264,6 +264,20 @@
   color: var(--text-faint);
 }
 
+/* A field disabled by a rule `forbidden-when` is greyed, with the note stating its condition. */
+.ekphrasis-field[data-disabled] > .ekphrasis-field-label,
+.ekphrasis-field[data-disabled] > .ekphrasis-field-content,
+.ekphrasis-group[data-disabled] > .ekphrasis-group-heading,
+.ekphrasis-group[data-disabled] > .ekphrasis-group-body {
+  opacity: 0.5;
+}
+
+.ekphrasis-disabled-note {
+  grid-column: 1 / -1;
+  color: var(--text-faint);
+  font-size: var(--font-ui-small);
+}
+
 textarea.ekphrasis-control {
   resize: vertical;
   font-family: inherit;

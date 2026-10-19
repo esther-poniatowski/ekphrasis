@@ -186,6 +186,21 @@ describe("relational and conditional checkers", () => {
     ]);
   });
 
+  it("states the constraint of each condition that holds, whether or not the field complies", () => {
+    const constraints = (text: string): unknown =>
+      check(aims, text).constraints.map(({ path, effect }) => [path.join("."), effect]);
+    expect(constraints("task:\n  epistemic_aim: exploration\n")).toEqual([
+      ["task.tolerance", "forbidden"],
+    ]);
+    expect(
+      constraints("task:\n  epistemic_aim: modal-knowledge\n  proof_obligations: [p]\n"),
+    ).toEqual([["task.proof_obligations", "required"]]);
+    expect(constraints("task:\n  epistemic_aim: prediction\n")).toEqual([]);
+    expect(check(aims, "task:\n  epistemic_aim: description\n").constraints[0]?.condition).toBe(
+      "`task.epistemic_aim` is one of `description`, `exploration`",
+    );
+  });
+
   it("binds the wildcard of a shared prefix to the same item", () => {
     const schema = {
       type: "object",

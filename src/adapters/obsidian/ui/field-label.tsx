@@ -1,6 +1,7 @@
 /**
  * Label of a field, with the markers of a required field and of a locked value, and the note
- * that explains a lock.
+ * that explains a lock. A field is marked required when the schema requires it, or when a rule
+ * `required-when` requires it under the current values.
  *
  * The explanation of a lock is revealed by a click on its badge rather than by a tooltip: no
  * hover exists on touch devices, and no tooltip mechanism displayed on the badge inside Obsidian.
@@ -8,6 +9,7 @@
 import type { JSX } from "preact";
 import { useId, useState } from "preact/hooks";
 import type { Field, FieldLock } from "../../../domain";
+import { useFormContext } from "./form-context";
 
 const LOCK_NOTES: Readonly<Record<FieldLock, string>> = {
   alias: "This value comes from an anchor elsewhere in the file; edit it at its anchor.",
@@ -34,10 +36,12 @@ export function FieldLabel({
   readonly field: Field;
   readonly disclosure: LockDisclosure;
 }): JSX.Element {
+  const { constraints } = useFormContext();
+  const required = field.required || constraints.requires(field.id);
   return (
     <div class="ekphrasis-field-label">
       <span>{field.label}</span>
-      {field.required && (
+      {required && (
         <span class="ekphrasis-required" aria-label="required">
           *
         </span>

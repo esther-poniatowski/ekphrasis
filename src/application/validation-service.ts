@@ -26,6 +26,7 @@ import {
   undeclaredRequirements,
   UnfilledValues,
   type CheckerEnvironment,
+  type Constraint,
   type FormModel,
   type Issue,
   type JsonValue,
@@ -38,6 +39,11 @@ import type { InstanceValidator, SchemaValidator } from "./protocols";
 
 export interface ValidationReport {
   readonly issues: readonly Issue[];
+  /**
+   * Constraints of the conditional rules whose condition holds under the current values, so
+   * the form can mark a field required or disable it before any issue arises.
+   */
+  readonly constraints: readonly Constraint[];
   /**
    * Defects of the schema found while validating: a schema refused by the validator, a required
    * property absent from the properties, a value declared unfilled but admitted by a field, and
@@ -63,6 +69,7 @@ export class ValidationService {
     if (rootUnfilled && !("children" in model.root)) {
       return {
         issues: [issue([], "required", MISSING_MESSAGE, { missing: true })],
+        constraints: [],
         schemaIssues: defects,
       };
     }
@@ -81,6 +88,7 @@ export class ValidationService {
     const rules = checkRules(model.root, data, this.environment);
     return {
       issues: [...standard, ...withoutRepeatedMissing(standard, rules.issues)],
+      constraints: rules.constraints,
       schemaIssues: [...schemaIssues, ...rules.problems],
     };
   }

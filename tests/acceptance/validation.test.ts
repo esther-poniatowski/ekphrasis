@@ -121,6 +121,6 @@ describe("issues of the other bound fixtures", () => {
     ),
   )("reports no issue on %s", async (name) => {
     const state = await open(name, files.get(name) ?? "");
-    expect(state.report).toEqual({ issues: [], schemaIssues: [] });
+    expect(state.report).toMatchObject({ issues: [], schemaIssues: [] });
   });
 });

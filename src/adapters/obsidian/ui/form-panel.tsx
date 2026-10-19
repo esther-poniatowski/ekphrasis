@@ -11,7 +11,7 @@
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { FormReady, SessionSnapshot } from "../../../application";
-import { IssueIndex, type SchemaBinding, type SchemaIssue } from "../../../domain";
+import { ConstraintIndex, IssueIndex, type SchemaBinding, type SchemaIssue } from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
@@ -98,9 +98,10 @@ function EditableForm({
   readonly notice: JSX.Element | null;
 }): JSX.Element {
   const issues = IssueIndex.of(form.model, form.report.issues);
+  const constraints = new ConstraintIndex(form.report.constraints);
   return (
     <FormContext.Provider
-      value={{ registry, commit, commitDelay, errors: snapshot.errors, issues }}
+      value={{ registry, commit, commitDelay, errors: snapshot.errors, issues, constraints }}
     >
       <FormRoot form={form} issues={issues} notice={notice} />
     </FormContext.Provider>

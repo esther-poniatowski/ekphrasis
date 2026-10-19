@@ -6,6 +6,7 @@
 import type { JSX } from "preact";
 import type { MappingField } from "../../../../domain";
 import type { ControlProps } from "../control-registry";
+import { DisabledNote, forbidsItself, useDisabling } from "../disabled-note";
 import { FieldLabel, LockNote, useLockDisclosure } from "../field-label";
 import { useFormContext } from "../form-context";
 import { IssueCount, IssueList } from "../issue-list";
@@ -14,13 +15,20 @@ import { FieldList } from "./field-list";
 export function GroupSection({ field }: ControlProps<MappingField>): JSX.Element {
   const disclosure = useLockDisclosure();
   const { issues } = useFormContext();
+  const disabling = useDisabling(field);
   return (
-    <section class="ekphrasis-group" data-path={field.id} data-kind={field.kind}>
+    <section
+      class="ekphrasis-group"
+      data-path={field.id}
+      data-kind={field.kind}
+      data-disabled={forbidsItself(field, disabling) ? true : undefined}
+    >
       <div class="ekphrasis-group-heading">
         <FieldLabel field={field} disclosure={disclosure} />
         <IssueCount count={issues.countWithin(field.path)} />
       </div>
       <LockNote field={field} disclosure={disclosure} />
+      <DisabledNote field={field} constraint={disabling} />
       <IssueList issues={issues.at(field.id)} />
       <div class="ekphrasis-group-body">
         {field.kind === "alternatives" && <AlternativeLine field={field} />}

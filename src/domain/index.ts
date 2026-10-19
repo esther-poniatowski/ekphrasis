@@ -48,7 +48,9 @@ export {
   RuleDeclarationError,
   type Checker,
   type CheckerEnvironment,
+  type Constraint,
 } from "./validation/rules/declaration";
+export { ConstraintIndex } from "./validation/constraints";
 export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";
 export { undeclaredRequirements } from "./validation/undeclared-requirements";
 export { admittedUnfilledValues } from "./validation/admitted-unfilled";

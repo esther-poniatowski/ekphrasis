@@ -46,8 +46,25 @@ export interface Finding {
   readonly missing?: boolean;
 }
 
-/** A rule with its arguments read, ready to run on any field that declares it. */
-export type BoundRule = (context: RuleContext) => readonly Finding[];
+/**
+ * State that a conditional rule imposes on one field under the current values of the instance:
+ * the field must be filled, or must stay unfilled, whether or not it currently complies.
+ */
+export interface Constraint {
+  readonly path: YamlPath;
+  readonly effect: "required" | "forbidden";
+  /** Statement of the condition that holds, such as "`aim` equals `description`". */
+  readonly condition: string;
+}
+
+/**
+ * A rule with its arguments read, ready to run on any field that declares it. A conditional rule
+ * also states the constraints that hold under the current values, so the form can reflect them
+ * before any issue arises.
+ */
+export type BoundRule = ((context: RuleContext) => readonly Finding[]) & {
+  readonly constraints?: (context: RuleContext) => readonly Constraint[];
+};
 
 export interface Checker {
   readonly name: string;
