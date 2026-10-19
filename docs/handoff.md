@@ -11,13 +11,13 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The milestones *Bound form* and *Saving of scalars* are complete, and every step of both is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
+The milestones *Bound form*, *Saving of scalars* and *Validation* are complete, and every step of each is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
 
-The milestone *Validation* is implemented, and awaits its manual check. Four of its six steps are checked in the roadmap. The display of issues and the command *Validate instance* stay open until the [protocol of validation](../tests/manual/protocols/validation.md) passes inside Obsidian. The user runs it in the test vault, built by `npm run test-vault`. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
+The [protocol of validation](../tests/manual/protocols/validation.md) passed inside Obsidian on 2026-10-19, with every item ticked. Its section *Observations* holds remarks of the user on the presentation, triaged with the user before the next milestone. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
 
 The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
 
-The next step is the run of the protocol of validation. Once it passes, its two steps are checked, and the next milestone is *Collections*.
+The next milestone is *Collections*. Its first step is a decision of the user: whether an edit inside a flow collection keeps the flow form or converts the collection to block form.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
