@@ -9,6 +9,9 @@ export const isYamlExtension = (extension: string): boolean => YAML_EXTENSIONS.i
 /** Type of the view that hosts the form view and the source view of an instance. */
 export const INSTANCE_VIEW_TYPE = "ekphrasis-instance";
 
+/** Type of the side panel displaying the outline of the active form. */
+export const OUTLINE_VIEW_TYPE = "ekphrasis-outline";
+
 /**
  * Plugins known to register the YAML extensions, named in the notice of a refused registration:
  * Obsidian reports no owner, so the notice can only name the candidates.
@@ -20,4 +23,5 @@ export const ICONS = {
   instance: "file-code",
   formView: "layout-list",
   sourceView: "code-2",
+  outline: "list-tree",
 } as const;

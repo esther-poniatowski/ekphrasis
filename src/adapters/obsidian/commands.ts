@@ -1,9 +1,10 @@
 /**
  * Commands of the plugin.
  */
-import type { Plugin } from "obsidian";
-import { INSTANCE_VIEW_TYPE, isYamlExtension } from "./constants";
+import type { Plugin, Workspace } from "obsidian";
+import { INSTANCE_VIEW_TYPE, isYamlExtension, OUTLINE_VIEW_TYPE } from "./constants";
 import { InstanceView } from "./views/instance-view";
+import { OutlineView } from "./views/outline-view";
 
 /** Identifiers and names of the commands, shared with the notices that cite them. */
 export const COMMANDS = {
@@ -12,7 +13,24 @@ export const COMMANDS = {
   validate: { id: "validate-instance", name: "Validate instance" },
   collapseAll: { id: "collapse-all", name: "Collapse all" },
   expandAll: { id: "expand-all", name: "Expand all" },
+  showOutline: { id: "show-outline", name: "Show outline" },
+  searchFields: { id: "search-fields", name: "Search the fields" },
 } as const;
+
+/**
+ * Outline view of the workspace, opened in the right sidebar when no leaf holds one, and revealed
+ * so that its panel is visible.
+ */
+async function revealOutline(workspace: Workspace): Promise<OutlineView | null> {
+  let leaf = workspace.getLeavesOfType(OUTLINE_VIEW_TYPE)[0] ?? null;
+  if (leaf === null) {
+    leaf = workspace.getRightLeaf(false);
+    if (leaf === null) return null;
+    await leaf.setViewState({ type: OUTLINE_VIEW_TYPE, active: false });
+  }
+  await workspace.revealLeaf(leaf);
+  return leaf.view instanceof OutlineView ? leaf.view : null;
+}
 
 export function registerCommands(plugin: Plugin): void {
   const { workspace } = plugin.app;
@@ -52,6 +70,17 @@ export function registerCommands(plugin: Plugin): void {
       if (!checking) void view.validate();
       return true;
     },
+  });
+
+  plugin.addCommand({
+    ...COMMANDS.showOutline,
+    callback: () => void revealOutline(workspace),
+  });
+
+  // Opens the outline with the focus in its search, for the form of the active instance.
+  plugin.addCommand({
+    ...COMMANDS.searchFields,
+    callback: () => void revealOutline(workspace).then((view) => view?.focusSearch()),
   });
 
   // Fold or unfold every group and collection of the form of the active instance.

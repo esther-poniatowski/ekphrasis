@@ -18,7 +18,7 @@ import {
   YamlSourceEditor,
 } from "../../infrastructure";
 import { COMMANDS, registerCommands } from "./commands";
-import { INSTANCE_VIEW_TYPE, YAML_EXTENSIONS } from "./constants";
+import { INSTANCE_VIEW_TYPE, OUTLINE_VIEW_TYPE, YAML_EXTENSIONS } from "./constants";
 import { refusalNotice, registerExtensions } from "./extension-registration";
 import { OBSIDIAN_CHECKER_ENVIRONMENT } from "./formula-renderer";
 import { EkphrasisSettingTab, type SettingsHost } from "./settings-tab";
@@ -26,6 +26,7 @@ import { createDefaultRegistry } from "./ui/default-registry";
 import { VaultFileSource } from "./vault-file-source";
 import { InstanceView } from "./views/instance-view";
 import { OutlineChannel } from "./views/outline-channel";
+import { OutlineView } from "./views/outline-view";
 
 /** Delay after the last change of the settings before the open views are rebuilt. */
 const SETTINGS_REFRESH_DELAY_MS = 500;
@@ -67,6 +68,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       INSTANCE_VIEW_TYPE,
       (leaf) => new InstanceView(leaf, { forms, commits, registry, settings, outline }),
     );
+    this.registerView(OUTLINE_VIEW_TYPE, (leaf) => new OutlineView(leaf, outline));
 
     const refused = registerExtensions(YAML_EXTENSIONS, (extensions) =>
       this.registerExtensions(extensions, INSTANCE_VIEW_TYPE),

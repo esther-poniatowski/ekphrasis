@@ -691,3 +691,119 @@ td[data-revealed] {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* Outline: one line per entry, with the mark of its issues and the count within a section. */
+.ekphrasis-outline-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-2);
+  margin-bottom: var(--size-4-2);
+}
+
+.ekphrasis-outline-search {
+  width: 100%;
+}
+
+.ekphrasis-outline-toggle {
+  display: flex;
+  gap: var(--size-2-2);
+  align-items: center;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-outline-list,
+.ekphrasis-outline-results {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ekphrasis-outline-list .ekphrasis-outline-list {
+  margin-left: var(--size-4-2);
+  padding-left: var(--size-4-1);
+  border-left: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-outline-entry {
+  display: flex;
+  gap: var(--size-2-2);
+  align-items: center;
+  border-radius: var(--radius-s);
+}
+
+.ekphrasis-outline-entry[data-focused] {
+  background-color: var(--background-modifier-active-hover);
+}
+
+.ekphrasis-outline-fold,
+.ekphrasis-outline-fold:hover,
+.ekphrasis-outline-name,
+.ekphrasis-outline-name:hover,
+.ekphrasis-outline-result,
+.ekphrasis-outline-result:hover {
+  height: auto;
+  padding: var(--size-2-1) 0;
+  border: none;
+  box-shadow: none;
+  background: none;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ekphrasis-outline-fold {
+  flex: 0 0 1em;
+  color: var(--text-faint);
+}
+
+.ekphrasis-outline-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ekphrasis-outline-name:hover {
+  color: var(--text-accent);
+}
+
+.ekphrasis-outline-mark {
+  flex: 0 0 auto;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+}
+
+.ekphrasis-outline-mark.mod-invalid {
+  background-color: var(--text-error);
+}
+
+.ekphrasis-outline-mark.mod-missing {
+  background-color: var(--text-accent);
+}
+
+.ekphrasis-outline-mark.mod-warning {
+  background-color: rgb(var(--color-orange-rgb));
+}
+
+.ekphrasis-outline-count {
+  margin-left: auto;
+  padding: 0 var(--size-4-1);
+  border-radius: var(--radius-s);
+  color: var(--text-error);
+  background-color: rgba(var(--color-red-rgb), 0.1);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-outline-result {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ekphrasis-outline-trail,
+.ekphrasis-outline-empty {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
