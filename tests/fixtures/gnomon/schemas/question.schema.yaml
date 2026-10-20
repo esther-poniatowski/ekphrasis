@@ -1,15 +1,24 @@
 # Synthetic schema of a gnomon question record, written for ekphrasis: gnomon itself declares
 # its records by templates and Python checkers, without a JSON Schema.
-# constructs: nested groups, choices as `enum` and as `oneOf` of `const` values with titles,
-# records with nested flow sequences and flow mappings, a map keyed by dotted field paths with
-# values admitted by `additionalProperties`, a nullable field, the unfilled values `open`, `[]`
-# and `{}`, the conditional rule of gnomon in which the epistemic aim decides the required fields
-# (its entries for the question record, from `by_aim` of `requirements.yml`), written with
-# `required-when` at the root
+# constructs: nested groups, choices as `enum` and as `oneOf` of `const` values with titles and
+# descriptions, records with nested flow sequences and flow mappings, a map keyed by dotted field
+# paths with values admitted by `additionalProperties`, a nullable field, the unfilled values
+# `open`, `[]` and `{}`, the conditional rule of gnomon in which the epistemic aim decides the
+# required fields (its entries for the question record, from `by_aim` of `requirements.yml`),
+# written with `required-when` at the root
+# guidance: every key of the question template of gnomon, with its admitted values, and with
+# instructions and examples that restate the comments and the placeholders of the template
 
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: question.schema.yaml
 title: Question
+description: >-
+  A question record fixes the question before any candidate answer is evaluated. The method of
+  each part is stated in the epistemology notes of gnomon: subject of inquiry, contrast, domain,
+  epistemic task, modal strength, admissible explanans and virtues; symbols and expressions follow
+  the note of the same name. A quantity of another record is named by the identifier of that
+  record and the symbol of the quantity, as in `system.TOPIC#SYMBOL`. Every placeholder of the
+  template is replaced, and a closed field may stay unfilled.
 type: object
 required: [title, statement, id, type, status, subject, task]
 x-unfilled: [open, [], {}]
@@ -33,14 +42,20 @@ properties:
   title:
     type: string
     x-kind: markdown-line
+    description: Short name of the question.
+    examples: ["Onset of sustained oscillation in a driven damped pendulum"]
   statement:
     type: string
     x-kind: markdown
-    description: The question in full sentences, with its contrast and its domain.
+    description: >-
+      The question in words. It restates the fields from which `gnomon render` composes the
+      same question: the subject, the contrast, the domain and the task.
     examples: ["Which bounds on the forcing are sufficient for a sustained oscillation?"]
   id:
     type: string
     x-kind: label
+    description: Identifier of the record, written `quest.TOPIC.NAME`.
+    examples: [quest.pendulum.sustained-oscillation]
   type:
     const: question
   status:
@@ -49,37 +64,99 @@ properties:
     type: object
     required: [target_system, phenomenon]
     properties:
-      target_system: { type: string, x-kind: label }
-      phenomenon: { type: string, x-kind: label }
+      target_system:
+        type: string
+        x-kind: label
+        description: Identifier of the target-system record, written `system.TOPIC`.
+        examples: [system.pendulum-driven-damped]
+      phenomenon:
+        type: string
+        x-kind: label
+        description: Identifier of the phenomenon record, written `phen.TOPIC.NAME`.
+        examples: [phen.pendulum.sustained-oscillation]
       contrast:
         type: object
         properties:
           locus: { enum: [other-outcome, other-system, other-condition, none] }
           foil_set:
             type: array
+            description: >-
+              Alternatives to the explanandum. By default, the foils are the other values of the
+              explanandum variable.
             items:
               type: object
               properties:
-                name: { type: string }
-                symbol: { type: string, x-kind: label }
-                expression: { type: array, items: { type: string, x-kind: latex } }
-                reading: { type: string, x-kind: markdown-line }
-          compatibility: { enum: [derived, stipulated] }
+                name: { type: string, examples: [decay to rest] }
+                symbol: { type: string, x-kind: label, examples: [decay] }
+                expression:
+                  type: array
+                  items: { type: string, x-kind: latex, examples: ["A <= 0"] }
+                reading:
+                  type: string
+                  x-kind: markdown-line
+                  description: Meaning of the alternative, beyond its name and its expression.
+                  examples: ["The amplitude decreases to zero, as without forcing."]
+          compatibility:
+            enum: [derived, exclusive, compatible]
+            description: >-
+              Follows from the locus: `exclusive` for the locus `other-outcome`, and
+              `compatible` otherwise.
           foil_status: { enum: [observed, counterfactual, not-applicable] }
       domain:
         type: object
+        description: >-
+          Restrictions of the a priori specification only. The assumptions of the analysis
+          belong to the answer.
         properties:
           restrictions:
             type: array
+            description: One entry per restriction that the question imposes on the specification.
             items:
               type: object
               properties:
-                name: { type: string }
-                of: { type: string, x-kind: label }
-                restriction: { type: [string, "null"] }
-                values: { type: string }
-                justification: { type: string, x-kind: markdown-line }
-          limit: { type: [string, "null"] }
+                name:
+                  type: string
+                  description: Name of the restriction, required when no quantity names the entry.
+                  examples: [small damping]
+                of:
+                  type: string
+                  x-kind: label
+                  description: >-
+                    Quantity held, written `system.TOPIC#SYMBOL`. The key is omitted when no
+                    single quantity carries the restriction.
+                  examples: ["system.pendulum-driven-damped#gamma"]
+                restriction:
+                  type: [string, "null"]
+                  enum: [clamped, restricted, initial, stationary, without-event]
+                  description: >-
+                    Kind of the restriction, set only when the entry names a variable, since a
+                    parameter is already fixed.
+                values:
+                  type: string
+                  description: Set to which the quantity is held, written over declared symbols.
+                  examples: ["(0, 0.1)"]
+                expression:
+                  type: string
+                  description: >-
+                    Expression over declared symbols, written in place of the values when no
+                    single quantity carries the restriction.
+                  examples: ["gamma < omega_0"]
+                justification:
+                  type: string
+                  x-kind: markdown-line
+                  examples: ["The bounds are sought for weak damping only."]
+          limit:
+            type: object
+            description: Filled only when the question concerns the limit system itself.
+            properties:
+              expression:
+                type: string
+                description: Limit taken, written `SYMBOL -> LIMIT VALUE`.
+                examples: ["gamma -> 0"]
+              justification:
+                type: string
+                x-kind: markdown-line
+                examples: ["The question concerns the undamped pendulum."]
   task:
     type: object
     required: [epistemic_aim]
@@ -92,38 +169,125 @@ properties:
           - { const: explanation, title: Explanation }
           - { const: modal-knowledge, title: Modal knowledge }
           - { const: model-knowledge, title: Model knowledge }
-      requested_relation: { enum: [necessary, sufficient, both] }
-      modal_strength: { enum: [necessary, possible] }
+      requested_relation:
+        enum:
+          - causal-intervention
+          - causal-mechanistic
+          - constitutive
+          - functional
+          - nomological
+          - statistical
+          - mathematical
+          - not-applicable
+      modal_strength: { enum: [actual, possible, necessary] }
       admissible_explanans:
         type: object
+        description: Optional. When it is left unfilled, proportionality bounds the answer.
         properties:
-          compositional: { type: array, items: { type: string, x-kind: label } }
-          substrate: { enum: [dependent, independent] }
-          justification: { type: string, x-kind: markdown-line }
+          compositional:
+            type: array
+            description: >-
+              Constituent kinds or index sets whose parts may enter the explanans. The sequence
+              stays empty for the system as a whole.
+            items:
+              type: string
+              x-kind: label
+              examples: ["system.pendulum-driven-damped#bob"]
+          substrate: { enum: [specific, independent, mapping] }
+          justification:
+            type: string
+            x-kind: markdown-line
+            description: >-
+              Why the answer is bound to these variables, with the shortfall of an answer that
+              draws on other variables.
+            examples: ["The bounds concern the forcing and the damping only."]
       required_accuracy:
         type: object
         properties:
-          standard: { enum: [qualitative, numeric-bound] }
+          standard:
+            enum: [qualitative, order-of-magnitude, numeric-bound, structural-only, not-applicable]
           outputs_to_match:
+            type: array
+            description: Outputs named by their target side only; the answer reproduces each output.
+            items:
+              type: object
+              properties:
+                target:
+                  type: string
+                  x-kind: label
+                  examples: ["phen.pendulum.sustained-oscillation#A"]
+                tolerance:
+                  type: object
+                  description: Omitted when the standard is `qualitative` or `structural-only`.
+                  properties:
+                    metric:
+                      type: string
+                      x-kind: latex
+                      description: Measure of the difference between `answer` and `target`.
+                      examples: ['\left| A_{\mathrm{answer}} - A_{\mathrm{target}} \right|']
+                    bound:
+                      type: string
+                      x-kind: latex
+                      examples: ["10^{-2}"]
+                justification:
+                  type: string
+                  x-kind: markdown-line
+                  examples: ["The onset amplitude is the measured output of the phenomenon."]
+          structures_to_match:
             type: array
             items:
               type: object
               properties:
-                target: { type: string, x-kind: label }
-                tolerance:
-                  type: object
-                  properties:
-                    metric: { type: string, x-kind: latex }
-                    bound: { type: string, x-kind: latex }
-                justification: { type: string, x-kind: markdown-line }
-      proof_obligations: { type: array, items: { type: string } }
+                target:
+                  type: string
+                  x-kind: label
+                  examples: ["phen.pendulum.sustained-oscillation#A"]
+                justification:
+                  type: string
+                  x-kind: markdown-line
+                  examples: ["The periodic orbit is the structure of the phenomenon."]
+      proof_obligations:
+        type: array
+        description: Filled when the answer must derive a statement rather than match a measurement.
+        items:
+          type: object
+          properties:
+            name: { type: string, examples: [sufficiency of the bound] }
+            reading:
+              type: string
+              x-kind: markdown-line
+              examples: ["A forcing above the bound sustains a periodic oscillation."]
+            antecedent:
+              type: array
+              items: { type: string, x-kind: latex, examples: ["F / \\gamma > c"] }
+            consequent:
+              type: array
+              items: { type: string, x-kind: latex, examples: ["A > 0"] }
   virtues:
     type: array
+    description: One entry per virtue that the inquiry weighs, under any epistemic aim.
     items:
       type: object
       properties:
-        virtue: { enum: [generality, simplicity, precision] }
-        standing: { enum: [required, preferred] }
+        virtue:
+          enum:
+            - unification
+            - generality
+            - robustness
+            - intelligibility
+            - structural-transparency
+            - economy
+            - tractability
+        standing:
+          oneOf:
+            - { const: constitutive, description: The product test applies the virtue. }
+            - { const: preferred, description: The appraisal ranks the answers on the virtue. }
+        justification:
+          type: string
+          x-kind: markdown-line
+          description: >-
+            Why the inquiry weighs this virtue, with the shortfall of an answer that lacks it.
+          examples: ["A bound valid for every forcing frequency serves the comparison of systems."]
         check:
           type: object
           properties:
@@ -132,4 +296,7 @@ properties:
             note: { type: string, x-kind: latex }
   maturity:
     type: object
+    description: >-
+      Optional. One maturity per field, keyed by its field path. The status of the record applies
+      to every field left out.
     additionalProperties: { enum: [provisional, stabilized] }

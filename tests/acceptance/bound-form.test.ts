@@ -66,8 +66,10 @@ describe("bound form on the fixtures", () => {
 
       const scalars = fields.filter((field) => isScalarKind(field.kind));
       for (const field of scalars) expect(registry.hasControl(field.kind)).toBe(true);
+      // A group or a collection holding an unfilled scalar displays it as its empty state.
+      const displaying = fields.filter((field) => isScalarKind(field.kind) || field.unfilled);
       const displayed = new Set(
-        scalars.flatMap((field) => (field.node?.range ? [field.node.range.start] : [])),
+        displaying.flatMap((field) => (field.node?.range ? [field.node.range.start] : [])),
       );
       expect(scalarOffsets(parser.parse(text)).filter((offset) => !displayed.has(offset))).toEqual(
         [],

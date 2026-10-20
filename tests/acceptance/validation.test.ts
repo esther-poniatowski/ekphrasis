@@ -86,7 +86,7 @@ describe("conditional rule of gnomon on the question fixture", () => {
   it("reports every field that the aim requires, and reports each once", async () => {
     const text = withAim("explanation")
       .replace(/ {4}foil_set:[\s\S]*?(?= {4}compatibility)/, "")
-      .replace("requested_relation: open", "requested_relation: both");
+      .replace("requested_relation: open", "requested_relation: nomological");
     expect(issuesOf(await open(QUESTION, text))).toEqual([
       ["subject.contrast.foil_set", "required-when", true],
     ]);

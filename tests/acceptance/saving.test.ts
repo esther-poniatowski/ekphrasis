@@ -7,7 +7,8 @@
  * Each commit is either written or refused because its value is locked, or because it would
  * remove a comment inside a flow collection. A written commit keeps every comment, and changes
  * no byte outside the lines of its entry; an absent field is written by an insertion, which
- * leaves the old text whole.
+ * leaves the old text whole, except below a group holding an unfilled value, whose entry is
+ * rewritten since the unfilled value is erased.
  *
  * Every collection of every bound fixture also receives structural commits, each on the original
  * text: each item removed, and moved one position up and down; the next item inserted by the edit
@@ -21,7 +22,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { CommitService, DEFAULT_SETTINGS, FormService } from "../../src/application";
-import { REFUSALS } from "../../src/domain";
+import { fieldChain, REFUSALS } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
 import { DirectoryFileSource, FIXTURE_BINDINGS, FIXTURE_RULES } from "../support/fixture-vault";
 import {
@@ -90,6 +91,17 @@ describe("golden test of byte preservation", () => {
             failures.push(`${label}: comments changed`);
           }
           if (field.node === null) {
+            const chain = fieldChain(state.model.root, field.path) ?? [];
+            const present = chain.findLastIndex((ancestor) => ancestor.node !== null);
+            const holder = chain[present];
+            if (holder?.node?.kind === "scalar" && present > 0) {
+              // The unfilled value of the group is erased, and the field written below its key.
+              const [start, end] = entryRegion(text, holder, chain[present - 1] ?? null);
+              if (!changesOnly(text, after, start, end)) {
+                failures.push(`${label}: changed bytes outside the entry of its group`);
+              }
+              continue;
+            }
             const at = firstDifference(text, after);
             if (!changesOnly(text, after, at, at)) failures.push(`${label}: not an insertion`);
             continue;
