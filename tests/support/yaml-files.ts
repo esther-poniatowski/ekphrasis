@@ -3,11 +3,14 @@
  * of the consumer projects.
  */
 import { readdirSync, readFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** Folder of the synthetic fixtures reproducing the constructs of the consumer projects. */
-export const FIXTURES_ROOT = fileURLToPath(new URL("../fixtures", import.meta.url));
+/**
+ * Folder of the synthetic fixtures reproducing the constructs of the consumer projects. The path is
+ * joined rather than resolved as a URL, since a simulated DOM replaces the class `URL`.
+ */
+export const FIXTURES_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "fixtures");
 
 /**
  * Environment variable naming the folder of the corpus. The corpus holds records of the consumer
