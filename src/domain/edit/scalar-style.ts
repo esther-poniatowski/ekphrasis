@@ -44,6 +44,10 @@ const FLOW_INDICATORS = /[,[\]{}]/;
 /** Characters other than the tab and the line feed, which no quoted single line can hold. */
 const CONTROL = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f﻿]/;
 
+/** Whether `style` writes a quoted scalar. */
+export const isQuotedStyle = (style: ScalarStyle): boolean =>
+  style === "single-quoted" || style === "double-quoted";
+
 /** Whether `text` is read back as the same string when written plain at a scalar of `context`. */
 export function isPlainSafe(text: string, context: ScalarContext): boolean {
   if (text === "" || text.trim() !== text) return false;

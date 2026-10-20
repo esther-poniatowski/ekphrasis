@@ -6,8 +6,9 @@
  * written in the style that the domain selects for a new value, at their position; the YAML
  * writer of the infrastructure produces the text of each scalar.
  */
-import type { MappingEntry, ScalarStyle, ScalarValue, YamlNode } from "../model";
+import type { MappingEntry, ScalarNode, ScalarStyle, ScalarValue, YamlNode } from "../model";
 import {
+  isQuotedStyle,
   selectScalarStyle,
   textOfValue,
   type ScalarContext,
@@ -17,6 +18,11 @@ import { INDENT_STEP, scalarPart, type ScalarText, type TextPart } from "./sourc
 
 // --- New values ----------------------------------------------------------------------------------
 
+/**
+ * New scalar holding `value`. Its style `plain` stands for the style selected from the content of
+ * the value; a quoted style, assigned by the siblings of the scalar, is kept when it represents
+ * the value.
+ */
 export const newScalar = (value: ScalarValue): YamlNode => ({
   kind: "scalar",
   value,
@@ -67,6 +73,10 @@ export function scalarText(
 
 const isBlockStyle = (style: ScalarStyle): boolean => style === "literal" || style === "folded";
 
+/** Style that the new scalar `node` keeps when it represents the value: its quoted style. */
+const keptStyle = (node: ScalarNode): ScalarStyle | null =>
+  isQuotedStyle(node.style) ? node.style : null;
+
 /** Text of the null value inside a flow collection, where no empty value can stand. */
 const FLOW_NULL: ScalarText = { text: "null", style: "plain", context: "flow", indent: 0 };
 
@@ -114,7 +124,8 @@ function valueAfter(value: YamlNode, indent: number, context: "after-key" | "blo
       if (value.value === null) return ["\n"];
       // The writer indents the lines of a block scalar after a key one step beyond the key; an
       // item scalar receives the column of its content directly.
-      const scalar = scalarText(value.value, context, null, context === "block" ? nested : indent);
+      const column = context === "block" ? nested : indent;
+      const scalar = scalarText(value.value, context, keptStyle(value), column);
       return [" ", scalarPart(scalar), ...(isBlockStyle(scalar.style) ? [] : ["\n"])];
     }
     case "mapping": {
@@ -150,7 +161,7 @@ export function flowText(value: YamlNode): TextPart[] {
     case "scalar":
       return value.value === null
         ? [scalarPart(FLOW_NULL)]
-        : [scalarPart(scalarText(value.value, "flow", null, 0))];
+        : [scalarPart(scalarText(value.value, "flow", keptStyle(value), 0))];
     case "mapping":
       return [
         "{",

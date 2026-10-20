@@ -39,7 +39,7 @@ import { UnfilledValues } from "../validation/unfilled";
 import { CollectionEdits, Unplaceable } from "./collection-edits";
 import { expectedTree, type CommitEffect } from "./expected-tree";
 import type { ScalarContext, WrittenValue } from "./scalar-style";
-import { childWithSiblingForms, entryWithSiblingForms } from "./sibling-form";
+import { SiblingForms } from "./sibling-form";
 import { INDENT_STEP, scalarPart, splice, type SourceEdit, type TextPart } from "./source-edit";
 import { SourceText } from "./source-text";
 import {
@@ -164,12 +164,14 @@ const isBlockStyle = (style: ScalarStyle): boolean => style === "literal" || sty
 
 class CommitPlanner {
   private readonly collections: CollectionEdits;
+  private readonly siblings: SiblingForms;
 
   constructor(
     private readonly model: FormModel,
     private readonly source: SourceText,
   ) {
     this.collections = new CollectionEdits(source);
+    this.siblings = new SiblingForms(new UnfilledValues(model.unfilled));
   }
 
   plan(commit: Commit): CommitPlan {
@@ -217,7 +219,8 @@ class CommitPlanner {
       const insertion = this.insertBelow(chain, [], newScalar(written));
       return { ...insertion, path: field.path, effect: { kind: "set", value: written } };
     }
-    const { edits, effect } = this.change(field, parent, node, target);
+    const grandparent = chain.at(-3)?.node ?? null;
+    const { edits, effect } = this.change(field, parent, grandparent, node, target);
     return { edits, path: field.path, effect, itemChanges: [] };
   }
 
@@ -235,9 +238,11 @@ class CommitPlanner {
     return unfilled === null ? { kind: "empty" } : { kind: "value", value: unfilled };
   }
 
+  /** Edits writing `target` at the token `node` of `field`, a child of `parent` in `grandparent`. */
   private change(
     field: ScalarField,
     parent: Field | null,
+    grandparent: YamlNode | null,
     node: ScalarNode,
     target: Target,
   ): { edits: SourceEdit[]; effect: CommitEffect } {
@@ -260,7 +265,8 @@ class CommitPlanner {
         const effect: CommitEffect = { kind: "set", value: target.value };
         if (range.start === range.end) {
           if (entry === null || context === "flow") return refuse(REFUSALS.unlocated);
-          return { edits: this.fill(entry, target.value, indent), effect };
+          const style = this.siblings.styleAt(entry.key, mapping, grandparent);
+          return { edits: this.fill(entry, target.value, style, indent), effect };
         }
         // A single-line kind drops a block style, so its one line is written plain or quoted.
         const current =
@@ -287,11 +293,19 @@ class CommitPlanner {
     }
   }
 
-  /** Writes `value` into the empty value of `entry`, after the colon of its key. */
-  private fill(entry: MappingEntry, value: WrittenValue, indent: number): SourceEdit[] {
+  /**
+   * Writes `value` into the empty value of `entry`, after the colon of its key, in the quoted
+   * style `style` of its siblings when that style represents the value.
+   */
+  private fill(
+    entry: MappingEntry,
+    value: WrittenValue,
+    style: ScalarStyle | null,
+    indent: number,
+  ): SourceEdit[] {
     const keyRange = entry.keyRange ?? refuse(REFUSALS.unlocated);
     const colon = this.source.colonAfter(keyRange.end) ?? refuse(REFUSALS.unlocated);
-    const scalar = scalarText(value, "after-key", null, indent);
+    const scalar = scalarText(value, "after-key", style, indent);
     const at = colon + 1;
     if (!isBlockStyle(scalar.style)) return [splice(at, at, [" ", scalarPart(scalar)])];
     // The header joins the key, before any comment of its line; the body starts on the next line.
@@ -388,15 +402,10 @@ class CommitPlanner {
     let edits: SourceEdit[];
     if (node?.kind === "mapping" && typeof first === "string" && "children" in owner) {
       const parent = chain[anchor - 1]?.node ?? null;
-      edits = this.insertEntry(
-        owner,
-        node,
-        first,
-        entryWithSiblingForms(first, value, node, parent),
-      );
+      edits = this.insertEntry(owner, node, first, this.siblings.entry(first, value, node, parent));
     } else if (node?.kind === "sequence" && typeof first === "number") {
       if (first > node.items.length) return refuse(REFUSALS.position);
-      const item = childWithSiblingForms(value, node);
+      const item = this.siblings.child(value, node);
       edits = node.flow
         ? this.collections.insertFlow(node, first, flowText(item))
         : this.collections.insertBlock(node, first, (indent, indentFirst) =>
@@ -470,7 +479,7 @@ class CommitPlanner {
     if (anchor === 0) {
       if (value.kind !== "mapping") return refuse(REFUSALS.unlocated);
       const at = this.source.length;
-      const root = childWithSiblingForms(value, null);
+      const root = this.siblings.child(value, null);
       return [splice(at, at, [this.collections.lineBreakBefore(at), ...lines(root, 0)])];
     }
     const owner = chain[anchor];
@@ -485,7 +494,7 @@ class CommitPlanner {
     const entry =
       parent.entries.find((candidate) => candidate.key === key) ?? refuse(REFUSALS.unlocated);
     const keyRange = entry.keyRange ?? refuse(REFUSALS.unlocated);
-    const shaped = entryWithSiblingForms(key, value, parent, chain[anchor - 2]?.node ?? null);
+    const shaped = this.siblings.entry(key, value, parent, chain[anchor - 2]?.node ?? null);
     const flow = (shaped.kind === "mapping" || shaped.kind === "sequence") && shaped.flow;
     if (flow && range.start < range.end && !isBlockStyle(node.style)) {
       return [splice(range.start, range.end, flowText(shaped))];
@@ -495,7 +504,7 @@ class CommitPlanner {
       return [splice(colon + 1, colon + 1, [" ", ...flowText(shaped)])];
     }
     // A block scalar holding the unfilled value spans lines of its own, so the block form is kept.
-    const block = flow ? childWithSiblingForms(value, parent) : shaped;
+    const block = flow ? this.siblings.child(value, parent) : shaped;
     const erased = range.start === range.end ? [] : this.erase(node, range);
     const at = this.entryEnd(entry);
     const indent = this.source.column(keyRange.start) + INDENT_STEP;

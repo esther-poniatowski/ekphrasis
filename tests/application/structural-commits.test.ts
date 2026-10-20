@@ -369,3 +369,63 @@ describe("form of a new collection under a key of a block mapping", () => {
     );
   });
 });
+
+describe("quoting style of a new string among its siblings", () => {
+  const rowCount = (text: string): number => text.match(/- name/g)?.length ?? 0;
+  const name = (text: string, row: number, value = "w x"): string =>
+    written(text, { path: ["rows", row, "name"], value });
+
+  it.each([
+    [
+      "every sibling is double-quoted",
+      'rows:\n  - name: "a"\n  - name: "b"\n',
+      'rows:\n  - name: "a"\n  - name: "b"\n  - name: "w x"\n',
+    ],
+    [
+      "every sibling is single-quoted",
+      "rows:\n  - name: 'a'\n",
+      "rows:\n  - name: 'a'\n  - name: 'w x'\n",
+    ],
+    [
+      "the other siblings hold the null value or an unfilled value",
+      'rows:\n  - name: "a"\n  - name:\n  - name: open\n',
+      'rows:\n  - name: "a"\n  - name:\n  - name: open\n  - name: "w x"\n',
+    ],
+  ])("writes a new row in the quoting style of its siblings when %s", (_, text, expected) => {
+    expect(name(text, rowCount(text))).toBe(expected);
+  });
+
+  it.each([
+    ["the styles are mixed", "rows:\n  - name: \"a\"\n  - name: 'b'\n"],
+    ["a sibling is plain", 'rows:\n  - name: "a"\n  - name: b\n'],
+    ["no sibling holds a filled value", "rows:\n  - name:\n"],
+  ])("selects the style from the content when %s", (_, text) => {
+    expect(name(text, rowCount(text))).toBe(`${text}  - name: w x\n`);
+  });
+
+  it("falls back to the style of the content when the shared style cannot represent the value", () => {
+    const text = 'rows:\n  - name: "a"\n';
+    expect(name(text, 1, "line one\nline two")).toBe(
+      `${text}  - name: |-\n      line one\n      line two\n`,
+    );
+  });
+
+  it("fills an empty value in the quoting style of its siblings", () => {
+    const text = 'rows:\n  - name: "a"\n  - name: # later\n';
+    expect(name(text, 1)).toBe('rows:\n  - name: "a"\n  - name: "w x" # later\n');
+  });
+
+  it("writes a new item of a sequence in the quoting style of the other items", () => {
+    expect(
+      written("tags: ['a', 'b']\n", { kind: "insert-item", path: ["tags"], index: 2, value: "c" }),
+    ).toBe("tags: ['a', 'b', 'c']\n");
+    expect(written('tags:\n  - "a"\n', { path: ["tags", 1], value: "c" })).toBe(
+      'tags:\n  - "a"\n  - "c"\n',
+    );
+  });
+
+  it("keeps the style of an edited token, whatever its siblings", () => {
+    const text = 'rows:\n  - name: "a"\n  - name: b\n';
+    expect(name(text, 1, "c")).toBe('rows:\n  - name: "a"\n  - name: c\n');
+  });
+});

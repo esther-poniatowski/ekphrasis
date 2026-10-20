@@ -97,14 +97,15 @@ describe("keyed records of a geonexus glossary", () => {
         "    label: phase lag",
         "    gloss: the delay of the response behind the forcing",
         "    category: noun",
-        "    frames: [~ at resonance, '~ of {system}']",
+        "    frames: ['~ at resonance', '~ of {system}']",
         "    confusions:",
         "      - term: damping-ratio",
         "        distinction: the lag is an angle whereas the ratio is a number",
       ].join("\n"),
     );
     // The new frames take the flow form of the frames of both other terms, whereas the new
-    // confusions take the block form of those of `damping-ratio`. The new term sorts after
+    // confusions take the block form of those of `damping-ratio`. The second frame takes the
+    // single quotes of the first, whose braces required them. The new term sorts after
     // `natural-frequency`, whose removal keeps the comment of its lines.
     expect(text.indexOf("  damping-ratio:")).toBeLessThan(text.indexOf("  phase-lag:"));
     expect(text).not.toContain("natural-frequency:");
@@ -125,8 +126,9 @@ describe("keyed records of a geonexus glossary", () => {
       { path: [...rows, 1, "term"], value: "damping-ratio" },
       { path: [...rows, 1, "when"], value: "the phrase names the decay" },
     ]);
+    // The new condition takes the double quotes of the placeholder of the other row.
     expect(session.text).toContain(
-      "      - term: damping-ratio\n        when: the phrase names the decay\n",
+      '      - term: damping-ratio\n        when: "the phrase names the decay"\n',
     );
   });
 });
@@ -149,15 +151,16 @@ describe("record tables of a gnomon target system", () => {
       { path: ["reference_class", "selection_criteria", 0], value: "a periodic torque" },
     ]);
     const text = session.text;
-    // The new signature takes the flow form of the signatures of the other rows.
+    // The new signature takes the flow form of the signatures of the other rows, the new name
+    // their double quotes, and the new expression the single quotes of the only filled one.
     expect(text).toContain(
       [
         "variables:",
-        "  - name: forcing amplitude",
+        '  - name: "forcing amplitude"',
         "    symbol: F",
         "    determined: outside",
         "    signature: [t]",
-        "    expression: F = F_0",
+        "    expression: 'F = F_0'",
         "    shared: true",
         '  - name: "angle from the vertical"',
       ].join("\n"),
@@ -165,7 +168,7 @@ describe("record tables of a gnomon target system", () => {
     expect(text).toContain("  selection_criteria: [a periodic torque]\n");
     expect(text).toContain("    holds: for small damping\n");
     expect(text).toContain('  - name: "bob"\n    symbol: bob\n    extent: "single"\n\nindex_sets:');
-    expect(text).toContain("  - name: bob\n    structure: discrete\n");
+    expect(text).toContain('  - name: "bob"\n    structure: discrete\n');
     expect(issuesWithin(session, "variables")).toEqual([]);
     expect(lostLines(original, text, /"rod"|symbol: rod|holds: open|selection_criteria/)).toEqual(
       [],
