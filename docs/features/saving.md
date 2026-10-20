@@ -77,7 +77,7 @@ Four rules write the entries of a block collection:
 - an inserted item starts with the indicator `-` at the column of the indicators of its siblings. An item holding a mapping writes its first key after the indicator, and its other keys aligned under the first;
 - an inserted key takes the column of its siblings, and a nested collection is indented two spaces further. An empty nested collection is written `{}` or `[]`;
 - a removed item or entry takes its lines with it. Each comment on those lines stays, on a line of its own at the column of the removed entry, as for a [cleared value](#^cleared-values);
-- the removal of the only entry writes `[]` or `{}` after the key of the collection, before any comment of that line, since a block collection holds at least one entry.
+- the removal of the only entry writes `[]` or `{}` after the key of the collection, before any comment of that line, since a block collection holds at least one entry. The only key of a mapping item, written after the indicator `-`, is replaced by `{}` when its value is a single-line scalar.
 
 ### Flow collections
 
@@ -101,11 +101,12 @@ The two consequences below arise in no fixture, so each was checked on one const
 
 ## Refused commits
 
-A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Four edits are also refused before any text is written:
+A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Five edits are also refused before any text is written:
 
 - an edit of a value reached through an alias or merged by a merge key, whose text lies at its anchor. The item holding an alias can still be removed or moved;
 - a removal that would delete a comment: inside a flow collection, or on the line of the first key of a sequence item;
 - an insertion into an item of a block sequence that holds an unfilled value, such as `- open`;
+- the removal of the only key of a mapping item whose value spans lines of its own, since `{}` cannot hold those lines;
 - a structural edit made while the text of the file loads, since its positions may designate other items once the text is parsed.
 
 A refused commit leaves the file unchanged. Its reason is displayed below its field, and the control keeps the typed text until the value of the field changes.

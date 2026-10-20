@@ -60,6 +60,49 @@ function field(instance: InstanceSession, id: string): Field {
   return fieldAt(form.model.root, id);
 }
 
+describe("sequence of commits", () => {
+  const text = "title: a\nstatus: x\ncheck: {verdict: v, other: o}\n";
+
+  it("writes the text of every commit once, each commit planned on the previous text", async () => {
+    const { session: instance, host } = session();
+    instance.setText(text);
+    await instance.refresh("r.yml");
+
+    const outcome = instance.commitAll([
+      { kind: "remove-entry", path: ["status"] },
+      { kind: "remove-entry", path: ["check", "other"] },
+    ]);
+    expect(outcome).toBe("written");
+    expect(host.writes).toEqual(["title: a\ncheck: {verdict: v}\n"]);
+    expect(field(instance, "check.verdict")).toMatchObject({ value: "v" });
+  });
+
+  it("leaves the text unchanged when one commit is refused, with the reason at its path", async () => {
+    const { session: instance, host } = session();
+    instance.setText(text);
+    await instance.refresh("r.yml");
+
+    const outcome = instance.commitAll([
+      { kind: "remove-entry", path: ["status"] },
+      { kind: "remove-entry", path: ["missing"] },
+    ]);
+    expect(outcome).toBe("refused");
+    expect(host.writes).toEqual([]);
+    expect(instance.text).toBe(text);
+    expect(field(instance, "status")).toMatchObject({ value: "x" });
+    expect(instance.snapshot.errors.get("missing")).toBe(REFUSALS.missing);
+  });
+
+  it("refuses a sequence while the text loads, and reports an empty sequence unchanged", async () => {
+    const { session: instance, host } = session();
+    instance.setText(text);
+    expect(instance.commitAll([{ kind: "remove-entry", path: ["status"] }])).toBe("refused");
+    await instance.refresh("r.yml");
+    expect(instance.commitAll([])).toBe("unchanged");
+    expect(host.writes).toEqual([]);
+  });
+});
+
 describe("instance session", () => {
   it("writes a commit on a loaded form, and rebuilds the form from the new text", async () => {
     const { session: instance, host } = session();

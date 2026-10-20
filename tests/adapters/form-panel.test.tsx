@@ -52,6 +52,8 @@ function renderPanel(state: FormState): Element {
       snapshot={snapshot}
       registry={createDefaultRegistry()}
       commit={() => undefined}
+      commitAll={() => false}
+      confirmLoss={() => Promise.resolve(false)}
       commitDelay={DEFAULT_SETTINGS.commitDelay}
       folds={new FoldState()}
       onOpenSource={() => undefined}

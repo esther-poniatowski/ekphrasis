@@ -31,6 +31,7 @@ import type { ControlRegistry } from "../ui/control-registry";
 import { FoldState } from "../ui/fold-state";
 import { FormPanel } from "../ui/form-panel";
 import { countPhrase } from "../ui/issue-list";
+import { confirmLoss } from "./loss-confirmation";
 import { SourceEditor } from "./source-editor";
 
 export type ViewMode = "form" | "source";
@@ -271,6 +272,12 @@ export class InstanceView extends TextFileView implements SessionHost {
           commit: (commit) => {
             if (fileCount === this.fileCount) this.session.commit(commit);
           },
+          commitAll: (commits) => {
+            if (fileCount !== this.fileCount) return false;
+            const outcome = this.session.commitAll(commits);
+            return outcome === "written" || outcome === "unchanged";
+          },
+          confirmLoss: (request) => confirmLoss(this.app, request),
           commitDelay: this.services.settings().commitDelay,
           folds: this.folds,
           onOpenSource: () => {

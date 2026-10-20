@@ -551,16 +551,35 @@ class CommitPlanner {
     }
     editable(parent);
     const index = mapping.entries.findIndex((entry) => entry.key === key);
-    if (index < 0) return refuse(REFUSALS.unlocated);
+    const entry = mapping.entries[index] ?? refuse(REFUSALS.unlocated);
+    const keyStart = entry.keyRange?.start ?? refuse(REFUSALS.unlocated);
     let edits: SourceEdit[];
     if (mapping.flow) {
       edits = this.collections.removeFlow(mapping, index);
-    } else if (mapping.entries.length === 1) {
+    } else if (mapping.entries.length > 1) {
+      edits = this.remove(mapping, entry);
+    } else if (this.source.startsLine(keyStart)) {
       edits = this.emptyCollection(chain.slice(0, -1), mapping, " {}");
     } else {
-      edits = this.collections.removeBlock(mapping, index);
+      edits = this.emptyItem(entry);
     }
     return { edits, path: field.path, effect: { kind: "remove" }, itemChanges: [] };
+  }
+
+  /**
+   * Edits removing `entry`, the only entry of a mapping item of a block sequence, whose key
+   * follows the indicator `-`: the empty mapping `{}` replaces the key and its value, before any
+   * comment of the line. A value spanning lines of its own is refused, since its removal would
+   * leave lines that the empty mapping cannot hold.
+   */
+  private emptyItem(entry: MappingEntry): SourceEdit[] {
+    const keyRange = entry.keyRange ?? refuse(REFUSALS.unlocated);
+    const value = entry.value;
+    const valueEnd = value.range?.end ?? refuse(REFUSALS.unlocated);
+    if (value.kind !== "scalar" || isBlockStyle(value.style)) return refuse(REFUSALS.unlocated);
+    // The empty value of a bare key may lie before its colon, which the replacement includes.
+    const colon = this.source.colonAfter(keyRange.end) ?? refuse(REFUSALS.unlocated);
+    return [splice(keyRange.start, Math.max(valueEnd, colon + 1), ["{}"])];
   }
 
   /** Present sequence holding the item that ends `chain`, with its field. */

@@ -67,6 +67,19 @@ export class ItemIdentities {
     }
   }
 
+  /**
+   * Independent copy of the identifiers, which a sequence of commits updates and the session
+   * adopts once every commit of the sequence is written.
+   */
+  copy(): ItemIdentities {
+    const copy = new ItemIdentities();
+    copy.counter = this.counter;
+    for (const [sequence, entry] of this.sequences) {
+      copy.sequences.set(sequence, { items: [...entry.items], next: entry.next });
+    }
+    return copy;
+  }
+
   private entry(sequence: string): Entry {
     let entry = this.sequences.get(sequence);
     if (entry === undefined) {

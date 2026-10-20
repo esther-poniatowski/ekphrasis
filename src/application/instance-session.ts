@@ -132,6 +132,52 @@ export class InstanceSession {
     return outcome;
   }
 
+  /**
+   * Commits `commits` in their order, each on the text written by the previous one, and writes
+   * the final text once. The sequence is atomic: when one commit is refused, the text, the form
+   * and the identifiers of items stay as they were before the first commit, and the reason is
+   * placed at the path of the refused commit. While the current text has no form, the sequence
+   * is refused, like a structural commit.
+   */
+  commitAll(commits: readonly Commit[]): CommitOutcome {
+    const outcome = this.applyAll(commits);
+    if (outcome === "written") this.host.write(this.current);
+    this.host.changed();
+    return outcome;
+  }
+
+  private applyAll(commits: readonly Commit[]): CommitOutcome {
+    const ids = commits.map((commit) => printFieldPath(commit.path));
+    let state = this.state;
+    if (state?.status !== "form") {
+      if (ids[0] !== undefined) this.errors.set(ids[0], STRUCTURE_WAITS);
+      return "refused";
+    }
+    const identities = this.identities.copy();
+    let text = this.current;
+    let written = false;
+    for (const [index, commit] of commits.entries()) {
+      const id = ids[index] ?? "";
+      const result = this.commits.commit(state, text, commit, identities);
+      if (result.status === "refused") {
+        this.errors.set(id, result.reason);
+        return "refused";
+      }
+      this.errors.delete(id);
+      if (result.status === "written") {
+        state = result.state;
+        text = result.text;
+        written = true;
+      }
+    }
+    if (!written) return "unchanged";
+    this.current = text;
+    this.state = state;
+    this.form = state;
+    this.identities = identities;
+    return "written";
+  }
+
   private apply(state: FormReady, id: string, commit: Commit): CommitOutcome {
     const result = this.commits.commit(state, this.current, commit, this.identities);
     if (result.status === "refused") {

@@ -5,11 +5,13 @@
  *
  * A field of kind `alternatives` opens with a selector of the alternative. The selector shows the
  * alternative that the value matches, and choosing another one displays the fields of that
- * alternative, each written by its first edit, like any absent field.
+ * alternative, each written by its first edit, like any absent field. The switch first removes
+ * the keys of the previous alternative only, after a confirmation when one of them holds a filled
+ * value; a cancelled confirmation or a refused removal keeps the previous alternative.
  */
 import type { JSX } from "preact";
 import { useState } from "preact/hooks";
-import type { Field, MappingField } from "../../../../domain";
+import { planAlternativeSwitch, type Field, type MappingField } from "../../../../domain";
 import type { ControlProps } from "../control-registry";
 import { DisabledNote, forbidsItself, useDisabling } from "../disabled-note";
 import { LockNote, useLockDisclosure } from "../field-label";
@@ -24,12 +26,24 @@ export function GroupSection({
   actions,
 }: ControlProps<MappingField>): JSX.Element {
   const disclosure = useLockDisclosure();
-  const { issues, errors } = useFormContext();
+  const { issues, errors, editAll, confirmLoss } = useFormContext();
   const disabling = useDisabling(field);
   const fold = useFold(field);
   const error = errors.get(field.id) ?? null;
   const [chosen, choose] = useState<number | null>(null);
   const alternative = chosen ?? field.selectedAlternative;
+  const switchTo = async (to: number | null): Promise<void> => {
+    const { removals, lost } = planAlternativeSwitch(field, alternative, to);
+    if (lost.length > 0) {
+      const confirmed = await confirmLoss({
+        alternative: to === null ? "no alternative" : alternativeTitle(field, to),
+        fields: lost.map((child) => child.label),
+      });
+      if (!confirmed) return;
+    }
+    if (removals.length > 0 && !editAll(removals)) return;
+    choose(to);
+  };
   const children: readonly Field[] =
     field.kind === "alternatives" && alternative !== null
       ? (field.alternativeChildren[alternative] ?? field.children)
@@ -58,7 +72,7 @@ export function GroupSection({
               field={field}
               selected={alternative}
               readOnly={readOnly}
-              onChoose={choose}
+              onChoose={(to) => void switchTo(to)}
             />
           )}
           <FieldList field={{ ...field, children }} />
@@ -91,14 +105,17 @@ function AlternativeSelector({
           value={selected === null ? "" : String(selected)}
           disabled={readOnly}
           onChange={(event) => {
-            const value = event.currentTarget.value;
+            // The selector shows the displayed alternative until the switch is made.
+            const select = event.currentTarget;
+            const value = select.value;
+            select.value = selected === null ? "" : String(selected);
             onChoose(value === "" ? null : Number(value));
           }}
         >
           <option value="">—</option>
-          {field.alternatives.map((title, index) => (
+          {field.alternatives.map((_, index) => (
             <option key={index} value={String(index)}>
-              {title ?? `Alternative ${index + 1}`}
+              {alternativeTitle(field, index)}
             </option>
           ))}
         </select>
@@ -108,4 +125,9 @@ function AlternativeSelector({
       )}
     </div>
   );
+}
+
+/** Title of the alternative at position `index`, or its position when it has no title. */
+function alternativeTitle(field: MappingField, index: number): string {
+  return field.alternatives[index] ?? `Alternative ${index + 1}`;
 }

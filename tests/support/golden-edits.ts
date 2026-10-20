@@ -1,14 +1,17 @@
 /**
  * Edits of the golden test of byte preservation, shared by the fixtures and the corpus: the
- * commits made at each scalar field and at each collection, and the regions of the text that each
- * commit may change.
+ * commits made at each scalar field, at each collection and at each switch of alternative, and
+ * the regions of the text that each commit may change.
  */
 import type { CommitService, FormReady } from "../../src/application";
 import {
   isScalarKind,
+  planAlternativeSwitch,
+  printFieldPath,
   REFUSALS,
   type Commit,
   type Field,
+  type MappingField,
   type ScalarField,
   type ScalarValue,
   type SequenceField,
@@ -232,10 +235,14 @@ export function structuralCommits(field: Field): [string, Commit, boolean][] {
 /** Comments of `text`, sorted, so a move that carries a comment with its item compares equal. */
 export const sortedComments = (text: string): string[] => [...commentsOf(text)].sort();
 
-/** Outcome of the structural commits of one form: the failed invariants, and the commits written. */
+/**
+ * Outcome of the structural commits of one form: the failed invariants, the commits written, and
+ * the switches of alternative written.
+ */
 export interface StructuralOutcome {
   readonly failures: readonly string[];
   readonly written: number;
+  readonly switches: number;
 }
 
 /**
@@ -250,7 +257,13 @@ export function checkStructuralCommits(
   const comments = sortedComments(text);
   const failures: string[] = [];
   let written = 0;
+  let switches = 0;
   for (const [field, parent] of collectionSites(state.model.root)) {
+    if (field.kind === "alternatives") {
+      const outcome = checkSwitches(commits, state, text, field);
+      failures.push(...outcome.failures);
+      switches += outcome.written;
+    }
     for (const [label, commit, inserts] of structuralCommits(field)) {
       const result = commits.commit(state, text, commit);
       if (result.status === "refused") {
@@ -279,5 +292,54 @@ export function checkStructuralCommits(
       }
     }
   }
+  return { failures, written, switches };
+}
+
+/**
+ * Switches the alternatives field `field` of the form `state` of `text` to each other alternative,
+ * each on the original text, by the removals that the form commits in one sequence. A written
+ * switch keeps every comment, and changes no byte outside the lines of the removed keys.
+ */
+function checkSwitches(
+  commits: CommitService,
+  state: FormReady,
+  text: string,
+  field: MappingField,
+): { failures: string[]; written: number } {
+  const from = field.selectedAlternative;
+  const failures: string[] = [];
+  let written = 0;
+  field.alternatives.forEach((_, to) => {
+    const { removals } = planAlternativeSwitch(field, from, to);
+    if (removals.length === 0) return;
+    const label = `${field.id} switched to alternative ${to + 1}`;
+    let current = { state, text };
+    for (const removal of removals) {
+      const result = commits.commit(current.state, current.text, removal);
+      if (result.status !== "written") {
+        const allowed = field.lock !== null ? REFUSALS.locked : REFUSALS.comment;
+        if (result.status === "unchanged" || result.reason !== allowed) {
+          failures.push(
+            `${label}: ${result.status === "refused" ? result.reason : "unchanged"} at ${printFieldPath(removal.path)}`,
+          );
+        }
+        return;
+      }
+      current = { state: result.state, text: result.text };
+    }
+    written += 1;
+    if (JSON.stringify(sortedComments(current.text)) !== JSON.stringify(sortedComments(text))) {
+      failures.push(`${label}: comments changed`);
+    }
+    const removed = field.children.filter((child) =>
+      removals.some((removal) => removal.path.at(-1) === child.path.at(-1)),
+    );
+    const regions = removed.map((child) => entryRegion(text, child, field));
+    const start = Math.min(...regions.map(([regionStart]) => regionStart));
+    const end = Math.max(...regions.map(([, regionEnd]) => regionEnd));
+    if (!changesOnly(text, current.text, start, end)) {
+      failures.push(`${label}: changed bytes outside the removed keys`);
+    }
+  });
   return { failures, written };
 }

@@ -14,6 +14,7 @@ import {
 } from "../../src/application";
 import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
 import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
+import type { LossRequest } from "../../src/adapters/obsidian/ui/form-context";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
 import type { PathRule } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
@@ -23,17 +24,21 @@ export interface RenderedForm {
   readonly container: Element;
   readonly session: InstanceSession;
   readonly folds: FoldState;
+  /** Requests of confirmation made by the form, in their order. */
+  readonly confirmations: LossRequest[];
 }
 
 /**
  * Renders the form of the instance at the vault path `path`, holding `text`, with the schemas
- * read from `files` and bound by `rules`.
+ * read from `files` and bound by `rules`. Each request of confirmation is recorded, and answered
+ * by `confirm`.
  */
 export async function renderForm(
   files: FileSource,
   rules: readonly PathRule[],
   path: string,
   text: string,
+  confirm = true,
 ): Promise<RenderedForm> {
   const parser = new YamlDocumentParser();
   const forms = new FormService(parser, new FileSchemaLoader(files), createValidation(), () => ({
@@ -46,11 +51,17 @@ export async function renderForm(
   const display = (): void => rerender?.(panel());
   const folds = new FoldState(display);
   const session = new InstanceSession(forms, commits, { write: () => {}, changed: display });
+  const confirmations: LossRequest[] = [];
   const panel = (): ComponentChild => (
     <FormPanel
       snapshot={session.snapshot}
       registry={registry}
       commit={(commit) => session.commit(commit)}
+      commitAll={(edits) => session.commitAll(edits) !== "refused"}
+      confirmLoss={(request) => {
+        confirmations.push(request);
+        return Promise.resolve(confirm);
+      }}
       commitDelay={DEFAULT_SETTINGS.commitDelay}
       folds={folds}
       onOpenSource={() => undefined}
@@ -60,7 +71,7 @@ export async function renderForm(
   const result = render(<div />);
   rerender = result.rerender;
   await session.refresh(path);
-  return { container: result.container, session, folds };
+  return { container: result.container, session, folds, confirmations };
 }
 
 /** Element matching `selector` under `container`, or an error naming the selector. */

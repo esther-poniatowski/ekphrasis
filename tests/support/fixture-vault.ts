@@ -38,6 +38,10 @@ export const FIXTURE_RULES: readonly PathRule[] = [
   { pattern: "**/{glossary,*.glossary}.yml", schema: "geonexus/schemas/glossary.schema.yaml" },
   { pattern: "constructs/anchors.yml", schema: "constructs/schemas/anchors.schema.yaml" },
   {
+    pattern: "constructs/alternatives.yml",
+    schema: "constructs/schemas/alternatives.schema.yaml",
+  },
+  {
     pattern: "constructs/block-scalars.yml",
     schema: "constructs/schemas/block-scalars.schema.yaml",
   },
@@ -49,5 +53,6 @@ export const FIXTURE_BINDINGS: Readonly<Record<string, BindingSource>> = {
   "gnomon/target-system.yml": "modeline",
   "geonexus/glossary.yml": "path-rule",
   "constructs/anchors.yml": "path-rule",
+  "constructs/alternatives.yml": "path-rule",
   "constructs/block-scalars.yml": "path-rule",
 };

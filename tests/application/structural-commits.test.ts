@@ -260,6 +260,32 @@ describe("entries of mappings keyed by identifiers", () => {
   });
 });
 
+describe("removal of the keys of an item", () => {
+  it("removes the first key of a row up to the next key", () => {
+    const text = "rows:\n  - name: a\n    symbol: b # kept\n";
+    expect(written(text, { kind: "remove-entry", path: ["rows", 0, "name"] })).toBe(
+      "rows:\n  - symbol: b # kept\n",
+    );
+  });
+
+  it.each([
+    ["a scalar", "rows:\n  - name: a # kept\n", "rows:\n  - {} # kept\n"],
+    ["the null value", "rows:\n  - name:\ntitle: t\n", "rows:\n  - {}\ntitle: t\n"],
+  ])(
+    "writes an empty mapping in place of the only key of a row holding %s",
+    (_, text, expected) => {
+      expect(written(text, { kind: "remove-entry", path: ["rows", 0, "name"] })).toBe(expected);
+    },
+  );
+
+  it("refuses to remove the only key of a row holding a block collection", () => {
+    const text = "rows:\n  - marks:\n      - a\n";
+    expect(written(text, { kind: "remove-entry", path: ["rows", 0, "marks"] })).toBe(
+      `refused: ${REFUSALS.unlocated}`,
+    );
+  });
+});
+
 describe("form of a new collection under a key of a block mapping", () => {
   const marks = (text: string, row: number): string =>
     written(text, { path: ["rows", row, "marks", 0], value: "w" });

@@ -2,7 +2,8 @@
 /**
  * Controls of the collection kinds, in a simulated DOM: rows and items added as drafts and
  * written by their first value, moved and removed by their actions, checkboxes inserting and
- * removing admitted values, entries added under a new identifier, and folded sections.
+ * removing admitted values, entries added under a new identifier, folded sections, and the
+ * switch of an alternative.
  */
 import { cleanup, fireEvent } from "@testing-library/preact";
 import { afterEach, describe, expect, it } from "vitest";
@@ -132,6 +133,58 @@ describe("keyed records", () => {
     });
     expect(element<HTMLButtonElement>(terms, ".ekphrasis-key-adder button").disabled).toBe(true);
     expect(terms.textContent).toContain("The identifier b-term is already present.");
+  });
+});
+
+describe("alternatives", () => {
+  const schema = `
+type: object
+properties:
+  source:
+    oneOf:
+      - { title: Book, required: [isbn], properties: { isbn: { type: string }, year: { type: integer } } }
+      - { title: Paper, required: [doi], properties: { doi: { type: string }, year: { type: integer } } }
+`;
+
+  /** Renders `text`, chooses the alternative *Paper*, and lets the confirmation resolve. */
+  async function choosePaper(text: string, confirm: boolean): Promise<RenderedForm> {
+    const form = await renderForm(
+      new MemoryFileSource({ "s.yaml": schema }),
+      [{ pattern: "*.yml", schema: "s.yaml" }],
+      "r.yml",
+      text,
+      confirm,
+    );
+    fireEvent.change(selector(form), { target: { value: "1" } });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    return form;
+  }
+
+  const selector = ({ container }: RenderedForm): HTMLSelectElement =>
+    element<HTMLSelectElement>(container, '[data-path="source"] select');
+
+  it("keeps the previous alternative and the file when the confirmation is cancelled", async () => {
+    const text = "source:\n  isbn: 978-0\n  year: 2020\n";
+    const form = await choosePaper(text, false);
+    expect(form.confirmations).toEqual([{ alternative: "Paper", fields: ["isbn"] }]);
+    expect(form.session.text).toBe(text);
+    expect(selector(form).value).toBe("0");
+    expect(form.container.querySelector('[data-path="source.isbn"]')).not.toBeNull();
+  });
+
+  it("removes the keys of the previous alternative only once confirmed", async () => {
+    const form = await choosePaper("source:\n  isbn: 978-0\n  year: 2020\n", true);
+    expect(form.session.text).toBe("source:\n  year: 2020\n");
+    expect(selector(form).value).toBe("1");
+    expect(form.container.querySelector('[data-path="source.doi"]')).not.toBeNull();
+    expect(form.container.querySelector('[data-path="source.isbn"]')).toBeNull();
+  });
+
+  it("switches without a confirmation when the removed keys hold no value", async () => {
+    const form = await choosePaper("source:\n  isbn:\n  year: 2020\n", false);
+    expect(form.confirmations).toEqual([]);
+    expect(form.session.text).toBe("source:\n  year: 2020\n");
+    expect(selector(form).value).toBe("1");
   });
 });
 

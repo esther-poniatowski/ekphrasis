@@ -22,7 +22,7 @@ import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
 import type { FoldState } from "./fold-state";
-import { FormContext } from "./form-context";
+import { FormContext, type LossRequest } from "./form-context";
 import { InlineText } from "./inline-text";
 import { countPhrase, IssueList } from "./issue-list";
 import { FieldList } from "./sections/field-list";
@@ -32,6 +32,10 @@ export interface FormPanelProps {
   readonly registry: ControlRegistry;
   /** Commits a value or a structural edit made in the form. */
   readonly commit: (commit: Commit) => void;
+  /** Commits several structural edits as one change, and returns whether the text holds them. */
+  readonly commitAll: (commits: readonly Commit[]) => boolean;
+  /** Asks the author to confirm a switch of alternative that would remove filled values. */
+  readonly confirmLoss: (request: LossRequest) => Promise<boolean>;
   readonly commitDelay: number;
   /** Folded state of the sections, kept by the view across displays. */
   readonly folds: FoldState;
@@ -105,6 +109,8 @@ function EditableForm({
   snapshot,
   registry,
   commit,
+  commitAll,
+  confirmLoss,
   commitDelay,
   folds,
 }: FormPanelProps & {
@@ -119,6 +125,8 @@ function EditableForm({
         registry,
         commit: (path, value) => commit({ path, value }),
         edit: commit,
+        editAll: commitAll,
+        confirmLoss,
         commitDelay,
         errors: snapshot.errors,
         issues,

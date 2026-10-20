@@ -1,0 +1,12 @@
+# Generic construct of a value matching one of several object schemas.
+# constructs: alternatives in sequence items and under a key, in block and flow mappings, a key
+# shared by two alternatives, a nested flow sequence, comments on the lines of kept keys
+
+sources:
+  - isbn: "978-0"
+    year: 2020 # the printed edition
+    pages: [xii, "340"]
+  - { doi: 10.1/x, year: 2021 }
+primary: # the preprint
+  doi: 10.2/y
+  year: 2019

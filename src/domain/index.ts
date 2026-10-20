@@ -35,6 +35,7 @@ export {
   type ScalarCommit,
   type SequenceChange,
 } from "./edit/commit-plan";
+export { planAlternativeSwitch, type AlternativeSwitch } from "./edit/alternative-switch";
 export {
   validatorDocuments,
   documentUri,

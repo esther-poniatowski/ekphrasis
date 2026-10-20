@@ -35,6 +35,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Items, rows and entries added as drafts, written by their first value, and moved or removed by buttons, with identifiers of items kept across reorderings.
 - Insertion and removal of the entries of flow collections with their separating commas, keeping the flow form, and of block collections with the indentation of their siblings.
 - New collection under a key of a block mapping written in flow form when every sibling holding that key writes it in flow form, such as `signature: [t]` in a new row.
+- Switch of alternative removing the keys of the previous alternative only, after a confirmation listing the fields whose filled values would be lost.
 - Folding of each group and collection, following `x-collapsed` when the form opens, the commands *Collapse all* and *Expand all*, and a vertical guide along each group.
 
 ### Changed

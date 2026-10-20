@@ -1,0 +1,26 @@
+# Synthetic schema binding the fixture of alternatives, so that the golden test of byte
+# preservation switches each value to its other alternative through the form.
+# constructs: a `oneOf` of two object schemas sharing one property, reused by a reference
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: alternatives.schema.yaml
+type: object
+$defs:
+  source:
+    oneOf:
+      - title: Book
+        required: [isbn]
+        properties:
+          isbn: { type: string }
+          year: { type: integer }
+          pages: { type: array, items: { type: string } }
+      - title: Paper
+        required: [doi]
+        properties:
+          doi: { type: string }
+          year: { type: integer }
+properties:
+  sources:
+    type: array
+    items: { $ref: "#/$defs/source" }
+  primary: { $ref: "#/$defs/source" }

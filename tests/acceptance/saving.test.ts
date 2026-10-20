@@ -14,7 +14,8 @@
  * of its first scalar; each unchecked admitted value of a field of kind `choices` inserted; each
  * entry of a mapping keyed by identifiers removed, and a new entry inserted; the first item of each
  * absent nested sequence inserted, in each item or entry and in the next one, so that the new
- * collection takes the form of its siblings. A written structural
+ * collection takes the form of its siblings; each value of kind `alternatives` switched to each
+ * other alternative, by the removal of the keys of its alternative only. A written structural
  * commit keeps every comment, and changes no byte outside the lines of the collection; an
  * insertion leaves the old text whole.
  */
@@ -111,12 +112,14 @@ describe("golden test of byte preservation after structural edits", () => {
     it("changes the entries of every collection, only within the lines of the collection", async () => {
       const state = await forms.open(name, text);
       if (state.status !== "form") throw new Error(`Expected a form, got ${state.status}.`);
-      const { failures, written } = checkStructuralCommits(commits, state, text);
+      const { failures, written, switches } = checkStructuralCommits(commits, state, text);
       expect(failures, failures.join("\n")).toEqual([]);
-      if (
-        collectionSites(state.model.root).some(([field]) => structuralCommits(field).length > 0)
-      ) {
+      const sites = collectionSites(state.model.root).map(([field]) => field);
+      if (sites.some((field) => structuralCommits(field).length > 0)) {
         expect(written).toBeGreaterThan(0);
+      }
+      if (sites.some((field) => field.kind === "alternatives" && field.node !== null)) {
+        expect(switches).toBeGreaterThan(0);
       }
     });
   });
