@@ -17,6 +17,15 @@ export * from "./form/kinds";
 export * from "./form/model";
 export { buildFormModel } from "./form/builder";
 export { fieldChain } from "./form/navigation";
+export {
+  buildOutline,
+  entryName,
+  fieldTrail,
+  restrictToIssues,
+  searchOutline,
+  type OutlineEntry,
+  type OutlineMatch,
+} from "./form/outline";
 export { placeField } from "./form/templates";
 export { ItemIdentities, type ItemChange, type SequenceIdentifiers } from "./form/item-identities";
 export * from "./edit/scalar-style";
@@ -44,12 +53,15 @@ export {
 export { UnfilledValues, jsonEquals } from "./validation/unfilled";
 export { InstanceData, instanceValue, pruneUnfilled } from "./validation/instance-data";
 export {
+  dominantMark,
   IssueIndex,
   issue,
+  MARK_ORDER,
   markOf,
   MISSING_MESSAGE,
   type Issue,
   type IssueMark,
+  type IssuePlace,
   type Severity,
 } from "./validation/issues";
 export {

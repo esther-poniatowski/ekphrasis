@@ -36,6 +36,15 @@ export function markOf(item: Issue): IssueMark {
   return item.missing ? "missing" : "invalid";
 }
 
+/** Order in which the marks display: an invalid value first, then a missing field, then a warning. */
+export const MARK_ORDER: readonly IssueMark[] = ["invalid", "missing", "warning"];
+
+/** Mark under which a place holding `issues` displays, or `null` when it holds none. */
+export function dominantMark(issues: readonly Issue[]): IssueMark | null {
+  const marks = new Set(issues.map(markOf));
+  return MARK_ORDER.find((mark) => marks.has(mark)) ?? null;
+}
+
 /** Builds an issue, printing its path. */
 export function issue(
   path: YamlPath,
@@ -51,6 +60,12 @@ export function issue(
     missing: options.missing ?? false,
     message,
   };
+}
+
+/** Field or key outside the schema at which issues display. */
+export interface IssuePlace {
+  readonly id: string;
+  readonly path: YamlPath;
 }
 
 /**
@@ -92,6 +107,21 @@ export class IssueIndex {
   /** Number of issues at `path` or below it, wherever they display. */
   countWithin(path: YamlPath): number {
     return this.issues.filter((item) => startsWith(item.path, path)).length;
+  }
+
+  /**
+   * Identifiers of the places holding an issue of each mark, each listed once per mark, in the
+   * order of the issues. A place holding issues of two marks is listed under both.
+   */
+  placesByMark(): Readonly<Record<IssueMark, readonly IssuePlace[]>> {
+    const places: Record<IssueMark, IssuePlace[]> = { missing: [], invalid: [], warning: [] };
+    for (const item of this.issues) {
+      const list = places[markOf(item)];
+      if (this.byPlace.has(item.id) && !list.some(({ id }) => id === item.id)) {
+        list.push({ id: item.id, path: item.path });
+      }
+    }
+    return places;
   }
 
   /** Number of issues under each mark. */

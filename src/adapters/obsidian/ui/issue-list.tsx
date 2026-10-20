@@ -3,10 +3,10 @@
  * of the issues within a group, and the phrase counting the issues of an instance.
  */
 import type { JSX } from "preact";
-import { markOf, type Issue, type IssueMark } from "../../../domain";
+import { dominantMark, markOf, type Issue, type IssueMark } from "../../../domain";
 import { InlineText } from "./inline-text";
 
-const MARK_NOUNS: Readonly<Record<IssueMark, readonly [string, string]>> = {
+export const MARK_NOUNS: Readonly<Record<IssueMark, readonly [string, string]>> = {
   missing: ["missing field", "missing fields"],
   invalid: ["invalid value", "invalid values"],
   warning: ["warning", "warnings"],
@@ -61,7 +61,4 @@ export function IssueCount({ count }: { readonly count: number }): JSX.Element |
 }
 
 /** Mark shown on the content of a field: an invalid value first, then a missing field. */
-export function fieldMark(issues: readonly Issue[]): IssueMark | null {
-  const marks = new Set(issues.map(markOf));
-  return (["invalid", "missing", "warning"] as const).find((mark) => marks.has(mark)) ?? null;
-}
+export const fieldMark = dominantMark;
