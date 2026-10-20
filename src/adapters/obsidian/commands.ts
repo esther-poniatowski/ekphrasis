@@ -10,6 +10,8 @@ export const COMMANDS = {
   openInEkphrasis: { id: "open-in-ekphrasis", name: "Open in ekphrasis" },
   toggleView: { id: "toggle-form-source", name: "Toggle form and source view" },
   validate: { id: "validate-instance", name: "Validate instance" },
+  collapseAll: { id: "collapse-all", name: "Collapse all" },
+  expandAll: { id: "expand-all", name: "Expand all" },
 } as const;
 
 export function registerCommands(plugin: Plugin): void {
@@ -51,4 +53,20 @@ export function registerCommands(plugin: Plugin): void {
       return true;
     },
   });
+
+  // Fold or unfold every group and collection of the form of the active instance.
+  for (const [command, folded] of [
+    [COMMANDS.collapseAll, true],
+    [COMMANDS.expandAll, false],
+  ] as const) {
+    plugin.addCommand({
+      ...command,
+      checkCallback: (checking) => {
+        const view = workspace.getActiveViewOfType(InstanceView);
+        if (view === null || view.mode !== "form") return false;
+        if (!checking) view.foldAll(folded);
+        return true;
+      },
+    });
+  }
 }

@@ -5,22 +5,11 @@
  * gnomon question fixture through the session of the instance, as the instance view renders it,
  * so each commit rebuilds the form model and renders the panel again.
  */
-import { cleanup, fireEvent, render } from "@testing-library/preact";
-import type { ComponentChild } from "preact";
+import { cleanup, fireEvent } from "@testing-library/preact";
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  CommitService,
-  DEFAULT_SETTINGS,
-  FormService,
-  InstanceSession,
-  type SessionHost,
-} from "../../src/application";
-import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
-import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
-import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
 import { DirectoryFileSource, FIXTURE_RULES } from "../support/fixture-vault";
+import { renderForm } from "../support/rendered-form";
 import { FIXTURES_ROOT, readYamlFiles } from "../support/yaml-files";
-import { createValidation } from "../support/validation";
 
 const PATH = "gnomon/question.yml";
 const AIMS = [
@@ -34,38 +23,11 @@ const AIMS = [
 
 afterEach(cleanup);
 
-/** Session of the question fixture, whose host renders the form panel after each change. */
+/** Form of the question fixture, rendered after each commit. */
 async function renderedQuestion(): Promise<Element> {
-  const parser = new YamlDocumentParser();
-  const forms = new FormService(
-    parser,
-    new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT)),
-    createValidation(),
-    () => ({ ...DEFAULT_SETTINGS, pathRules: FIXTURE_RULES }),
-  );
-  const commits = new CommitService(parser, new YamlSourceEditor(), createValidation());
-  const registry = createDefaultRegistry();
-  let rerender: ((ui: ComponentChild) => void) | null = null;
-  const panel = (): ComponentChild => (
-    <FormPanel
-      snapshot={session.snapshot}
-      registry={registry}
-      commit={(path, value) => session.commit({ path, value })}
-      commitDelay={DEFAULT_SETTINGS.commitDelay}
-      onOpenSource={() => undefined}
-    />
-  );
-  const host: SessionHost = {
-    write: () => undefined,
-    changed: () => rerender?.(panel()),
-  };
-  const session = new InstanceSession(forms, commits, host);
   const text = readYamlFiles(FIXTURES_ROOT).find(({ name }) => name === PATH)?.text ?? "";
-  session.setText(text);
-  const result = render(<div />);
-  rerender = result.rerender;
-  await session.refresh(PATH);
-  return result.container;
+  const form = await renderForm(new DirectoryFileSource(FIXTURES_ROOT), FIXTURE_RULES, PATH, text);
+  return form.container;
 }
 
 function aimDropdown(container: Element): HTMLSelectElement {

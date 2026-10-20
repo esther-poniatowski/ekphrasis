@@ -286,7 +286,8 @@ ul.ekphrasis-path-messages {
 .ekphrasis-field[data-disabled] > .ekphrasis-field-label,
 .ekphrasis-field[data-disabled] > .ekphrasis-field-content,
 .ekphrasis-group[data-disabled] > .ekphrasis-group-heading,
-.ekphrasis-group[data-disabled] > .ekphrasis-group-body {
+.ekphrasis-group[data-disabled] > .ekphrasis-group-body,
+.ekphrasis-table-cell:has(> .ekphrasis-disabled-note) > :not(.ekphrasis-disabled-note) {
   opacity: 0.5;
 }
 
@@ -314,12 +315,170 @@ textarea.ekphrasis-control {
 
 .ekphrasis-group-heading {
   display: flex;
-  align-items: baseline;
+  gap: var(--size-2-2);
+  align-items: center;
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
+/* A vertical guide runs along the fields of each group, from under the fold button of its heading,
+   so each field reads as part of its group. */
 .ekphrasis-group-body {
+  margin-left: calc(var(--icon-xs) / 2);
   padding-left: var(--size-4-4);
+  border-left: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-group-body:hover {
+  border-left-color: var(--background-modifier-border-hover);
+}
+
+/* The button folding a section; the theme styles of buttons are reset so only its chevron shows. */
+.ekphrasis-fold,
+.ekphrasis-fold:hover {
+  display: inline-flex;
+  flex: none;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  color: var(--text-faint);
+  background: none;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ekphrasis-fold:hover {
+  color: var(--text-normal);
+}
+
+.ekphrasis-fold svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  transition: transform 100ms ease-in-out;
+}
+
+.ekphrasis-group[data-folded] > .ekphrasis-group-heading .ekphrasis-fold svg {
+  transform: rotate(-90deg);
+}
+
+.ekphrasis-group-heading > .ekphrasis-field-label {
+  padding-top: 0;
+}
+
+/* Actions of an item or an entry: moving it up or down, and removing it. */
+.ekphrasis-item-actions {
+  display: inline-flex;
+  flex: none;
+  gap: var(--size-2-1);
+  margin-left: auto;
+}
+
+.ekphrasis-issue-count + .ekphrasis-item-actions {
+  margin-left: var(--size-2-2);
+}
+
+.ekphrasis-item-action {
+  height: auto;
+  padding: 0 var(--size-2-2);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-field-content.mod-actions {
+  display: flex;
+  gap: var(--size-2-2);
+  align-items: center;
+}
+
+.ekphrasis-field-control {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Buttons adding an item, a row or an entry, below the last one. */
+.ekphrasis-add {
+  margin: var(--size-2-2) 0;
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-key-adder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2);
+  align-items: center;
+}
+
+.ekphrasis-key-adder > .ekphrasis-control {
+  flex: 1;
+  width: auto;
+  min-width: 10rem;
+}
+
+.ekphrasis-key-adder > .ekphrasis-commit-error {
+  flex-basis: 100%;
+}
+
+/* Tables: a header row of property labels, one row per item, and a scroll on narrow panes. */
+.ekphrasis-table-scroll {
+  overflow-x: auto;
+}
+
+.ekphrasis-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-table th {
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: var(--font-normal);
+  padding: var(--size-2-2);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-table td {
+  vertical-align: top;
+  padding: var(--size-2-1);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-table-key {
+  font-family: var(--font-monospace);
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-table-actions .ekphrasis-item-actions {
+  margin-left: 0;
+}
+
+.ekphrasis-table-cell {
+  min-width: 6rem;
+}
+
+.ekphrasis-table-cell[data-issue="invalid"] {
+  box-shadow: inset 3px 0 0 var(--text-error);
+}
+
+.ekphrasis-table-cell[data-issue="missing"] {
+  box-shadow: inset 3px 0 0 var(--text-accent);
+}
+
+.ekphrasis-table-cell[data-issue="warning"] {
+  box-shadow: inset 3px 0 0 rgb(var(--color-orange-rgb));
+}
+
+/* Checkboxes of the admitted values of a field of kind `choices`. */
+.ekphrasis-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2) var(--size-4-4);
+}
+
+.ekphrasis-choice {
+  display: inline-flex;
+  gap: var(--size-2-2);
+  align-items: center;
 }
 
 .ekphrasis-extra-entries {

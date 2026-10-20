@@ -11,11 +11,18 @@
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { FormReady, SessionSnapshot } from "../../../application";
-import { ConstraintIndex, IssueIndex, type SchemaBinding, type SchemaIssue } from "../../../domain";
+import {
+  ConstraintIndex,
+  IssueIndex,
+  type Commit,
+  type SchemaBinding,
+  type SchemaIssue,
+} from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
 import { FieldView } from "./field-view";
-import { FormContext, type FormContextValue } from "./form-context";
+import type { FoldState } from "./fold-state";
+import { FormContext } from "./form-context";
 import { InlineText } from "./inline-text";
 import { countPhrase, IssueList } from "./issue-list";
 import { FieldList } from "./sections/field-list";
@@ -23,8 +30,11 @@ import { FieldList } from "./sections/field-list";
 export interface FormPanelProps {
   readonly snapshot: SessionSnapshot;
   readonly registry: ControlRegistry;
-  readonly commit: FormContextValue["commit"];
+  /** Commits a value or a structural edit made in the form. */
+  readonly commit: (commit: Commit) => void;
   readonly commitDelay: number;
+  /** Folded state of the sections, kept by the view across displays. */
+  readonly folds: FoldState;
   readonly onOpenSource: () => void;
 }
 
@@ -96,6 +106,7 @@ function EditableForm({
   registry,
   commit,
   commitDelay,
+  folds,
 }: FormPanelProps & {
   readonly form: FormReady;
   readonly notice: JSX.Element | null;
@@ -104,7 +115,16 @@ function EditableForm({
   const constraints = new ConstraintIndex(form.report.constraints);
   return (
     <FormContext.Provider
-      value={{ registry, commit, commitDelay, errors: snapshot.errors, issues, constraints }}
+      value={{
+        registry,
+        commit: (path, value) => commit({ path, value }),
+        edit: commit,
+        commitDelay,
+        errors: snapshot.errors,
+        issues,
+        constraints,
+        folds,
+      }}
     >
       <FormRoot form={form} issues={issues} notice={notice} />
     </FormContext.Provider>

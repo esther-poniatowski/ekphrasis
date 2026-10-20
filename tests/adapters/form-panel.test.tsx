@@ -13,6 +13,7 @@ import {
   type SessionSnapshot,
 } from "../../src/application";
 import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
+import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
 import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
@@ -52,6 +53,7 @@ function renderPanel(state: FormState): Element {
       registry={createDefaultRegistry()}
       commit={() => undefined}
       commitDelay={DEFAULT_SETTINGS.commitDelay}
+      folds={new FoldState()}
       onOpenSource={() => undefined}
     />,
   ).container;

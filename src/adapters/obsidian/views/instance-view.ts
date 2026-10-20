@@ -28,6 +28,7 @@ import {
 import { IssueIndex } from "../../../domain";
 import { ICONS, INSTANCE_VIEW_TYPE, isYamlExtension } from "../constants";
 import type { ControlRegistry } from "../ui/control-registry";
+import { FoldState } from "../ui/fold-state";
 import { FormPanel } from "../ui/form-panel";
 import { countPhrase } from "../ui/issue-list";
 import { SourceEditor } from "./source-editor";
@@ -58,6 +59,8 @@ export class InstanceView extends TextFileView implements SessionHost {
   /** Element of the form that held the focus last, restored when the author returns. */
   private lastFocused: HTMLElement | null = null;
   private editor: SourceEditor | null = null;
+  /** Folded state of the sections of the form, kept across displays of the same file. */
+  private readonly folds = new FoldState(() => this.display());
   private readonly formEl: HTMLElement;
   private readonly sourceEl: HTMLElement;
   private readonly modeAction: HTMLElement;
@@ -107,6 +110,7 @@ export class InstanceView extends TextFileView implements SessionHost {
       this.session.reset();
       this.fileCount += 1;
       this.lastFocused = null;
+      this.folds.reset();
       this.chosenMode = this.restoredMode;
       this.restoredMode = null;
     }
@@ -134,6 +138,11 @@ export class InstanceView extends TextFileView implements SessionHost {
   /** Displays the new snapshot of the session. */
   changed(): void {
     this.display();
+  }
+
+  /** Folds every group and collection of the form when `folded` holds, and else unfolds them. */
+  foldAll(folded: boolean): void {
+    this.folds.setAll(folded);
   }
 
   /** Switches between the form view and the source view. */
@@ -259,10 +268,11 @@ export class InstanceView extends TextFileView implements SessionHost {
           snapshot: this.session.snapshot,
           registry: this.services.registry,
           // A commit from a control of a previous file is dropped rather than applied here.
-          commit: (path, value) => {
-            if (fileCount === this.fileCount) this.session.commit({ path, value });
+          commit: (commit) => {
+            if (fileCount === this.fileCount) this.session.commit(commit);
           },
           commitDelay: this.services.settings().commitDelay,
+          folds: this.folds,
           onOpenSource: () => {
             if (this.mode === "form") this.toggleMode();
           },

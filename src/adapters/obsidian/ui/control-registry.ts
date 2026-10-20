@@ -5,7 +5,7 @@
  * A kind without a registered component falls back to the generic component of its shape, so
  * every field displays, even before its dedicated control exists.
  */
-import type { ComponentType } from "preact";
+import type { ComponentChildren, ComponentType } from "preact";
 import {
   isMappingKind,
   isScalarKind,
@@ -23,6 +23,8 @@ export interface ControlProps<F> {
   readonly field: F;
   /** Whether the value must be displayed without being editable. */
   readonly readOnly: boolean;
+  /** Actions of the field as an item or an entry of its collection, such as moving it. */
+  readonly actions?: ComponentChildren;
 }
 
 export interface ScalarControlProps extends ControlProps<ScalarField> {

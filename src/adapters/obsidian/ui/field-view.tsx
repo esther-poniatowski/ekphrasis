@@ -5,19 +5,26 @@
  * unfilled. A forbidden field that still holds a value stays editable, so the author can clear
  * it, and its issue displays like any other; once cleared, the field is disabled.
  */
-import type { JSX } from "preact";
+import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../domain";
 import { useDisabling } from "./disabled-note";
 import { FieldRow } from "./field-row";
 import { useFormContext } from "./form-context";
 
-export function FieldView({ field }: { readonly field: Field }): JSX.Element {
+export function FieldView({
+  field,
+  actions = null,
+}: {
+  readonly field: Field;
+  /** Actions of the field as an item or an entry of its collection, such as moving it. */
+  readonly actions?: ComponentChildren;
+}): JSX.Element {
   const { registry, commit, errors } = useFormContext();
   const disabled = useDisabling(field) !== null;
   const locked = field.lock !== null || disabled;
   if (field.mismatch !== null) {
     return (
-      <FieldRow field={field}>
+      <FieldRow field={field} actions={actions}>
         <pre
           class="ekphrasis-yaml-text"
           title="This value does not have the shape the schema declares."
@@ -33,19 +40,19 @@ export function FieldView({ field }: { readonly field: Field }): JSX.Element {
     case "keyed-records":
     case "alternatives": {
       const Control = registry.mapping(field.kind);
-      return <Control field={field} readOnly={locked} />;
+      return <Control field={field} readOnly={locked} actions={actions} />;
     }
     case "choices":
     case "list":
     case "table":
     case "records": {
       const Control = registry.sequence(field.kind);
-      return <Control field={field} readOnly={locked} />;
+      return <Control field={field} readOnly={locked} actions={actions} />;
     }
     default: {
       const Control = registry.scalar(field.kind);
       return (
-        <FieldRow field={field} error={errors.get(field.id) ?? null}>
+        <FieldRow field={field} error={errors.get(field.id) ?? null} actions={actions}>
           <Control
             field={field}
             readOnly={locked}
