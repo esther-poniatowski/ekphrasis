@@ -7,7 +7,7 @@ note: # write the note here
 remark: optional remark # kept when the key is removed
 count: 3
 draft: false
-status: posed # posed | answered | open
+status: posed # posed | answered
 subject:
   system: pendulum
 check: { verdict: pending, evidence: "" }

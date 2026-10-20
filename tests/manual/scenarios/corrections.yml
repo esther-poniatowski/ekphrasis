@@ -2,9 +2,9 @@
 # Manual test record of the corrections made after the check of Validation.
 title: |-
   A title written as a block scalar
-status: open
-summary: open
-done: open
-count: open
+status:
+summary:
+done:
+count:
 level: low
 aim: description

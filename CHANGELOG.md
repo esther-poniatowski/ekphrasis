@@ -46,6 +46,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Modeline in the message of an unbound file, placed after the words *at the top of the file*.
 - Title of the box of issues, reduced to the counts of each kind and written in the colour of errors, such as `Validation: 3 missing fields, 1 warning`.
 - Messages of the box of issues and of the box of schema defects, aligned after the longest path.
+- Scenario records of the manual tests written with empty values as their unfilled values, without `x-unfilled: [open]` in their schemas.
 
 ### Fixed
 

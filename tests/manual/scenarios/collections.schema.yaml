@@ -4,7 +4,6 @@ title: Collections
 description: A schema exercising the controls of the collection kinds and the boxes at the top of the form.
 type: object
 required: [title, ghost, undeclared_property_with_a_long_name]
-x-unfilled: [open]
 properties:
   title: { type: string }
   tags: { type: array, items: { type: string } }
@@ -79,4 +78,4 @@ properties:
       inner:
         type: object
         properties:
-          level: { enum: [low, high, open] }
+          level: { enum: [low, high] }

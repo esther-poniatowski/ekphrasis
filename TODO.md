@@ -72,7 +72,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Guidance and navigation
 
 - [x] **Saving**: write a new scalar value in the quoting style of its siblings when they all share one quoted style that represents the value. (2026-10-20)
-- [ ] **Tooling**: write the scenario records of the manual tests with empty values as unfilled values, drop `x-unfilled: [open]` from their schemas, and update the expected results of the protocols still to run.
+- [x] **Tooling**: write the scenario records of the manual tests with empty values as unfilled values, drop `x-unfilled: [open]` from their schemas, and update the expected results of the protocols still to run. (2026-10-20)
 - [ ] **Form view**: keep a pane in the source view when another file opens in it.
 - [ ] **Form view**: display the instructions and the examples of a field on demand.
 - [ ] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian.

@@ -5,7 +5,6 @@ description: A schema exercising each kind of issue of the milestone Validation.
 type: object
 additionalProperties: false
 required: [title, status, count, aim]
-x-unfilled: [open]
 x-rules:
   - check: required-when
     field: tolerance
@@ -33,7 +32,7 @@ properties:
       - { check: word-count, max: 5, severity: warning }
       - { check: inline-markdown }
   id: { type: string, x-kind: label }
-  status: { enum: [posed, answered, open] }
+  status: { enum: [posed, answered] }
   count: { type: integer, minimum: 1 }
   category:
     x-kind: text

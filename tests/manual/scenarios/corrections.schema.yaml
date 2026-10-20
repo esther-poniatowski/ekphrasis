@@ -4,7 +4,6 @@ title: Corrections
 description: A schema exercising the corrections made after the check of Validation.
 type: object
 required: [title, status, aim, ghost]
-x-unfilled: [open]
 x-rules:
   - check: required-when
     field: tolerance
@@ -30,7 +29,7 @@ properties:
     examples: ["One sentence stating the result."]
   done: { type: boolean }
   count: { type: integer }
-  level: { enum: [low, high, open] }
+  level: { enum: [low, high] }
   aim: { enum: [description, prediction, explanation] }
   tolerance: { type: number }
   bounds:

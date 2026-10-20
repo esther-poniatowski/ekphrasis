@@ -5,7 +5,7 @@ title: |
   second line
 summary: "A summary that holds more than five words."
 id: two words
-status: open
+status:
 count: 0
 category: adjective
 code: Bad1

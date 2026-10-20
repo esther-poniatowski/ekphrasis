@@ -4,7 +4,6 @@ title: Saving
 description: A schema exercising each kind of commit of the milestone Saving of scalars.
 type: object
 required: [title, status, count]
-x-unfilled: [open]
 properties:
   title: { type: string }
   prose: { type: string, x-kind: markdown }
@@ -15,7 +14,7 @@ properties:
   count: { type: integer }
   weight: { type: number }
   draft: { type: boolean }
-  status: { enum: [posed, answered, open] }
+  status: { enum: [posed, answered] }
   subject:
     type: object
     properties:
