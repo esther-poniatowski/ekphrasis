@@ -5,9 +5,8 @@
  * The view extends `TextFileView`, which loads the text of the file through `setViewData` and
  * saves the text returned by `getViewData`. The text and the form state belong to the session of
  * the instance: each load of the text, including a reload after a change made outside, runs the
- * form pipeline again, and each commit of the form writes the file at once. A file bound to no
- * schema opens in the source view, since every form derives from a schema; a mode chosen by the
- * author holds until another file opens.
+ * form pipeline again, and each commit of the form writes the file at once. The mode displayed
+ * follows the rules of `ModeChoice`.
  */
 import {
   Notice,
@@ -33,8 +32,7 @@ import { FormPanel } from "../ui/form-panel";
 import { countPhrase } from "../ui/issue-list";
 import { confirmLoss } from "./loss-confirmation";
 import { SourceEditor } from "./source-editor";
-
-export type ViewMode = "form" | "source";
+import { isViewMode, ModeChoice, type ViewMode } from "./view-mode";
 
 /** Collaborators of the view, supplied by the plugin. */
 export interface InstanceViewServices {
@@ -44,14 +42,9 @@ export interface InstanceViewServices {
   readonly settings: () => EkphrasisSettings;
 }
 
-const isViewMode = (value: unknown): value is ViewMode => value === "form" || value === "source";
-
 export class InstanceView extends TextFileView implements SessionHost {
   private readonly session: InstanceSession;
-  /** Mode chosen by the author for the open file, or `null` to follow the binding. */
-  private chosenMode: ViewMode | null = null;
-  /** Mode restored from the workspace, applied when its file loads. */
-  private restoredMode: ViewMode | null = null;
+  private readonly modes = new ModeChoice();
   /**
    * Counter of the files loaded, which keys the form: the controls of another file are new
    * components, so no text typed for one file is committed to the next.
@@ -98,8 +91,7 @@ export class InstanceView extends TextFileView implements SessionHost {
 
   /** Mode displayed: the chosen one, else the source view for an unbound file, else the form. */
   get mode(): ViewMode {
-    const unbound = this.session.snapshot.state?.status === "unbound";
-    return this.chosenMode ?? (unbound ? "source" : "form");
+    return this.modes.displayed(this.session.snapshot.state?.status === "unbound");
   }
 
   getViewData(): string {
@@ -112,8 +104,7 @@ export class InstanceView extends TextFileView implements SessionHost {
       this.fileCount += 1;
       this.lastFocused = null;
       this.folds.reset();
-      this.chosenMode = this.restoredMode;
-      this.restoredMode = null;
+      this.modes.fileOpened();
     }
     this.session.setText(data);
     this.data = data;
@@ -148,10 +139,11 @@ export class InstanceView extends TextFileView implements SessionHost {
 
   /** Switches between the form view and the source view. */
   toggleMode(): void {
-    this.chosenMode = this.mode === "form" ? "source" : "form";
+    const mode = this.mode === "form" ? "source" : "form";
+    this.modes.choose(mode);
     this.app.workspace.requestSaveLayout();
     // The text may have changed in the source view, so the form is rebuilt from it.
-    if (this.chosenMode === "form") {
+    if (mode === "form") {
       void this.refresh();
     } else {
       this.display();
@@ -166,8 +158,8 @@ export class InstanceView extends TextFileView implements SessionHost {
    * of the issues in a notice and scrolls to the first issue displayed.
    */
   async validate(): Promise<void> {
-    if (this.chosenMode !== "form") {
-      this.chosenMode = "form";
+    if (this.modes.recorded !== "form") {
+      this.modes.choose("form");
       this.app.workspace.requestSaveLayout();
     }
     await this.refresh();
@@ -196,19 +188,19 @@ export class InstanceView extends TextFileView implements SessionHost {
     } catch (error) {
       console.error("ekphrasis: the form could not be built.", error);
       new Notice("Ekphrasis: the form could not be built; the developer console holds the error.");
-      this.chosenMode = "source";
+      this.modes.force("source");
       this.display();
     }
   }
 
   override getState(): Record<string, unknown> {
-    return { ...super.getState(), mode: this.chosenMode };
+    return { ...super.getState(), mode: this.modes.recorded };
   }
 
   override async setState(state: unknown, result: ViewStateResult): Promise<void> {
     if (typeof state === "object" && state !== null) {
       const mode = (state as Record<string, unknown>)["mode"];
-      if (isViewMode(mode)) this.restoredMode = mode;
+      if (isViewMode(mode)) this.modes.restore(mode);
     }
     await super.setState(state, result);
   }

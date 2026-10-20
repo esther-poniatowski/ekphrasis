@@ -38,6 +38,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Switch of alternative removing the keys of the previous alternative only, after a confirmation listing the fields whose filled values would be lost.
 - Folding of each group and collection, following `x-collapsed` when the form opens, the commands *Collapse all* and *Expand all*, and a vertical guide along each group.
 - New string written in the quoted style shared by its siblings, such as a double-quoted name in a new row whose neighbouring names are double-quoted.
+- Source view chosen by the author kept in its pane when another YAML file opens there.
 
 ### Changed
 

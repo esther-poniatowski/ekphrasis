@@ -84,6 +84,6 @@ The source view displays the YAML text of the instance in an editor with YAML sy
 - a button in the header of the view;
 - the command *Toggle form and source view*.
 
-A pane in the source view stays in the source view when another file opens in it, as the user decided on 2026-10-20, so an author editing YAML text moves from file to file in that view.
+A pane in the source view stays in the source view when another file opens in it, as the user decided on 2026-10-20, so an author editing YAML text moves from file to file in that view. This rule holds for a source view chosen by the author. The source view displayed for a file bound to no schema, or after a failure of the form, ends with its file. A note opened in the pane replaces the view of ekphrasis, so the next YAML file opened there displays its form.
 
 Both views edit the same file, so each view displays the edits of the other after a switch. When the text fails to parse, the form view displays the parse error with its line and its column, and offers to open the source view. A form displayed before the error stays visible under the error, as specified for [changes from outside](saving.md). The editor of the source view is supplied by ekphrasis, as the decision on the [source view](../adr/source-view.md) records.
