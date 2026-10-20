@@ -93,6 +93,37 @@ describe("sequence of commits", () => {
     expect(instance.snapshot.errors.get("missing")).toBe(REFUSALS.missing);
   });
 
+  it("leaves a block mapping emptied with `emptyAsNull` null, so its next key is a block line", async () => {
+    const block = "title: a\ncheck:\n  verdict: v # verdict kept here\nstatus: x\n";
+    const { session: instance, host } = session();
+    instance.setText(block);
+    await instance.refresh("r.yml");
+
+    const removal = {
+      kind: "remove-entry",
+      path: ["check", "verdict"],
+      emptyAsNull: true,
+    } as const;
+    expect(instance.commitAll([removal])).toBe("written");
+    expect(host.writes.at(-1)).toBe("title: a\ncheck:\n  # verdict kept here\nstatus: x\n");
+    expect(instance.commit({ path: ["check", "other"], value: "z" })).toBe("written");
+    expect(host.writes.at(-1)).toBe(
+      "title: a\ncheck:\n  other: z\n  # verdict kept here\nstatus: x\n",
+    );
+  });
+
+  it("writes the empty flow mapping for an emptied block mapping without `emptyAsNull`", async () => {
+    const block = "title: a\ncheck:\n  verdict: v\nstatus: x\n";
+    const { session: instance, host } = session();
+    instance.setText(block);
+    await instance.refresh("r.yml");
+
+    expect(instance.commitAll([{ kind: "remove-entry", path: ["check", "verdict"] }])).toBe(
+      "written",
+    );
+    expect(host.writes.at(-1)).toBe("title: a\ncheck: {}\nstatus: x\n");
+  });
+
   it("refuses a sequence while the text loads, and reports an empty sequence unchanged", async () => {
     const { session: instance, host } = session();
     instance.setText(text);

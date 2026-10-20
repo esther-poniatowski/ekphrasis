@@ -77,7 +77,7 @@ Four rules write the entries of a block collection:
 - an inserted item starts with the indicator `-` at the column of the indicators of its siblings. An item holding a mapping writes its first key after the indicator, and its other keys aligned under the first;
 - an inserted key takes the column of its siblings, and a nested collection is indented two spaces further. An empty nested collection is written `{}` or `[]`;
 - a removed item or entry takes its lines with it. Each comment on those lines stays, on a line of its own at the column of the removed entry, as for a [cleared value](#^cleared-values);
-- the removal of the only entry writes `[]` or `{}` after the key of the collection, before any comment of that line, since a block collection holds at least one entry. The only key of a mapping item, written after the indicator `-`, is replaced by `{}` when its value is a single-line scalar.
+- the removal of the only entry writes `[]` or `{}` after the key of the collection, before any comment of that line, since a block collection holds at least one entry. A switch of alternative instead leaves the key with an empty value, as the user decided on 2026-10-20, so the first key of the new alternative is written in block form, as the mapping was. The only key of a mapping item, written after the indicator `-`, is replaced by `{}` when its value is a single-line scalar.
 
 ### Flow collections
 

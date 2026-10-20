@@ -84,6 +84,12 @@ export interface ItemMove {
 export interface EntryRemoval {
   readonly kind: "remove-entry";
   readonly path: YamlPath;
+  /**
+   * Whether a block mapping left without entries holds the null value, instead of the empty flow
+   * mapping `{}`. A switch of alternative sets it, so the first key of the new alternative is
+   * written in block form, as the mapping was.
+   */
+  readonly emptyAsNull?: boolean;
 }
 
 export type Commit = ScalarCommit | ItemInsertion | ItemRemoval | ItemMove | EntryRemoval;
@@ -190,7 +196,7 @@ class CommitPlanner {
       case "move-item":
         return this.moveItem(chain, field, commit.to);
       case "remove-entry":
-        return this.removeEntry(chain, field);
+        return this.removeEntry(chain, field, commit.emptyAsNull === true);
       default:
         return this.setScalar(chain, field, commit.value);
     }
@@ -541,8 +547,11 @@ class CommitPlanner {
     };
   }
 
-  /** Change removing the entry `field`, with its key and its whole value, from its mapping. */
-  private removeEntry(chain: readonly Field[], field: Field): Change {
+  /**
+   * Change removing the entry `field`, with its key and its whole value, from its mapping. A block
+   * mapping left without entries holds `{}`, or the null value when `emptyAsNull` holds.
+   */
+  private removeEntry(chain: readonly Field[], field: Field, emptyAsNull: boolean): Change {
     const key = field.path.at(-1);
     const parent = chain.at(-2);
     const mapping = parent?.node?.kind === "mapping" ? parent.node : null;
@@ -559,7 +568,16 @@ class CommitPlanner {
     } else if (mapping.entries.length > 1) {
       edits = this.remove(mapping, entry);
     } else if (this.source.startsLine(keyStart)) {
-      edits = this.emptyCollection(chain.slice(0, -1), mapping, " {}");
+      edits = this.emptyCollection(chain.slice(0, -1), mapping, emptyAsNull ? "" : " {}");
+      // The emptied mapping reads back as the null value when no flow mapping replaces it.
+      if (emptyAsNull) {
+        return {
+          edits,
+          path: field.path,
+          effect: { kind: "remove", emptyAsNull },
+          itemChanges: [],
+        };
+      }
     } else {
       edits = this.emptyItem(entry);
     }

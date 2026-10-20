@@ -95,10 +95,8 @@ The field *series* holds two items, each writing its key *marks* as a flow seque
 - [ ] Field *source*. → A selector *Alternative* shows *Book*, followed by the field *isbn* holding `978-0`.
 - [ ] Choose *Paper* in the selector. → A dialog *Switch to Paper?* lists the field *isbn*, and the selector still shows *Book*.
 - [ ] Click *Cancel*. → The dialog closes, the selector shows *Book*, the field *isbn* holds `978-0`, and the right pane is unchanged.
-- [ ] Choose *Paper* again, then click *Remove and switch*. → The selector shows *Paper*, followed by an empty field *doi*, and the right pane shows `source: {}` in place of the lines of *source*.
-- [ ] Choose *Paper* in the selector. → An empty field *doi* replaces the field *isbn*, and the right pane is unchanged.
-- [ ] Type `10.1/x` in *doi*, then `Tab`. → The right pane shows `  doi: 10.1/x` above `  isbn: 978-0`, and the group *source* shows *The value matches several alternatives, whereas exactly one is admitted.*
-- [ ] Look at the right pane and at the group *source*. → The right pane shows `source: {doi: 10.1/x}`, since the switch removed `isbn`, and the group shows no message about several alternatives.
+- [ ] Choose *Paper* again, then click *Remove and switch*. → The selector shows *Paper*, followed by an empty field *doi*, and the right pane shows `source:` with no value in place of the lines of *source*.
+- [ ] Type `10.1/x` in *doi*, then `Tab`. → The right pane shows `source:` followed by the line `  doi: 10.1/x`, since the switch removed `isbn`, and the group shows no message about several alternatives.
 
 The field *medium* holds the alternative *Print*, with the keys *pages* and *year*. The key *year* belongs to both alternatives.
 

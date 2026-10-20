@@ -66,7 +66,9 @@ describe("switch of alternative", () => {
     expect(field.selectedAlternative).toBe(BOOK);
     const change = planAlternativeSwitch(field, BOOK, PAPER);
     expect(summary(change)).toEqual({ removed: ["isbn"], lost: ["isbn"] });
-    expect(change.removals).toEqual([{ kind: "remove-entry", path: ["source", "isbn"] }]);
+    expect(change.removals).toEqual([
+      { kind: "remove-entry", path: ["source", "isbn"], emptyAsNull: true },
+    ]);
   });
 
   it("removes the keys holding the null value, an unfilled value or an empty collection without listing them", () => {

@@ -32,7 +32,11 @@ export function planAlternativeSwitch(
   const kept = new Set((field.alternativeChildren[to] ?? []).map((child) => child.path.at(-1)));
   const removed = previous.filter((child) => child.node !== null && !kept.has(child.path.at(-1)));
   return {
-    removals: removed.map((child) => ({ kind: "remove-entry", path: child.path })),
+    removals: removed.map((child) => ({
+      kind: "remove-entry",
+      path: child.path,
+      emptyAsNull: true,
+    })),
     lost: removed.filter(holdsFilledValue),
   };
 }

@@ -9,11 +9,12 @@ import type { MappingEntry, ScalarValue, YamlNode, YamlPath } from "../model";
 
 /**
  * Effect of a commit on the value at its path: a scalar set, a key or an item removed, or, at the
- * path of a sequence, an item inserted or moved.
+ * path of a sequence, an item inserted or moved. A removal marked `emptyAsNull` leaves the null
+ * value in place of a mapping that it empties.
  */
 export type CommitEffect =
   | { readonly kind: "set"; readonly value: ScalarValue }
-  | { readonly kind: "remove" }
+  | { readonly kind: "remove"; readonly emptyAsNull?: boolean }
   | { readonly kind: "insert-item"; readonly index: number; readonly value: YamlNode }
   | { readonly kind: "move-item"; readonly from: number; readonly to: number };
 
@@ -47,12 +48,9 @@ export function expectedTree(tree: YamlNode, path: YamlPath, effect: CommitEffec
   const entries: readonly MappingEntry[] = tree.kind === "mapping" ? tree.entries : [];
   const existing = entries.find((entry) => entry.key === segment);
   if (effect.kind === "remove" && rest.length === 0) {
-    return {
-      kind: "mapping",
-      flow: false,
-      range: null,
-      entries: entries.filter((e) => e !== existing),
-    };
+    const remaining = entries.filter((e) => e !== existing);
+    if (remaining.length === 0 && effect.emptyAsNull === true) return scalar(null);
+    return { kind: "mapping", flow: false, range: null, entries: remaining };
   }
   const value = expectedTree(existing?.value ?? scalar(null), rest, effect);
   const updated = existing
