@@ -44,10 +44,25 @@ properties:
       properties:
         name: { type: string }
         aliases: { type: array, items: { type: string } }
+  series:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        marks: { type: array, items: { type: string } }
   source:
     oneOf:
       - { title: Book, required: [isbn], properties: { isbn: { type: string } } }
       - { title: Paper, required: [doi], properties: { doi: { type: string } } }
+  medium:
+    oneOf:
+      - title: Print
+        required: [pages]
+        properties: { pages: { type: string }, year: { type: integer } }
+      - title: Online
+        required: [url]
+        properties: { url: { type: string }, year: { type: integer } }
   check:
     type: object
     properties:

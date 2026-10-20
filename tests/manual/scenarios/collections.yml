@@ -19,13 +19,23 @@ terms:
 entries:
   first:
     label: First entry
-    frames: ["~ of x"]
+    frames:
+      - "~ of x"
 variants:
   - name: small
-    aliases: [s]
+    aliases:
+      - s
   - name: large
+series:
+  - name: first
+    marks: [a, b]
+  - name: second
+    marks: [c]
 source:
   isbn: 978-0
+medium:
+  pages: 340 pages
+  year: 2020
 check: {verdict: pending}
 notes:
   text: folded at opening

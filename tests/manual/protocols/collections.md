@@ -1,13 +1,13 @@
 # Test protocol: Collections
 
-This checklist verifies inside Obsidian the milestone *Collections*. The milestone gives each collection kind its controls, and each section a fold button and a vertical guide. The same checklist also verifies the changes of style requested by the [check of the corrections after *Validation*](corrections-validation.md). Both sets of roadmap steps are ticked once their items pass. Each item states an action, then the expected result after the arrow. Tick an item when the result matches, and write any deviation under *Observations*, with the message of the developer console (`Cmd+Option+I`, tab *Console*) when the console shows a message.
+This checklist verifies inside Obsidian the milestone *Collections*. The milestone gives each collection kind its controls, and each section a fold button and a vertical guide. The checklist also verifies two behaviours decided by the user on 2026-10-20. First, a new collection takes the flow form of its siblings. Second, a switch of alternative removes the keys of the previous alternative. The same checklist also verifies the changes of style requested by the [check of the corrections after *Validation*](corrections-validation.md). Both sets of roadmap steps are ticked once their items pass. Each item states an action, then the expected result after the arrow. Tick an item when the result matches, and write any deviation under *Observations*, with the message of the developer console (`Cmd+Option+I`, tab *Console*) when the console shows a message.
 
 > [!TIP] Rule for a failing item
 > Record the deviation and continue with the next item. Stop only when the plugin fails to load, since every later item depends on it.
 
 ## Setup
 
-The record `scenarios/collections.yml` is bound to the schema `scenarios/collections.schema.yaml`. The record holds one field of each collection kind. Its table *rows* holds a value outside the admitted values. Its group *notes* is folded by the keyword `x-collapsed` when the form opens. The schema requires two properties without declaring them. Its field `nested.inner.level` admits the unfilled value `open`. The items change the record cumulatively, and the section *Reset* restores it.
+The record `scenarios/collections.yml` is bound to the schema `scenarios/collections.schema.yaml`. The record holds at least one field of each collection kind. Its table *rows* holds a value outside the admitted values. Its group *notes* is folded by the keyword `x-collapsed` when the form opens. The schema requires two properties without declaring them. Its field `nested.inner.level` admits the unfilled value `open`. The items change the record cumulatively, and the section *Reset* restores it.
 
 - [ ] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
 - [ ] Open `scenarios/collections.yml`. Open it a second time in a pane on the right, through *Split right* in the tab menu, and switch the right pane to the source view. → The left pane shows the form, and the right pane the YAML text.
@@ -85,11 +85,28 @@ The field *variants* displays one collapsible group per item, headed `#1` and `#
 - [ ] Group `#3`: click `↑` in its heading. → The group holding `medium` is second, and the right pane shows `  - name: medium` between the items *small* and *large*.
 - [ ] Group `#2`, field *aliases*: add the item `m`. → The right pane shows `    aliases:` and `      - m` under `  - name: medium`.
 
+The field *series* holds two items, each writing its key *marks* as a flow sequence.
+
+- [ ] Field *series*: click *+ Add an item* below its groups, type `third` in the field *name* of the group `#3`, then `Tab`. → The right pane shows `  - name: third` after the item *second*.
+- [ ] Group `#3` of *series*, field *marks*: add the item `c`. → The right pane shows `    marks: [c]` under `  - name: third`, in the flow form of the two other items.
+
 ## Alternatives
 
 - [ ] Field *source*. → A selector *Alternative* shows *Book*, followed by the field *isbn* holding `978-0`.
+- [ ] Choose *Paper* in the selector. → A dialog *Switch to Paper?* lists the field *isbn*, and the selector still shows *Book*.
+- [ ] Click *Cancel*. → The dialog closes, the selector shows *Book*, the field *isbn* holds `978-0`, and the right pane is unchanged.
+- [ ] Choose *Paper* again, then click *Remove and switch*. → The selector shows *Paper*, followed by an empty field *doi*, and the right pane shows `source: {}` in place of the lines of *source*.
 - [ ] Choose *Paper* in the selector. → An empty field *doi* replaces the field *isbn*, and the right pane is unchanged.
 - [ ] Type `10.1/x` in *doi*, then `Tab`. → The right pane shows `  doi: 10.1/x` above `  isbn: 978-0`, and the group *source* shows *The value matches several alternatives, whereas exactly one is admitted.*
+- [ ] Look at the right pane and at the group *source*. → The right pane shows `source: {doi: 10.1/x}`, since the switch removed `isbn`, and the group shows no message about several alternatives.
+
+The field *medium* holds the alternative *Print*, with the keys *pages* and *year*. The key *year* belongs to both alternatives.
+
+- [ ] Field *medium*. → The selector shows *Print*, followed by the fields *pages* holding `340 pages` and *year* holding `2020`.
+- [ ] Choose *Online* in the selector. → The dialog *Switch to Online?* lists the field *pages* only.
+- [ ] Click *Remove and switch*. → The selector shows *Online*, followed by an empty field *url* and the field *year* holding `2020`. The right pane shows `medium:` followed by `  year: 2020` only.
+- [ ] Type `example.org` in *url*, then `Tab`. Delete its text, then `Tab` again. → The right pane shows `  url: open` above `  year: 2020`.
+- [ ] Choose *Print* in the selector. → No dialog opens, the line `  url: open` disappears from the right pane, and the selector shows *Print* with an empty field *pages*.
 
 ## Flow mapping
 
@@ -101,6 +118,7 @@ The field *check* holds `{verdict: pending}`.
 ## Consumer fixtures
 
 - [ ] Open `gnomon/target-system.yml`. Table *variables*: add a row, type `forcing amplitude` in its cell *name*, then `Tab`. Run *Ekphrasis: Toggle form and source view*. → The source view shows `  - name: forcing amplitude` after the row *damping coefficient*.
+- [ ] Return to the form view with the same command. Group `#3` of *variables*, field *signature*: add the item `t`, then run the command again. → The source view shows `    signature: [t]` under `  - name: forcing amplitude`, in the flow form of the signatures of the two other rows.
 - [ ] Return to the form view with the same command. Field *reference class → selection criteria*: add the item `a periodic torque`, then run the command again. → The source view shows `  selection_criteria: [a periodic torque]`.
 - [ ] Open *Settings → Ekphrasis*, click *Add a path rule*, and fill the pattern `**/{glossary,*.glossary}.yml` and the schema `geonexus/schemas/glossary.schema.yaml`. Open `geonexus/glossary.yml`. → The tab shows the form of the glossary, with the sections *terms* and *forbidden*.
 - [ ] Below the groups of *terms*, add the identifier `phase-lag`, then type `phase lag` in its field *label*, then `Tab`. → The fields *gloss* and *category* of `phase-lag` are reported missing.
