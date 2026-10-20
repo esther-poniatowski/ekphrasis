@@ -43,3 +43,10 @@ The decision holds, as the spike on rendering time measured on 2026-10-01 in a t
 - MathJax loaded in 37 ms at its first use in a session, and in about 2 ms afterwards.
 
 Therefore, the form view must not render all its values in one task. A batch of about fifteen values keeps each task under 50 ms, the duration beyond which the browser counts a task as blocking input. The spike used short synthetic values on one computer, without the post-processors of other plugins. Therefore, the size of a batch must be adjusted on the records of the consumer projects, where some prose values exceed 400 characters.
+
+The form view adds a budget of time to the count, as the [rendering in batches](../features/form-view.md#^batched-rendering) specifies: a batch ends after fifteen values, or once 40 ms have elapsed. Therefore, a batch of long values ends before it blocks input, whatever the size of the batch. The records of the consumer projects were measured on 2026-10-20, outside Obsidian, with two results:
+
+- The longest question record of gnomon holds 52 string values, the longest of 339 characters. At the measured cost per value, its rendered values fill about four batches.
+- The glossaries of geonexus render no value, since their schemas declare no rendered kind.
+
+The cost of a long value inside Obsidian, with the post-processors of other plugins, is observed in the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md), since the form reports each batch longer than 50 ms in the developer console.

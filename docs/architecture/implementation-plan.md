@@ -133,6 +133,8 @@ The decision reopens when a field kind for references, suggesting the identifier
 
 **Exit criterion.** A question record of gnomon, filled only through the form, needs no consultation of the template comments.
 
+**Check.** A template guides its author by three means: a comment listing the admitted values, a comment giving instructions, and a placeholder showing the form of a value. On 2026-10-20, the [acceptance test of guidance](../../tests/acceptance/guidance.test.ts) built the form of the question template of gnomon from the question schema of the fixtures. Each key of the template was a field of that form, with the admitted values of its comment, with instructions for each other comment, and with an example for each placeholder. The form displays these values in its dropdowns, and the instructions and examples at the help button of each field. The area of keys outside the schema dates from the milestone *Bound form*. The help buttons, the rendered values, the outline and its search await the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md).
+
 ### Instance creation
 
 **Goal.** A command creates a new record from its schema.

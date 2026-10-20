@@ -34,8 +34,8 @@ The code of each feature is divided according to whether it calls the API of Obs
 | [Field kinds](../features/field-kinds.md) | Derivation of the kind of each field | — | — | One control per kind |
 | [Field paths](../features/field-paths.md) | Parser of field paths, matching of paths against the instance | — | — | — |
 | [Instance creation](../features/instance-creation.md) | Skeleton of a new instance | Use case that creates an instance | — | Commands, choice of the schema and of the path |
-| [Form view](../features/form-view.md) | Form model | Use case that opens a form | — | Form view, rendered values, source view |
-| [Outline](../features/outline.md) | — | — | — | Outline view |
+| [Form view](../features/form-view.md) | Form model | Use case that opens a form | — | Form view, instructions on demand, rendered values and their queue, source view |
+| [Outline](../features/outline.md) | Entries of the outline, names of items, restriction to the entries with issues, search of fields | — | — | Outline view, channel following the active form, move of the form to a field |
 | [Saving](../features/saving.md) | Scalar styles, plan of the edits of a commit, expected document | Use case that commits an edit and confirms it by parsing again, session of an open instance, port for the document editor | Text of each scalar, splice into the source text | Commit triggers of the controls, writes through the vault, reaction to changes from outside |
 | [Validation](../features/validation.md) | Unfilled values, conversion of the errors of the validator to field paths, predefined checkers, paths of rules, issues | Order of checks, port for the schema validator | JSON Schema validator | Display of issues, command *Validate instance*, rendering of formulas for the checker `latex` |
 | [Custom checkers](../features/custom-checkers.md) | — | Port for the checker runner | Python process and its message protocol | Interpreter and modules in the settings tab |

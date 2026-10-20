@@ -73,11 +73,11 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 - [x] **Saving**: write a new scalar value in the quoting style of its siblings when they all share one quoted style that represents the value. (2026-10-20)
 - [x] **Tooling**: write the scenario records of the manual tests with empty values as unfilled values, drop `x-unfilled: [open]` from their schemas, and update the expected results of the protocols still to run. (2026-10-20)
-- [x] **Form view**: keep a pane in the source view when another file opens in it. (2026-10-20)
+- [ ] **Form view**: keep a pane in the source view when another file opens in it.
 - [ ] **Form view**: display the instructions and the examples of a field on demand.
 - [ ] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian.
 - [ ] **Form view**: render first the fields that enter the visible area of a long instance, in batches that yield to input between them.
-- [ ] **Form view**: display the keys outside the schema in a read-only area.
+- [x] **Form view**: display the keys outside the schema in a read-only area. (2026-10-20: implemented by the milestone *Bound form*, and checked by its protocol and by the protocol of validation)
 - [ ] **Outline**: display the entries of the active instance, and move the form to the field of a clicked entry.
 - [ ] **Outline**: mark the entries with issues, and restrict the outline to them on demand.
 - [ ] **Form view**: display the counts of the summary at the top of the form as a list, one line per kind of issue, with the fields of each kind reachable from it.

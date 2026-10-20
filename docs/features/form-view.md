@@ -27,11 +27,23 @@ The text of the form can be selected and copied, including the labels, the schem
 
 ## Instructions and examples
 
-A help button beside each label displays the instructions and the examples of the field below that label, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. An empty control displays the first example as placeholder text, after the mark `—` of an [unfilled value](#^unfilled-display).
+A help button beside each label displays the instructions and the examples of the field below that label, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. The button responds to a click only, since touch devices have no hover. A field carries the button when its schema declares the keyword `description` or `examples`. The instructions are rendered as Markdown, and the examples follow them, each written as in the file. The button shows the information icon, distinct from the circled question mark of a locked value. Three places carry the button besides the label of a scalar field:
+
+- the heading of a group or a collection, whose instructions display below the heading, also while the section is folded;
+- the header of each column of a table, whose instructions display above the table under the name of the column, since the cells of a column share them;
+- the title of the form, for the instructions of the root schema.
+
+An empty control displays the first example as placeholder text, after the mark `—` of an [unfilled value](#^unfilled-display).
 
 ## Rendered values
 
-A field of kind `markdown-line`, `markdown` or `latex` displays its value rendered as in a note, as the [requirement on rendered content](../requirements.md#^rendered-content) demands. A click on the rendered value opens the control on the text of the value, and leaving the control renders the value again. The values render through the renderers of Obsidian, as the decision on [field rendering](../adr/field-rendering.md) records. Therefore, links, callouts and formulas display as in any note.
+A field of kind `markdown-line`, `markdown` or `latex` displays its value rendered as in a note, as the [requirement on rendered content](../requirements.md#^rendered-content) demands. A click on the rendered value opens the control on the text of the value, and leaving the control renders the value again. The focus reached by the keyboard opens the control as a click does. The values render through the renderers of Obsidian, as the decision on [field rendering](../adr/field-rendering.md) records. Therefore, links, callouts and formulas display as in any note. A value of kind `markdown-line` displays inline, and a value of kind `latex` as a display formula. Three cases depart from the click that opens the control:
+
+- an empty value displays its control at once, with its placeholder;
+- a read-only value, locked or disabled, displays rendered, and a click on it opens no control;
+- a click on a link of the rendered value follows the link, and an internal link opens its note, resolved from the folder of the instance.
+
+Each rendering blocks input for a few milliseconds, so the values of a long instance render in batches. The values that enter the visible area render first, in the order of the form, and the other values follow. A batch renders at most fifteen values, and ends earlier once 40 ms have elapsed. Therefore, a batch of long values stays under 50 ms, since the browser counts a longer task as blocking input. Between two batches, the form yields to input. Until its rendering runs, a value displays as its plain text. A batch longer than 50 ms is reported in the developer console, with its number of values. ^batched-rendering
 
 ## Unfilled values
 
@@ -47,7 +59,7 @@ The file keeps its unfilled value, and a cleared required field receives the fir
 
 Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A missing field takes the accent colour of the required marker, and an invalid value the colour of errors. A group containing an issue carries the number of its issues in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
 
-The top of the form counts the missing fields, the invalid values and the warnings of the instance. These counts form the title of a box, written in the colour of errors, such as `Validation: 3 missing fields, 9 invalid values, 1 warning`. Under its title, the box lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a required property absent from the properties of its group. The same property is also reported as a defect of the schema. This box and the box of schema defects align the start of their messages after the longest path.
+The top of the form summarizes the issues of the instance in a box titled *Validation*, written in the colour of errors. The box holds one line for each mark of issue present: missing fields, invalid values, then warnings. Each line opens with the count of its issues, such as `3 missing fields`, and names each field holding an issue of that kind. A click on a name moves the form to its field, as a click on an entry of the [outline](outline.md) does. Several fields can share one label, so a field is named by the trail of the names from the top of the form, such as `rows › bob › name`, with each item named as in the outline. Under these lines, the box lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a required property absent from the properties of its group. The same property is also reported as a defect of the schema. This box and the box of schema defects align the start of their messages after the longest path.
 
 ## Conditional rules
 

@@ -26,11 +26,11 @@ Each field is filled in its control, and each change is saved into the file as s
 - the help button beside a label displays the instructions and the examples of the field;
 - a Markdown or LaTeX value displays rendered, and a click on it opens its text for editing;
 - a group or a table can be collapsed, so that the form shows the part under work only;
-- the [outline](../features/outline.md) in the side panel moves the form to any field in one click.
+- the [outline](../features/outline.md) in the side panel, opened by the command *Show outline*, moves the form to any field in one click, and its search, opened by the command *Search the fields*, finds a field by its name.
 
 ## Correcting issues
 
-To list the remaining work, the author restricts the outline to the entries with issues, and follows each entry to its highlighted field. To run every rule at once, including the custom checkers of the project, the author runs the command *Validate instance*. The meaning of each issue is specified under [validation](../features/validation.md).
+To list the remaining work, the author restricts the outline to the entries with issues, and follows each entry to its highlighted field. The box *Validation* at the top of the form also names each field holding an issue, and a click on a name moves the form to that field. To run every rule at once, including the custom checkers of the project, the author runs the command *Validate instance*. The meaning of each issue is specified under [validation](../features/validation.md).
 
 ## Editing the YAML text
 

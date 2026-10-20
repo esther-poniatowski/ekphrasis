@@ -39,6 +39,9 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Folding of each group and collection, following `x-collapsed` when the form opens, the commands *Collapse all* and *Expand all*, and a vertical guide along each group.
 - New string written in the quoted style shared by its siblings, such as a double-quoted name in a new row whose neighbouring names are double-quoted.
 - Source view chosen by the author kept in its pane when another YAML file opens there.
+- Instructions and examples of a field displayed on demand, by a help button beside its label, in the heading of its section, in the header of its column, or beside the title of the form.
+- Values of kind `markdown-line`, `markdown` and `latex` displayed through the renderers of Obsidian and edited after a click, the visible values rendered first, in batches that yield to input.
+- Outline of the active form in a side panel, with the marks of issues, the restriction to the entries with issues, and a search that moves the form to a field and shows its instructions, opened by the commands *Show outline* and *Search the fields*.
 
 ### Changed
 
@@ -48,6 +51,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Title of the box of issues, reduced to the counts of each kind and written in the colour of errors, such as `Validation: 3 missing fields, 1 warning`.
 - Messages of the box of issues and of the box of schema defects, aligned after the longest path.
 - Scenario records of the manual tests written with empty values as their unfilled values, without `x-unfilled: [open]` in their schemas.
+- Box of issues at the top of the form, holding one line per kind of issue with the names of the fields concerned, each moving the form to its field, in place of a title listing the counts.
 
 ### Fixed
 
