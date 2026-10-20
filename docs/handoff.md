@@ -64,11 +64,7 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. Three further questions await the user:
-
-- whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder;
-- whether a new collection under a block mapping should take the flow form when its sibling entries write the same key in flow form. The current rule writes the block form, as the [rules of collections](features/saving.md#^structural-edits) state, so a new row of gnomon receives `signature:` on its own line, whereas its siblings write `signature: [bob, t]`;
-- whether choosing another alternative should remove the keys of the previous alternative. The form keeps them until their fields are cleared, so a value can match two alternatives meanwhile.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. The user decided on 2026-10-20 the two questions left by the milestone *Collections*: a new collection follows the flow form of its siblings, and choosing another alternative removes the keys of the previous one. Both decisions are specified in the [rules of collections](features/saving.md#^structural-edits) and the [field kinds](features/field-kinds.md), and listed as open steps of the roadmap.
 
 ## Provenance
 

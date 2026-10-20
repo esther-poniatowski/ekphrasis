@@ -66,6 +66,8 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings. (2026-10-20)
 - [ ] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*.
 - [ ] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group.
+- [ ] **Saving**: write a new collection under a block mapping in flow form when every sibling holding the same key writes it in flow form.
+- [ ] **Field kinds**: remove the keys of the previous alternative when another alternative is chosen, after a confirmation when one of them holds a filled value.
 
 ## Guidance and navigation
 
