@@ -16,10 +16,12 @@ import {
   type SequenceField,
 } from "../../../../domain";
 import type { ControlProps } from "../control-registry";
+import { FieldHelp, HelpButton, hasGuidance, type Guidance } from "../field-help";
 import { DisabledNote, forbidsItself, useDisabling } from "../disabled-note";
 import { LockNote, useLockDisclosure } from "../field-label";
 import { FieldView } from "../field-view";
 import { useFormContext } from "../form-context";
+import { columnHelpKey } from "../help-state";
 import { fieldMark, IssueList } from "../issue-list";
 import { useDraft } from "./draft";
 import { ActionButton, EntryActions, ItemActions } from "./item-actions";
@@ -27,8 +29,11 @@ import { KeyAdder } from "./key-adder";
 import { SectionHeading, useFold } from "./section-heading";
 import { AddButton } from "./sequence-section";
 
-/** Column of a table: the key of a property of the rows, with its label and requirement. */
-interface Column {
+/**
+ * Column of a table: the key of a property of the rows, with its label, its requirement, and its
+ * instructions and examples, displayed below the header of the table on demand.
+ */
+interface Column extends Guidance {
   readonly key: string;
   readonly label: string;
   readonly required: boolean;
@@ -41,6 +46,8 @@ function columnsOf(template: Field | null | undefined): Column[] {
     key: String(child.path.at(-1)),
     label: child.label,
     required: child.required,
+    description: child.description,
+    examples: child.examples,
   }));
 }
 
@@ -179,6 +186,14 @@ function TableFrame({
       <IssueList issues={issues.at(field.id)} />
       {!fold.folded && (
         <div class="ekphrasis-group-body">
+          {columns.map((column) => (
+            <FieldHelp
+              key={column.key}
+              helpKey={columnHelpKey(field.uid, column.key)}
+              guidance={column}
+              title={column.label}
+            />
+          ))}
           <div class="ekphrasis-table-scroll">
             <table class="ekphrasis-table">
               <thead>
@@ -191,6 +206,12 @@ function TableFrame({
                         <span class="ekphrasis-required" aria-label="required">
                           *
                         </span>
+                      )}
+                      {hasGuidance(column) && (
+                        <HelpButton
+                          helpKey={columnHelpKey(field.uid, column.key)}
+                          label={column.label}
+                        />
                       )}
                     </th>
                   ))}

@@ -1,6 +1,6 @@
 /**
- * Label of a field, with the markers of a required field and of a locked value, and the note
- * that explains a lock. A field is marked required when the schema requires it, or when a rule
+ * Label of a field, with the markers of a required field and of a locked value, the help button
+ * of a field with instructions or examples, and the note that explains a lock. A field is marked required when the schema requires it, or when a rule
  * `required-when` requires it under the current values.
  *
  * The explanation of a lock is revealed by a click on its badge rather than by a tooltip: no
@@ -9,6 +9,7 @@
 import type { JSX } from "preact";
 import { useId, useState } from "preact/hooks";
 import type { Field, FieldLock } from "../../../domain";
+import { HelpButton, hasGuidance } from "./field-help";
 import { useFormContext } from "./form-context";
 
 const LOCK_NOTES: Readonly<Record<FieldLock, string>> = {
@@ -58,6 +59,7 @@ export function FieldLabel({
           <HelpIcon />
         </button>
       )}
+      {hasGuidance(field) && <HelpButton helpKey={field.uid} label={field.label} />}
     </div>
   );
 }

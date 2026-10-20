@@ -1,13 +1,18 @@
 /**
  * Context shared by the components of one form: the registry of controls, the commits of values
- * and of structural edits, the confirmation of a loss of values, the commit delay, the reasons of the refused commits, the issues of
- * validation, the constraints of the conditional rules, and the folded state of the sections.
+ * and of structural edits, the confirmation of a loss of values, the commit delay, the reasons of
+ * the refused commits, the issues of validation, the constraints of the conditional rules, the
+ * folded state of the sections, the shown instructions, the rendering of values, and the move of
+ * the form to a field.
  */
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
 import type { Commit, ConstraintIndex, IssueIndex, ScalarValue, YamlPath } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 import type { FoldState } from "./fold-state";
+import type { HelpState } from "./help-state";
+import type { RenderScheduler } from "./rendering/render-queue";
+import type { ValueRenderer } from "./rendering/value-renderer";
 
 /** Switch of alternative waiting for a confirmation, since it would remove filled values. */
 export interface LossRequest {
@@ -39,6 +44,13 @@ export interface FormContextValue {
   /** Fields required or forbidden by the conditional rules under the current values. */
   readonly constraints: ConstraintIndex;
   readonly folds: FoldState;
+  readonly help: HelpState;
+  /** Renderer of the values of kind `markdown`, `markdown-line` and `latex`. */
+  readonly renderer: ValueRenderer;
+  /** Scheduler of the renderings, which renders the visible values first. */
+  readonly scheduler: RenderScheduler;
+  /** Moves the form to the field at `path`, unfolding the sections containing it. */
+  readonly reveal: (path: YamlPath) => void;
 }
 
 export const FormContext = createContext<FormContextValue | null>(null);

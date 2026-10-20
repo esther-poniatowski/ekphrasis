@@ -16,7 +16,10 @@ import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-re
 import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
 import type { LossRequest } from "../../src/adapters/obsidian/ui/form-context";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
-import type { PathRule } from "../../src/domain";
+import { HelpState } from "../../src/adapters/obsidian/ui/help-state";
+import { IMMEDIATE_SCHEDULER } from "../../src/adapters/obsidian/ui/rendering/render-queue";
+import { TEXT_RENDERER } from "../../src/adapters/obsidian/ui/rendering/value-renderer";
+import type { PathRule, YamlPath } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
 import { createValidation } from "./validation";
 
@@ -24,8 +27,11 @@ export interface RenderedForm {
   readonly container: Element;
   readonly session: InstanceSession;
   readonly folds: FoldState;
+  readonly help: HelpState;
   /** Requests of confirmation made by the form, in their order. */
   readonly confirmations: LossRequest[];
+  /** Paths of the fields to which the form was asked to move, in their order. */
+  readonly reveals: YamlPath[];
 }
 
 /**
@@ -50,6 +56,8 @@ export async function renderForm(
   let rerender: ((ui: ComponentChild) => void) | null = null;
   const display = (): void => rerender?.(panel());
   const folds = new FoldState(display);
+  const help = new HelpState(display);
+  const reveals: YamlPath[] = [];
   const session = new InstanceSession(forms, commits, { write: () => {}, changed: display });
   const confirmations: LossRequest[] = [];
   const panel = (): ComponentChild => (
@@ -64,6 +72,10 @@ export async function renderForm(
       }}
       commitDelay={DEFAULT_SETTINGS.commitDelay}
       folds={folds}
+      help={help}
+      renderer={TEXT_RENDERER}
+      scheduler={IMMEDIATE_SCHEDULER}
+      reveal={(path) => reveals.push(path)}
       onOpenSource={() => undefined}
     />
   );
@@ -71,7 +83,7 @@ export async function renderForm(
   const result = render(<div />);
   rerender = result.rerender;
   await session.refresh(path);
-  return { container: result.container, session, folds, confirmations };
+  return { container: result.container, session, folds, help, confirmations, reveals };
 }
 
 /** Element matching `selector` under `container`, or an error naming the selector. */

@@ -24,6 +24,13 @@ export class FoldState {
     this.changed();
   }
 
+  /** Unfolds the fields of identities `uids`, as a move of the form to a field requires. */
+  unfold(uids: readonly string[]): void {
+    if (uids.length === 0) return;
+    for (const uid of uids) this.toggled.set(uid, false);
+    this.changed();
+  }
+
   /** Folds every field when `folded` holds, and else unfolds every field. */
   setAll(folded: boolean): void {
     this.toggled.clear();

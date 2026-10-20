@@ -1,20 +1,19 @@
 /**
- * Multi-line input, for the kind `markdown`.
+ * Multi-line input, the editor of the kind `markdown`.
  */
 import type { JSX } from "preact";
-import type { ScalarControlProps } from "../control-registry";
 import { placeholderOf } from "./scalar-format";
-import { useTextDraft } from "./use-text-draft";
+import type { EditorProps } from "./text-control";
 
 /** Bounds on the number of visible lines, so a short value stays compact and a long one scrolls. */
 const MIN_ROWS = 2;
 const MAX_ROWS = 12;
 
-export function TextareaControl({ field, readOnly, onCommit }: ScalarControlProps): JSX.Element {
-  const draft = useTextDraft(field, onCommit);
+export function TextArea({ field, readOnly, draft, inputRef }: EditorProps): JSX.Element {
   const rows = Math.min(MAX_ROWS, Math.max(MIN_ROWS, draft.text.split("\n").length));
   return (
     <textarea
+      ref={inputRef ?? null}
       class="ekphrasis-control"
       value={draft.text}
       rows={rows}

@@ -6,8 +6,8 @@
  * editable, so the text typed in a control survives a change made outside. A text that fails to
  * parse adds a notice above the form: the commits made meanwhile wait for a text that parses.
  *
- * The issues of validation display at their fields. The top of the form counts them, and lists
- * those whose path designates no field of the form.
+ * The issues of validation display at their fields. The top of the form counts them by mark,
+ * names the fields holding them, and lists those whose path designates no field of the form.
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { FormReady, SessionSnapshot } from "../../../application";
@@ -17,14 +17,19 @@ import {
   type Commit,
   type SchemaBinding,
   type SchemaIssue,
+  type YamlPath,
 } from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
+import { FieldHelp, HelpButton, hasGuidance } from "./field-help";
 import { FieldView } from "./field-view";
 import type { FoldState } from "./fold-state";
 import { FormContext, type LossRequest } from "./form-context";
+import type { HelpState } from "./help-state";
 import { InlineText } from "./inline-text";
-import { countPhrase, IssueList } from "./issue-list";
+import { IssueSummary } from "./issue-summary";
+import type { RenderScheduler } from "./rendering/render-queue";
+import type { ValueRenderer } from "./rendering/value-renderer";
 import { FieldList } from "./sections/field-list";
 
 export interface FormPanelProps {
@@ -39,6 +44,12 @@ export interface FormPanelProps {
   readonly commitDelay: number;
   /** Folded state of the sections, kept by the view across displays. */
   readonly folds: FoldState;
+  /** Shown instructions of the fields, kept by the view across displays. */
+  readonly help: HelpState;
+  readonly renderer: ValueRenderer;
+  readonly scheduler: RenderScheduler;
+  /** Moves the form to the field at a path, unfolding the sections containing it. */
+  readonly reveal: (path: YamlPath) => void;
   readonly onOpenSource: () => void;
 }
 
@@ -113,6 +124,10 @@ function EditableForm({
   confirmLoss,
   commitDelay,
   folds,
+  help,
+  renderer,
+  scheduler,
+  reveal,
 }: FormPanelProps & {
   readonly form: FormReady;
   readonly notice: JSX.Element | null;
@@ -132,6 +147,10 @@ function EditableForm({
         issues,
         constraints,
         folds,
+        help,
+        renderer,
+        scheduler,
+        reveal,
       }}
     >
       <FormRoot form={form} issues={issues} notice={notice} />
@@ -154,7 +173,15 @@ function FormRoot({
   return (
     <div class="ekphrasis-form">
       <div class="ekphrasis-form-header">
-        {model.title !== null && <div class="ekphrasis-form-title">{model.title}</div>}
+        {(model.title !== null || hasGuidance(root)) && (
+          <div class="ekphrasis-form-title">
+            {model.title}
+            {hasGuidance(root) && (
+              <HelpButton helpKey={root.uid} label={model.title ?? "the record"} />
+            )}
+          </div>
+        )}
+        <FieldHelp helpKey={root.uid} guidance={root} />
         <div class="ekphrasis-form-binding">
           Schema <code>{binding.schemaPath}</code>
           {`, named by ${BINDING_SOURCES[binding.source]}.`}
@@ -178,14 +205,7 @@ function FormRoot({
           </ul>
         </div>
       )}
-      {issues.issues.length > 0 && (
-        <div class="ekphrasis-issue-summary">
-          <div class="ekphrasis-issue-summary-title">
-            {`Validation: ${countPhrase(issues.counts)}`}
-          </div>
-          <IssueList issues={issues.unplaced} withPaths />
-        </div>
-      )}
+      <IssueSummary model={model} issues={issues} />
       {root.mismatch === null &&
       (root.kind === "group" || root.kind === "keyed-table" || root.kind === "keyed-records") ? (
         <FieldList field={root} />

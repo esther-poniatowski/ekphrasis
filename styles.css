@@ -546,3 +546,148 @@ textarea.ekphrasis-control {
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
 }
+
+/* ---- Guidance and navigation ------------------------------------------------------------- */
+
+/* The help button resets the theme styles of buttons, as the lock symbol does. */
+.ekphrasis-help-button,
+.ekphrasis-help-button:hover {
+  display: inline-flex;
+  align-self: center;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  color: var(--text-faint);
+  background: none;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ekphrasis-help-button svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.ekphrasis-help-button:hover,
+.ekphrasis-help-button[data-shown] {
+  color: var(--text-accent);
+}
+
+/* The instructions of a field span its row, between its label and its control. */
+.ekphrasis-help {
+  grid-column: 1 / -1;
+  margin: var(--size-2-1) 0 var(--size-2-2);
+  padding: var(--size-2-2) var(--size-4-3);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: var(--radius-s);
+  background-color: var(--background-secondary-alt);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-help-title {
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-help-text > :first-child {
+  margin-top: 0;
+}
+
+.ekphrasis-help-text > :last-child {
+  margin-bottom: 0;
+}
+
+.ekphrasis-help-examples ul {
+  margin: var(--size-2-1) 0 0;
+  padding-left: var(--size-4-4);
+}
+
+.ekphrasis-help-examples-label {
+  color: var(--text-faint);
+}
+
+/* A rendered value reads as its control: a click on it opens the editor. */
+.ekphrasis-rendered.ekphrasis-control {
+  min-height: var(--input-height);
+  padding: var(--size-2-2) var(--size-4-2);
+  border-radius: var(--radius-s);
+  cursor: text;
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-rendered.ekphrasis-control:hover,
+.ekphrasis-rendered.ekphrasis-control:focus-visible {
+  background-color: var(--background-modifier-hover);
+}
+
+.ekphrasis-rendered[aria-readonly="true"] {
+  cursor: default;
+}
+
+/* The Markdown renderer wraps inline content in a paragraph, displayed inline for one line. */
+.ekphrasis-rendered[data-kind="markdown-line"] p {
+  display: inline;
+  margin: 0;
+}
+
+.ekphrasis-rendered[data-kind="markdown"] > :first-child {
+  margin-top: 0;
+}
+
+.ekphrasis-rendered[data-kind="markdown"] > :last-child {
+  margin-bottom: 0;
+}
+
+/* A field reached from the outline or the summary is highlighted briefly. */
+.ekphrasis-field[data-revealed],
+.ekphrasis-group[data-revealed],
+td[data-revealed] {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+/* Summary of the issues: one line per kind, followed by the fields holding issues of that kind. */
+.ekphrasis-issue-lines {
+  margin: var(--size-2-1) 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ekphrasis-issue-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-1) var(--size-4-2);
+  align-items: baseline;
+}
+
+.ekphrasis-issue-line-count {
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-issue-line.mod-invalid .ekphrasis-issue-line-count {
+  color: var(--text-error);
+}
+
+.ekphrasis-issue-line.mod-missing .ekphrasis-issue-line-count {
+  color: var(--text-accent);
+}
+
+.ekphrasis-issue-line.mod-warning .ekphrasis-issue-line-count {
+  color: rgb(var(--color-orange-rgb));
+}
+
+.ekphrasis-field-link,
+.ekphrasis-field-link:hover {
+  height: auto;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: none;
+  color: var(--link-color);
+  font-size: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

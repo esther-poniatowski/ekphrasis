@@ -25,6 +25,7 @@ import { EkphrasisSettingTab, type SettingsHost } from "./settings-tab";
 import { createDefaultRegistry } from "./ui/default-registry";
 import { VaultFileSource } from "./vault-file-source";
 import { InstanceView } from "./views/instance-view";
+import { OutlineChannel } from "./views/outline-channel";
 
 /** Delay after the last change of the settings before the open views are rebuilt. */
 const SETTINGS_REFRESH_DELAY_MS = 500;
@@ -61,9 +62,10 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     );
     const commits = new CommitService(parser, new YamlSourceEditor(), validation);
     const registry = createDefaultRegistry();
+    const outline = new OutlineChannel();
     this.registerView(
       INSTANCE_VIEW_TYPE,
-      (leaf) => new InstanceView(leaf, { forms, commits, registry, settings }),
+      (leaf) => new InstanceView(leaf, { forms, commits, registry, settings, outline }),
     );
 
     const refused = registerExtensions(YAML_EXTENSIONS, (extensions) =>

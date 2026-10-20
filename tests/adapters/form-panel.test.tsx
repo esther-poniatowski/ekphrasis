@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 /**
- * Boxes at the top of the form and message of an unbound file, in a simulated DOM: the title of
- * the box of issues lists the counts, both boxes put each message in a column after its path,
+ * Boxes at the top of the form and message of an unbound file, in a simulated DOM: the box of
+ * issues lists the counts of each kind with the fields reached from them, both boxes put each
+ * message in a column after its path,
  * and the message of an unbound file names the line of the modeline after its place.
  */
 import { cleanup, render } from "@testing-library/preact";
@@ -15,6 +16,10 @@ import {
 import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
 import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
+import { HelpState } from "../../src/adapters/obsidian/ui/help-state";
+import { IMMEDIATE_SCHEDULER } from "../../src/adapters/obsidian/ui/rendering/render-queue";
+import { TEXT_RENDERER } from "../../src/adapters/obsidian/ui/rendering/value-renderer";
+import type { YamlPath } from "../../src/domain";
 import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
 import { createValidation } from "../support/validation";
@@ -41,7 +46,10 @@ async function stateOf(text: string): Promise<FormState> {
   return forms.open(text === "" ? "free.yml" : "bound/r.yml", text);
 }
 
-function renderPanel(state: FormState): Element {
+function renderPanel(
+  state: FormState,
+  reveal: (path: YamlPath) => void = () => undefined,
+): Element {
   const snapshot: SessionSnapshot = {
     state,
     form: state.status === "form" ? state : null,
@@ -56,16 +64,37 @@ function renderPanel(state: FormState): Element {
       confirmLoss={() => Promise.resolve(false)}
       commitDelay={DEFAULT_SETTINGS.commitDelay}
       folds={new FoldState()}
+      help={new HelpState()}
+      renderer={TEXT_RENDERER}
+      scheduler={IMMEDIATE_SCHEDULER}
+      reveal={reveal}
       onOpenSource={() => undefined}
     />,
   ).container;
 }
 
 describe("boxes at the top of the form", () => {
-  it("titles the box of issues by the list of counts, without a final period", async () => {
-    const container = renderPanel(await stateOf("title: open\nstatus: open\ncount: many\n"));
-    const title = container.querySelector(".ekphrasis-issue-summary-title");
-    expect(title?.textContent).toBe("Validation: 3 missing fields, 1 invalid value");
+  it("lists one line per kind of issue, naming the fields that a click reaches", async () => {
+    const reveals: unknown[] = [];
+    const container = renderPanel(
+      await stateOf("title: open\nstatus: open\ncount: many\n"),
+      (path) => reveals.push(path),
+    );
+    expect(container.querySelector(".ekphrasis-issue-summary-title")?.textContent).toBe(
+      "Validation",
+    );
+    const lines = Array.from(container.querySelectorAll(".ekphrasis-issue-line"), (line) => [
+      line.querySelector(".ekphrasis-issue-line-count")?.textContent,
+      Array.from(line.querySelectorAll("button"), (button) => button.textContent),
+    ]);
+    // The required property `ghost` has no field, so it is listed below the lines, with its path.
+    expect(lines).toEqual([
+      ["3 missing fields", ["title", "status"]],
+      ["1 invalid value", ["count"]],
+    ]);
+    const [, count] = Array.from(container.querySelectorAll<HTMLElement>(".ekphrasis-field-link"));
+    count?.click();
+    expect(reveals).toEqual([["status"]]);
   });
 
   it("puts each message after its path, in both boxes", async () => {

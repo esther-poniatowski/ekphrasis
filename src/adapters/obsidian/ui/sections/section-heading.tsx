@@ -1,9 +1,12 @@
 /**
  * Heading of a group or a collection: the button folding the section, the label of the field,
  * the count of the issues within it, and the actions of an item or an entry, such as moving it.
+ * The instructions of the field follow the heading while they are shown, also when the section
+ * is folded.
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../../domain";
+import { FieldHelp } from "../field-help";
 import { FieldLabel, type LockDisclosure } from "../field-label";
 import { useFormContext } from "../form-context";
 import { IssueCount } from "../issue-list";
@@ -39,20 +42,23 @@ export function SectionHeading({
 }): JSX.Element {
   const { issues } = useFormContext();
   return (
-    <div class="ekphrasis-group-heading">
-      <button
-        type="button"
-        class="ekphrasis-fold"
-        aria-expanded={!fold.folded}
-        aria-label={fold.folded ? `Expand ${field.label}` : `Collapse ${field.label}`}
-        onClick={fold.toggle}
-      >
-        <ChevronIcon />
-      </button>
-      <FieldLabel field={field} disclosure={disclosure} />
-      <IssueCount count={issues.countWithin(field.path)} />
-      {actions}
-    </div>
+    <>
+      <div class="ekphrasis-group-heading">
+        <button
+          type="button"
+          class="ekphrasis-fold"
+          aria-expanded={!fold.folded}
+          aria-label={fold.folded ? `Expand ${field.label}` : `Collapse ${field.label}`}
+          onClick={fold.toggle}
+        >
+          <ChevronIcon />
+        </button>
+        <FieldLabel field={field} disclosure={disclosure} />
+        <IssueCount count={issues.countWithin(field.path)} />
+        {actions}
+      </div>
+      <FieldHelp helpKey={field.uid} guidance={field} />
+    </>
   );
 }
 

@@ -1,0 +1,105 @@
+/**
+ * Instructions of a field on demand: a help button beside its label, and the panel below the
+ * label holding the instructions of the keyword `description`, rendered as Markdown, and the
+ * values of the keyword `examples`. The panel shows and hides at each click of the button, rather
+ * than at hover, since touch devices have no hover.
+ */
+import type { JSX } from "preact";
+import type { JsonValue } from "../../../domain";
+import { formatScalar } from "./controls/scalar-format";
+import { useFormContext } from "./form-context";
+import { RenderedValue } from "./rendering/rendered-value";
+
+/** Instructions and examples of one field, or of one column of a table. */
+export interface Guidance {
+  readonly description: string | null;
+  readonly examples: readonly JsonValue[];
+}
+
+export const hasGuidance = (guidance: Guidance): boolean =>
+  guidance.description !== null || guidance.examples.length > 0;
+
+/** Button showing and hiding the instructions of the help key `helpKey`, named after `label`. */
+export function HelpButton({
+  helpKey,
+  label,
+}: {
+  readonly helpKey: string;
+  readonly label: string;
+}): JSX.Element {
+  const { help } = useFormContext();
+  const shown = help.isShown(helpKey);
+  return (
+    <button
+      type="button"
+      class="ekphrasis-help-button"
+      aria-label={shown ? `Hide the instructions of ${label}` : `Show the instructions of ${label}`}
+      aria-expanded={shown}
+      data-shown={shown ? true : undefined}
+      onClick={() => help.toggle(helpKey)}
+    >
+      <InfoIcon />
+    </button>
+  );
+}
+
+/** Panel of the instructions and the examples of `guidance`, while its help key is shown. */
+export function FieldHelp({
+  helpKey,
+  guidance,
+  title = null,
+}: {
+  readonly helpKey: string;
+  readonly guidance: Guidance;
+  /** Name of the field, written at the top of a panel displayed away from its label. */
+  readonly title?: string | null;
+}): JSX.Element | null {
+  const { help } = useFormContext();
+  if (!help.isShown(helpKey) || !hasGuidance(guidance)) return null;
+  const { description, examples } = guidance;
+  return (
+    <div class="ekphrasis-help" data-help={helpKey}>
+      {title !== null && <div class="ekphrasis-help-title">{title}</div>}
+      {description !== null && (
+        <RenderedValue kind="markdown" text={description} immediate class="ekphrasis-help-text" />
+      )}
+      {examples.length > 0 && (
+        <div class="ekphrasis-help-examples">
+          <span class="ekphrasis-help-examples-label">
+            {examples.length === 1 ? "Example" : "Examples"}
+          </span>
+          <ul>
+            {examples.map((example, index) => (
+              <li key={index}>
+                <code>{formatScalar(example)}</code>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Circled letter i of the Lucide icon set, distinct from the circled question mark of a locked
+ * value. The icon is inlined, so the components load without Obsidian in unit tests.
+ */
+function InfoIcon(): JSX.Element {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+}

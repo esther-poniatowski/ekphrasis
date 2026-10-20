@@ -7,6 +7,10 @@
  * the instance: each load of the text, including a reload after a change made outside, runs the
  * form pipeline again, and each commit of the form writes the file at once. The mode displayed
  * follows the rules of `ModeChoice`.
+ *
+ * The view is the source of the outline while it is the last active view of an instance: it
+ * reports to the outline channel each change of its form and of its focused field, and moves its
+ * form to the field of an entry clicked in the outline.
  */
 import {
   Notice,
@@ -21,18 +25,41 @@ import {
   InstanceSession,
   type CommitService,
   type EkphrasisSettings,
+  type FormReady,
   type FormService,
   type SessionHost,
 } from "../../../application";
-import { IssueIndex } from "../../../domain";
+import { IssueIndex, type YamlPath } from "../../../domain";
 import { ICONS, INSTANCE_VIEW_TYPE, isYamlExtension } from "../constants";
 import type { ControlRegistry } from "../ui/control-registry";
 import { FoldState } from "../ui/fold-state";
 import { FormPanel } from "../ui/form-panel";
+import { HelpState } from "../ui/help-state";
 import { countPhrase } from "../ui/issue-list";
+import {
+  DEFAULT_QUEUE_OPTIONS,
+  RenderQueue,
+  windowEnvironment,
+  type BatchReport,
+} from "../ui/rendering/render-queue";
+import { planReveal, revealElement } from "../ui/reveal";
+import { ObsidianValueRenderer } from "../value-renderer";
 import { confirmLoss } from "./loss-confirmation";
+import type { OutlineChannel, OutlineSource } from "./outline-channel";
 import { SourceEditor } from "./source-editor";
 import { isViewMode, ModeChoice, type ViewMode } from "./view-mode";
+
+/** Duration beyond which a task blocks input, as the browser counts a long task. */
+const LONG_TASK_MS = 50;
+
+/** Reports a batch of renderings that blocked input longer than a long task. */
+function reportLongBatch({ jobs, durationMs, pending }: BatchReport): void {
+  if (durationMs <= LONG_TASK_MS) return;
+  console.warn(
+    `ekphrasis: a batch of ${jobs} rendered values took ${Math.round(durationMs)} ms ` +
+      `(${pending} pending).`,
+  );
+}
 
 /** Collaborators of the view, supplied by the plugin. */
 export interface InstanceViewServices {
@@ -40,9 +67,10 @@ export interface InstanceViewServices {
   readonly commits: CommitService;
   readonly registry: ControlRegistry;
   readonly settings: () => EkphrasisSettings;
+  readonly outline: OutlineChannel;
 }
 
-export class InstanceView extends TextFileView implements SessionHost {
+export class InstanceView extends TextFileView implements SessionHost, OutlineSource {
   private readonly session: InstanceSession;
   private readonly modes = new ModeChoice();
   /**
@@ -53,8 +81,14 @@ export class InstanceView extends TextFileView implements SessionHost {
   /** Element of the form that held the focus last, restored when the author returns. */
   private lastFocused: HTMLElement | null = null;
   private editor: SourceEditor | null = null;
+  /** Printed field path of the field that holds the focus in the form, or `null`. */
+  private focused: string | null = null;
   /** Folded state of the sections of the form, kept across displays of the same file. */
   private readonly folds = new FoldState(() => this.display());
+  /** Shown instructions of the fields, kept across displays of the same file. */
+  private readonly help = new HelpState(() => this.display());
+  private readonly renderer: ObsidianValueRenderer;
+  private readonly queue: RenderQueue;
   private readonly formEl: HTMLElement;
   private readonly sourceEl: HTMLElement;
   private readonly modeAction: HTMLElement;
@@ -70,7 +104,18 @@ export class InstanceView extends TextFileView implements SessionHost {
     this.sourceEl = this.contentEl.createDiv({ cls: "ekphrasis-source-container" });
     this.formEl.addEventListener("focusin", (event) => {
       const target = event.target as Node | null;
-      if (target?.instanceOf(HTMLElement)) this.lastFocused = target;
+      if (!target?.instanceOf(HTMLElement)) return;
+      this.lastFocused = target;
+      const id = target.closest<HTMLElement>("[data-path]")?.dataset["path"] ?? null;
+      if (id !== this.focused) {
+        this.focused = id;
+        services.outline.changed(this);
+      }
+    });
+    this.renderer = new ObsidianValueRenderer(this.app, () => this.file?.path ?? "", this);
+    this.queue = new RenderQueue(windowEnvironment(this.contentEl), {
+      ...DEFAULT_QUEUE_OPTIONS,
+      onBatch: reportLongBatch,
     });
     this.modeAction = this.addAction(ICONS.sourceView, "Open the source view", () =>
       this.toggleMode(),
@@ -89,6 +134,22 @@ export class InstanceView extends TextFileView implements SessionHost {
     return isYamlExtension(extension);
   }
 
+  get filePath(): string | null {
+    return this.file?.path ?? null;
+  }
+
+  /**
+   * Latest form of the instance, also while the source view is displayed, since a click in the
+   * outline then opens the form view; `null` when the instance has no form.
+   */
+  get form(): FormReady | null {
+    return this.session.snapshot.form;
+  }
+
+  get focusedId(): string | null {
+    return this.focused;
+  }
+
   /** Mode displayed: the chosen one, else the source view for an unbound file, else the form. */
   get mode(): ViewMode {
     return this.modes.displayed(this.session.snapshot.state?.status === "unbound");
@@ -104,6 +165,8 @@ export class InstanceView extends TextFileView implements SessionHost {
       this.fileCount += 1;
       this.lastFocused = null;
       this.folds.reset();
+      this.help.reset();
+      this.focused = null;
       this.modes.fileOpened();
     }
     this.session.setText(data);
@@ -130,6 +193,25 @@ export class InstanceView extends TextFileView implements SessionHost {
   /** Displays the new snapshot of the session. */
   changed(): void {
     this.display();
+  }
+
+  /**
+   * Moves the form to the field at `path`: the form view opens, the sections containing the
+   * field unfold, its instructions show when `showHelp` holds, and its control takes the focus.
+   */
+  reveal(path: YamlPath, showHelp: boolean): void {
+    const form = this.session.snapshot.form;
+    const plan = form === null ? null : planReveal(form.model, path);
+    if (plan === null) return;
+    if (this.mode !== "form") {
+      this.modes.choose("form");
+      this.app.workspace.requestSaveLayout();
+    }
+    this.folds.unfold(plan.unfold);
+    if (showHelp) this.help.show(plan.helpKey);
+    this.display();
+    this.app.workspace.setActiveLeaf(this.leaf, { focus: true });
+    revealElement(this.formEl, plan.id);
   }
 
   /** Folds every group and collection of the form when `folded` holds, and else unfolds them. */
@@ -212,8 +294,13 @@ export class InstanceView extends TextFileView implements SessionHost {
   protected override async onOpen(): Promise<void> {
     await super.onOpen();
     this.registerEvent(
-      this.app.workspace.on("active-leaf-change", (leaf) => this.restoreFocus(leaf)),
+      this.app.workspace.on("active-leaf-change", (leaf) => {
+        if (leaf === this.leaf) this.services.outline.activate(this);
+        this.restoreFocus(leaf);
+      }),
     );
+    // The first view of an instance feeds the outline until another one becomes active.
+    if (this.services.outline.source === null) this.services.outline.activate(this);
   }
 
   /**
@@ -239,6 +326,8 @@ export class InstanceView extends TextFileView implements SessionHost {
 
   protected override async onClose(): Promise<void> {
     render(null, this.formEl);
+    this.queue.dispose();
+    this.services.outline.release(this);
     this.editor?.destroy();
     this.editor = null;
     await super.onClose();
@@ -272,6 +361,10 @@ export class InstanceView extends TextFileView implements SessionHost {
           confirmLoss: (request) => confirmLoss(this.app, request),
           commitDelay: this.services.settings().commitDelay,
           folds: this.folds,
+          help: this.help,
+          renderer: this.renderer,
+          scheduler: this.queue,
+          reveal: (path) => this.reveal(path, false),
           onOpenSource: () => {
             if (this.mode === "form") this.toggleMode();
           },
@@ -281,6 +374,7 @@ export class InstanceView extends TextFileView implements SessionHost {
     } else {
       this.showEditor();
     }
+    this.services.outline.changed(this);
   }
 
   private showEditor(): void {
