@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildFormModel, type FormModel, type JsonValue } from "../../../src/domain";
+import { buildFormModel, fieldChain, type FormModel, type JsonValue } from "../../../src/domain";
 import { YamlDocumentParser } from "../../../src/infrastructure";
 import { fieldAt } from "../../support/form-fields";
 import { schemaSet } from "../../support/schemas";
@@ -218,5 +218,87 @@ describe("form model", () => {
   it("builds the declared fields of an empty document", () => {
     const model = build({ type: "object", properties: { a: { type: "string" } } }, "");
     expect(fieldAt(model.root, "a")).toMatchObject({ node: null, value: null });
+  });
+
+  it("builds the next item of each sequence and the entry template of keyed mappings", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          rows: {
+            type: "array",
+            "x-collapsed": true,
+            items: { type: "object", properties: { name: { type: "string" } } },
+          },
+          terms: {
+            type: "object",
+            additionalProperties: { type: "object", properties: { label: { type: "string" } } },
+          },
+        },
+      },
+      "rows:\n  - name: a\nterms:\n  t1:\n    label: x\n",
+    );
+    const rows = fieldAt(model.root, "rows");
+    if (!("items" in rows)) throw new Error("expected a sequence");
+    expect(rows.collapsed).toBe(true);
+    expect(rows.next).toMatchObject({ id: "rows[1]", node: null, kind: "group" });
+    expect(rows.next?.key).not.toBe(rows.items[0]?.key);
+    const terms = fieldAt(model.root, "terms");
+    if (!("children" in terms)) throw new Error("expected a mapping");
+    expect(terms.kind).toBe("keyed-table");
+    expect(terms.entryTemplate).toMatchObject({ id: 'terms[""]', node: null });
+  });
+
+  it("reaches the next item and a new keyed entry by field path, for commits", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          rows: {
+            type: "array",
+            items: { type: "object", properties: { name: { type: "string" } } },
+          },
+          terms: {
+            type: "object",
+            additionalProperties: { type: "object", properties: { label: { type: "string" } } },
+          },
+        },
+      },
+      "rows: []\nterms: {}\n",
+    );
+    const next = fieldChain(model.root, ["rows", 0, "name"])?.at(-1);
+    expect(next).toMatchObject({ id: "rows[0].name", node: null });
+    const entry = fieldChain(model.root, ["terms", "new-term"])?.at(-1);
+    expect(entry).toMatchObject({ id: "terms.new-term", label: "new-term", key: "new-term" });
+    expect(fieldChain(model.root, ["terms", "new-term", "label"])?.at(-1)).toMatchObject({
+      id: "terms.new-term.label",
+      uid: "terms.new-term.label",
+    });
+    expect(fieldChain(model.root, ["rows", 1])).toBeNull();
+  });
+
+  it("builds the fields of every alternative, the unmatched ones included", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          source: {
+            oneOf: [
+              { title: "Book", required: ["isbn"], properties: { isbn: { type: "string" } } },
+              { title: "Paper", required: ["doi"], properties: { doi: { type: "string" } } },
+            ],
+          },
+        },
+      },
+      "source:\n  isbn: x\n",
+    );
+    const source = fieldAt(model.root, "source");
+    if (!("alternativeChildren" in source)) throw new Error("expected a mapping");
+    expect(source.selectedAlternative).toBe(0);
+    expect(source.alternativeChildren.map((fields) => fields.map((field) => field.id))).toEqual([
+      ["source.isbn"],
+      ["source.doi"],
+    ]);
+    expect(fieldChain(model.root, ["source", "doi"])?.at(-1)).toMatchObject({ node: null });
   });
 });

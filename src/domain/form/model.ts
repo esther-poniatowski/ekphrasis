@@ -17,9 +17,21 @@ import type { ChoiceOption, MappingKind, ScalarKind, SequenceKind } from "./kind
 export type FieldLock = "alias" | "merge";
 
 export interface FieldBase {
-  /** Printed field path, unique in the model, so it keys the control of the field. */
+  /** Printed field path, unique in the model, which places the issues and the commits. */
   readonly id: string;
   readonly path: YamlPath;
+  /**
+   * Identifier of the field among its siblings, kept across reorderings: the key of a mapping
+   * entry, or the identifier of a sequence item. It keys the control of the field.
+   */
+  readonly key: string;
+  /**
+   * Keys and item identifiers from the root to the field, so a field keeps its identity when an
+   * item containing it moves.
+   */
+  readonly identity: readonly string[];
+  /** Printed identity, unique in the model, which keys the state of the field in the form. */
+  readonly uid: string;
   /**
    * Title of the schema, else the key (read with spaces for a declared property), else the
    * position of the item.
@@ -66,11 +78,30 @@ export interface MappingField extends FieldBase {
   readonly alternatives: readonly (string | null)[];
   /** Position of the alternative that the value matches, or `null` when none matches. */
   readonly selectedAlternative: number | null;
+  /**
+   * Fields of each alternative, the properties of the parent included, so the form displays the
+   * fields of an alternative that the value does not match yet; empty for the other kinds.
+   */
+  readonly alternativeChildren: readonly (readonly Field[])[];
+  /**
+   * Absent entry of a mapping whose keys are identifiers, placed under the key `""`, from which
+   * the form displays a new entry once its key is chosen; `null` for a mapping without such keys.
+   */
+  readonly entryTemplate: Field | null;
+  /** Whether the keyword `x-collapsed` folds the field when the form opens. */
+  readonly collapsed: boolean;
 }
 
 export interface SequenceField extends FieldBase {
   readonly kind: SequenceKind;
   readonly items: readonly Field[];
+  /**
+   * Absent item after the last one, whose first edited value inserts it; `null` beyond the depth
+   * of nested templates, so a recursive schema terminates.
+   */
+  readonly next: Field | null;
+  /** Whether the keyword `x-collapsed` folds the field when the form opens. */
+  readonly collapsed: boolean;
 }
 
 export type Field = ScalarField | MappingField | SequenceField;

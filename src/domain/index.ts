@@ -17,6 +17,8 @@ export * from "./form/kinds";
 export * from "./form/model";
 export { buildFormModel } from "./form/builder";
 export { fieldChain } from "./form/navigation";
+export { placeField } from "./form/templates";
+export { ItemIdentities, type ItemChange, type SequenceIdentifiers } from "./form/item-identities";
 export * from "./edit/scalar-style";
 export * from "./edit/source-edit";
 export { valueFromText } from "./edit/input-value";

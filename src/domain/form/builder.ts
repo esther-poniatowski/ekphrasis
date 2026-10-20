@@ -9,6 +9,7 @@ import type { JsonValue } from "../schema/json";
 import type { SchemaSet } from "../schema/schema-set";
 import { UnfilledValues } from "../validation/unfilled";
 import { effectiveEntries, resolveAliases } from "./entries";
+import { ItemIdentities } from "./item-identities";
 import {
   choiceOptions,
   isMappingKind,
@@ -31,14 +32,32 @@ import type {
   SequenceField,
 } from "./model";
 
-/** Builds the form model of the instance `tree`, parsed from `source`, under `schemas`. */
-export function buildFormModel(schemas: SchemaSet, tree: YamlNode, source: string): FormModel {
-  return new FormModelBuilder(source).build(SchemaView.root(schemas), tree);
+/**
+ * Builds the form model of the instance `tree`, parsed from `source`, under `schemas`. The items
+ * of sequences take their identifiers from `identities`, so a model rebuilt after a structural
+ * commit keeps the identifier of each item.
+ */
+export function buildFormModel(
+  schemas: SchemaSet,
+  tree: YamlNode,
+  source: string,
+  identities: ItemIdentities = new ItemIdentities(),
+): FormModel {
+  return new FormModelBuilder(source, identities).build(SchemaView.root(schemas), tree);
 }
+
+/**
+ * Bound on the nesting of absent templates (the next item of a sequence, the new entry of a
+ * keyed mapping), so the templates of a recursive schema terminate.
+ */
+const MAX_TEMPLATE_DEPTH = 4;
 
 /** Position of one field: its path, its schema, its node and the context set by its parent. */
 interface FieldSite {
   readonly path: YamlPath;
+  readonly identity: readonly string[];
+  /** Number of absent templates among the ancestors of the field. */
+  readonly templates: number;
   readonly label: string;
   readonly schema: SchemaView | null;
   readonly node: YamlNode | null;
@@ -50,12 +69,17 @@ class FormModelBuilder {
   private readonly issues: SchemaIssue[] = [];
   private unfilled = new UnfilledValues([]);
 
-  constructor(private readonly source: string) {}
+  constructor(
+    private readonly source: string,
+    private readonly identities: ItemIdentities,
+  ) {}
 
   build(schema: SchemaView, tree: YamlNode): FormModel {
     this.unfilled = new UnfilledValues(schema.unfilledValues);
     const root = this.field({
       path: [],
+      identity: [],
+      templates: 0,
       label: schema.title ?? "",
       schema,
       node: tree,
@@ -96,6 +120,9 @@ class FormModelBuilder {
       rules: this.rulesOf(site),
       id: printFieldPath(site.path),
       path: site.path,
+      key: site.identity.at(-1) ?? "",
+      identity: site.identity,
+      uid: printFieldPath(site.identity),
       label: site.label,
       description: site.schema?.description ?? null,
       examples: site.schema?.examples ?? [],
@@ -131,17 +158,22 @@ class FormModelBuilder {
     const required = new Set([...(schema?.required ?? []), ...(chosen?.required ?? [])]);
 
     const byKey = new Map(entries.map((entry) => [entry.key, entry]));
-    const children: Field[] = declared.map(({ key, schema: property }) => {
-      const entry = byKey.get(key);
-      return this.field({
-        path: [...site.path, key],
-        label: property.title ?? keyLabel(key),
-        schema: property,
-        node: entry?.value ?? null,
-        required: required.has(key),
-        lock: entry?.lock ?? site.lock,
+    const declaredFields = (
+      properties: readonly PropertySchema[],
+      requiredKeys: ReadonlySet<string>,
+    ): Field[] =>
+      properties.map(({ key, schema: property }) => {
+        const entry = byKey.get(key);
+        return this.field({
+          ...this.childSite(site, key),
+          label: property.title ?? keyLabel(key),
+          schema: property,
+          node: entry?.value ?? null,
+          required: requiredKeys.has(key),
+          lock: entry?.lock ?? site.lock,
+        });
       });
-    });
+    const children = declaredFields(declared, required);
     const declaredKeys = new Set(declared.map(({ key }) => key));
     const extraEntries: ExtraEntry[] = [];
     for (const entry of entries) {
@@ -157,7 +189,7 @@ class FormModelBuilder {
       } else {
         children.push(
           this.field({
-            path,
+            ...this.childSite(site, entry.key),
             label: entry.key,
             schema: property,
             node: entry.value,
@@ -167,6 +199,14 @@ class FormModelBuilder {
         );
       }
     }
+    const alternativeChildren = alternatives.map((alternative, index) =>
+      index === selected
+        ? children
+        : declaredFields(
+            mergeProperties(schema?.properties() ?? [], alternative.properties()),
+            new Set([...(schema?.required ?? []), ...alternative.required]),
+          ),
+    );
     return {
       ...this.base(site, mapping !== null || this.isUnfilledScalar(site.node)),
       kind,
@@ -174,26 +214,70 @@ class FormModelBuilder {
       extraEntries,
       alternatives: alternatives.map((alternative) => alternative.title),
       selectedAlternative: selected,
+      alternativeChildren,
+      entryTemplate: this.entryTemplate(site, kind),
+      collapsed: schema?.collapsed ?? false,
     };
+  }
+
+  /** Site of the entry `key` of the mapping at `site`, before its schema and its node. */
+  private childSite(
+    site: FieldSite,
+    key: string,
+  ): Pick<FieldSite, "path" | "identity" | "templates"> {
+    return {
+      path: [...site.path, key],
+      identity: [...site.identity, key],
+      templates: site.templates,
+    };
+  }
+
+  /** Absent entry of a mapping keyed by identifiers, placed under the key `""`. */
+  private entryTemplate(site: FieldSite, kind: MappingKind): Field | null {
+    if (kind !== "keyed-table" && kind !== "keyed-records") return null;
+    const schema = site.schema?.dynamicSchema() ?? null;
+    if (schema === null || site.templates >= MAX_TEMPLATE_DEPTH) return null;
+    return this.field({
+      path: [...site.path, ""],
+      identity: [...site.identity, ""],
+      templates: site.templates + 1,
+      label: "",
+      schema,
+      node: null,
+      required: false,
+      lock: site.lock,
+    });
   }
 
   private sequenceField(site: FieldSite, kind: SequenceKind): SequenceField {
     const sequence = site.node?.kind === "sequence" ? site.node : null;
     const itemSchema = site.schema?.items() ?? null;
-    const items = (sequence?.items ?? []).map((item, index) =>
+    const nodes = sequence?.items ?? [];
+    const identifiers = this.identities.of(printFieldPath(site.identity), nodes.length);
+    const item = (index: number, node: YamlNode | null, identifier: string, templates: number) =>
       this.field({
         path: [...site.path, index],
+        identity: [...site.identity, identifier],
+        templates,
         label: `#${index + 1}`,
         schema: itemSchema,
-        node: item,
+        node,
         required: false,
         lock: site.lock,
-      }),
+      });
+    const items = nodes.map((node, index) =>
+      item(index, node, identifiers.items[index] ?? "", site.templates),
     );
+    const next =
+      site.templates < MAX_TEMPLATE_DEPTH
+        ? item(nodes.length, null, identifiers.next, site.templates + 1)
+        : null;
     return {
       ...this.base(site, sequence !== null || this.isUnfilledScalar(site.node)),
       kind,
       items,
+      next,
+      collapsed: site.schema?.collapsed ?? false,
     };
   }
 

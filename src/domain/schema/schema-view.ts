@@ -47,6 +47,11 @@ export class SchemaView {
     return Array.isArray(examples) ? (examples as readonly JsonValue[]) : [];
   }
 
+  /** Whether the keyword `x-collapsed` holds `true`, folding the field when the form opens. */
+  get collapsed(): boolean {
+    return this.keyword("x-collapsed")?.value === true;
+  }
+
   /** Name written under the keyword `x-kind`, unchecked. */
   get declaredKind(): string | null {
     return this.string("x-kind");
