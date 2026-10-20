@@ -54,23 +54,26 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar. (2026-10-19)
 - [x] **Form view**: test in the simulated DOM that a dropdown lists each admitted value once, after successive changes of its value. (2026-10-20)
 - [x] **Form view**: write the title of the box of issues as a list of counts, without the conjunction and the final period, as in `Validation: 3 missing fields, 9 invalid values, 1 warning`. (2026-10-20)
-- [ ] **Form view**: display the title of the box of issues in the colour of errors, as the title of the box of schema defects takes the colour of its edge.
-- [ ] **Form view**: in the box of issues and the box of schema defects, align the start of each message after the longest field name.
+- [x] **Form view**: display the title of the box of issues in the colour of errors, as the title of the box of schema defects takes the colour of its edge. (2026-10-20)
+- [x] **Form view**: in the box of issues and the box of schema defects, align the start of each message after the longest field name. (2026-10-20)
 - [x] **Form view**: in the message of a file bound to no schema, replace the word *ways*, and place the line of the modeline after the words *at the top of the file*. (2026-10-20)
 
 ## Collections
 
-- [ ] **Field kinds**: display one control per collection kind, including the tables and the alternatives.
+- [x] **Field kinds**: display one control per collection kind, including the tables and the alternatives. (2026-10-20)
 - [x] **Form view**: give each item of a sequence an identifier kept across reorderings. (2026-10-20)
 - [x] **Saving**: implement the insertion and removal of entries inside a flow collection with their separating commas, keeping the flow form, as the user decided on 2026-10-20. (2026-10-20)
 - [x] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings. (2026-10-20)
-- [ ] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*.
-- [ ] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group.
-- [ ] **Saving**: write a new collection under a block mapping in flow form when every sibling holding the same key writes it in flow form.
-- [ ] **Field kinds**: remove the keys of the previous alternative when another alternative is chosen, after a confirmation when one of them holds a filled value.
+- [x] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*. (2026-10-20)
+- [x] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group. (2026-10-20)
+- [x] **Saving**: write a new collection under a block mapping in flow form when every sibling holding the same key writes it in flow form. (2026-10-20)
+- [x] **Field kinds**: remove the keys of the previous alternative when another alternative is chosen, after a confirmation when one of them holds a filled value. (2026-10-20)
 
 ## Guidance and navigation
 
+- [ ] **Saving**: write a new scalar value in the quoting style of its siblings when they all share one quoted style that represents the value.
+- [ ] **Tooling**: write the scenario records of the manual tests with empty values as unfilled values, drop `x-unfilled: [open]` from their schemas, and update the expected results of the protocols still to run.
+- [ ] **Form view**: keep a pane in the source view when another file opens in it.
 - [ ] **Form view**: display the instructions and the examples of a field on demand.
 - [ ] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian.
 - [ ] **Form view**: render first the fields that enter the visible area of a long instance, in batches that yield to input between them.

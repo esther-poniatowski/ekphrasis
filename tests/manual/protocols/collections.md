@@ -41,9 +41,9 @@ The field *tags* holds the flow sequence `[alpha, beta, gamma]`.
 
 The field *steps* holds a block sequence whose first item carries the comment `# on the first step`.
 
-- [ ] Field *steps*, item `#1`: click `↓`. → The right pane shows `- second step` first, then `- first step # on the first step`.
+- [x] Field *steps*, item `#1`: click `↓`. → The right pane shows `- second step` first, then `- first step # on the first step`.
 - [x] Field *steps*, item `#1`: delete its text, then `Tab`. → The input shows the placeholder `—`, and the right pane shows `- open` in place of `- second step`.
-- [/] Field *steps*, item `#2`: click `✕`. → The line `- first step` disappears, and the line `  # on the first step` remains below `- open`.
+- [x] Field *steps*, item `#2`: click `✕`. → The line `- first step` disappears, and the line `  # on the first step` remains below `- open`.
 
 ## Checkboxes
 

@@ -11,23 +11,9 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 ## Task state
 
-The milestones *Bound form*, *Saving of scalars* and *Validation* are complete, and every step of each is checked in the [roadmap](../TODO.md). The repository is published at `https://github.com/esther-poniatowski/ekphrasis`.
+The milestones *Bound form*, *Saving of scalars*, *Validation* and *Collections* are complete, together with the corrections that followed the check of *Validation*, and every step of each is checked in the [roadmap](../TODO.md). Their [manual protocols](../tests/manual/_index.md) passed inside Obsidian, the last one, the protocol of collections, on 2026-10-20. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
 
-The [protocol of validation](../tests/manual/protocols/validation.md) passed inside Obsidian on 2026-10-19, with every item ticked. Its section *Observations* holds remarks of the user on the presentation, triaged with the user before the next milestone. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
-
-The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
-
-The [protocol of the corrections](../tests/manual/protocols/corrections-validation.md) passed inside Obsidian on 2026-10-20. Its section *Observations* gave five steps, closing the section *Corrections after the check of Validation* of the roadmap. Three of them are implemented, tested and ticked. The other two steps are implemented but visible in Obsidian only: the colour of the title of the box of issues, and the alignment of the messages of both boxes. Both stay unticked until the manual check.
-
-The milestone *Collections* is implemented. Three of its steps are ticked: the identifiers of items, and the edits of flow and block collections. The other three, the controls of the collection kinds, the folding of sections and the vertical guides, stay unticked until the manual check. The two steps decided by the user on 2026-10-20 are implemented and tested. First, a new collection takes the flow form of its siblings. Second, a switch of alternative removes the keys of the previous alternative, after a confirmation when a value would be lost. Both steps are visible in Obsidian, so they also stay unticked until the manual check. The exit criterion is verified by the [acceptance test of collections](../tests/acceptance/collections.test.ts). That test fills a keyed record of the glossary fixture and rows of the target-system fixture. The [golden test of byte preservation](../tests/acceptance/saving.test.ts) passes after three groups of structural edits:
-
-- the edits of every collection of the fixtures;
-- the first item of each absent nested sequence;
-- the switch of each alternative of the [fixture of alternatives](../tests/fixtures/constructs/alternatives.yml).
-
-The [corpus test of structural edits](../tests/acceptance/corpus-collections.test.ts) passes on both consumer projects.
-
-**Next action**: the user runs the [protocol of collections](../tests/manual/protocols/collections.md) inside Obsidian, in the test vault rebuilt on 2026-10-20 after the two decided steps. The protocol also covers the five corrections and the two decided steps. Once its items pass, the seven unticked steps above are ticked with the date of the run, and the observations are triaged with the user before *Guidance and navigation*. The third item of its section *Alternatives* predates the decision on the switch, so it cannot pass: the user decides whether to delete it, and the item after it states the expected result.
+The next milestone is *Guidance and navigation*. Its first three steps carry decisions of the user taken on 2026-10-20, after the protocol of collections: the quoting style of siblings, specified under [scalar styles](features/saving.md); empty values in the scenario records of the manual tests; and the source view kept per pane, specified in the [form view](features/form-view.md).
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
