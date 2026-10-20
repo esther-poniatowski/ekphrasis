@@ -38,6 +38,6 @@ The form plugins examined split between Svelte and plain DOM, and none of them u
 
 - The package `preact` becomes a runtime dependency. TypeScript and esbuild must compile JSX with the import source `preact`, and the TypeScript, ESLint and Vitest configurations must cover the files with the extension `.tsx`.
 - The lint configuration must forbid `preact` in the domain, application and infrastructure layers, as it forbids `obsidian`.
-- Each control is keyed by its field. Positional field paths change when items move, so the form model must give each item of a sequence an identifier kept across reorderings.
+- Each control is keyed by its field. Positional field paths change when items move, so the form model must give each item of a sequence an identifier kept across reorderings. The [identifiers of items](../../src/domain/form/item-identities.ts) meet this consequence from the milestone *Collections*.
 - Component tests run under Vitest in a simulated DOM, with the testing library of Preact.
 - Another plugin that adds a field kind must write a Preact component.

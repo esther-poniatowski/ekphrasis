@@ -37,6 +37,8 @@ subject:
       symbol: G
 ```
 
+A position counts the items before it, so the path of an item changes when an item before it is inserted, removed or moved. The form keys the control of each item by an identifier kept across such edits, whereas each issue and each commit designates its node by the current path.
+
 ## Wildcards
 
 A rule may hold the wildcards `[*]` and `*`, so that one declaration applies to every item of a collection. An issue designates one node, so its path never holds a wildcard. For example, the rule path `subject.foils[*].symbol` yields the issue paths `subject.foils[0].symbol` and `subject.foils[1].symbol`.

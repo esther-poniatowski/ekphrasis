@@ -53,14 +53,60 @@ Rich content frequently holds seven constructions misread in a plain scalar, sin
 
 ## Cleared values
 
-Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place. ^cleared-values
+Clearing the value of an optional field removes its key from the file. Each comment on the removed lines stays, on a line of its own at the indentation of the key. When the key is the only key of its mapping, the key stays with an empty value, since a block mapping holds at least one key. Clearing the value of a required field writes the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value, written as an empty value after the key. Therefore, the file keeps a key for every required field, and a program finds each missing value at its expected place. A cleared item of a sequence is treated as a cleared required field, so it stays at its position; its removal is a [structural edit](#^structural-edits). ^cleared-values
+
+## Collections
+
+An edit of a collection inserts, removes or moves one of its entries: an item of a sequence, or a key with its value in a mapping. Each edit keeps the form of its collection, as the user decided on 2026-10-20. A block collection receives lines with the indentation of its siblings, and a flow collection receives its entries with their separating commas. A flow collection never becomes a block collection, since that conversion would rewrite lines that the author did not edit. ^structural-edits
+
+### New entries
+
+A new item, row or entry is written by the first value committed inside it, as an absent optional field is. Before that commit, the form displays the entry as a draft, and the entry is absent from the file. After that commit, the entry holds the committed value only, with the absent keys and items between that value and the collection. Its position follows four rules:
+
+- a new item ends its sequence;
+- a new key of a declared property follows the order of the schema, as an absent field does;
+- a new key admitted by a pattern or by `additionalProperties` enters at its sorted place when the keys of the mapping are sorted, and after the last key otherwise;
+- a value checked in a field of kind `choices` enters at its place in the order of the admitted values.
+
+When a collection is absent, or holds the null value or an unfilled value, it is written with its first entry. Under a key of a block mapping, the collection follows on the next lines, indented by two spaces under the key, and its unfilled value is erased. Inside a flow collection, the collection replaces the unfilled value in flow form. Therefore, a new collection under a block mapping takes the block form. This rule holds even when sibling entries write the same key in flow form: a new row of gnomon receives `signature:` followed by an item line, whereas the other rows write `signature: [bob, t]`.
+
+### Block collections
+
+Four rules write the entries of a block collection:
+
+- an inserted item starts with the indicator `-` at the column of the indicators of its siblings. An item holding a mapping writes its first key after the indicator, and its other keys aligned under the first;
+- an inserted key takes the column of its siblings, and a nested collection is indented two spaces further. An empty nested collection is written `{}` or `[]`;
+- a removed item or entry takes its lines with it. Each comment on those lines stays, on a line of its own at the column of the removed entry, as for a [cleared value](#^cleared-values);
+- the removal of the only entry writes `[]` or `{}` after the key of the collection, before any comment of that line, since a block collection holds at least one entry.
+
+### Flow collections
+
+Four rules write the entries of a flow collection:
+
+- an inserted entry follows the comma after its preceding sibling, or precedes the first entry with a comma of its own. When each entry of the collection starts a line, as in the multi-line mappings of geonexus, the new entry takes a line of its own at the column of its siblings. Otherwise, the entry joins the line of its neighbour, so `[pop, t]` becomes `[pop, t, x]`. In both layouts, a trailing comma after the last entry follows the new last entry;
+- a removed entry takes one separating comma with it: the comma after it, or the comma before it for the last entry. The removal of the only entry leaves `[]` or `{}`;
+- a removal is refused when its text holds a comment, since a comment inside a flow collection has no line of its own to remain on;
+- the null value is written `null`, since an empty value cannot stand between two commas.
+
+### Reordering
+
+An item of a sequence moves by one position up or down. The text of each item between the old and the new position moves to the place of its new position. Therefore, the indicators, the commas and the comment lines between items stay in place, whereas a comment on the last line of an item moves with that item. The entries of a mapping keep the order of the file, since the form offers no reordering of keys. Across a move, each item keeps the identifier that keys its control, as the decision on the [form interface framework](../adr/form-interface-framework.md) requires. Its [field path](field-paths.md), by contrast, counts its new position.
+
+### Unverified rules
+
+The two consequences below arise in no fixture, so each was checked on one constructed text only:
+
+- an insertion into a flow collection whose entries each start a line, after an entry followed by a comment, moves that comment to the line of the new entry;
+- a flow collection spanning several lines whose entries do not all start a line receives a new entry on the line of its neighbour.
 
 ## Refused commits
 
-A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Two edits are also refused until the milestone *Collections* of the [implementation plan](../architecture/implementation-plan.md) implements them:
+A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Four edits are also refused before any text is written:
 
-- adding or removing a key of a mapping written between braces;
-- clearing an item of a sequence.
+- an edit of a value reached through an alias or merged by a merge key, whose text lies at its anchor. The item holding an alias can still be removed or moved;
+- a removal that would delete a comment: inside a flow collection, or on the line of the first key of a sequence item;
+- an insertion into an item of a block sequence that holds an unfilled value, such as `- open`;
+- a structural edit made while the text of the file loads, since its positions may designate other items once the text is parsed.
 
 A refused commit leaves the file unchanged. Its reason is displayed below its field, and the control keeps the typed text until the value of the field changes.
 

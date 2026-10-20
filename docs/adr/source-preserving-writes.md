@@ -60,4 +60,12 @@ The milestone *Saving of scalars* meets the three constraints in the [plan of co
 - the domain derives the context of each scalar from its parent, and the writer converts that context into the flags of `CST.setScalarValue`;
 - the domain selects the style of every written value, and the writer passes it as an explicit scalar type.
 
-The [golden test of byte preservation](../../tests/acceptance/saving.test.ts) also verifies inserting and removing keys of block mappings. Keys of flow mappings, items and rows remain unverified until the milestone *Collections*.
+The [golden test of byte preservation](../../tests/acceptance/saving.test.ts) also verifies inserting and removing keys of block mappings. From the milestone *Collections*, the same test also makes structural edits on every collection of the fixtures:
+
+- each item removed, and moved one position up and down;
+- the next item of each sequence inserted, by the edit of its first value;
+- each entry of a keyed mapping removed, and a new entry inserted;
+- each unchecked value of a field of kind `choices` inserted;
+- each key of a flow mapping inserted and removed, by the edits of its scalars.
+
+Each written edit keeps every comment, and changes no byte outside the lines of its collection. The [corpus test of structural edits](../../tests/acceptance/corpus-collections.test.ts) made the same edits on 2026-10-20. That test wrote 396 commits on the 8 target-system records of gnomon, and 1169 commits on the 16 glossaries of geonexus, without a failure. Two insertion rules into flow collections remain verified on constructed texts only, as the [rules of collections](../features/saving.md#^structural-edits) list.

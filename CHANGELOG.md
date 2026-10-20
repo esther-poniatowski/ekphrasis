@@ -31,10 +31,15 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Schema defects for a required property absent from the properties of its group, and for a value of `x-unfilled` that a field enumerates.
 - Every unfilled value, the null value or a value of `x-unfilled`, displayed as an empty control marked `—`.
 - Conditional rules reflected in the controls: a field required by `required-when` is marked as required, and an unfilled field forbidden by `forbidden-when` is disabled, with a note stating the condition.
+- Controls of the collection kinds: tables for `table` and `keyed-table`, checkboxes for `choices`, collapsible groups for `records` and `keyed-records`, and a selector for `alternatives`.
+- Items, rows and entries added as drafts, written by their first value, and moved or removed by buttons, with identifiers of items kept across reorderings.
+- Insertion and removal of the entries of flow collections with their separating commas, keeping the flow form, and of block collections with the indentation of their siblings.
+- Folding of each group and collection, following `x-collapsed` when the form opens, the commands *Collapse all* and *Expand all*, and a vertical guide along each group.
 
 ### Changed
 
 - Message of a file bound to no schema, laid out as a heading followed by the two methods of binding it.
+- Cleared item of a sequence kept at its position with the unfilled value, instead of a refused commit.
 - Modeline in the message of an unbound file, placed after the words *at the top of the file*.
 - Title of the box of issues, reduced to the counts of each kind and written in the colour of errors, such as `Validation: 3 missing fields, 1 warning`.
 - Messages of the box of issues and of the box of schema defects, aligned after the longest path.

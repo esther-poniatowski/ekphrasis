@@ -17,7 +17,9 @@ The fields of the instance appear in the order of the schema. Each field occupie
 - the control of its [kind](field-kinds.md), placed in a content area whose background sets it apart from the label;
 - a status marker, showing whether the field is filled, missing or invalid.
 
-A group opens a section headed by its label, and the fields of the group are indented under that heading. Each group and each collection can be collapsed and expanded, one at a time, or all at once by the commands *Collapse all* and *Expand all*. When the form opens, the keyword `x-collapsed` of the schema fixes which of them are folded. The layout thereby satisfies the [requirement on visible structure](../requirements.md#^visible-structure).
+A group opens a section headed by its label, and the fields of the group are indented under that heading, along a vertical guide that marks the extent of the group. Each group and each collection can be collapsed and expanded. The button at the start of its heading folds it alone, and the commands *Collapse all* and *Expand all* fold or unfold every section at once. When the form opens, the keyword `x-collapsed` of the schema fixes which of them are folded.
+
+Each item of a sequence carries two buttons moving it one position up or down, and a button removing it. Each entry of a mapping keyed by identifiers carries a button removing it. A button below each collection adds an item, a row or an entry. The new entry displays as a draft until a value is committed inside it, as specified for [saving](saving.md#^structural-edits). The layout thereby satisfies the [requirement on visible structure](../requirements.md#^visible-structure).
 
 ## Text and focus
 

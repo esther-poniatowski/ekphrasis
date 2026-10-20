@@ -123,6 +123,8 @@ The decision reopens when a field kind for references, suggesting the identifier
 
 **Risk.** A flow collection, such as an inline mapping of geonexus, holds its entries between braces or brackets, separated by commas, usually on one line. An insertion or a removal must then edit the separating commas, and has no sibling line whose indentation it could copy. The user decided on 2026-10-20 that such an edit keeps the flow form, since converting the collection to block form would rewrite lines that the author did not edit, against the [requirement on source preservation](../requirements.md#^source-preservation). The cost is a second set of insertion rules, beside the rules of block collections.
 
+**Check.** On 2026-10-20, the [acceptance test of collections](../../tests/acceptance/collections.test.ts) filled a new keyed record of the glossary fixture and new rows of the target-system fixture. Each commit applied through the session of the instance, as the form applies it. The [golden test of byte preservation](../../tests/acceptance/saving.test.ts) passed after the structural edits of every collection of the fixtures, and the corpus test of structural edits passed on both consumer projects. The controls, the folding and the vertical guides await the [protocol of collections](../../tests/manual/protocols/collections.md).
+
 ### Guidance and navigation
 
 **Goal.** The author is guided at each field and moves through long instances.

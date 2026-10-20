@@ -61,9 +61,9 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Collections
 
 - [ ] **Field kinds**: display one control per collection kind, including the tables and the alternatives.
-- [ ] **Form view**: give each item of a sequence an identifier kept across reorderings.
-- [ ] **Saving**: implement the insertion and removal of entries inside a flow collection with their separating commas, keeping the flow form, as the user decided on 2026-10-20.
-- [ ] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings.
+- [x] **Form view**: give each item of a sequence an identifier kept across reorderings. (2026-10-20)
+- [x] **Saving**: implement the insertion and removal of entries inside a flow collection with their separating commas, keeping the flow form, as the user decided on 2026-10-20. (2026-10-20)
+- [x] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings. (2026-10-20)
 - [ ] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*.
 - [ ] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group.
 
