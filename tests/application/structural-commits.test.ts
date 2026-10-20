@@ -31,7 +31,11 @@ const SCHEMA: JsonValue = {
       items: {
         type: "object",
         required: ["name"],
-        properties: { name: { type: "string" }, symbol: { type: "string" } },
+        properties: {
+          name: { type: "string" },
+          symbol: { type: "string" },
+          marks: { type: "array", items: { type: "string" } },
+        },
       },
     },
     check: {
@@ -253,5 +257,89 @@ describe("entries of mappings keyed by identifiers", () => {
     const two = "terms:\n  a-term:\n    label: A\n    frames: [x]\n  b-term:\n    label: B\n";
     expect(written(two, { kind: "remove-entry", path: ["terms", "a-term"] })).toBe(text);
     expect(written(text, { kind: "remove-entry", path: ["terms", "b-term"] })).toBe("terms: {}\n");
+  });
+});
+
+describe("form of a new collection under a key of a block mapping", () => {
+  const marks = (text: string, row: number): string =>
+    written(text, { path: ["rows", row, "marks", 0], value: "w" });
+
+  it.each([
+    [
+      "every sibling writes the key in flow form",
+      2,
+      "rows:\n  - marks: [a]\n  - marks: [b, c]\n  - name: x\n",
+      "rows:\n  - marks: [a]\n  - marks: [b, c]\n  - name: x\n    marks: [w]\n",
+    ],
+    [
+      "the only sibling holds an empty flow sequence",
+      1,
+      "rows:\n  - marks: []\n  - name: x\n",
+      "rows:\n  - marks: []\n  - name: x\n    marks: [w]\n",
+    ],
+    [
+      "a sibling without the key is not counted",
+      2,
+      "rows:\n  - marks: [a]\n  - name: y\n  - name: x\n",
+      "rows:\n  - marks: [a]\n  - name: y\n  - name: x\n    marks: [w]\n",
+    ],
+    [
+      "the sibling is reached through an alias",
+      1,
+      "base: &b {marks: [a]}\nrows:\n  - *b\n  - name: x\n",
+      "base: &b {marks: [a]}\nrows:\n  - *b\n  - name: x\n    marks: [w]\n",
+    ],
+  ])("writes the flow form when %s", (_, row, text, expected) => {
+    expect(marks(text, row)).toBe(expected);
+  });
+
+  it.each([
+    [
+      "the forms are mixed",
+      2,
+      "rows:\n  - marks: [a]\n  - marks:\n      - b\n  - name: x\n",
+      "rows:\n  - marks: [a]\n  - marks:\n      - b\n  - name: x\n    marks:\n      - w\n",
+    ],
+    [
+      "a sibling holds an unfilled value",
+      2,
+      "rows:\n  - marks: [a]\n  - marks: open\n  - name: x\n",
+      "rows:\n  - marks: [a]\n  - marks: open\n  - name: x\n    marks:\n      - w\n",
+    ],
+    [
+      "no sibling holds the key",
+      1,
+      "rows:\n  - name: a\n  - name: x\n",
+      "rows:\n  - name: a\n  - name: x\n    marks:\n      - w\n",
+    ],
+  ])("keeps the block form when %s", (_, row, text, expected) => {
+    expect(marks(text, row)).toBe(expected);
+  });
+
+  it("writes a new item with the form of its siblings at each new collection", () => {
+    expect(marks("rows:\n  - marks: [a]\n", 1)).toBe("rows:\n  - marks: [a]\n  - marks: [w]\n");
+    expect(marks("rows:\n  - marks:\n      - a\n", 1)).toBe(
+      "rows:\n  - marks:\n      - a\n  - marks:\n      - w\n",
+    );
+  });
+
+  it("replaces an unfilled value or fills a bare key in flow form, keeping the comment", () => {
+    const sibling = "rows:\n  - marks: [a]\n";
+    expect(marks(`${sibling}  - name: x\n    marks: open # later\n`, 1)).toBe(
+      `${sibling}  - name: x\n    marks: [w] # later\n`,
+    );
+    expect(marks(`${sibling}  - name: x\n    marks: # later\n`, 1)).toBe(
+      `${sibling}  - name: x\n    marks: [w] # later\n`,
+    );
+  });
+
+  it("finds the siblings among the entries of a mapping keyed by identifiers", () => {
+    const text = "terms:\n  a-term:\n    frames: [x]\n  b-term:\n    label: B\n";
+    expect(written(text, { path: ["terms", "c-term", "frames", 0], value: "w" })).toBe(
+      `${text}  c-term:\n    frames: [w]\n`,
+    );
+    expect(written(text, { path: ["terms", "b-term", "frames", 0], value: "w" })).toBe(
+      "terms:\n  a-term:\n    frames: [x]\n  b-term:\n    label: B\n    frames: [w]\n",
+    );
   });
 });

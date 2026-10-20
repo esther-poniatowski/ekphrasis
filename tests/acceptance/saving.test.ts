@@ -12,7 +12,9 @@
  * Every collection of every bound fixture also receives structural commits, each on the original
  * text: each item removed, and moved one position up and down; the next item inserted by the edit
  * of its first scalar; each unchecked admitted value of a field of kind `choices` inserted; each
- * entry of a mapping keyed by identifiers removed, and a new entry inserted. A written structural
+ * entry of a mapping keyed by identifiers removed, and a new entry inserted; the first item of each
+ * absent nested sequence inserted, in each item or entry and in the next one, so that the new
+ * collection takes the form of its siblings. A written structural
  * commit keeps every comment, and changes no byte outside the lines of the collection; an
  * insertion leaves the old text whole.
  */

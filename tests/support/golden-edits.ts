@@ -11,6 +11,7 @@ import {
   type Field,
   type ScalarField,
   type ScalarValue,
+  type SequenceField,
 } from "../../src/domain";
 import { commentsOf } from "./yaml-comments";
 
@@ -139,6 +140,29 @@ function firstScalar(field: Field): [ScalarField, ScalarValue] | null {
   return null;
 }
 
+/** Absent sequences of `field` and of the mappings under it, down to the first present sequence. */
+function absentSequences(field: Field): SequenceField[] {
+  if ("items" in field) return field.node === null ? [field] : [];
+  return "children" in field ? field.children.flatMap(absentSequences) : [];
+}
+
+/**
+ * Commits opening a new collection in each member of `members`, the items or entries of a
+ * collection and the template of its next one: the first scalar of each absent sequence. The
+ * path of a scalar under the template of a keyed entry is moved by `place`.
+ */
+function newCollections(
+  members: readonly Field[],
+  place: (path: Commit["path"]) => Commit["path"] = (path) => path,
+): [string, Commit, boolean][] {
+  return members.flatMap(absentSequences).flatMap((sequence): [string, Commit, boolean][] => {
+    const leaf = sequence.next === null ? null : firstScalar(sequence.next);
+    if (leaf === null) return [];
+    const [scalar, value] = leaf;
+    return [[`${sequence.id} opened`, { path: place(scalar.path), value }, true]];
+  });
+}
+
 /** Structural commits of one collection field, each labelled, with whether it inserts. */
 export function structuralCommits(field: Field): [string, Commit, boolean][] {
   const commits: [string, Commit, boolean][] = [];
@@ -179,17 +203,28 @@ export function structuralCommits(field: Field): [string, Commit, boolean][] {
         commits.push([`${scalar.id} inserted`, { path: scalar.path, value }, true]);
       }
     }
+    commits.push(...newCollections([...field.items, ...(field.next === null ? [] : [field.next])]));
   }
   if ("children" in field && field.entryTemplate !== null && field.node?.kind === "mapping") {
     for (const child of field.children) {
       commits.push([`${child.id} removed`, { kind: "remove-entry", path: child.path }, false]);
     }
+    const toNewEntry = (path: Commit["path"]): Commit["path"] => [
+      ...field.path,
+      "new-entry",
+      ...path.slice(field.path.length + 1),
+    ];
     const leaf = firstScalar(field.entryTemplate);
     if (leaf !== null) {
       const [scalar, value] = leaf;
-      const path = [...field.path, "new-entry", ...scalar.path.slice(field.path.length + 1)];
-      commits.push([`${field.id}.new-entry inserted`, { path, value }, true]);
+      commits.push([
+        `${field.id}.new-entry inserted`,
+        { path: toNewEntry(scalar.path), value },
+        true,
+      ]);
     }
+    commits.push(...newCollections(field.children));
+    commits.push(...newCollections([field.entryTemplate], toNewEntry));
   }
   return commits;
 }

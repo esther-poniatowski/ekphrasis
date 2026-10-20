@@ -75,8 +75,9 @@ const FLOW_NULL: ScalarText = { text: "null", style: "plain", context: "flow", i
 /**
  * Lines of the key `key` holding `value`, the key indented by `indent`. The lines end with a line
  * break. The first line is not indented when `indentFirst` is false, since its insertion point
- * already follows an indentation. A nested mapping or sequence is indented one step further, an
- * empty one is written `{}` or `[]`, and the null value as an empty value after the colon.
+ * already follows an indentation. A nested mapping or sequence is indented one step further,
+ * unless it is marked `flow`; an empty one is written `{}` or `[]`, and the null value as an
+ * empty value after the colon.
  */
 export function entryLines(
   key: string,
@@ -99,9 +100,15 @@ export function itemLines(value: YamlNode, indent: number, indentFirst: boolean)
   return [...parts, ...valueAfter(value, indent, "block")];
 }
 
-/** Text after a key or an item indicator at the column `indent`: the value and its lines. */
+/**
+ * Text after a key or an item indicator at the column `indent`: the value and its lines. A
+ * collection marked `flow` is written on the line of its key, between brackets or braces.
+ */
 function valueAfter(value: YamlNode, indent: number, context: "after-key" | "block"): TextPart[] {
   const nested = indent + INDENT_STEP;
+  if ((value.kind === "mapping" || value.kind === "sequence") && value.flow) {
+    return [" ", ...flowText(value), "\n"];
+  }
   switch (value.kind) {
     case "scalar": {
       if (value.value === null) return ["\n"];

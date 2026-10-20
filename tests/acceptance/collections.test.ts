@@ -5,7 +5,7 @@
  * Each scenario runs the commits that the controls of the form make, one at a time, through the
  * session of the instance, so each commit applies to the form rebuilt from the previous one. A
  * new entry or row is written by the first edit of a value inside it, then filled, reordered and
- * removed. At the end, the filled records raise no issue, and every line of the original text
+ * removed; a new collection inside it takes the form of its siblings. At the end, the filled records raise no issue, and every line of the original text
  * outside the edited collections is still present.
  */
 import { describe, expect, it } from "vitest";
@@ -97,15 +97,15 @@ describe("keyed records of a geonexus glossary", () => {
         "    label: phase lag",
         "    gloss: the delay of the response behind the forcing",
         "    category: noun",
-        "    frames:",
-        "      - ~ at resonance",
-        "      - ~ of {system}",
+        "    frames: [~ at resonance, '~ of {system}']",
         "    confusions:",
         "      - term: damping-ratio",
         "        distinction: the lag is an angle whereas the ratio is a number",
       ].join("\n"),
     );
-    // The new term sorts after `natural-frequency`, whose removal keeps the comment of its lines.
+    // The new frames take the flow form of the frames of both other terms, whereas the new
+    // confusions take the block form of those of `damping-ratio`. The new term sorts after
+    // `natural-frequency`, whose removal keeps the comment of its lines.
     expect(text.indexOf("  damping-ratio:")).toBeLessThan(text.indexOf("  phase-lag:"));
     expect(text).not.toContain("natural-frequency:");
     expect(text).toContain("  # noun | verb | adjective\n  phase-lag:\n");
@@ -149,14 +149,14 @@ describe("record tables of a gnomon target system", () => {
       { path: ["reference_class", "selection_criteria", 0], value: "a periodic torque" },
     ]);
     const text = session.text;
+    // The new signature takes the flow form of the signatures of the other rows.
     expect(text).toContain(
       [
         "variables:",
         "  - name: forcing amplitude",
         "    symbol: F",
         "    determined: outside",
-        "    signature:",
-        "      - t",
+        "    signature: [t]",
         "    expression: F = F_0",
         "    shared: true",
         '  - name: "angle from the vertical"',

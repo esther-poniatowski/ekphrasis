@@ -15,7 +15,8 @@
  *
  * A structural commit inserts an item at a position, removes an item or an entry, or moves an
  * item. Each edit keeps the form of its collection: a block collection receives lines with the
- * indentation of its siblings, and a flow collection receives its entries with their commas.
+ * indentation of its siblings, and a flow collection receives its entries with their commas. A
+ * new collection under a key of a block mapping takes the form of its siblings.
  */
 import { EkphrasisError } from "../../errors";
 import { isScalarKind, isSingleLineKind } from "../form/kinds";
@@ -38,6 +39,7 @@ import { UnfilledValues } from "../validation/unfilled";
 import { CollectionEdits, Unplaceable } from "./collection-edits";
 import { expectedTree, type CommitEffect } from "./expected-tree";
 import type { ScalarContext, WrittenValue } from "./scalar-style";
+import { childWithSiblingForms, entryWithSiblingForms } from "./sibling-form";
 import { INDENT_STEP, scalarPart, splice, type SourceEdit, type TextPart } from "./source-edit";
 import { SourceText } from "./source-text";
 import {
@@ -379,13 +381,20 @@ class CommitPlanner {
     const node = owner.node;
     let edits: SourceEdit[];
     if (node?.kind === "mapping" && typeof first === "string" && "children" in owner) {
-      edits = this.insertEntry(owner, node, first, value);
+      const parent = chain[anchor - 1]?.node ?? null;
+      edits = this.insertEntry(
+        owner,
+        node,
+        first,
+        entryWithSiblingForms(first, value, node, parent),
+      );
     } else if (node?.kind === "sequence" && typeof first === "number") {
       if (first > node.items.length) return refuse(REFUSALS.position);
+      const item = childWithSiblingForms(value, node);
       edits = node.flow
-        ? this.collections.insertFlow(node, first, flowText(value))
+        ? this.collections.insertFlow(node, first, flowText(item))
         : this.collections.insertBlock(node, first, (indent, indentFirst) =>
-            itemLines(value, indent, indentFirst),
+            itemLines(item, indent, indentFirst),
           );
     } else if (node?.kind === "scalar" && new UnfilledValues(this.model.unfilled).has(node.value)) {
       edits = this.insertUnderEmpty(chain, anchor, node, nestedValue(segments, leaf));
@@ -431,9 +440,11 @@ class CommitPlanner {
 
   /**
    * Writes `value` in place of the unfilled value `node` of the field `chain[anchor]`. Under a key
-   * of a block mapping, the token is erased and the value follows on the next lines, one step
-   * further indented; inside a flow collection, the token is replaced by the flow form of the
-   * value. At the root, the keys are appended to the text.
+   * of a block mapping, the value takes the form of its siblings: in block form, the token is
+   * erased and the value follows on the next lines, one step further indented; in flow form, the
+   * value replaces the token, or follows the colon of a bare key. Inside a flow collection, the
+   * token is replaced by the flow form of the value. At the root, the keys are appended to the
+   * text.
    */
   private insertUnderEmpty(
     chain: readonly Field[],
@@ -441,17 +452,20 @@ class CommitPlanner {
     node: ScalarNode,
     value: YamlNode,
   ): SourceEdit[] {
-    const lines = (indent: number): TextPart[] => {
-      if (value.kind === "mapping") {
-        return value.entries.flatMap((e) => entryLines(e.key, e.value, indent, true));
+    const lines = (collection: YamlNode, indent: number): TextPart[] => {
+      if (collection.kind === "mapping") {
+        return collection.entries.flatMap((e) => entryLines(e.key, e.value, indent, true));
       }
-      if (value.kind === "sequence") return value.items.flatMap((i) => itemLines(i, indent, true));
+      if (collection.kind === "sequence") {
+        return collection.items.flatMap((i) => itemLines(i, indent, true));
+      }
       return refuse(REFUSALS.unlocated);
     };
     if (anchor === 0) {
       if (value.kind !== "mapping") return refuse(REFUSALS.unlocated);
       const at = this.source.length;
-      return [splice(at, at, [this.collections.lineBreakBefore(at), ...lines(0)])];
+      const root = childWithSiblingForms(value, null);
+      return [splice(at, at, [this.collections.lineBreakBefore(at), ...lines(root, 0)])];
     }
     const owner = chain[anchor];
     const parent = chain[anchor - 1]?.node;
@@ -461,13 +475,28 @@ class CommitPlanner {
     }
     if (parent?.kind !== "mapping") return refuse(REFUSALS.unlocated);
     const key = owner?.path.at(-1);
+    if (typeof key !== "string") return refuse(REFUSALS.unlocated);
     const entry =
       parent.entries.find((candidate) => candidate.key === key) ?? refuse(REFUSALS.unlocated);
-    const keyStart = entry.keyRange?.start ?? refuse(REFUSALS.unlocated);
+    const keyRange = entry.keyRange ?? refuse(REFUSALS.unlocated);
+    const shaped = entryWithSiblingForms(key, value, parent, chain[anchor - 2]?.node ?? null);
+    const flow = (shaped.kind === "mapping" || shaped.kind === "sequence") && shaped.flow;
+    if (flow && range.start < range.end && !isBlockStyle(node.style)) {
+      return [splice(range.start, range.end, flowText(shaped))];
+    }
+    if (flow && range.start === range.end) {
+      const colon = this.source.colonAfter(keyRange.end) ?? refuse(REFUSALS.unlocated);
+      return [splice(colon + 1, colon + 1, [" ", ...flowText(shaped)])];
+    }
+    // A block scalar holding the unfilled value spans lines of its own, so the block form is kept.
+    const block = flow ? childWithSiblingForms(value, parent) : shaped;
     const erased = range.start === range.end ? [] : this.erase(node, range);
     const at = this.entryEnd(entry);
-    const indent = this.source.column(keyStart) + INDENT_STEP;
-    return [...erased, splice(at, at, [this.collections.lineBreakBefore(at), ...lines(indent)])];
+    const indent = this.source.column(keyRange.start) + INDENT_STEP;
+    return [
+      ...erased,
+      splice(at, at, [this.collections.lineBreakBefore(at), ...lines(block, indent)]),
+    ];
   }
 
   // --- Removals and moves ------------------------------------------------------------------------
