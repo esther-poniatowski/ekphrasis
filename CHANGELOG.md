@@ -8,7 +8,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 - Domain model of YAML documents, carrying source ranges.
 - Source tree in four layers: `domain`, `application`, `infrastructure` and `adapters`.
-- Development toolchain that builds, type-checks, lints, formats and tests the code (esbuild, tsc, ESLint, Prettier and Vitest, respectively), with components written in TSX for Preact.
+- Development toolchain that builds, type-checks, lints, formats and tests the code (esbuild, tsc, ESLint, Prettier and Vitest, respectively), with components written in TSX for Preact, and component tests in the simulated DOM happy-dom with the Testing Library of Preact.
 - Boundaries between layers, enforced by ESLint, which admit the libraries `obsidian`, `preact` and CodeMirror in the adapters layer only.
 - View of ekphrasis for the files `.yaml` and `.yml`, holding a form view and a source view with YAML highlighting.
 - Switch between the form view and the source view, by a header button and by the command *Toggle form and source view*.
