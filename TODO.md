@@ -52,11 +52,11 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Form view**: reflect the conditional rules in the controls: disable a field forbidden by the current values, and mark as required a field required by them. (2026-10-20)
 - [x] **Form view**: lay out the message of a file bound to no schema as a heading followed by the list of the two ways of binding it. (2026-10-20)
 - [x] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar. (2026-10-19)
-- [ ] **Form view**: test in the simulated DOM that a dropdown lists each admitted value once, after successive changes of its value.
-- [ ] **Form view**: write the title of the box of issues as a list of counts, without the conjunction and the final period, as in `Validation: 3 missing fields, 9 invalid values, 1 warning`.
+- [x] **Form view**: test in the simulated DOM that a dropdown lists each admitted value once, after successive changes of its value. (2026-10-20)
+- [x] **Form view**: write the title of the box of issues as a list of counts, without the conjunction and the final period, as in `Validation: 3 missing fields, 9 invalid values, 1 warning`. (2026-10-20)
 - [ ] **Form view**: display the title of the box of issues in the colour of errors, as the title of the box of schema defects takes the colour of its edge.
 - [ ] **Form view**: in the box of issues and the box of schema defects, align the start of each message after the longest field name.
-- [ ] **Form view**: in the message of a file bound to no schema, replace the word *ways*, and place the line of the modeline after the words *at the top of the file*.
+- [x] **Form view**: in the message of a file bound to no schema, replace the word *ways*, and place the line of the modeline after the words *at the top of the file*. (2026-10-20)
 
 ## Collections
 

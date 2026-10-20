@@ -48,11 +48,11 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
     case "unbound":
       return (
         <Message title="This file is bound to no schema" onOpenSource={onOpenSource}>
-          <p>To display it as a form, bind it to a schema in one of two ways:</p>
+          <p>To display it as a form, bind it to a schema by one of two methods:</p>
           <ul class="ekphrasis-message-list">
             <li>
-              write the line <code># yaml-language-server: $schema=path/to/schema.yaml</code> at the
-              top of the file;
+              write at the top of the file the line{" "}
+              <code># yaml-language-server: $schema=path/to/schema.yaml</code>;
             </li>
             <li>add a path rule in the settings of ekphrasis.</li>
           </ul>
@@ -136,13 +136,15 @@ function FormRoot({
       {schemaIssues.length > 0 && (
         <div class="ekphrasis-schema-issues" role="alert">
           <div class="ekphrasis-schema-issues-title">Schema warnings</div>
-          <ul>
+          <ul class="ekphrasis-path-messages">
             {schemaIssues.map((issue, index) => (
               <li key={index}>
                 <code class="ekphrasis-issue-path">
                   {issue.path === "" ? "(root)" : issue.path}
                 </code>
-                <InlineText text={issue.message} />
+                <span class="ekphrasis-issue-message">
+                  <InlineText text={issue.message} />
+                </span>
               </li>
             ))}
           </ul>
@@ -151,7 +153,7 @@ function FormRoot({
       {issues.issues.length > 0 && (
         <div class="ekphrasis-issue-summary">
           <div class="ekphrasis-issue-summary-title">
-            {`Validation: ${countPhrase(issues.counts)}.`}
+            {`Validation: ${countPhrase(issues.counts)}`}
           </div>
           <IssueList issues={issues.unplaced} withPaths />
         </div>

@@ -12,19 +12,21 @@ const MARK_NOUNS: Readonly<Record<IssueMark, readonly [string, string]>> = {
   warning: ["warning", "warnings"],
 };
 
-/** Phrase counting the issues of each mark, such as "2 missing fields and 1 invalid value". */
+/**
+ * Counts of the issues of each mark, as a list without conjunction, such as
+ * "2 missing fields, 1 invalid value".
+ */
 export function countPhrase(counts: Readonly<Record<IssueMark, number>>): string {
   const parts = (Object.keys(MARK_NOUNS) as IssueMark[])
     .filter((mark) => counts[mark] > 0)
     .map((mark) => `${counts[mark]} ${MARK_NOUNS[mark][counts[mark] === 1 ? 0 : 1]}`);
-  if (parts.length === 0) return "no issue";
-  const last = parts.pop();
-  return parts.length === 0 ? `${last}` : `${parts.join(", ")} and ${last}`;
+  return parts.length === 0 ? "no issue" : parts.join(", ");
 }
 
 /**
  * Issues of one field or key, below its control. With `withPaths`, each issue is preceded by its
- * field path, for the issues displayed away from their field.
+ * field path, for the issues displayed away from their field, and the messages start in one
+ * column, after the longest path.
  */
 export function IssueList({
   issues,
@@ -35,13 +37,15 @@ export function IssueList({
 }): JSX.Element | null {
   if (issues.length === 0) return null;
   return (
-    <ul class="ekphrasis-issues">
+    <ul class={withPaths ? "ekphrasis-issues ekphrasis-path-messages" : "ekphrasis-issues"}>
       {issues.map((item, index) => (
         <li key={index} class={`ekphrasis-issue mod-${markOf(item)}`} data-checker={item.checker}>
           {withPaths && (
             <code class="ekphrasis-issue-path">{item.id === "" ? "(root)" : item.id}</code>
           )}
-          <InlineText text={item.message} />
+          <span class="ekphrasis-issue-message">
+            <InlineText text={item.message} />
+          </span>
         </li>
       ))}
     </ul>

@@ -34,7 +34,10 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ### Changed
 
-- Message of a file bound to no schema, laid out as a heading followed by the list of the two ways of binding it.
+- Message of a file bound to no schema, laid out as a heading followed by the two methods of binding it.
+- Modeline in the message of an unbound file, placed after the words *at the top of the file*.
+- Title of the box of issues, reduced to the counts of each kind and written in the colour of errors, such as `Validation: 3 missing fields, 1 warning`.
+- Messages of the box of issues and of the box of schema defects, aligned after the longest path.
 
 ### Fixed
 

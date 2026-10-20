@@ -45,7 +45,7 @@ The file keeps its unfilled value, and a cleared required field receives the fir
 
 Each missing or invalid field is highlighted, and its messages display below its control. Missing fields and invalid fields take different colours, so an author can finish filling before correcting. A missing field takes the accent colour of the required marker, and an invalid value the colour of errors. A group containing an issue carries the number of its issues in its heading, so a collapsed group still signals its issues. The [outline](outline.md) marks the same fields.
 
-The top of the form counts the missing fields, the invalid values and the warnings of the instance. The top of the form also lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a required property absent from the properties of its group. The same property is also reported as a defect of the schema.
+The top of the form counts the missing fields, the invalid values and the warnings of the instance. These counts form the title of a box, written in the colour of errors, such as `Validation: 3 missing fields, 9 invalid values, 1 warning`. Under its title, the box lists each issue whose path designates no field of the form, with its path. Such an issue concerns the root, or a required property absent from the properties of its group. The same property is also reported as a defect of the schema. This box and the box of schema defects align the start of their messages after the longest path.
 
 ## Conditional rules
 

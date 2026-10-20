@@ -120,13 +120,29 @@
   font-weight: var(--font-semibold);
 }
 
-.ekphrasis-schema-issues ul {
-  margin: var(--size-2-2) 0 0;
-  padding-left: var(--size-4-4);
-}
-
 .ekphrasis-issue-path {
   margin-right: var(--size-4-2);
+}
+
+/* Messages preceded by their paths, in the boxes at the top of the form: two columns, so each
+   message starts after the longest path. A path wider than half the box wraps. */
+ul.ekphrasis-path-messages {
+  display: grid;
+  grid-template-columns: fit-content(50%) 1fr;
+  column-gap: var(--size-4-3);
+  row-gap: var(--size-2-1);
+  margin: var(--size-2-2) 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ekphrasis-path-messages > li {
+  display: contents;
+}
+
+.ekphrasis-path-messages .ekphrasis-issue-path {
+  margin-right: 0;
+  overflow-wrap: anywhere;
 }
 
 .ekphrasis-field {
@@ -250,7 +266,9 @@
   font-size: var(--font-ui-small);
 }
 
+/* The title takes the colour of the edge of its box, as the title of the schema warnings does. */
 .ekphrasis-issue-summary-title {
+  color: var(--text-error);
   font-weight: var(--font-semibold);
 }
 
