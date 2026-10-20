@@ -1,0 +1,69 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: guidance.schema.yaml
+title: Guidance
+description: A schema exercising the instructions on demand, the rendered values, the summary of issues and the outline. Each field with a help button states what it holds.
+type: object
+required: [title, status, count]
+properties:
+  title:
+    type: string
+    description: The name of the record, in **one** line.
+    examples: [Onset of oscillation, Decay to rest]
+  status:
+    enum: [posed, answered]
+    description: The state of the record.
+  count:
+    type: integer
+    minimum: 1
+    description: A positive whole number.
+  summary:
+    type: string
+    x-kind: markdown-line
+    description: One line of Markdown, with emphasis or a link, in eight words at most.
+    x-rules: [{ check: word-count, max: 8, severity: warning }]
+  prose:
+    type: string
+    x-kind: markdown
+    description: Paragraphs of Markdown, callouts included.
+  formula:
+    type: string
+    x-kind: latex
+    description: A formula, written without its delimiters.
+    examples: ['\omega_0 = \sqrt{g / \ell}']
+  empty_line:
+    type: string
+    x-kind: markdown-line
+    examples: ["A *new* line"]
+  copy:
+    type: string
+    x-kind: markdown-line
+  subject:
+    type: object
+    x-collapsed: true
+    description: What the record is about.
+    properties:
+      system:
+        type: string
+        x-kind: label
+        description: Identifier of the system.
+        examples: [system.pendulum]
+      note: { type: string }
+  rows:
+    type: array
+    description: One row per variable.
+    items:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: Name of the variable, in words.
+        symbol: { type: string, x-kind: label }
+        expression: { type: string, x-kind: latex }
+  steps:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        text: { type: string, x-kind: markdown-line }

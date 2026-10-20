@@ -1,0 +1,15 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: guidance-long.schema.yaml
+title: Long record
+description: A schema exercising the rendering of many values in batches.
+type: object
+properties:
+  entries:
+    x-kind: records
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        prose: { type: string, x-kind: markdown }
+        formula: { type: string, x-kind: latex }

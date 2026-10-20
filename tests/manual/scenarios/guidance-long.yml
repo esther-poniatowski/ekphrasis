@@ -1,0 +1,364 @@
+# yaml-language-server: $schema=guidance-long.schema.yaml
+# Manual test record of the rendering in batches: 120 entries, each with one Markdown value
+# of about 300 characters and one formula, so the form renders 240 values.
+entries:
+  - name: entry 1
+    prose: "Entry 1 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{1} \cos(\Omega t)'
+  - name: entry 2
+    prose: "Entry 2 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{2} \cos(\Omega t)'
+  - name: entry 3
+    prose: "Entry 3 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{3} \cos(\Omega t)'
+  - name: entry 4
+    prose: "Entry 4 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{4} \cos(\Omega t)'
+  - name: entry 5
+    prose: "Entry 5 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{5} \cos(\Omega t)'
+  - name: entry 6
+    prose: "Entry 6 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{6} \cos(\Omega t)'
+  - name: entry 7
+    prose: "Entry 7 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{7} \cos(\Omega t)'
+  - name: entry 8
+    prose: "Entry 8 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{8} \cos(\Omega t)'
+  - name: entry 9
+    prose: "Entry 9 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{9} \cos(\Omega t)'
+  - name: entry 10
+    prose: "Entry 10 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{10} \cos(\Omega t)'
+  - name: entry 11
+    prose: "Entry 11 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{11} \cos(\Omega t)'
+  - name: entry 12
+    prose: "Entry 12 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{12} \cos(\Omega t)'
+  - name: entry 13
+    prose: "Entry 13 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{13} \cos(\Omega t)'
+  - name: entry 14
+    prose: "Entry 14 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{14} \cos(\Omega t)'
+  - name: entry 15
+    prose: "Entry 15 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{15} \cos(\Omega t)'
+  - name: entry 16
+    prose: "Entry 16 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{16} \cos(\Omega t)'
+  - name: entry 17
+    prose: "Entry 17 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{17} \cos(\Omega t)'
+  - name: entry 18
+    prose: "Entry 18 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{18} \cos(\Omega t)'
+  - name: entry 19
+    prose: "Entry 19 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{19} \cos(\Omega t)'
+  - name: entry 20
+    prose: "Entry 20 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{20} \cos(\Omega t)'
+  - name: entry 21
+    prose: "Entry 21 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{21} \cos(\Omega t)'
+  - name: entry 22
+    prose: "Entry 22 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{22} \cos(\Omega t)'
+  - name: entry 23
+    prose: "Entry 23 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{23} \cos(\Omega t)'
+  - name: entry 24
+    prose: "Entry 24 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{24} \cos(\Omega t)'
+  - name: entry 25
+    prose: "Entry 25 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{25} \cos(\Omega t)'
+  - name: entry 26
+    prose: "Entry 26 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{26} \cos(\Omega t)'
+  - name: entry 27
+    prose: "Entry 27 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{27} \cos(\Omega t)'
+  - name: entry 28
+    prose: "Entry 28 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{28} \cos(\Omega t)'
+  - name: entry 29
+    prose: "Entry 29 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{29} \cos(\Omega t)'
+  - name: entry 30
+    prose: "Entry 30 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{30} \cos(\Omega t)'
+  - name: entry 31
+    prose: "Entry 31 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{31} \cos(\Omega t)'
+  - name: entry 32
+    prose: "Entry 32 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{32} \cos(\Omega t)'
+  - name: entry 33
+    prose: "Entry 33 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{33} \cos(\Omega t)'
+  - name: entry 34
+    prose: "Entry 34 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{34} \cos(\Omega t)'
+  - name: entry 35
+    prose: "Entry 35 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{35} \cos(\Omega t)'
+  - name: entry 36
+    prose: "Entry 36 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{36} \cos(\Omega t)'
+  - name: entry 37
+    prose: "Entry 37 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{37} \cos(\Omega t)'
+  - name: entry 38
+    prose: "Entry 38 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{38} \cos(\Omega t)'
+  - name: entry 39
+    prose: "Entry 39 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{39} \cos(\Omega t)'
+  - name: entry 40
+    prose: "Entry 40 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{40} \cos(\Omega t)'
+  - name: entry 41
+    prose: "Entry 41 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{41} \cos(\Omega t)'
+  - name: entry 42
+    prose: "Entry 42 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{42} \cos(\Omega t)'
+  - name: entry 43
+    prose: "Entry 43 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{43} \cos(\Omega t)'
+  - name: entry 44
+    prose: "Entry 44 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{44} \cos(\Omega t)'
+  - name: entry 45
+    prose: "Entry 45 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{45} \cos(\Omega t)'
+  - name: entry 46
+    prose: "Entry 46 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{46} \cos(\Omega t)'
+  - name: entry 47
+    prose: "Entry 47 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{47} \cos(\Omega t)'
+  - name: entry 48
+    prose: "Entry 48 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{48} \cos(\Omega t)'
+  - name: entry 49
+    prose: "Entry 49 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{49} \cos(\Omega t)'
+  - name: entry 50
+    prose: "Entry 50 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{50} \cos(\Omega t)'
+  - name: entry 51
+    prose: "Entry 51 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{51} \cos(\Omega t)'
+  - name: entry 52
+    prose: "Entry 52 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{52} \cos(\Omega t)'
+  - name: entry 53
+    prose: "Entry 53 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{53} \cos(\Omega t)'
+  - name: entry 54
+    prose: "Entry 54 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{54} \cos(\Omega t)'
+  - name: entry 55
+    prose: "Entry 55 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{55} \cos(\Omega t)'
+  - name: entry 56
+    prose: "Entry 56 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{56} \cos(\Omega t)'
+  - name: entry 57
+    prose: "Entry 57 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{57} \cos(\Omega t)'
+  - name: entry 58
+    prose: "Entry 58 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{58} \cos(\Omega t)'
+  - name: entry 59
+    prose: "Entry 59 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{59} \cos(\Omega t)'
+  - name: entry 60
+    prose: "Entry 60 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{60} \cos(\Omega t)'
+  - name: entry 61
+    prose: "Entry 61 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{61} \cos(\Omega t)'
+  - name: entry 62
+    prose: "Entry 62 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{62} \cos(\Omega t)'
+  - name: entry 63
+    prose: "Entry 63 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{63} \cos(\Omega t)'
+  - name: entry 64
+    prose: "Entry 64 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{64} \cos(\Omega t)'
+  - name: entry 65
+    prose: "Entry 65 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{65} \cos(\Omega t)'
+  - name: entry 66
+    prose: "Entry 66 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{66} \cos(\Omega t)'
+  - name: entry 67
+    prose: "Entry 67 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{67} \cos(\Omega t)'
+  - name: entry 68
+    prose: "Entry 68 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{68} \cos(\Omega t)'
+  - name: entry 69
+    prose: "Entry 69 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{69} \cos(\Omega t)'
+  - name: entry 70
+    prose: "Entry 70 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{70} \cos(\Omega t)'
+  - name: entry 71
+    prose: "Entry 71 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{71} \cos(\Omega t)'
+  - name: entry 72
+    prose: "Entry 72 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{72} \cos(\Omega t)'
+  - name: entry 73
+    prose: "Entry 73 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{73} \cos(\Omega t)'
+  - name: entry 74
+    prose: "Entry 74 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{74} \cos(\Omega t)'
+  - name: entry 75
+    prose: "Entry 75 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{75} \cos(\Omega t)'
+  - name: entry 76
+    prose: "Entry 76 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{76} \cos(\Omega t)'
+  - name: entry 77
+    prose: "Entry 77 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{77} \cos(\Omega t)'
+  - name: entry 78
+    prose: "Entry 78 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{78} \cos(\Omega t)'
+  - name: entry 79
+    prose: "Entry 79 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{79} \cos(\Omega t)'
+  - name: entry 80
+    prose: "Entry 80 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{80} \cos(\Omega t)'
+  - name: entry 81
+    prose: "Entry 81 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{81} \cos(\Omega t)'
+  - name: entry 82
+    prose: "Entry 82 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{82} \cos(\Omega t)'
+  - name: entry 83
+    prose: "Entry 83 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{83} \cos(\Omega t)'
+  - name: entry 84
+    prose: "Entry 84 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{84} \cos(\Omega t)'
+  - name: entry 85
+    prose: "Entry 85 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{85} \cos(\Omega t)'
+  - name: entry 86
+    prose: "Entry 86 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{86} \cos(\Omega t)'
+  - name: entry 87
+    prose: "Entry 87 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{87} \cos(\Omega t)'
+  - name: entry 88
+    prose: "Entry 88 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{88} \cos(\Omega t)'
+  - name: entry 89
+    prose: "Entry 89 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{89} \cos(\Omega t)'
+  - name: entry 90
+    prose: "Entry 90 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{90} \cos(\Omega t)'
+  - name: entry 91
+    prose: "Entry 91 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{91} \cos(\Omega t)'
+  - name: entry 92
+    prose: "Entry 92 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{92} \cos(\Omega t)'
+  - name: entry 93
+    prose: "Entry 93 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{93} \cos(\Omega t)'
+  - name: entry 94
+    prose: "Entry 94 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{94} \cos(\Omega t)'
+  - name: entry 95
+    prose: "Entry 95 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{95} \cos(\Omega t)'
+  - name: entry 96
+    prose: "Entry 96 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{96} \cos(\Omega t)'
+  - name: entry 97
+    prose: "Entry 97 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{97} \cos(\Omega t)'
+  - name: entry 98
+    prose: "Entry 98 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{98} \cos(\Omega t)'
+  - name: entry 99
+    prose: "Entry 99 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{99} \cos(\Omega t)'
+  - name: entry 100
+    prose: "Entry 100 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{100} \cos(\Omega t)'
+  - name: entry 101
+    prose: "Entry 101 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{101} \cos(\Omega t)'
+  - name: entry 102
+    prose: "Entry 102 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{102} \cos(\Omega t)'
+  - name: entry 103
+    prose: "Entry 103 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{103} \cos(\Omega t)'
+  - name: entry 104
+    prose: "Entry 104 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{104} \cos(\Omega t)'
+  - name: entry 105
+    prose: "Entry 105 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{105} \cos(\Omega t)'
+  - name: entry 106
+    prose: "Entry 106 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{106} \cos(\Omega t)'
+  - name: entry 107
+    prose: "Entry 107 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{107} \cos(\Omega t)'
+  - name: entry 108
+    prose: "Entry 108 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{108} \cos(\Omega t)'
+  - name: entry 109
+    prose: "Entry 109 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{109} \cos(\Omega t)'
+  - name: entry 110
+    prose: "Entry 110 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{110} \cos(\Omega t)'
+  - name: entry 111
+    prose: "Entry 111 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{111} \cos(\Omega t)'
+  - name: entry 112
+    prose: "Entry 112 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{112} \cos(\Omega t)'
+  - name: entry 113
+    prose: "Entry 113 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{113} \cos(\Omega t)'
+  - name: entry 114
+    prose: "Entry 114 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{114} \cos(\Omega t)'
+  - name: entry 115
+    prose: "Entry 115 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{115} \cos(\Omega t)'
+  - name: entry 116
+    prose: "Entry 116 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{116} \cos(\Omega t)'
+  - name: entry 117
+    prose: "Entry 117 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{117} \cos(\Omega t)'
+  - name: entry 118
+    prose: "Entry 118 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{118} \cos(\Omega t)'
+  - name: entry 119
+    prose: "Entry 119 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{119} \cos(\Omega t)'
+  - name: entry 120
+    prose: "Entry 120 describes a driven damped pendulum whose *forcing amplitude* exceeds the damping, so the motion settles on a **periodic orbit** after a transient. The [[linked-note]] states the setting, and the bound on the ratio of forcing to damping is compared with the measured onset of oscillation."
+    formula: '\ddot{\theta} + \gamma \dot{\theta} + \omega_0^2 \sin\theta = F_{120} \cos(\Omega t)'

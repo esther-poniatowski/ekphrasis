@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=guidance.schema.yaml
+# Manual test record of the milestone Guidance and navigation.
+title: Guidance
+status:
+count: 0
+summary: &line A line with *emphasis* and a link to [[linked-note]] here
+prose: |
+  First paragraph, with **bold** text.
+
+  > [!note] A callout
+  > Its body.
+formula: '\frac{a}{b} + \alpha'
+empty_line:
+copy: *line
+subject:
+  system: system.pendulum
+  note: inside a folded group
+rows:
+  - name: "angle"
+    symbol: theta
+    expression: '\theta'
+  - name: "damping"
+    symbol: gamma
+    expression: '\gamma'
+steps:
+  - name: first
+    text: The *first* step
+  - name: second
+    text: The *second* step
+extra_key: 1
