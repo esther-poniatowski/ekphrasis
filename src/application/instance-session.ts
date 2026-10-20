@@ -6,9 +6,13 @@
  * While the current text loads, or fails to parse, the session keeps the latest form for display
  * and queues each commit by field path; the queued commits apply, in their order, as soon as a
  * form is built from the current text. Therefore, a change made outside never meets a commit
- * computed on the text it replaced.
+ * computed on the text it replaced. A structural commit designates its items by position, which
+ * a change made outside may shift, so it is refused rather than queued.
+ *
+ * The session keeps the identifiers of the items of sequences, so each form built for the same
+ * file gives a moved item the identifier it had before the move.
  */
-import { printFieldPath, type ScalarCommit } from "../domain";
+import { ItemIdentities, printFieldPath, type Commit, type ScalarCommit } from "../domain";
 import type { CommitService } from "./commit-service";
 import type { FormReady, FormService, FormState } from "./form-service";
 
@@ -33,12 +37,17 @@ export interface SessionSnapshot {
 /** Outcome of a commit, as the control that made it receives it. */
 export type CommitOutcome = "written" | "unchanged" | "queued" | "refused";
 
+/** Reason of a structural commit made while the text of the file loads. */
+export const STRUCTURE_WAITS =
+  "The file is loading, so the entries were left unchanged; repeat the action once the form updates.";
+
 export class InstanceSession {
   private current = "";
   private state: FormState | null = null;
   private form: FormReady | null = null;
   private readonly queue = new Map<string, ScalarCommit>();
   private readonly errors = new Map<string, string>();
+  private identities = new ItemIdentities();
   /** Counter of the texts set, so the pipeline run of a replaced text is discarded. */
   private generation = 0;
 
@@ -63,6 +72,7 @@ export class InstanceSession {
     this.form = null;
     this.queue.clear();
     this.errors.clear();
+    this.identities = new ItemIdentities();
     this.generation += 1;
   }
 
@@ -89,7 +99,7 @@ export class InstanceSession {
     let state: FormState;
     do {
       text = this.current;
-      state = await this.forms.open(path, text);
+      state = await this.forms.open(path, text, this.identities);
       if (generation !== this.generation) return;
     } while (text !== this.current);
     this.state = state;
@@ -100,24 +110,30 @@ export class InstanceSession {
     this.host.changed();
   }
 
-  /** Commits `commit` now when the current text has a form, and else queues it. */
-  commit(commit: ScalarCommit): CommitOutcome {
+  /**
+   * Commits `commit` now when the current text has a form, and else queues a scalar commit and
+   * refuses a structural one.
+   */
+  commit(commit: Commit): CommitOutcome {
     const id = printFieldPath(commit.path);
     let outcome: CommitOutcome;
     if (this.state?.status === "form") {
       outcome = this.apply(this.state, id, commit);
       if (outcome === "written") this.host.write(this.current);
-    } else {
+    } else if (isScalarCommit(commit)) {
       this.queue.set(id, commit);
       this.errors.delete(id);
       outcome = "queued";
+    } else {
+      this.errors.set(id, STRUCTURE_WAITS);
+      outcome = "refused";
     }
     this.host.changed();
     return outcome;
   }
 
-  private apply(state: FormReady, id: string, commit: ScalarCommit): CommitOutcome {
-    const result = this.commits.commit(state, this.current, commit);
+  private apply(state: FormReady, id: string, commit: Commit): CommitOutcome {
+    const result = this.commits.commit(state, this.current, commit, this.identities);
     if (result.status === "refused") {
       this.errors.set(id, result.reason);
       return "refused";
@@ -140,4 +156,8 @@ export class InstanceSession {
     }
     if (written) this.host.write(this.current);
   }
+}
+
+function isScalarCommit(commit: Commit): commit is ScalarCommit {
+  return commit.kind === undefined || commit.kind === "set";
 }

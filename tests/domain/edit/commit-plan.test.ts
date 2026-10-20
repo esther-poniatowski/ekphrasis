@@ -137,18 +137,20 @@ describe("plan of a commit", () => {
     expect(plan(text, ["count"], 1)).toEqual({ status: "refused", reason: REFUSALS.mismatch });
   });
 
-  it("refuses to add or remove a key of a flow mapping, and to clear an item", () => {
+  it("plans the edits of a key of a flow mapping, and of a cleared item", () => {
     const text = "title: a\nstatus: posed\ncheck: {verdict: x, evidence: y}\ntags: [p]\n";
-    expect(plan(text, ["check", "evidence"], null)).toEqual({
-      status: "refused",
-      reason: REFUSALS.flow,
-    });
+    expect(plan(text, ["check", "evidence"], null)).toMatchObject({ status: "planned" });
     const absent = "title: a\nstatus: posed\ncheck: {verdict: x}\n";
-    expect(plan(absent, ["check", "evidence"], "y")).toEqual({
+    expect(plan(absent, ["check", "evidence"], "y")).toMatchObject({ status: "planned" });
+    expect(plan(text, ["tags", 0], null)).toMatchObject({ status: "planned" });
+  });
+
+  it("refuses to remove a key of a flow mapping with a comment in its text", () => {
+    const text = "title: a\nstatus: posed\ncheck: {verdict: x, # kept\n  evidence: y}\n";
+    expect(plan(text, ["check", "verdict"], null)).toEqual({
       status: "refused",
-      reason: REFUSALS.flow,
+      reason: REFUSALS.comment,
     });
-    expect(plan(text, ["tags", 0], null)).toEqual({ status: "refused", reason: REFUSALS.item });
   });
 
   it("refuses a path that designates no field", () => {

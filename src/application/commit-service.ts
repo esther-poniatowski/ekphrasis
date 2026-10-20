@@ -6,13 +6,15 @@
  *
  * The confirmation compares the whole parsed document with the tree that the domain expects, so
  * a commit is written only when the edited value reads back as committed and every other value
- * reads back unchanged.
+ * reads back unchanged. Once confirmed, a structural commit carries the identifiers of the items
+ * over to the new form model.
  */
 import {
   buildFormModel,
+  ItemIdentities,
   planCommit,
   sameContent,
-  type ScalarCommit,
+  type Commit,
   type YamlNode,
 } from "../domain";
 import { EkphrasisError } from "../errors";
@@ -39,8 +41,16 @@ export class CommitService {
     private readonly validation: ValidationService,
   ) {}
 
-  /** Commits `commit` on `text`, whose form state is `state`. */
-  commit(state: FormReady, text: string, commit: ScalarCommit): CommitResult {
+  /**
+   * Commits `commit` on `text`, whose form state is `state`. The identifiers of the items of
+   * sequences are kept in `identities`, which a written commit updates.
+   */
+  commit(
+    state: FormReady,
+    text: string,
+    commit: Commit,
+    identities: ItemIdentities = new ItemIdentities(),
+  ): CommitResult {
     const plan = planCommit(state.model, text, commit);
     if (plan.status !== "planned") return plan;
     let next: string;
@@ -54,7 +64,8 @@ export class CommitService {
       return { status: "refused", reason: UNCONFIRMED };
     }
     if (!sameContent(tree, plan.expected)) return { status: "refused", reason: UNCONFIRMED };
-    const model = buildFormModel(state.schemas, tree, next);
+    for (const { sequence, change } of plan.itemChanges) identities.apply(sequence, change);
+    const model = buildFormModel(state.schemas, tree, next, identities);
     const report = this.validation.validate(state.schemas, model, tree);
     return { status: "written", text: next, state: { ...state, model, report } };
   }

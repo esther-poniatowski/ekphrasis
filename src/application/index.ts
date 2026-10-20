@@ -22,6 +22,7 @@ export { FormService, type FormReady, type FormState } from "./form-service";
 export { CommitService, UNCONFIRMED, type CommitResult } from "./commit-service";
 export {
   InstanceSession,
+  STRUCTURE_WAITS,
   type CommitOutcome,
   type SessionHost,
   type SessionSnapshot,

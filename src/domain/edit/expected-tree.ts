@@ -7,9 +7,15 @@
  */
 import type { MappingEntry, ScalarValue, YamlNode, YamlPath } from "../model";
 
-/** Effect of a commit on the value at its path. */
+/**
+ * Effect of a commit on the value at its path: a scalar set, a key or an item removed, or, at the
+ * path of a sequence, an item inserted or moved.
+ */
 export type CommitEffect =
-  { readonly kind: "set"; readonly value: ScalarValue } | { readonly kind: "remove" };
+  | { readonly kind: "set"; readonly value: ScalarValue }
+  | { readonly kind: "remove" }
+  | { readonly kind: "insert-item"; readonly index: number; readonly value: YamlNode }
+  | { readonly kind: "move-item"; readonly from: number; readonly to: number };
 
 const scalar = (value: ScalarValue): YamlNode => ({
   kind: "scalar",
@@ -19,20 +25,24 @@ const scalar = (value: ScalarValue): YamlNode => ({
 });
 
 /**
- * Tree of `tree` after `effect` at `path`. A missing key along the path is added, and a null
- * value along the path becomes a mapping, as an insertion under an empty key writes it.
+ * Tree of `tree` after `effect` at `path`. A missing key along the path is added, a position
+ * after the last item appends an item, and a scalar along the path becomes a mapping or a
+ * sequence, as an insertion under an empty value writes it.
  */
 export function expectedTree(tree: YamlNode, path: YamlPath, effect: CommitEffect): YamlNode {
   const [segment, ...rest] = path;
-  if (segment === undefined) {
-    return effect.kind === "set" ? scalar(effect.value) : scalar(null);
-  }
+  if (segment === undefined) return atTarget(tree, effect);
   if (typeof segment === "number") {
-    if (tree.kind !== "sequence") return tree;
-    const items = tree.items.map((item, index) =>
-      index === segment ? expectedTree(item, rest, effect) : item,
-    );
-    return { ...tree, items };
+    const items = tree.kind === "sequence" ? tree.items : [];
+    const flow = tree.kind === "sequence" && tree.flow;
+    if (effect.kind === "remove" && rest.length === 0) {
+      return { kind: "sequence", flow, range: null, items: items.filter((_, i) => i !== segment) };
+    }
+    const updated =
+      segment === items.length
+        ? [...items, expectedTree(scalar(null), rest, effect)]
+        : items.map((item, index) => (index === segment ? expectedTree(item, rest, effect) : item));
+    return { kind: "sequence", flow, range: null, items: updated };
   }
   const entries: readonly MappingEntry[] = tree.kind === "mapping" ? tree.entries : [];
   const existing = entries.find((entry) => entry.key === segment);
@@ -54,6 +64,28 @@ export function expectedTree(tree: YamlNode, path: YamlPath, effect: CommitEffec
     range: null,
     entries: updated,
   };
+}
+
+/** Node at the path of a commit after its effect. */
+function atTarget(tree: YamlNode, effect: CommitEffect): YamlNode {
+  switch (effect.kind) {
+    case "set":
+      return scalar(effect.value);
+    case "remove":
+      return scalar(null);
+    case "insert-item": {
+      const items = tree.kind === "sequence" ? [...tree.items] : [];
+      items.splice(effect.index, 0, effect.value);
+      return { kind: "sequence", flow: tree.kind === "sequence" && tree.flow, range: null, items };
+    }
+    case "move-item": {
+      if (tree.kind !== "sequence") return tree;
+      const items = [...tree.items];
+      const [moved] = items.splice(effect.from, 1);
+      if (moved !== undefined) items.splice(effect.to, 0, moved);
+      return { ...tree, range: null, items };
+    }
+  }
 }
 
 /**

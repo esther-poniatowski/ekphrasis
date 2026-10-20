@@ -127,11 +127,11 @@ describe("instance session", () => {
 
   it("records the reason of a refused commit at its field, until a commit there succeeds", async () => {
     const { session: instance } = session();
-    instance.setText("check: {verdict: x, other: y}\n");
+    instance.setText("check: {verdict: x, # kept\n  other: y}\n");
     await instance.refresh("r.yml");
 
     expect(instance.commit({ path: ["check", "verdict"], value: null })).toBe("refused");
-    expect(instance.snapshot.errors.get("check.verdict")).toBe(REFUSALS.flow);
+    expect(instance.snapshot.errors.get("check.verdict")).toBe(REFUSALS.comment);
 
     expect(instance.commit({ path: ["check", "verdict"], value: "z" })).toBe("written");
     expect(instance.snapshot.errors.size).toBe(0);
@@ -139,7 +139,7 @@ describe("instance session", () => {
 
   it("forgets the errors when a text from outside replaces the current text", async () => {
     const { session: instance } = session();
-    instance.setText("check: {verdict: x, other: y}\n");
+    instance.setText("check: {verdict: x, # kept\n  other: y}\n");
     await instance.refresh("r.yml");
     instance.commit({ path: ["check", "verdict"], value: null });
 

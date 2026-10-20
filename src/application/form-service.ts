@@ -4,6 +4,7 @@
  */
 import {
   buildFormModel,
+  ItemIdentities,
   resolveBinding,
   type BindingSource,
   type FormModel,
@@ -63,8 +64,15 @@ export class FormService {
     private readonly settings: () => EkphrasisSettings,
   ) {}
 
-  /** Opens the instance at the vault path `path`, holding `text`. */
-  async open(path: string, text: string): Promise<FormState> {
+  /**
+   * Opens the instance at the vault path `path`, holding `text`. The items of sequences take
+   * their identifiers from `identities`.
+   */
+  async open(
+    path: string,
+    text: string,
+    identities: ItemIdentities = new ItemIdentities(),
+  ): Promise<FormState> {
     const result = resolveBinding(path, text, this.settings().pathRules);
     if (result.status === "unbound") return result;
     if (result.status === "invalid") {
@@ -81,7 +89,7 @@ export class FormService {
     }
     try {
       const schemas = await this.schemas.load(binding.schemaPath);
-      const model = buildFormModel(schemas, tree, text);
+      const model = buildFormModel(schemas, tree, text, identities);
       const report = this.validation.validate(schemas, model, tree);
       return { status: "form", binding, model, report, schemas, schemaPaths: schemas.paths };
     } catch (error) {

@@ -273,13 +273,13 @@ describe("refused commits", () => {
   it("refuses a commit that the domain does not plan", () => {
     expect(
       commit(
-        "title: a\nstatus: posed\ncheck: {verdict: x, other: 1}\n",
+        "title: a\nstatus: posed\ncheck: {verdict: x, # kept\n  other: 1}\n",
         ["check", "verdict"],
         null,
       ),
     ).toEqual({
       status: "refused",
-      reason: REFUSALS.flow,
+      reason: REFUSALS.comment,
     });
   });
 

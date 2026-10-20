@@ -23,7 +23,18 @@ export * from "./edit/scalar-style";
 export * from "./edit/source-edit";
 export { valueFromText } from "./edit/input-value";
 export { expectedTree, sameContent, type CommitEffect } from "./edit/expected-tree";
-export { planCommit, REFUSALS, type CommitPlan, type ScalarCommit } from "./edit/commit-plan";
+export {
+  planCommit,
+  REFUSALS,
+  type Commit,
+  type CommitPlan,
+  type EntryRemoval,
+  type ItemInsertion,
+  type ItemMove,
+  type ItemRemoval,
+  type ScalarCommit,
+  type SequenceChange,
+} from "./edit/commit-plan";
 export {
   validatorDocuments,
   documentUri,
