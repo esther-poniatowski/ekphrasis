@@ -121,7 +121,7 @@ The decision reopens when a field kind for references, suggesting the identifier
 
 **Exit criterion.** The keyed records of a geonexus glossary and the record tables of a gnomon target system can be filled, and the golden test still passes after structural edits.
 
-**Risk.** A flow collection, such as an inline mapping of geonexus, holds its entries between braces or brackets, separated by commas, usually on one line. An insertion or a removal must then edit the separating commas, and has no sibling line whose indentation it could copy. Before this milestone starts, the plan must settle whether such an edit keeps the flow form or converts the collection to block form. Keeping the flow form preserves the layout chosen by the author, at the cost of a second set of insertion rules.
+**Risk.** A flow collection, such as an inline mapping of geonexus, holds its entries between braces or brackets, separated by commas, usually on one line. An insertion or a removal must then edit the separating commas, and has no sibling line whose indentation it could copy. The user decided on 2026-10-20 that such an edit keeps the flow form, since converting the collection to block form would rewrite lines that the author did not edit, against the [requirement on source preservation](../requirements.md#^source-preservation). The cost is a second set of insertion rules, beside the rules of block collections.
 
 ### Guidance and navigation
 

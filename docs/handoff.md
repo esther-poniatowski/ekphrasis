@@ -17,13 +17,9 @@ The [protocol of validation](../tests/manual/protocols/validation.md) passed ins
 
 The exit criterion of *Validation* is verified by the [acceptance test of validation](../tests/acceptance/validation.test.ts). The question fixture expresses the rule `by_aim` of gnomon by rules `required-when`, and each aim reports exactly the unfilled fields that it requires. The [corpus test of validation](../tests/acceptance/corpus-validation.test.ts) compares the same rule with the registry of gnomon on its question records, and validates the records of geonexus against their schemas.
 
-The section *Corrections after the check of Validation* of the roadmap is implemented except its first step, and its steps stand in three states:
+The [protocol of the corrections](../tests/manual/protocols/corrections-validation.md) passed inside Obsidian on 2026-10-20, with every item ticked. The duplicated dropdown options were no defect: the observation had confused distinct options. Its section *Observations* gave four corrections of style, and a regression test of the dropdown in the simulated DOM `happy-dom` with `@testing-library/preact`, installed on 2026-10-20. These five steps close the section *Corrections after the check of Validation* of the roadmap. A test file selects the simulated DOM by the comment `// @vitest-environment happy-dom`.
 
-- The steps on schema defects and on single-line values are checked, since their tests cover them outside Obsidian.
-- The steps on unfilled values, conditional rules and the message of an unbound file await the [protocol of the corrections](../tests/manual/protocols/corrections-validation.md). The protocol has not run yet, and these steps stay unticked until it passes.
-- The step on duplicated dropdown options is open. Its component test runs in the simulated DOM `happy-dom` with the testing library `@testing-library/preact`, as the decision on the [interface framework](adr/form-interface-framework.md) specifies. Both were installed as development dependencies on 2026-10-20, with the approval of the user, and a test file selects the DOM by the comment `// @vitest-environment happy-dom`. The duplicated options did not reappear with Preact 11 over a minimal DOM, on the sequence of the protocol and on 3000 random sequences, so the duplication may depend on the DOM of Obsidian. The protocol collects evidence of the duplication inside Obsidian, in its section *Dropdown options of gnomon*.
-
-The milestone *Collections* follows. Its first step awaits a decision of the user: whether an edit inside a flow collection keeps the flow form or converts the collection to block form.
+The milestone *Collections* follows these steps. An edit inside a flow collection keeps the flow form, as the user decided on 2026-10-20 and the [implementation plan](architecture/implementation-plan.md) records.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 

@@ -46,18 +46,23 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Corrections after the check of Validation
 
-- [ ] **Form view**: reproduce by a test, then correct, the options of a dropdown displayed twice after its value changes.
+- [x] **Form view**: reproduce by a test, then correct, the options of a dropdown displayed twice after its value changes. No defect existed: the observation had confused distinct options, *Modal knowledge* with *Model knowledge* and *Exploration* with *Explanation*, as the [protocol of the corrections](tests/manual/protocols/corrections-validation.md) records. (2026-10-20)
 - [x] **Validation**: report as a schema defect each property required by the keyword `required` or by a condition but absent from the properties of the schema, naming that property. (2026-10-19)
-- [ ] **Form view**: display every unfilled value as an empty control marked `—`, whatever value the file holds, and warn when a schema declares as unfilled a value that it admits for a field.
-- [ ] **Form view**: reflect the conditional rules in the controls: disable a field forbidden by the current values, and mark as required a field required by them.
-- [ ] **Form view**: lay out the message of a file bound to no schema as a heading followed by the list of the two ways of binding it.
+- [x] **Form view**: display every unfilled value as an empty control marked `—`, whatever value the file holds, and warn when a schema declares as unfilled a value that it admits for a field. (2026-10-20)
+- [x] **Form view**: reflect the conditional rules in the controls: disable a field forbidden by the current values, and mark as required a field required by them. (2026-10-20)
+- [x] **Form view**: lay out the message of a file bound to no schema as a heading followed by the list of the two ways of binding it. (2026-10-20)
 - [x] **Saving**: write the value of a single-line kind in plain style, or single-quoted when the plain style misreads it, even when the previous value was a block scalar. (2026-10-19)
+- [ ] **Form view**: test in the simulated DOM that a dropdown lists each admitted value once, after successive changes of its value.
+- [ ] **Form view**: write the title of the box of issues as a list of counts, without the conjunction and the final period, as in `Validation: 3 missing fields, 9 invalid values, 1 warning`.
+- [ ] **Form view**: display the title of the box of issues in the colour of errors, as the title of the box of schema defects takes the colour of its edge.
+- [ ] **Form view**: in the box of issues and the box of schema defects, align the start of each message after the longest field name.
+- [ ] **Form view**: in the message of a file bound to no schema, replace the word *ways*, and place the line of the modeline after the words *at the top of the file*.
 
 ## Collections
 
 - [ ] **Field kinds**: display one control per collection kind, including the tables and the alternatives.
 - [ ] **Form view**: give each item of a sequence an identifier kept across reorderings.
-- [ ] **Saving**: decide whether an edit inside a flow collection keeps its flow form or converts the collection to block form, and implement the insertion and removal of entries with their separating commas.
+- [ ] **Saving**: implement the insertion and removal of entries inside a flow collection with their separating commas, keeping the flow form, as the user decided on 2026-10-20.
 - [ ] **Saving**: insert, remove and reorder items and rows with the indentation of their siblings.
 - [ ] **Form view**: collapse and expand groups and collections, following the keyword `x-collapsed` when the form opens, and provide the commands *Collapse all* and *Expand all*.
 - [ ] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group.
