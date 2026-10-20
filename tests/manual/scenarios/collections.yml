@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=collections.schema.yaml
+# Manual test record of the controls of the collection kinds.
+title: Collections
+tags: [alpha, beta, gamma]
+steps:
+  - first step # on the first step
+  - second step
+kinds: [noun, adjective]
+rows:
+  - name: length
+    symbol: L
+    unit: m
+  - name: time
+    symbol: T
+    unit: km
+terms:
+  b-term:
+    label: B term
+entries:
+  first:
+    label: First entry
+    frames: ["~ of x"]
+variants:
+  - name: small
+    aliases: [s]
+  - name: large
+source:
+  isbn: 978-0
+check: {verdict: pending}
+notes:
+  text: folded at opening
+nested:
+  inner:
+    level: low

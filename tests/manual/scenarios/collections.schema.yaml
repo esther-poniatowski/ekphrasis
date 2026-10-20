@@ -1,0 +1,67 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: collections.schema.yaml
+title: Collections
+description: A schema exercising the controls of the collection kinds and the boxes at the top of the form.
+type: object
+required: [title, ghost, undeclared_property_with_a_long_name]
+x-unfilled: [open]
+properties:
+  title: { type: string }
+  tags: { type: array, items: { type: string } }
+  steps: { type: array, items: { type: string } }
+  kinds:
+    type: array
+    uniqueItems: true
+    items: { enum: [noun, verb, adjective] }
+  rows:
+    type: array
+    items:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        symbol: { type: string, x-kind: label }
+        unit: { enum: [m, s, kg] }
+  terms:
+    type: object
+    additionalProperties:
+      type: object
+      required: [label]
+      properties:
+        label: { type: string }
+        gloss: { type: string }
+  entries:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        label: { type: string }
+        frames: { type: array, items: { type: string } }
+  variants:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        aliases: { type: array, items: { type: string } }
+  source:
+    oneOf:
+      - { title: Book, required: [isbn], properties: { isbn: { type: string } } }
+      - { title: Paper, required: [doi], properties: { doi: { type: string } } }
+  check:
+    type: object
+    properties:
+      verdict: { type: string }
+      evidence: { type: string }
+  notes:
+    type: object
+    x-collapsed: true
+    properties:
+      text: { type: string }
+  nested:
+    type: object
+    properties:
+      inner:
+        type: object
+        properties:
+          level: { enum: [low, high, open] }

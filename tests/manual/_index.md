@@ -12,5 +12,6 @@ The manual tests of ekphrasis verify inside Obsidian the behaviours that unit te
 - [Protocol of saving](protocols/saving.md): to verify the commits, the scalar styles and the changes made outside while a field holds the focus.
 - [Protocol of validation](protocols/validation.md): to verify the issues displayed at fields and in group headings, their update after each commit, and the command *Validate instance*.
 - [Protocol of the corrections after validation](protocols/corrections-validation.md): to verify inside Obsidian the corrections made after the check of validation.
+- [Protocol of collections](protocols/collections.md): to verify the controls of the collection kinds, the folding of sections, and the corrections of style made after the check of the corrections.
 - [Scenario records](scenarios): to find the records and schemas written for the protocols, which the test vault copies at each build.
 - [Settings of the test vault](vault-settings.json): to know the path rules and the commit delay from which every protocol starts.
