@@ -8,17 +8,17 @@ aliases:
 
 The documentation of ekphrasis specifies an Obsidian plugin that fills YAML records through forms generated from JSON Schemas. The plugin serves projects that record their specifications in YAML files.
 
-- [Project overview](overview.md): to decide whether the plugin fits a project that fills YAML records against schemas.
-- [Requirements](requirements.md): to check a design choice against the properties required of the plugin.
-- [Existing plugins](references/_index.md): to know which requirements remain unmet by the plugins already available.
-- [User guide](guide/_index.md): to install the plugin, fill records through forms, and write the schemas of these records.
-- [Features](features/_index.md): to know the syntax accepted in a schema or an instance, and the behaviour of the plugin for each feature.
-- [Architecture decisions](adr/_index.md): to know which constraint fixed each design choice, and which change of constraint would reopen the choice.
-- [Architecture](architecture/_index.md): to locate the module responsible for a behaviour before changing that behaviour.
-- [Agent prompts](prompts/_index.md): to delegate a review or another recurring task on the project to an AI agent.
-- [Documentation conventions](documentation-conventions.md): to write a new note and register it in this documentation.
-- [Roadmap](../TODO.md): to know which features are implemented and which steps remain open.
-- [Handoff](handoff.md): to resume the implementation in a new agent session, with the state, constraints and facts left by the previous session.
+- [Project overview](overview.md): shows whether the plugin fits a project that fills YAML records against schemas
+- [Requirements](requirements.md): states the properties against which each design choice is checked
+- [References - Existing plugins](references/_index.md): measures the plugins already available against the requirements of ekphrasis
+- [User guide](guide/_index.md): guides the authors who install the plugin, fill records and write their schemas
+- [Features](features/_index.md): specifies the syntax accepted in schemas and instances, and the behaviour of each feature
+- [Architecture decisions](adr/_index.md): records the constraint that fixed each design choice, and the change of constraint that would reopen it
+- [Architecture](architecture/_index.md): locates the module responsible for a behaviour before that behaviour changes
+- [Agent prompts](prompts/_index.md): delegates recurring tasks on the project to an AI agent
+- [Documentation conventions](documentation-conventions.md): fixes how a new note is written and registered in this documentation
+- [Roadmap](../TODO.md): tracks which features are implemented and which steps remain open
+- [Handoff](handoff.md): resumes the implementation in a new agent session, from the state left by the previous session
 
 A feature can be described by three kinds of note, one per folder:
 

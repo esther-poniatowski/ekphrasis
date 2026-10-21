@@ -10,5 +10,5 @@ aliases:
 
 These references inventory existing Obsidian plugins and assess them against the [requirements](../requirements.md) of ekphrasis.
 
-- [Plugins for YAML processing](existing-plugins-yaml.md): to know which YAML plugins open the same files as ekphrasis, and which requirements they leave unmet.
-- [Plugins for form management](existing-plugins-forms.md): to know which requirements the form plugins leave unmet, and which interface technologies they use.
+- [Assessment of existing plugins - YAML processing](existing-plugins-yaml.md): measures the YAML plugins against the requirements of ekphrasis
+- [Assessment of existing plugins - Form management](existing-plugins-forms.md): measures the form plugins against the requirements of ekphrasis

@@ -9,6 +9,6 @@ aliases:
 
 The user guide of ekphrasis serves two readers: an author who fills YAML records through forms, and an author who writes the schemas of these records.
 
-- [Installation](installation.md): to install the plugin in a vault, and to avoid a conflict with another plugin that opens YAML files.
-- [Filling a form](filling-forms.md): to create a record from a schema, fill its fields, and correct the issues reported.
-- [Writing a schema](writing-schemas.md): to declare a record type, bind its files, and add instructions and validity rules.
+- [Installation](installation.md): guides the author in installing the plugin in a vault
+- [Filling a form](filling-forms.md): guides the author in creating a record from a schema and filling its fields
+- [Writing a schema](writing-schemas.md): guides the author in declaring a record type, with its instructions and its validity rules

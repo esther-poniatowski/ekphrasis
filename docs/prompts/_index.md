@@ -9,4 +9,4 @@ aliases:
 
 The agent prompts of ekphrasis delegate recurring tasks on the project to an AI agent.
 
-- [Adversarial design review](design-review.md): to have an agent challenge the design and the implementation strategy before implementation.
+- [Adversarial design review](design-review.md): delegates to an agent an adversarial review of the design before its implementation

@@ -8,11 +8,11 @@ aliases:
 
 The manual tests of ekphrasis verify inside Obsidian the behaviours that unit tests cannot reach, such as focus, rendering and changes made by other applications. Each protocol runs in the test vault built by `npm run test-vault`, and its ticks and observations record the outcome of each run.
 
-- [Protocol of the bound form](protocols/bound-form.md): to verify the controls, the binding and the switch between views inside Obsidian.
-- [Protocol of saving](protocols/saving.md): to verify the commits, the scalar styles and the changes made outside while a field holds the focus.
-- [Protocol of validation](protocols/validation.md): to verify the issues displayed at fields and in group headings, their update after each commit, and the command *Validate instance*.
-- [Protocol of the corrections after validation](protocols/corrections-validation.md): to verify inside Obsidian the corrections made after the check of validation.
-- [Protocol of collections](protocols/collections.md): to verify the controls of the collection kinds, the folding of sections, and the corrections of style made after the check of the corrections.
-- [Protocol of guidance and navigation](protocols/guidance-navigation.md): to verify the instructions on demand, the rendered values, the summary of issues, the outline and its search, and the three decisions taken after the check of collections.
-- [Scenario records](scenarios): to find the records and schemas written for the protocols, which the test vault copies at each build.
-- [Settings of the test vault](vault-settings.json): to know the path rules and the commit delay from which every protocol starts.
+- [Test protocol: Bound form](protocols/bound-form.md): verifies the bound form inside Obsidian
+- [Test protocol: Saving of scalars](protocols/saving.md): verifies the saving of scalar fields inside Obsidian
+- [Test protocol: Validation](protocols/validation.md): verifies the validation of instances inside Obsidian
+- [Test protocol: Corrections after the check of Validation](protocols/corrections-validation.md): verifies inside Obsidian the corrections made after the check of validation
+- [Test protocol: Collections](protocols/collections.md): verifies the collection kinds inside Obsidian
+- [Test protocol: Guidance and navigation](protocols/guidance-navigation.md): verifies the guidance and the navigation of the form inside Obsidian
+- [Scenario records](scenarios): supplies the records and the schemas of the protocols, copied into the test vault at each build
+- [Settings of the test vault](vault-settings.json): fixes the settings from which every protocol starts

@@ -82,12 +82,12 @@ The three fields are reported as missing until they are filled. Once filled, the
 
 | Topic | Purpose |
 | --- | --- |
-| [Installation](docs/guide/installation.md) | To install the plugin in a vault |
-| [Filling a form](docs/guide/filling-forms.md) | To create a record from a schema and fill its fields |
-| [Writing a schema](docs/guide/writing-schemas.md) | To declare a record type with its instructions and rules |
-| [Features](docs/features/_index.md) | To know the syntax and the behaviour of each feature |
-| [Architecture](docs/architecture/_index.md) | To locate the module responsible for a behaviour |
-| [Architecture decisions](docs/adr/_index.md) | To know which constraint fixed each design choice |
+| [Installation](docs/guide/installation.md) | guides the author in installing the plugin in a vault |
+| [Filling a form](docs/guide/filling-forms.md) | guides the author in creating a record from a schema and filling its fields |
+| [Writing a schema](docs/guide/writing-schemas.md) | guides the author in declaring a record type, with its instructions and its rules |
+| [Features](docs/features/_index.md) | specifies the syntax and the behaviour of each feature |
+| [Architecture](docs/architecture/_index.md) | locates the module responsible for a behaviour |
+| [Architecture decisions](docs/adr/_index.md) | records the constraint that fixed each design choice |
 
 Every note of the documentation is registered in the [documentation index](docs/_index.md).
 

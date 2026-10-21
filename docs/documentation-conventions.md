@@ -49,7 +49,7 @@ Each tag of the vocabulary names one category of note:
 
 ## Registration
 
-Each folder carries an index file `_index.md` that registers every file of the folder. A note is registered in the edit that creates it. When registration is deferred to a later edit, the note typically stays unregistered, because that edit serves another concern. Within an index, each entry states the goal of a reader who opens the note, and never summarizes the content of that note.
+Each folder carries an index file `_index.md` that registers every file of the folder. A note is registered in the edit that creates it. When registration is deferred to a later edit, the note typically stays unregistered, because that edit serves another concern. Within an index, each entry gives the title of its note as link text, followed by one clause stating the goal of a reader who opens the note. The clause opens on a verb in the present tense, whose implicit subject is the note, and ends without a period, as in `- [Saving](saving.md): predicts how each edit changes the YAML file`. The entry never summarizes the content of that note.
 
 ## Cross-references
 

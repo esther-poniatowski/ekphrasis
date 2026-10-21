@@ -9,15 +9,15 @@ aliases:
 
 Each feature of ekphrasis is specified in one note, by the syntax accepted in a schema or an instance and by the behaviour of the plugin. Each note states the target behaviour of its feature, whereas the steps already implemented are checked in the [roadmap](../../TODO.md). The notes are listed in dependency order.
 
-- [YAML instances](instance-files.md): to store a record in a YAML file, and to bind that file to its schema.
-- [Schemas](schemas.md): to declare the fields of a record type, their defaults, their instructions and their required or conditional status.
-- [Field kinds](field-kinds.md): to choose the control through which each field is filled.
-- [Field paths](field-paths.md): to designate a field of an instance in a rule, in an issue or in a checker.
-- [Instance creation](instance-creation.md): to create a new instance from a schema, and to predict the skeleton written into the file.
-- [Form view](form-view.md): to fill an instance, display the instructions of a field, and switch to the YAML text.
-- [Outline](outline.md): to navigate a long instance, and to find the fields that remain missing or invalid.
+- [YAML instances](instance-files.md): fixes how a record is stored in a YAML file and bound to its schema
+- [Schemas](schemas.md): fixes how a schema declares a record type
+- [Field kinds](field-kinds.md): matches each field with the control through which it is filled
+- [Field paths](field-paths.md): fixes how a rule, an issue or a checker designates a field of an instance
+- [Instance creation](instance-creation.md): predicts the new instance written from a schema
+- [Form view](form-view.md): fixes how an instance is filled through its form
+- [Outline](outline.md): fixes how an author moves through a long instance and finds its remaining issues
 - [Links](links.md): fixes how a value or a note links to a field of an instance, and how the links of a value resolve
-- [Saving](saving.md): to predict how each edit changes the YAML file, and which parts of the file stay unchanged.
-- [Validation](validation.md): to declare validity rules in a schema, and to interpret the issues reported.
-- [Custom checkers](custom-checkers.md): to implement a rule in Python, register it, and invoke it from a schema.
-- [Schema editor](schema-editor.md): to create and modify schemas through a form, and to manage their versions.
+- [Saving](saving.md): predicts how each edit changes the YAML file, and which parts of the file stay unchanged
+- [Validation](validation.md): fixes how a schema declares its validity rules, and how their issues are reported
+- [Custom checkers](custom-checkers.md): fixes how a rule written in Python is registered and invoked from a schema
+- [Schema editor](schema-editor.md): fixes how schemas and their versions are created and modified through a form
