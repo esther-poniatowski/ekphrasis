@@ -20,6 +20,8 @@ The requirements of ekphrasis are the properties needed from the plugin by a pro
 
 - **Visible structure**: keys must be distinguished from the areas holding the values, and each nested group must be collapsible. ^visible-structure
 - **Outline**: a side panel must display the structure of the instance, and a click on an entry of that panel must move the form to the field. ^outline
+- **Links in values**: the Markdown links and the wikilinks of a value must resolve as in a note stored in the folder of the instance. ^links-in-values
+- **Field links**: a link must be able to designate a field of a YAML instance, by the path of its file or by the identifier of its record, together with its field path. Following such a link, from a form or from a note, must open the form at that field. ^field-links
 
 ## Validation
 

@@ -83,8 +83,19 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Form view**: display the counts of the summary at the top of the form as a list, one line per kind of issue, with the fields of each kind reachable from it.
 - [ ] **Outline**: provide a search that moves the form to a field, and displays its instructions.
 
+## Links
+
+- [ ] **Links**: decide, in a decision record, the location of the index of identifiers (a module of ekphrasis or a separate plugin), the syntax of a link by identifier, and the declaration of the identifier of a record type.
+- [ ] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign.
+- [ ] **Links**: verify that the Markdown links and the wikilinks of a value resolve as in a note stored in the folder of the instance, including relative paths, encoded spaces and subpaths of notes.
+- [ ] **Links**: parse field links by path, and open the target instance in the form view at the designated field, from a value of a form and from a note.
+- [ ] **Links**: suggest the field paths of an instance after a hash sign in a link.
+- [ ] **Links**: provide the command *Copy link to field*, in the link format set in the settings of Obsidian.
+- [ ] **Links**: index the identifiers of the records of the vault, and resolve the field links by identifier.
+
 ## Instance creation
 
+- [ ] **Tooling**: measure the time per file of the corpus tests on geonexus, which grew from about 2 minutes on 2026-10-02 to 41 minutes on 2026-10-20, find the cause, and correct it or record the remaining cost.
 - [ ] **Instance creation**: write the skeleton of a new instance, with its modeline when no path rule binds its path.
 - [ ] **Instance creation**: add the schema folder to the settings, and offer its schemas together with those of the path rules.
 - [ ] **Instance creation**: provide the command *Create instance*, and one command per schema declared with a command name.

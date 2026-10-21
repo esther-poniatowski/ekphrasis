@@ -7,7 +7,7 @@ aliases:
 ---
 # Implementation plan
 
-The implementation plan orders the construction of ekphrasis into ten milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
+The implementation plan orders the construction of ekphrasis into eleven milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
 
 > [!TIP] Ordering rule
 > A milestone precedes another when the second depends on its modules, or when it tests a premise on which the second depends. Among independent milestones, the milestone whose failure would change the most decisions comes first.
@@ -113,6 +113,8 @@ These four parts amount to a milestone. Moreover, such an index serves more than
 
 The decision reopens when a field kind for references, suggesting the identifiers declared in other records, is adopted. Such a kind needs an index inside the form, and a decision record must then choose between a module of ekphrasis and a separate plugin.
 
+The milestone *Links* reopens the decision, since the user decided on 2026-10-21 that a link may designate a record by its identifier. A link by identifier needs the index of identifiers set aside above. Therefore, the first step of *Links* is a decision record choosing between a module of ekphrasis and a separate plugin for that index. The rules across files keep running as custom checkers until that record decides otherwise.
+
 ### Collections
 
 **Goal.** Every collection kind can be displayed and edited, including insertions, removals and reorderings.
@@ -134,6 +136,22 @@ The decision reopens when a field kind for references, suggesting the identifier
 **Exit criterion.** A question record of gnomon, filled only through the form, needs no consultation of the template comments.
 
 **Check.** A template guides its author by three means: a comment listing the admitted values, a comment giving instructions, and a placeholder showing the form of a value. On 2026-10-20, the [acceptance test of guidance](../../tests/acceptance/guidance.test.ts) built the form of the question template of gnomon from the question schema of the fixtures. Each key of the template was a field of that form, with the admitted values of its comment, with instructions for each other comment, and with an example for each placeholder. The form displays these values in its dropdowns, and the instructions and examples at the help button of each field. The area of keys outside the schema dates from the milestone *Bound form*. The help buttons, the rendered values, the outline and its search await the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md).
+
+### Links
+
+**Goal.** The links of values resolve as in notes, and a link designates a field of another instance, from a form or from a note, as the specification of [links](../features/links.md) details.
+
+**Modules.** Parser of field links in the domain, opening of an instance at a field, suggestions of field paths in links, command *Copy link to field*, index of the identifiers of records, and resolution of links by identifier.
+
+**Exit criterion.** A note of the test vault links to a field of a question record by path and by identifier, and each link opens the form at that field. A link inside a Markdown value of a record opens its target field in the same way.
+
+**Risks.** Three premises must be verified by spikes before the steps that rest on them:
+
+- Obsidian passes the subpath of a followed link to the view of a note; whether it passes that subpath to the view of a plugin opening a YAML file is unverified;
+- Obsidian resolves a link from a note to a file that is not a note by its path, and the forms of path that it accepts for a YAML file, with or without its extension, are unverified;
+- the suggestions of headings in links belong to Obsidian, and whether a plugin can add its own suggestions after a hash sign is unverified.
+
+A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The decision record that opens the milestone fixes that syntax, the declaration of the identifier of a record type, and the location of the index.
 
 ### Instance creation
 
