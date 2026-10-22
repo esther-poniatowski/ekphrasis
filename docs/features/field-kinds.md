@@ -19,7 +19,7 @@ A scalar kind holds one value per field:
 | `text` | One line of plain text | Single-line input | `type: string` |
 | `markdown-line` | One line of inline Markdown | Single-line input, with a rendered display | `x-kind` only |
 | `markdown` | Paragraphs of Markdown | Multi-line input, with a rendered display | `x-kind` only |
-| `latex` | LaTeX formula, without delimiters | Single-line input, with a display formula | `x-kind` only |
+| `latex` | LaTeX formula, without delimiters | Single-line input, with a display formula aligned by the keyword `x-align` | `x-kind` only |
 | `number` | Integer or decimal number | Single-line input with a decimal keyboard | `type: number` or `type: integer` |
 | `boolean` | `true` or `false` | Toggle | `type: boolean` |
 | `choice` | One of the admitted values | Dropdown | `enum`, or `oneOf` of `const` values |

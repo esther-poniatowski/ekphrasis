@@ -49,4 +49,4 @@ The form view adds a budget of time to the count, as the [rendering in batches](
 - The longest question record of gnomon holds 52 string values, the longest of 339 characters. At the measured cost per value, its rendered values fill about four batches.
 - The glossaries of geonexus render no value, since their schemas declare no rendered kind.
 
-The cost of a long value inside Obsidian, with the post-processors of other plugins, is observed in the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md), since the form reports each batch longer than 50 ms in the developer console.
+The cost of a long value inside Obsidian, with the post-processors of other plugins, is observed in the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md), since the form reports each batch longer than 50 ms in the developer console. That protocol passed on 2026-10-22, and the record `scenarios/guidance-long.yml` rendered without any batch reported longer than 50 ms.

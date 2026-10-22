@@ -73,15 +73,23 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 - [x] **Saving**: write a new scalar value in the quoting style of its siblings when they all share one quoted style that represents the value. (2026-10-20)
 - [x] **Tooling**: write the scenario records of the manual tests with empty values as unfilled values, drop `x-unfilled: [open]` from their schemas, and update the expected results of the protocols still to run. (2026-10-20)
-- [ ] **Form view**: keep a pane in the source view when another file opens in it.
-- [ ] **Form view**: display the instructions and the examples of a field on demand.
-- [ ] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian.
-- [ ] **Form view**: render first the fields that enter the visible area of a long instance, in batches that yield to input between them.
+- [x] **Form view**: keep a pane in the source view when another file opens in it. (2026-10-22)
+- [x] **Form view**: display the instructions and the examples of a field on demand. (2026-10-22)
+- [x] **Form view**: render the values of kind `markdown-line`, `markdown` and `latex` through the renderers of Obsidian. (2026-10-22)
+- [x] **Form view**: render first the fields that enter the visible area of a long instance, in batches that yield to input between them. (2026-10-22)
 - [x] **Form view**: display the keys outside the schema in a read-only area. (2026-10-20: implemented by the milestone *Bound form*, and checked by its protocol and by the protocol of validation)
-- [ ] **Outline**: display the entries of the active instance, and move the form to the field of a clicked entry.
-- [ ] **Outline**: mark the entries with issues, and restrict the outline to them on demand.
-- [ ] **Form view**: display the counts of the summary at the top of the form as a list, one line per kind of issue, with the fields of each kind reachable from it.
-- [ ] **Outline**: provide a search that moves the form to a field, and displays its instructions.
+- [x] **Outline**: display the entries of the active instance, and move the form to the field of a clicked entry. (2026-10-22)
+- [x] **Outline**: mark the entries with issues, and restrict the outline to them on demand. (2026-10-22)
+- [x] **Form view**: display the counts of the summary at the top of the form as a list, one line per kind of issue, with the fields of each kind reachable from it. (2026-10-22)
+- [x] **Outline**: provide a search that moves the form to a field, and displays its instructions. (2026-10-22)
+
+## Corrections after the check of Guidance and navigation
+
+- [ ] **Outline**: add a button clearing the search field, marked by a cross.
+- [ ] **Form view**: add buttons folding and unfolding every section, in the header of the form view and at the top of the outline, beside the commands *Collapse all* and *Expand all*.
+- [ ] **Form view**: separate the information icon of the title of the form from its last letter.
+- [ ] **Field kinds**: read the keyword `x-align`, `left` or `center`, on a field of kind `latex` and on a column of a table, with `center` as default.
+- [ ] **Form view**: verify that `Enter` and `Space` open the instructions of a focused help button.
 
 ## Links
 

@@ -137,6 +137,8 @@ The milestone *Links* reopens the decision, since the user decided on 2026-10-21
 
 **Check.** A template guides its author by three means: a comment listing the admitted values, a comment giving instructions, and a placeholder showing the form of a value. On 2026-10-20, the [acceptance test of guidance](../../tests/acceptance/guidance.test.ts) built the form of the question template of gnomon from the question schema of the fixtures. Each key of the template was a field of that form, with the admitted values of its comment, with instructions for each other comment, and with an example for each placeholder. The form displays these values in its dropdowns, and the instructions and examples at the help button of each field. The area of keys outside the schema dates from the milestone *Bound form*. The help buttons, the rendered values, the outline and its search await the [protocol of guidance and navigation](../../tests/manual/protocols/guidance-navigation.md).
 
+**Corrections.** The manual check of 2026-10-22 passed, and the observations of the user gave five corrections, listed in the [roadmap](../../TODO.md) and carried out before *Links*: a button clearing the search, buttons folding every section, the spacing of the icon of the title, the keyword `x-align` of formulas, and a check that a focused help button opens by the keyboard.
+
 ### Links
 
 **Goal.** The links of values resolve as in notes, and a link designates a field of another instance, from a form or from a note, as the specification of [links](../features/links.md) details.
