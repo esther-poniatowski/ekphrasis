@@ -153,7 +153,15 @@ The milestone *Links* reopens the decision, since the user decided on 2026-10-21
 - Obsidian resolves a link from a note to a file that is not a note by its path, and the forms of path that it accepts for a YAML file, with or without its extension, are unverified;
 - the suggestions of headings in links belong to Obsidian, and whether a plugin can add its own suggestions after a hash sign is unverified.
 
-A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The decision record that opens the milestone fixes that syntax, the declaration of the identifier of a record type, and the location of the index.
+On 2026-10-22, the declarations of the API, in `obsidian` 1.13.1 and in `obsidianmd/obsidian-api` at version 1.14.4, settled one part of each premise:
+
+- a view receives an ephemeral state through `setEphemeralState(state)`, and `OpenViewState.eState` carries one; no declaration states that following a link passes its subpath to the view of a YAML file, nor under which key;
+- `getFirstLinkpathDest(linkpath, sourcePath)` returns `TFile | null`, `TFile` being the type of every file of the vault, and `parseLinktext` splits a link into a path and a subpath starting with `#`; no declaration states which forms of the path of a YAML file resolve;
+- `registerEditorSuggest` admits a suggest of a plugin, whose `onTrigger` decides at each key press whether it applies; no declaration states the order among the suggests, nor whether the suggestions of headings yield to a plugin.
+
+The remaining part of each premise needs a test vault. The disposable plugin of the folder `spikes/` tests it, through the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md).
+
+A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), proposed on 2026-10-22, weighs that syntax, the declaration of the identifier of a record type, and the location of the index. The user decides among its options.
 
 ### Instance creation
 
