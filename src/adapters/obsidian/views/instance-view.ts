@@ -92,6 +92,8 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   private readonly formEl: HTMLElement;
   private readonly sourceEl: HTMLElement;
   private readonly modeAction: HTMLElement;
+  /** Buttons of the header folding and unfolding every section, shown in the form view only. */
+  private readonly foldActions: readonly HTMLElement[];
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -120,6 +122,11 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
     this.modeAction = this.addAction(ICONS.sourceView, "Open the source view", () =>
       this.toggleMode(),
     );
+    // Each action added displays before the previous ones, so the order reads collapse, expand.
+    this.foldActions = [
+      this.addAction(ICONS.expandAll, "Expand all", () => this.foldAll(false)),
+      this.addAction(ICONS.collapseAll, "Collapse all", () => this.foldAll(true)),
+    ];
   }
 
   getViewType(): string {
@@ -337,6 +344,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
     const mode = this.mode;
     this.formEl.toggle(mode === "form");
     this.sourceEl.toggle(mode === "source");
+    for (const action of this.foldActions) action.toggle(mode === "form");
     setIcon(this.modeAction, mode === "form" ? ICONS.sourceView : ICONS.formView);
     this.modeAction.setAttr(
       "aria-label",

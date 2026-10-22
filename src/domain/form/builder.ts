@@ -144,6 +144,7 @@ class FormModelBuilder {
       kind,
       value,
       options: options.filter((option) => !this.unfilled.has(option.value)),
+      align: kind === "latex" && site.schema?.declaredAlign === "left" ? "left" : "center",
     };
   }
 

@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
 /**
  * Guidance of the author in a simulated DOM: the instructions and the examples of a field shown
- * and hidden by its help button, those of a column of a table under the header of the table, the
- * values of kind `markdown-line`, `markdown` and `latex` displayed rendered and edited after a
- * click, and the move of the form to a field.
+ * and hidden by its help button, by a click or by the keyboard, those of a column of a table under
+ * the header of the table, the values of kind `markdown-line`, `markdown` and `latex` displayed
+ * rendered and edited after a click, the alignment of formulas, and the move of the form to a
+ * field.
  */
 import { cleanup, fireEvent } from "@testing-library/preact";
 import { afterEach, describe, expect, it } from "vitest";
@@ -85,6 +86,28 @@ describe("instructions on demand", () => {
     expect(row(container, "title").querySelector(".ekphrasis-help")).toBeNull();
   });
 
+  it("shows and hides the instructions by the keys Enter and Space on the focused help button", async () => {
+    const { container } = await renderGuided();
+    const button = (): HTMLButtonElement =>
+      element<HTMLButtonElement>(row(container, "title"), ".ekphrasis-help-button");
+    const shown = (): boolean => row(container, "title").querySelector(".ekphrasis-help") !== null;
+    button().focus();
+    expect(container.ownerDocument.activeElement).toBe(button());
+    fireEvent.keyDown(button(), { key: "Enter" });
+    expect(shown()).toBe(true);
+    fireEvent.keyDown(button(), { key: "Enter" });
+    expect(shown()).toBe(false);
+    fireEvent.keyDown(button(), { key: " " });
+    expect(shown()).toBe(true);
+    // A key held down repeats its event, which must not toggle the instructions again.
+    fireEvent.keyDown(button(), { key: " ", repeat: true });
+    expect(shown()).toBe(true);
+    // Each handled key cancels the activation of the button by the browser, which would toggle
+    // the instructions a second time.
+    expect(fireEvent.keyDown(button(), { key: "Enter" })).toBe(false);
+    expect(shown()).toBe(false);
+  });
+
   it("offers no help button to a field without instructions or examples", async () => {
     const { container } = await renderGuided();
     expect(row(container, "summary").querySelector(".ekphrasis-help-button")).toBeNull();
@@ -134,6 +157,36 @@ describe("rendered values", () => {
       expect([rendered.dataset["kind"], rendered.textContent]).toEqual([kind, text]);
       expect(field.querySelector("input, textarea")).toBeNull();
     }
+  });
+
+  it("aligns a formula as its keyword x-align sets it, in a field and in a cell", async () => {
+    const schema = [
+      "type: object",
+      "properties:",
+      "  centred: { type: string, x-kind: latex }",
+      "  left: { type: string, x-kind: latex, x-align: left }",
+      "  rows:",
+      "    type: array",
+      "    items:",
+      "      type: object",
+      "      properties:",
+      "        expression: { type: string, x-kind: latex, x-align: left }",
+      "        name: { type: string }",
+      "",
+    ].join("\n");
+    const { container } = await renderForm(
+      new MemoryFileSource({ "s.yaml": schema }),
+      [{ pattern: "*.yml", schema: "s.yaml" }],
+      "r.yml",
+      "centred: a\nleft: b\nrows:\n  - expression: c\n    name: d\n",
+    );
+    const align = (selector: string): string | undefined =>
+      element(container, `${selector} .ekphrasis-rendered`).dataset["align"];
+    expect([
+      align('.ekphrasis-field[data-path="centred"]'),
+      align('.ekphrasis-field[data-path="left"]'),
+      align('td[data-path="rows[0].expression"]'),
+    ]).toEqual(["center", "left", "left"]);
   });
 
   it("displays the editor of an empty value at once, with its placeholder", async () => {

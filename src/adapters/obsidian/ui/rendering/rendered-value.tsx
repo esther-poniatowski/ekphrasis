@@ -6,6 +6,7 @@
  */
 import type { HTMLAttributes, JSX } from "preact";
 import { useEffect, useRef } from "preact/hooks";
+import type { FormulaAlign } from "../../../../domain";
 import { useFormContext } from "../form-context";
 import type { RenderedKind } from "./value-renderer";
 
@@ -16,6 +17,8 @@ export type RenderedValueProps = {
   readonly immediate?: boolean;
   /** Classes added to the class of a rendered value. */
   readonly class?: string;
+  /** Alignment of a formula of kind `latex`, which the style sheet reads; `center` by default. */
+  readonly align?: FormulaAlign;
 } & Omit<HTMLAttributes<HTMLDivElement>, "ref" | "class" | "className">;
 
 export function RenderedValue({
@@ -23,6 +26,7 @@ export function RenderedValue({
   text,
   immediate = false,
   class: className,
+  align = "center",
   ...attributes
 }: RenderedValueProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,6 +44,7 @@ export function RenderedValue({
       ref={ref}
       class={className === undefined ? "ekphrasis-rendered" : `ekphrasis-rendered ${className}`}
       data-kind={kind}
+      data-align={kind === "latex" ? align : undefined}
     />
   );
 }

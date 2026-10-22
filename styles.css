@@ -72,7 +72,11 @@
   margin-bottom: var(--size-4-6);
 }
 
+/* The help button of the title stands apart from its last letter, by a gap scaled to the title. */
 .ekphrasis-form-title {
+  display: flex;
+  gap: var(--size-4-2);
+  align-items: center;
   font-size: var(--h2-size);
   font-weight: var(--h2-weight);
   margin-bottom: var(--size-4-2);
@@ -632,6 +636,20 @@ textarea.ekphrasis-control {
   margin: 0;
 }
 
+/*
+ * A formula is centred in its control or its cell, as MathJax centres a display formula, unless
+ * the keyword `x-align` of its schema sets it on the left. The plain text displayed before the
+ * rendering takes the same alignment.
+ */
+.ekphrasis-rendered[data-align="center"] {
+  text-align: center;
+}
+
+.ekphrasis-rendered[data-align="left"],
+.ekphrasis-rendered[data-align="left"] mjx-container[display="true"] {
+  text-align: left;
+}
+
 .ekphrasis-rendered[data-kind="markdown"] > :first-child {
   margin-top: 0;
 }
@@ -698,6 +716,13 @@ td[data-revealed] {
   flex-direction: column;
   gap: var(--size-2-2);
   margin-bottom: var(--size-4-2);
+}
+
+/* The buttons folding every entry, centred as the buttons of the core panels of Obsidian. */
+.ekphrasis-outline-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--size-2-1);
 }
 
 .ekphrasis-outline-search {

@@ -52,6 +52,11 @@ export class SchemaView {
     return this.keyword("x-collapsed")?.value === true;
   }
 
+  /** Value written under the keyword `x-align`, unchecked. */
+  get declaredAlign(): string | null {
+    return this.string("x-align");
+  }
+
   /** Name written under the keyword `x-kind`, unchecked. */
   get declaredKind(): string | null {
     return this.string("x-kind");

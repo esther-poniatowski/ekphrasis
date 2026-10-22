@@ -37,6 +37,7 @@ export function RenderedControl({ field, readOnly, onCommit }: ScalarControlProp
       <RenderedValue
         kind={kind}
         text={draft.text}
+        align={field.align}
         class="ekphrasis-control"
         tabIndex={0}
         role={readOnly ? undefined : "button"}

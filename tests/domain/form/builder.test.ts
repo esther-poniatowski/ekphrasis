@@ -215,6 +215,45 @@ describe("form model", () => {
     ]);
   });
 
+  it("aligns a formula on the left by x-align, and centres it otherwise", () => {
+    const formula = (align?: string): JsonValue =>
+      align === undefined
+        ? { type: "string", "x-kind": "latex" }
+        : { type: "string", "x-kind": "latex", "x-align": align };
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          plain: formula(),
+          left: formula("left"),
+          center: formula("center"),
+          right: formula("right"),
+          text: { type: "string", "x-align": "left" },
+          rows: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { expression: formula("left"), name: { type: "string" } },
+            },
+          },
+        },
+      },
+      "rows:\n  - expression: x\n",
+    );
+    const aligns = ["plain", "left", "center", "right", "text", "rows[0].expression"].map((id) => [
+      id,
+      (fieldAt(model.root, id) as { align?: string }).align,
+    ]);
+    expect(aligns).toEqual([
+      ["plain", "center"],
+      ["left", "left"],
+      ["center", "center"],
+      ["right", "center"],
+      ["text", "center"],
+      ["rows[0].expression", "left"],
+    ]);
+  });
+
   it("builds the declared fields of an empty document", () => {
     const model = build({ type: "object", properties: { a: { type: "string" } } }, "");
     expect(fieldAt(model.root, "a")).toMatchObject({ node: null, value: null });

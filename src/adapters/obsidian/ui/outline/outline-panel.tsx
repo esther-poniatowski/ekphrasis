@@ -5,10 +5,13 @@
  *
  * A click on an entry moves the form to its field. Choosing a result of the search moves the form
  * to its field and shows its instructions. The entries of a section fold in the outline
- * independently of the form; the folded state, the search and the toggle belong to the panel of
- * one file.
+ * independently of the form, one at a time or all at once by the buttons at the top of the panel;
+ * the folded state, the search and the toggle belong to the panel of one file.
+ *
+ * The search field and its clear button take the classes of the search fields of Obsidian, whose
+ * style sheet draws the magnifier and the cross, and hides the cross while the field is empty.
  */
-import type { JSX } from "preact";
+import type { ComponentChildren, JSX } from "preact";
 import { useState } from "preact/hooks";
 import type { FormReady } from "../../../../application";
 import {
@@ -51,18 +54,43 @@ export function OutlinePanel({ form, focusedId, onReveal }: OutlinePanelProps): 
   return (
     <div class="ekphrasis-outline">
       <div class="ekphrasis-outline-toolbar">
-        <input
-          type="search"
-          class="ekphrasis-outline-search"
-          placeholder="Search the fields"
-          aria-label="Search the fields"
-          value={query}
-          onInput={(event) => setQuery(event.currentTarget.value)}
-          onKeyDown={(event) => {
-            const [first] = matches;
-            if (event.key === "Enter" && first !== undefined) onReveal(first.entry.path, true);
-          }}
-        />
+        <div class="ekphrasis-outline-actions">
+          <ActionButton label="Collapse all" onClick={() => setFolded(sectionUids(entries))}>
+            <path d="m7 20 5-5 5 5" />
+            <path d="m7 4 5 5 5-5" />
+          </ActionButton>
+          <ActionButton label="Expand all" onClick={() => setFolded(new Set())}>
+            <path d="m7 15 5 5 5-5" />
+            <path d="m7 9 5-5 5 5" />
+          </ActionButton>
+        </div>
+        <div class="search-input-container ekphrasis-outline-search-container">
+          <input
+            type="search"
+            class="ekphrasis-outline-search"
+            placeholder="Search the fields"
+            aria-label="Search the fields"
+            value={query}
+            onInput={(event) => setQuery(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              const [first] = matches;
+              if (event.key === "Enter" && first !== undefined) onReveal(first.entry.path, true);
+            }}
+          />
+          {query !== "" && (
+            <div
+              class="search-input-clear-button ekphrasis-outline-clear"
+              role="button"
+              aria-label="Clear the search"
+              // The search field keeps the focus, so the author types the next query at once.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={(event) => {
+                setQuery("");
+                event.currentTarget.parentElement?.querySelector("input")?.focus();
+              }}
+            />
+          )}
+        </div>
         <label class="ekphrasis-outline-toggle">
           <input
             type="checkbox"
@@ -164,6 +192,56 @@ function EntryList({
         );
       })}
     </ul>
+  );
+}
+
+/** Identities of the entries of sections holding entries, at every depth of `entries`. */
+function sectionUids(entries: readonly OutlineEntry[]): Set<string> {
+  const uids = new Set<string>();
+  const visit = (list: readonly OutlineEntry[]): void => {
+    for (const entry of list) {
+      if (entry.section && entry.children.length > 0) uids.add(entry.uid);
+      visit(entry.children);
+    }
+  };
+  visit(entries);
+  return uids;
+}
+
+/**
+ * Button of the top of the panel, drawn as an icon of the Lucide set whose paths are `children`,
+ * in the style of the buttons of the core panels of Obsidian. The icon is inlined, so the panel
+ * loads without Obsidian in unit tests.
+ */
+function ActionButton({
+  label,
+  onClick,
+  children,
+}: {
+  readonly label: string;
+  readonly onClick: () => void;
+  readonly children: ComponentChildren;
+}): JSX.Element {
+  return (
+    <button
+      type="button"
+      class="clickable-icon ekphrasis-outline-action"
+      aria-label={label}
+      onClick={onClick}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        {children}
+      </svg>
+    </button>
   );
 }
 

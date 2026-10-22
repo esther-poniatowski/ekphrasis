@@ -1,8 +1,9 @@
 // @vitest-environment happy-dom
 /**
  * Outline panel in a simulated DOM: the entries of a form with their marks and counts, the move
- * requested by a click, the highlight of the focused field, the folding of entries, the
- * restriction to the entries with issues, and the search of the fields.
+ * requested by a click, the highlight of the focused field, the folding of entries, one at a time
+ * or all at once, the restriction to the entries with issues, and the search of the fields with
+ * its clear button.
  */
 import { cleanup, fireEvent, render } from "@testing-library/preact";
 import { afterEach, describe, expect, it } from "vitest";
@@ -117,6 +118,31 @@ describe("outline panel", () => {
     fireEvent.click(element(container, 'li[data-path="rows"] .ekphrasis-outline-fold'));
     expect(displayed(container)).not.toContain("  bob");
     expect(displayed(container)).toContain("rows");
+  });
+
+  it("folds and unfolds every entry of the outline at once", async () => {
+    const { container } = await renderOutline();
+    fireEvent.click(element(container, 'button[aria-label="Collapse all"]'));
+    expect(displayed(container)).toEqual(["title", "status", "subject", "rows"]);
+    fireEvent.click(element(container, 'li[data-path="rows"] .ekphrasis-outline-fold'));
+    expect(displayed(container)).toEqual(["title", "status", "subject", "rows", "  bob", "  #2"]);
+    fireEvent.click(element(container, 'button[aria-label="Expand all"]'));
+    expect(displayed(container)).toHaveLength(12);
+  });
+
+  it("clears the search by its cross, and lists the entries again", async () => {
+    const { container } = await renderOutline();
+    expect(container.querySelector(".ekphrasis-outline-clear")).toBeNull();
+    const search = element<HTMLInputElement>(container, ".ekphrasis-outline-search");
+    fireEvent.input(search, { target: { value: "name" } });
+    expect(container.querySelector(".ekphrasis-outline-entry")).toBeNull();
+    const clear = element(container, ".ekphrasis-outline-clear");
+    expect(clear.getAttribute("aria-label")).toBe("Clear the search");
+    fireEvent.click(clear);
+    expect(search.value).toBe("");
+    expect(search.ownerDocument.activeElement).toBe(search);
+    expect(container.querySelector(".ekphrasis-outline-clear")).toBeNull();
+    expect(displayed(container)).toHaveLength(12);
   });
 
   it("restricts the outline to the entries with issues on demand", async () => {

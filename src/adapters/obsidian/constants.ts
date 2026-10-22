@@ -24,4 +24,6 @@ export const ICONS = {
   formView: "layout-list",
   sourceView: "code-2",
   outline: "list-tree",
+  collapseAll: "chevrons-down-up",
+  expandAll: "chevrons-up-down",
 } as const;

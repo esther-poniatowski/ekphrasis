@@ -1,8 +1,9 @@
 /**
  * Instructions of a field on demand: a help button beside its label, and the panel below the
  * label holding the instructions of the keyword `description`, rendered as Markdown, and the
- * values of the keyword `examples`. The panel shows and hides at each click of the button, rather
- * than at hover, since touch devices have no hover.
+ * values of the keyword `examples`. The panel shows and hides at each click of the button, or at
+ * each press of `Enter` or `Space` on the focused button, rather than at hover, since touch
+ * devices have no hover.
  */
 import type { JSX } from "preact";
 import type { JsonValue } from "../../../domain";
@@ -37,10 +38,26 @@ export function HelpButton({
       aria-expanded={shown}
       data-shown={shown ? true : undefined}
       onClick={() => help.toggle(helpKey)}
+      onKeyDown={(event) => {
+        if (!isActivationKey(event)) return;
+        // The default action would activate the button a second time, by a click.
+        event.preventDefault();
+        if (!event.repeat) help.toggle(helpKey);
+      }}
     >
       <InfoIcon />
     </button>
   );
+}
+
+/**
+ * Whether `event` presses `Enter` or `Space` without a modifier. The help button toggles its
+ * instructions at the key press itself, rather than relying on the activation of a button by the
+ * host, so the keyboard behaves alike in every host and in component tests.
+ */
+function isActivationKey(event: KeyboardEvent): boolean {
+  const modified = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+  return !modified && (event.key === "Enter" || event.key === " ");
 }
 
 /** Panel of the instructions and the examples of `guidance`, while its help key is shown. */

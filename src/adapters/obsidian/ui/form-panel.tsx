@@ -175,7 +175,7 @@ function FormRoot({
       <div class="ekphrasis-form-header">
         {(model.title !== null || hasGuidance(root)) && (
           <div class="ekphrasis-form-title">
-            {model.title}
+            {model.title !== null && <span>{model.title}</span>}
             {hasGuidance(root) && (
               <HelpButton helpKey={root.uid} label={model.title ?? "the record"} />
             )}

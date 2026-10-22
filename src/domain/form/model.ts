@@ -57,10 +57,18 @@ export interface FieldBase {
   readonly unfilled: boolean;
 }
 
+/** Alignment of the formula of a field of kind `latex`, in its control or its cell. */
+export type FormulaAlign = "left" | "center";
+
 export interface ScalarField extends FieldBase {
   readonly kind: ScalarKind;
   /** Value written in the file, or `null` when the instance holds no such key. */
   readonly value: ScalarValue;
+  /**
+   * Alignment of the formula, fixed by the keyword `x-align` for the kind `latex`: `left` when
+   * the keyword holds `left`, and else `center`. Every other kind holds `center`, unread.
+   */
+  readonly align: FormulaAlign;
   /**
    * Admitted values of a field of kind `choice`, without the unfilled values, which the empty
    * option stands for; empty for the other kinds.
