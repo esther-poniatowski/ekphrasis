@@ -47,6 +47,22 @@ Each tag of the vocabulary names one category of note:
 
 ^tag-vocabulary
 
+## Kinds of note
+
+Three kinds of note can describe one feature, one per folder:
+
+- a feature note states the syntax and the behaviour;
+- a decision record states the constraint that selected this syntax among the alternatives;
+- an architecture note states the module that implements the behaviour.
+
+A feature note and an architecture note state the target design, whereas the [roadmap](../TODO.md) checks the steps and the modules already implemented.
+
+A decision record fixes one design choice, binding on every later change of the code. To let a reader tell whether a changed constraint reopens the choice, each record states three elements:
+
+- the constraints that forced the choice;
+- the options weighed against these constraints;
+- the consequences of the choice.
+
 ## Registration
 
 Each folder carries an index file `_index.md` that registers every file of the folder. A note is registered in the edit that creates it. When registration is deferred to a later edit, the note typically stays unregistered, because that edit serves another concern. Within an index, each entry gives the title of its note as link text, followed by one clause stating the goal of a reader who opens the note. The clause opens on a verb in the present tense, whose implicit subject is the note, and ends without a period, as in `- [Saving](saving.md): predicts how each edit changes the YAML file`. The entry never summarizes the content of that note.

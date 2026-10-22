@@ -6,7 +6,7 @@ aliases:
 ---
 # Manual tests
 
-The manual tests of ekphrasis verify inside Obsidian the behaviours that unit tests cannot reach, such as focus, rendering and changes made by other applications. Each protocol runs in the test vault built by `npm run test-vault`, and its ticks and observations record the outcome of each run.
+Verifies inside Obsidian the behaviours of ekphrasis that unit tests cannot reach, such as focus, rendering and changes made by other applications
 
 - [Test protocol: Bound form](protocols/bound-form.md): verifies the bound form inside Obsidian
 - [Test protocol: Saving of scalars](protocols/saving.md): verifies the saving of scalar fields inside Obsidian

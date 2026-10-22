@@ -6,7 +6,7 @@ aliases:
 ---
 # ekphrasis documentation
 
-The documentation of ekphrasis specifies an Obsidian plugin that fills YAML records through forms generated from JSON Schemas. The plugin serves projects that record their specifications in YAML files.
+Specifies ekphrasis, an Obsidian plugin that fills YAML records through forms generated from JSON Schemas, for projects that record their specifications in YAML files
 
 - [Project overview](overview.md): shows whether the plugin fits a project that fills YAML records against schemas
 - [Requirements](requirements.md): states the properties against which each design choice is checked
@@ -19,9 +19,3 @@ The documentation of ekphrasis specifies an Obsidian plugin that fills YAML reco
 - [Documentation conventions](documentation-conventions.md): fixes how a new note is written and registered in this documentation
 - [Roadmap](../TODO.md): tracks which features are implemented and which steps remain open
 - [Handoff](handoff.md): resumes the implementation in a new agent session, from the state left by the previous session
-
-A feature can be described by three kinds of note, one per folder:
-
-- a feature note states the syntax and the behaviour;
-- a decision record states the constraint that selected this syntax among the alternatives;
-- an architecture note states the module that implements the behaviour.

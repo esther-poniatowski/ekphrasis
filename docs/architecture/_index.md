@@ -7,7 +7,7 @@ aliases:
 ---
 # Architecture
 
-The architecture of ekphrasis separates the code that builds and edits the form model from the code that connects the form to Obsidian. The notes describe the target architecture, whereas the [roadmap](../../TODO.md) records which modules exist.
+Describes the architecture of ekphrasis, in which the code building and editing the form model stays apart from the code connecting the form to Obsidian
 
 - [Layers and dependency rule](layers.md): places each module in the layer whose admitted dependencies cover its imports
 - [Form pipeline](form-pipeline.md): traces a control of the form, or a change of the file, back to the stage that produced it

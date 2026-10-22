@@ -7,13 +7,7 @@ aliases:
 ---
 # Architecture decisions
 
-Each architecture decision record fixes one design choice, binding on every subsequent change of the code. To let a reader tell whether a changed constraint reopens the choice, each record states three elements:
-
-- the constraints that forced the choice;
-- the options weighed against these constraints;
-- the consequences of the choice.
-
-Eight records are registered:
+Records the design choices of ekphrasis, each binding on every later change of the code
 
 - [Plain YAML instances](plain-yaml-instances.md): explains why instances are standalone YAML files rather than notes
 - [Schema binding](schema-binding.md): explains why a modeline comment, and else a path rule, selects the schema of an instance

@@ -7,7 +7,10 @@ aliases:
 ---
 # Features
 
-Each feature of ekphrasis is specified in one note, by the syntax accepted in a schema or an instance and by the behaviour of the plugin. Each note states the target behaviour of its feature, whereas the steps already implemented are checked in the [roadmap](../../TODO.md). The notes are listed in dependency order.
+Specifies each feature of ekphrasis by the syntax accepted in a schema or an instance and by the behaviour of the plugin
+
+> [!IMPORTANT] Order of entries
+> The notes are listed in dependency order.
 
 - [YAML instances](instance-files.md): fixes how a record is stored in a YAML file and bound to its schema
 - [Schemas](schemas.md): fixes how a schema declares a record type

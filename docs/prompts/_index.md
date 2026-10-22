@@ -7,6 +7,6 @@ aliases:
 ---
 # Agent prompts
 
-The agent prompts of ekphrasis delegate recurring tasks on the project to an AI agent.
+Delegates recurring tasks on ekphrasis to an AI agent
 
 - [Adversarial design review](design-review.md): delegates to an agent an adversarial review of the design before its implementation
