@@ -1,0 +1,45 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: corrections-guidance.schema.yaml
+title: Corrections
+description: A schema exercising the corrections made after the check of guidance and navigation.
+type: object
+properties:
+  name: { type: string }
+  note:
+    type: string
+    description: A note on the record, in one line.
+  centred:
+    type: string
+    x-kind: latex
+    description: A formula without the keyword x-align, centred by default.
+  left:
+    type: string
+    x-kind: latex
+    x-align: left
+    description: A formula aligned on the left by the keyword x-align.
+  explicit:
+    type: string
+    x-kind: latex
+    x-align: center
+  wrong:
+    type: string
+    x-kind: latex
+    x-align: right
+  subject:
+    type: object
+    properties:
+      system: { type: string }
+      parts:
+        type: array
+        items: { type: string }
+  rows:
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+        left:
+          type: string
+          x-kind: latex
+          x-align: left
+        centred: { type: string, x-kind: latex }

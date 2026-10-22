@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=corrections-guidance.schema.yaml
+# Manual test record of the corrections after the check of Guidance and navigation.
+name: Pendulum
+note:
+centred: '\frac{a}{b}'
+left: '\frac{a}{b}'
+explicit: '\frac{a}{b}'
+wrong: '\frac{a}{b}'
+subject:
+  system: pendulum
+  parts: [rod, bob]
+rows:
+  - name: angle
+    left: '\theta'
+    centred: '\theta'
+  - name: damping
+    left: '\gamma'
+    centred: '\gamma'
