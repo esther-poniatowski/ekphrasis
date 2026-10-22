@@ -34,7 +34,7 @@ const forbid = (...groups) => ({
 });
 
 export default tseslint.config(
-  { ignores: ["main.js", "node_modules/", "coverage/", "examples/"] },
+  { ignores: ["main.js", "spikes/main.js", "node_modules/", "coverage/", "examples/"] },
   ...tseslint.configs.recommendedTypeChecked,
   {
     languageOptions: {

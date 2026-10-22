@@ -33,6 +33,7 @@
     "src/**/*.tsx",
     "tests/**/*.ts",
     "tests/**/*.tsx",
+    "spikes/src/**/*.ts",
     "config/tools/*.ts"
   ]
 }

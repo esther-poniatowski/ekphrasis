@@ -9,6 +9,7 @@
 //
 //   production       single minified build; without it, watch mode with inline sourcemaps
 //   --target=plugin  the ekphrasis plugin, written to `main.js` at the repository root (default)
+//   --target=spikes  the disposable spike plugin, written to `spikes/main.js`
 //
 // Notes
 // -----
@@ -41,6 +42,7 @@ const RUNTIME_PACKAGES = [
 /** Build targets: each one is a plugin folder holding its own `manifest.json`. */
 const TARGETS = {
   plugin: { entryPoints: ["src/main.ts"], outfile: "main.js" },
+  spikes: { entryPoints: ["spikes/src/main.ts"], outfile: "spikes/main.js" },
 };
 
 const args = process.argv.slice(2);

@@ -12,6 +12,8 @@
 //   written during a run land in the versioned files.
 // - Plugin: symbolic links to the bundle, the manifest and the style sheet of the repository, and
 //   the settings of `tests/manual/vault-settings.json`, copied over the previous ones.
+// - Spikes: while the disposable folder `spikes/` exists, a symbolic link to it as the plugin
+//   `ekphrasis-spikes`, left disabled, since its view takes the YAML extensions from ekphrasis.
 //
 // Every other file of `.obsidian/` (workspace, other plugins such as YAML Editor) is kept.
 // =================================================================================================
@@ -49,6 +51,10 @@ const pluginFolder = join(VAULT, ".obsidian", "plugins", "ekphrasis");
 mkdirSync(pluginFolder, { recursive: true });
 for (const file of PLUGIN_FILES) link(file, join(pluginFolder, file));
 cpSync(SETTINGS, join(pluginFolder, "data.json"));
+
+const SPIKES = "spikes";
+if (existsSync(join(SPIKES, "manifest.json")))
+  link(SPIKES, join(VAULT, ".obsidian", "plugins", "ekphrasis-spikes"));
 
 const enabledPlugins = join(VAULT, ".obsidian", "community-plugins.json");
 if (!existsSync(enabledPlugins))
