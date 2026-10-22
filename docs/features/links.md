@@ -28,7 +28,7 @@ A field link by path appends the [field path](field-paths.md) of the field to th
 
 ## Field links by identifier
 
-A field link by identifier names the record by the value of its identifier, then the field by its field path. Such a link survives a move or a rename of the file of the record. Its resolution needs an index of the identifiers declared across the vault. The syntax of the link, the declaration of the identifier of a record type, and the location of the index remain open, and the proposed [decision on record identifiers](../adr/record-identifiers.md) weighs them.
+A field link by identifier names the record by the value of its identifier, then the field by its field path. Such a link stays valid after a move or a rename of the file of the record, as long as the identifier of the record stays unchanged. Its resolution needs an index of the identifiers declared across the vault. The syntax of the link, the declaration of the identifier of a record type, and the location of the index remain open, and the proposed [decision on record identifiers](../adr/record-identifiers.md) weighs them.
 
 ## Following a link
 
