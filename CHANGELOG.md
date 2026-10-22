@@ -42,6 +42,9 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Instructions and examples of a field displayed on demand, by a help button beside its label, in the heading of its section, in the header of its column, or beside the title of the form.
 - Values of kind `markdown-line`, `markdown` and `latex` displayed through the renderers of Obsidian and edited after a click, the visible values rendered first, in batches that yield to input.
 - Outline of the active form in a side panel, with the marks of issues, the restriction to the entries with issues, and a search that moves the form to a field and shows its instructions, opened by the commands *Show outline* and *Search the fields*.
+- Cross clearing the search field of the outline.
+- Buttons folding and unfolding every section, in the header of the form view, and every entry, at the top of the outline.
+- Keyword `x-align`, `left` or `center`, aligning the formula of a field of kind `latex` in its control or its table cell, `center` by default.
 
 ### Changed
 
@@ -52,6 +55,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Messages of the box of issues and of the box of schema defects, aligned after the longest path.
 - Scenario records of the manual tests written with empty values as their unfilled values, without `x-unfilled: [open]` in their schemas.
 - Box of issues at the top of the form, holding one line per kind of issue with the names of the fields concerned, each moving the form to its field, in place of a title listing the counts.
+- Help button toggling its instructions when `Enter` or `Space` is pressed on it, without relying on the host to activate the button, so that one press toggles once.
+- Help button of the title of the form set apart from its last letter.
 
 ### Fixed
 
