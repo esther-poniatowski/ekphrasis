@@ -80,3 +80,17 @@ export { ConstraintIndex } from "./validation/constraints";
 export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";
 export { undeclaredRequirements } from "./validation/undeclared-requirements";
 export { admittedUnfilledValues } from "./validation/admitted-unfilled";
+export {
+  FieldLinkError,
+  fieldLinkOfLinktext,
+  fieldLinkOfQuery,
+  fieldLinkOfUri,
+  fieldOfSubpath,
+  LINK_ACTION,
+  LINK_PARAMETERS,
+  parseFieldLink,
+  printIdentifierUri,
+  printSubpath,
+  type FieldLink,
+  type RecordTarget,
+} from "./links/field-link";
