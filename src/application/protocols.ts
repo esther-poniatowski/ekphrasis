@@ -3,9 +3,17 @@
  *
  * Interfaces through which the application consumes capabilities implemented in outer layers
  * (dependency inversion): parsing, editing and schema loading (infrastructure), and host file
- * access (adapters).
+ * access (adapters). The port of record identifiers is implemented by the application itself, so
+ * that the resolution of links by identifier does not depend on the module holding the index.
  */
-import type { JsonValue, SchemaSet, SourceEdit, ValidatorError, YamlNode } from "../domain";
+import type {
+  IdentifierResolution,
+  JsonValue,
+  SchemaSet,
+  SourceEdit,
+  ValidatorError,
+  YamlNode,
+} from "../domain";
 
 /** Converts a source text into the domain tree; raises `YamlParseError` on invalid input. */
 export interface DocumentParser {
@@ -47,4 +55,13 @@ export interface InstanceValidator {
  */
 export interface SchemaValidator {
   compile(schemas: SchemaSet): InstanceValidator;
+}
+
+/**
+ * Resolution of the identifiers of the records of the vault, as the decision on record
+ * identifiers places it behind a port.
+ */
+export interface RecordIdentifiers {
+  /** Files declaring `identifier`: one, several (ambiguous), or none. */
+  resolve(identifier: string): IdentifierResolution;
 }

@@ -9,6 +9,7 @@ export type {
   DocumentParser,
   FileSource,
   InstanceValidator,
+  RecordIdentifiers,
   SchemaLoader,
   SchemaValidator,
 } from "./protocols";
@@ -28,3 +29,4 @@ export {
   type SessionSnapshot,
 } from "./instance-session";
 export { ValidationService, type ValidationReport } from "./validation-service";
+export { IdentifierIndexService } from "./identifier-index-service";

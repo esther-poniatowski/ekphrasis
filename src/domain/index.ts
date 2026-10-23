@@ -100,3 +100,4 @@ export {
   readIdentifier,
   type IdentifierDeclaration,
 } from "./links/record-identifier";
+export { IdentifierIndex, type IdentifierResolution } from "./links/identifier-index";
