@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Record identifiers
-status: proposed
+status: accepted
 ---
 # Record identifiers
 

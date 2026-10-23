@@ -20,6 +20,8 @@ Specifies each feature of ekphrasis by the syntax accepted in a schema or an ins
 - [Form view](form-view.md): fixes how an instance is filled through its form
 - [Outline](outline.md): fixes how an author moves through a long instance and finds its remaining issues
 - [Links](links.md): fixes how a value or a note links to a field of an instance, and how the links of a value resolve
+- [Metadata](metadata.md): fixes how the metadata of an instance displays apart from its form, with its aliases, its tags and its links
+- [Tags](tags.md): fixes how the tags of instances join a tree of tags that a search browses
 - [Saving](saving.md): predicts how each edit changes the YAML file, and which parts of the file stay unchanged
 - [Validation](validation.md): fixes how a schema declares its validity rules, and how their issues are reported
 - [Custom checkers](custom-checkers.md): fixes how a rule written in Python is registered and invoked from a schema

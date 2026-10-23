@@ -93,13 +93,29 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Links
 
-- [ ] **Links**: decide, in a decision record, the location of the index of identifiers (a module of ekphrasis or a separate plugin), the syntax of a link by identifier, and the declaration of the identifier of a record type.
+- [x] **Links**: decide, in a decision record, the location of the index of identifiers (a module of ekphrasis or a separate plugin), the syntax of a link by identifier, and the declaration of the identifier of a record type. Accepted by the user on 2026-10-23, in the [decision on record identifiers](docs/adr/record-identifiers.md). (2026-10-23)
 - [ ] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign.
 - [ ] **Links**: verify that the Markdown links and the wikilinks of a value resolve as in a note stored in the folder of the instance, including relative paths, encoded spaces and subpaths of notes.
 - [ ] **Links**: parse field links by path, and open the target instance in the form view at the designated field, from a value of a form and from a note.
 - [ ] **Links**: suggest the field paths of an instance after a hash sign in a link.
 - [ ] **Links**: provide the command *Copy link to field*, in the link format set in the settings of Obsidian.
 - [ ] **Links**: index the identifiers of the records of the vault, and resolve the field links by identifier.
+
+## Metadata
+
+- [ ] **Metadata**: decide the default of the setting *Metadata field*, and whether the keys of the metadata block also appear in the outline and in the summary of issues.
+- [ ] **Metadata**: confirm in a test vault whether a plugin can add the aliases of YAML instances to the link suggestions of Obsidian, or must provide a suggestion of its own.
+- [ ] **Metadata**: read the setting *Metadata field* and the keyword `x-metadata`, and display the metadata block as a foldable panel of properties above the form, shown or hidden by a setting.
+- [ ] **Metadata**: suggest the aliases of instances in links, and fill the display text of a link inserted from an alias.
+- [ ] **Metadata**: render and resolve the links of the metadata block as the links of the properties of a note.
+
+## Tags
+
+- [ ] **Tags**: decide which values may carry tags written as `#tag` (values of kind `markdown-line` and `markdown` only, or every string), whether the tree also lists the tags of notes, and the syntax of the search, for instance the syntax of the search of Obsidian.
+- [ ] **Tags**: confirm in a test vault whether the tag pane and the search of Obsidian list any tag of a YAML file.
+- [ ] **Tags**: collect the tags of each instance from its metadata block and from its values, and nest them by their slashes.
+- [ ] **Tags**: display the tree of tags in a side panel, with the number of files of each tag, and open the files of a tag.
+- [ ] **Tags**: browse the tags by a search that combines and excludes tags.
 
 ## Instance creation
 

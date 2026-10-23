@@ -15,12 +15,14 @@ The milestones *Bound form*, *Saving of scalars*, *Validation* and *Collections*
 
 The milestone *Guidance and navigation* is complete: its [protocol](../tests/manual/protocols/guidance-navigation.md) passed inside Obsidian on 2026-10-22, and every step is checked in the roadmap. The user approved on 2026-10-22 the extension of the question schema of the gnomon fixtures, made by that milestone. The observations of the protocol gave the section *Corrections after the check of Guidance and navigation* of the roadmap. The five corrections are implemented since 2026-10-22. Component tests cover them, and the feature notes specify them. Their roadmap steps stay unticked until the [protocol of the corrections](../tests/manual/protocols/corrections-guidance.md) passes inside Obsidian, since each correction changes the display of the form.
 
-The milestone *Links* follows, added by the user on 2026-10-21 before *Instance creation*. Its first two steps are prepared and await the user:
+The milestone *Links* follows, added by the user on 2026-10-21 before *Instance creation*. Its first two steps are prepared:
 
-- the [decision on record identifiers](adr/record-identifiers.md) stays `proposed`. The record recommends a module of ekphrasis for the index, links by identifier written as URIs `obsidian://ekphrasis?id=…&field=…`, and a root keyword `x-identifier` naming the field path of the identifier. The user decides among its options;
+- the user accepted on 2026-10-23 the [decision on record identifiers](adr/record-identifiers.md): a module of ekphrasis for the index, links by identifier written as URIs `obsidian://ekphrasis?id=…&field=…`, and a root keyword `x-identifier` naming the field path of the identifier;
 - the spikes run in the section *Spikes of the milestone Links* of the same protocol, through the disposable plugin of `spikes/`. The spikes test the subpath of a followed link, the paths of a YAML file resolved from a note, the suggestions after a hash sign, and the URI handler. The [implementation plan](architecture/implementation-plan.md) records the part of each premise settled by the declarations of the API.
 
-After *Links*, the milestone *Instance creation* opens with the measure of the slow corpus tests of geonexus.
+The user also accepted on 2026-10-23 three choices made by the corrections: the buttons of the outline fold its own entries, the buttons of the form sit in the header of the view, and a value of `x-align` other than `left` falls back to `center` without a warning.
+
+After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). Each opens with a decision of the user and a spike, as the roadmap lists. The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 

@@ -7,7 +7,7 @@ aliases:
 ---
 # Implementation plan
 
-The implementation plan orders the construction of ekphrasis into eleven milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
+The implementation plan orders the construction of ekphrasis into thirteen milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
 
 > [!TIP] Ordering rule
 > A milestone precedes another when the second depends on its modules, or when it tests a premise on which the second depends. Among independent milestones, the milestone whose failure would change the most decisions comes first.
@@ -162,6 +162,26 @@ On 2026-10-22, the declarations of the API, in `obsidian` 1.13.1 and in `obsidia
 The remaining part of each premise needs a test vault. The disposable plugin of the folder `spikes/` tests it, through the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md).
 
 A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), proposed on 2026-10-22, weighs that syntax, the declaration of the identifier of a record type, and the location of the index. The user decides among its options.
+
+### Metadata
+
+**Goal.** The metadata of an instance displays apart from its form, as the properties of a note, and its aliases serve links, as the specification of [metadata](../features/metadata.md) details.
+
+**Modules.** Reading of the setting *Metadata field* and of the keyword `x-metadata`, panel of properties above the form, suggestions of aliases in links, and links of the metadata block.
+
+**Exit criterion.** The metadata block of a geonexus audience record displays as a panel of properties, its link `index` opens its target, and its alias is suggested in a link of a note and fills the display text of the link inserted.
+
+**Risks.** The link suggestions of Obsidian draw the aliases of notes from their frontmatter. Whether a plugin can add the aliases of YAML instances to those suggestions is unverified, so a spike opens the milestone. The milestone builds on the suggestions of field paths of *Links*.
+
+### Tags
+
+**Goal.** The tags of instances join a tree of tags, displayed and searched in a side panel, as the specification of [tags](../features/tags.md) details.
+
+**Modules.** Collection of the tags of each instance, tree of tags nested by slashes, side panel of the tree, and search with combinations and exclusions.
+
+**Exit criterion.** The tree lists the tags of the geonexus specifications, nested by their slashes, and a search combining one tag and excluding another lists the expected files.
+
+**Risks.** Whether the tag pane and the search of Obsidian list any tag of a YAML file is unverified, so a spike opens the milestone. Three choices remain open until then: the values that may carry tags, whether the tree also lists the tags of notes, and the syntax of the search.
 
 ### Instance creation
 

@@ -22,6 +22,9 @@ The requirements of ekphrasis are the properties needed from the plugin by a pro
 - **Outline**: a side panel must display the structure of the instance, and a click on an entry of that panel must move the form to the field. ^outline
 - **Links in values**: the Markdown links and the wikilinks of a value must resolve as in a note stored in the folder of the instance. ^links-in-values
 - **Field links**: a link must be able to designate a field of a YAML instance, by the path of its file or by the identifier of its record, together with its field path. Following such a link, from a form or from a note, must open the form at that field. ^field-links
+- **Metadata block**: a field of an instance, named for the whole vault and per schema, must hold the metadata of its record, displayed apart from the form as the properties of a note are displayed. ^metadata-block
+- **Aliases**: the aliases of an instance must appear among the suggestions of a link, and fill the display text of the link inserted from them. ^aliases
+- **Tags**: the tags of an instance, from its metadata block and from its values, must join a hierarchical tree of tags, which a search can browse with combinations and exclusions of tags. ^tags
 
 ## Validation
 
