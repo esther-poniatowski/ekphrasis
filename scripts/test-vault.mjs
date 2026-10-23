@@ -52,9 +52,16 @@ mkdirSync(pluginFolder, { recursive: true });
 for (const file of PLUGIN_FILES) link(file, join(pluginFolder, file));
 cpSync(SETTINGS, join(pluginFolder, "data.json"));
 
+// Obsidian lists a plugin only when its folder is a real folder, so the spike plugin, like
+// ekphrasis, is a real folder holding links to the built files.
 const SPIKES = "spikes";
-if (existsSync(join(SPIKES, "manifest.json")))
-  link(SPIKES, join(VAULT, ".obsidian", "plugins", "ekphrasis-spikes"));
+if (existsSync(join(SPIKES, "manifest.json"))) {
+  const spikeFolder = join(VAULT, ".obsidian", "plugins", "ekphrasis-spikes");
+  rmSync(spikeFolder, { recursive: true, force: true });
+  mkdirSync(spikeFolder, { recursive: true });
+  for (const file of ["main.js", "manifest.json"])
+    link(join(SPIKES, file), join(spikeFolder, file));
+}
 
 const enabledPlugins = join(VAULT, ".obsidian", "community-plugins.json");
 if (!existsSync(enabledPlugins))

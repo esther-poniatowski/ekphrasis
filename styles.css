@@ -725,6 +725,12 @@ td[data-revealed] {
   gap: var(--size-2-1);
 }
 
+/* The inline icons of these buttons take the size of the icons of Obsidian, as no attribute sizes them. */
+.ekphrasis-outline-action svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
 .ekphrasis-outline-search {
   width: 100%;
 }
