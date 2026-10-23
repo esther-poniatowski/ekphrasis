@@ -2,7 +2,9 @@
  * Commands of the plugin.
  */
 import type { Plugin, Workspace } from "obsidian";
+import type { RecordIdentifiers } from "../../application";
 import { INSTANCE_VIEW_TYPE, isYamlExtension, OUTLINE_VIEW_TYPE } from "./constants";
+import { registerCopyFieldLink } from "./copy-field-link";
 import { InstanceView } from "./views/instance-view";
 import { OutlineView } from "./views/outline-view";
 
@@ -15,6 +17,7 @@ export const COMMANDS = {
   expandAll: { id: "expand-all", name: "Expand all" },
   showOutline: { id: "show-outline", name: "Show outline" },
   searchFields: { id: "search-fields", name: "Search the fields" },
+  copyFieldLink: { id: "copy-link-to-field", name: "Copy link to field" },
 } as const;
 
 /**
@@ -32,7 +35,8 @@ async function revealOutline(workspace: Workspace): Promise<OutlineView | null> 
   return leaf.view instanceof OutlineView ? leaf.view : null;
 }
 
-export function registerCommands(plugin: Plugin): void {
+/** Registers the commands; *Copy link to field* reads the identifiers of the records. */
+export function registerCommands(plugin: Plugin, identifiers: RecordIdentifiers): void {
   const { workspace } = plugin.app;
 
   // Opens the active YAML file in the view of ekphrasis, whichever plugin owns its extension.
@@ -98,4 +102,6 @@ export function registerCommands(plugin: Plugin): void {
       },
     });
   }
+
+  registerCopyFieldLink(plugin, COMMANDS.copyFieldLink, identifiers);
 }

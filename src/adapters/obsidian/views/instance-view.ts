@@ -11,6 +11,9 @@
  * The view is the source of the outline while it is the last active view of an instance: it
  * reports to the outline channel each change of its form and of its focused field, and moves its
  * form to the field of an entry clicked in the outline.
+ *
+ * A followed field link passes its subpath to the view as the ephemeral state `{subpath}`; the
+ * view moves its form to that field once the form of the file is built.
  */
 import {
   Notice,
@@ -29,7 +32,7 @@ import {
   type FormService,
   type SessionHost,
 } from "../../../application";
-import { IssueIndex, type YamlPath } from "../../../domain";
+import { fieldChain, IssueIndex, type YamlPath } from "../../../domain";
 import { ICONS, INSTANCE_VIEW_TYPE, isYamlExtension } from "../constants";
 import type { ControlRegistry } from "../ui/control-registry";
 import { FoldState } from "../ui/fold-state";
@@ -44,6 +47,7 @@ import {
 } from "../ui/rendering/render-queue";
 import { planReveal, revealElement } from "../ui/reveal";
 import { ObsidianValueRenderer } from "../value-renderer";
+import { followedOutcome, subpathOfState } from "./followed-field";
 import { confirmLoss } from "./loss-confirmation";
 import type { OutlineChannel, OutlineSource } from "./outline-channel";
 import { SourceEditor } from "./source-editor";
@@ -68,6 +72,8 @@ export interface InstanceViewServices {
   readonly registry: ControlRegistry;
   readonly settings: () => EkphrasisSettings;
   readonly outline: OutlineChannel;
+  /** Follows a URI clicked in a rendered value, and returns whether it was a URI of ekphrasis. */
+  readonly followUri: (uri: string, newLeaf: boolean) => boolean;
 }
 
 export class InstanceView extends TextFileView implements SessionHost, OutlineSource {
@@ -83,6 +89,8 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   private editor: SourceEditor | null = null;
   /** Printed field path of the field that holds the focus in the form, or `null`. */
   private focused: string | null = null;
+  /** Subpath of a followed link, waiting for the form of the file at `file` to be built. */
+  private followed: { readonly file: string; readonly subpath: string } | null = null;
   /** Folded state of the sections of the form, kept across displays of the same file. */
   private readonly folds = new FoldState(() => this.display());
   /** Shown instructions of the fields, kept across displays of the same file. */
@@ -114,7 +122,12 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
         services.outline.changed(this);
       }
     });
-    this.renderer = new ObsidianValueRenderer(this.app, () => this.file?.path ?? "", this);
+    this.renderer = new ObsidianValueRenderer(
+      this.app,
+      () => this.file?.path ?? "",
+      this,
+      services.followUri,
+    );
     this.queue = new RenderQueue(windowEnvironment(this.contentEl), {
       ...DEFAULT_QUEUE_OPTIONS,
       onBatch: reportLongBatch,
@@ -200,6 +213,38 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   /** Displays the new snapshot of the session. */
   changed(): void {
     this.display();
+    this.followLink();
+  }
+
+  /**
+   * Receives the ephemeral state passed by Obsidian, such as `{subpath: "#subject.system"}` when a
+   * followed link designates a field of the instance.
+   */
+  override setEphemeralState(state: unknown): void {
+    super.setEphemeralState(state);
+    const subpath = subpathOfState(state);
+    const file = this.file?.path ?? null;
+    if (subpath === null || file === null) return;
+    this.followed = { file, subpath };
+    this.followLink();
+  }
+
+  /** Moves the form to the field of the followed link, once the form of its file is built. */
+  private followLink(): void {
+    const followed = this.followed;
+    if (followed === null) return;
+    if (followed.file !== this.file?.path) {
+      this.followed = null;
+      return;
+    }
+    const state = this.session.snapshot.state;
+    const outcome = followedOutcome(followed.subpath, state, (path) =>
+      state?.status === "form" ? fieldChain(state.model.root, path) !== null : false,
+    );
+    if (outcome.kind === "wait") return;
+    this.followed = null;
+    if (outcome.kind === "notice") new Notice(outcome.message);
+    else if (outcome.kind === "reveal") this.reveal(outcome.path, false);
   }
 
   /**

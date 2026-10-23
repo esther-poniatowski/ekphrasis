@@ -20,8 +20,14 @@ const reportFailure = (error: unknown): void => {
   console.error("ekphrasis: the index of record identifiers failed to update.", error);
 };
 
-/** Builds the index of `index` once the layout is ready, then follows the changes of the vault. */
-export function watchRecordIdentifiers(plugin: Plugin, index: IdentifierIndexService): void {
+/**
+ * Builds the index of `index` once the layout is ready, then follows the changes of the vault.
+ * Returns a promise settled once the first build is complete, whether it succeeded or failed.
+ */
+export function watchRecordIdentifiers(
+  plugin: Plugin,
+  index: IdentifierIndexService,
+): Promise<void> {
   const { vault, workspace } = plugin.app;
   const apply = (change: VaultChange): void => {
     applyVaultChange(index, change, () => yamlPathsOf(plugin)).catch(reportFailure);
@@ -32,16 +38,18 @@ export function watchRecordIdentifiers(plugin: Plugin, index: IdentifierIndexSer
     folder: !(file instanceof TFile),
   });
 
-  workspace.onLayoutReady(() => {
-    rebuildRecordIdentifiers(plugin, index).catch(reportFailure);
-    plugin.registerEvent(vault.on("create", (file) => apply(changeOf("create", file))));
-    plugin.registerEvent(vault.on("modify", (file) => apply(changeOf("modify", file))));
-    plugin.registerEvent(vault.on("delete", (file) => apply(changeOf("delete", file))));
-    plugin.registerEvent(
-      vault.on("rename", (file, oldPath) =>
-        apply({ kind: "rename", path: file.path, oldPath, folder: !(file instanceof TFile) }),
-      ),
-    );
+  return new Promise((resolve) => {
+    workspace.onLayoutReady(() => {
+      rebuildRecordIdentifiers(plugin, index).catch(reportFailure).finally(resolve);
+      plugin.registerEvent(vault.on("create", (file) => apply(changeOf("create", file))));
+      plugin.registerEvent(vault.on("modify", (file) => apply(changeOf("modify", file))));
+      plugin.registerEvent(vault.on("delete", (file) => apply(changeOf("delete", file))));
+      plugin.registerEvent(
+        vault.on("rename", (file, oldPath) =>
+          apply({ kind: "rename", path: file.path, oldPath, folder: !(file instanceof TFile) }),
+        ),
+      );
+    });
   });
 }
 
@@ -51,4 +59,9 @@ export async function rebuildRecordIdentifiers(
   index: IdentifierIndexService,
 ): Promise<void> {
   await index.rebuild(yamlPathsOf(plugin));
+}
+
+/** Rebuilds the index of `index`, and reports a failure in the console. */
+export function rebuildRecordIdentifiersSoon(plugin: Plugin, index: IdentifierIndexService): void {
+  rebuildRecordIdentifiers(plugin, index).catch(reportFailure);
 }

@@ -4,6 +4,7 @@ import {
   fieldLinkOfLinktext,
   fieldLinkOfQuery,
   fieldLinkOfUri,
+  fieldOfFollowedSubpath,
   parseFieldLink,
   printIdentifierUri,
   printSubpath,
@@ -142,6 +143,21 @@ describe("field links by identifier", () => {
   ])("rejects %s", (uri, reason) => {
     expect(() => fieldLinkOfUri(uri)).toThrow(FieldLinkError);
     expect(() => fieldLinkOfUri(uri)).toThrow(reason);
+  });
+});
+
+describe("subpath passed by Obsidian to a view", () => {
+  it("reads a field path holding brackets, and the empty subpath as the root", () => {
+    expect(fieldOfFollowedSubpath("#rows[1].name")).toEqual(["rows", 1, "name"]);
+    expect(fieldOfFollowedSubpath("")).toEqual([]);
+  });
+
+  it("reads a percent-encoded field path once decoded", () => {
+    expect(fieldOfFollowedSubpath("#notes[%22a%20b%22]")).toEqual(["notes", "a b"]);
+  });
+
+  it.each(["#", "#a..b", "#a[*]", '#notes["open'])("refuses the subpath %s", (subpath) => {
+    expect(() => fieldOfFollowedSubpath(subpath)).toThrow(FieldLinkError);
   });
 });
 

@@ -1,19 +1,24 @@
 /**
- * Command *Copy link to field*: copies to the clipboard a link by path to the field that holds, or
- * held last, the focus in the form of the active instance.
+ * Command *Copy link to field*: copies to the clipboard a link to the field that holds, or held
+ * last, the focus in the form of the active instance.
  *
- * The link follows the link format set in the settings of Obsidian, through
- * `FileManager.generateMarkdownLink`. The note that will hold the link is unknown when the link is
- * copied, so the link is written as from the vault root.
+ * The link designates the record by its identifier when the index of identifiers resolves the
+ * identifier of the record to its file alone, as a URI of ekphrasis written as a Markdown link.
+ * Otherwise, the link designates the file by its path, in the link format set in the settings of
+ * Obsidian, through `FileManager.generateMarkdownLink`. The note that will hold the link is
+ * unknown when the link is copied, so a link by path is written as from the vault root.
  */
 import { Notice, TFile, type FileManager, type Plugin, type Vault } from "obsidian";
-import { fieldLinkByPath, type FieldLinkText, type LinkFormatter } from "../../application";
+import {
+  fieldLinkByIdentifier,
+  fieldLinkByPath,
+  type FieldLinkText,
+  type LinkFormatter,
+  type RecordIdentifiers,
+} from "../../application";
 import type { FormModel } from "../../domain";
 import { EkphrasisError } from "../../errors";
 import { InstanceView } from "./views/instance-view";
-
-/** Identifier and name of the command, to join `COMMANDS` of `commands.ts` once registered. */
-export const COPY_FIELD_LINK_COMMAND = { id: "copy-link-to-field", name: "Copy link to field" };
 
 /** Source path given to Obsidian for a link whose note is unknown: the vault root. */
 const UNKNOWN_SOURCE = "";
@@ -36,12 +41,19 @@ export class ObsidianLinkFormatter implements LinkFormatter {
   }
 }
 
-/** Registers the command, available in the form view of an instance whose field was focused. */
-export function registerCopyFieldLink(plugin: Plugin): void {
+/**
+ * Registers the command `command`, available in the form view of an instance whose field was
+ * focused.
+ */
+export function registerCopyFieldLink(
+  plugin: Plugin,
+  command: { readonly id: string; readonly name: string },
+  identifiers: RecordIdentifiers,
+): void {
   const { workspace, vault, fileManager } = plugin.app;
   const formatter = new ObsidianLinkFormatter(vault, fileManager);
   plugin.addCommand({
-    ...COPY_FIELD_LINK_COMMAND,
+    ...command,
     checkCallback: (checking) => {
       const view = workspace.getActiveViewOfType(InstanceView);
       const path = view?.filePath ?? null;
@@ -50,21 +62,37 @@ export function registerCopyFieldLink(plugin: Plugin): void {
       if (view?.mode !== "form" || path === null || form === null || fieldId === null) {
         return false;
       }
-      if (!checking) void copyLink(formatter, path, form.model, fieldId);
+      if (!checking) void copyLink(formatter, identifiers, path, form.model, fieldId);
       return true;
     },
   });
 }
 
+/**
+ * Identifier of the record at `path` when it designates that record alone, and else `null`, so a
+ * record whose identifier is ambiguous is linked by its path.
+ */
+function uniqueIdentifier(identifiers: RecordIdentifiers, path: string): string | null {
+  const identifier = identifiers.identifierOf(path);
+  if (identifier === null) return null;
+  const resolution = identifiers.resolve(identifier);
+  return resolution.status === "found" && resolution.path === path ? identifier : null;
+}
+
 async function copyLink(
   formatter: LinkFormatter,
+  identifiers: RecordIdentifiers,
   path: string,
   model: FormModel,
   fieldId: string,
 ): Promise<void> {
   let result: FieldLinkText;
   try {
-    result = fieldLinkByPath(formatter, path, model, fieldId);
+    const identifier = uniqueIdentifier(identifiers, path);
+    result =
+      identifier === null
+        ? fieldLinkByPath(formatter, path, model, fieldId)
+        : fieldLinkByIdentifier(identifier, model, fieldId);
   } catch (error) {
     if (!(error instanceof EkphrasisError)) throw error;
     new Notice(error.message);

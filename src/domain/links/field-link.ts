@@ -105,6 +105,29 @@ export function fieldOfSubpath(subpath: string, link: string = subpath): YamlPat
 }
 
 /**
+ * Field path of the subpath that Obsidian passes to a view when it follows a link, such as
+ * `#rows[1].name`. A subpath that holds no valid field path is read again percent-decoded, since
+ * a Markdown link may encode its spaces and quotes.
+ *
+ * @throws FieldLinkError When the subpath holds no field path, encoded or not.
+ */
+export function fieldOfFollowedSubpath(subpath: string): YamlPath {
+  try {
+    return fieldOfSubpath(subpath);
+  } catch (error) {
+    if (!(error instanceof FieldLinkError)) throw error;
+    let decodedSubpath: string;
+    try {
+      decodedSubpath = decodeURIComponent(subpath);
+    } catch {
+      throw error;
+    }
+    if (decodedSubpath === subpath) throw error;
+    return fieldOfSubpath(decodedSubpath, subpath);
+  }
+}
+
+/**
  * Parses a URI. Returns `null` for a URI of another scheme than `obsidian`, or of another action
  * than `ekphrasis`. The values of the query are percent-decoded; a plus sign stays a plus sign.
  *

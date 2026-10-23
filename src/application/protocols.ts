@@ -65,6 +65,8 @@ export interface SchemaValidator {
 export interface RecordIdentifiers {
   /** Files declaring `identifier`: one, several (ambiguous), or none. */
   resolve(identifier: string): IdentifierResolution;
+  /** Identifier declared by the file at the vault path `path`, or `null` when it declares none. */
+  identifierOf(path: string): string | null;
 }
 
 /** Writer of links in the link format set in the host, Markdown link or wikilink. */

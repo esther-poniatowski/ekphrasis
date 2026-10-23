@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fieldLinkByPath, type LinkFormatter } from "../../src/application";
+import { fieldLinkByIdentifier, fieldLinkByPath, type LinkFormatter } from "../../src/application";
 import { buildFormModel, type FormModel } from "../../src/domain";
 import { YamlDocumentParser } from "../../src/infrastructure";
 import { schemaSet } from "../support/schemas";
@@ -20,7 +20,8 @@ const LOSSY: LinkFormatter = {
 
 function model(): FormModel {
   const text =
-    "task:\n  epistemic_aim: prediction\nfoils:\n  - name: laminar\nnotes:\n  a b: first\n";
+    "task:\n  epistemic_aim: prediction\nfoils:\n  - name: laminar\n  - name: turbulent\n" +
+    "notes:\n  a b: first\ngrid:\n  - [1, 2]\n";
   const schema = {
     type: "object",
     properties: {
@@ -29,9 +30,11 @@ function model(): FormModel {
         properties: { epistemic_aim: { title: "Epistemic aim", enum: ["prediction"] } },
       },
       foils: {
+        title: "Foils",
         type: "array",
         items: { type: "object", properties: { name: { type: "string" } } },
       },
+      grid: { type: "array", items: { type: "array", items: { type: "number" } } },
       notes: { type: "object", additionalProperties: { type: "string" } },
     },
   };
@@ -50,10 +53,24 @@ describe("text of a link to a field", () => {
     });
   });
 
-  it("writes a wikilink to an item, whose field path ends with a bracket", () => {
-    expect(fieldLinkByPath(WIKILINK, "q.yml", model(), "foils[0]")).toEqual({
+  it("writes a wikilink to an item, whose text joins the label of its list and its position", () => {
+    expect(fieldLinkByPath(WIKILINK, "q.yml", model(), "foils[1]")).toEqual({
       status: "link",
-      text: "[[q.yml#foils[0]|#1]]",
+      text: "[[q.yml#foils[1]|Foils #2]]",
+    });
+  });
+
+  it("labels an item of a list of lists by every list containing it", () => {
+    expect(fieldLinkByPath(WIKILINK, "q.yml", model(), "grid[0][1]")).toEqual({
+      status: "link",
+      text: "[[q.yml#grid[0][1]|grid #1 #2]]",
+    });
+  });
+
+  it("labels a field of an item by its own label", () => {
+    expect(fieldLinkByPath(WIKILINK, "q.yml", model(), "foils[0].name")).toEqual({
+      status: "link",
+      text: "[[q.yml#foils[0].name|name]]",
     });
   });
 
@@ -80,6 +97,40 @@ describe("text of a link to a field", () => {
     });
     expect(fieldLinkByPath(MARKDOWN, "q.yml", model(), "task..aim")).toMatchObject({
       status: "refused",
+    });
+  });
+});
+
+describe("text of a link by identifier to a field", () => {
+  it("writes a Markdown link to a URI of ekphrasis, with the label of the field as its text", () => {
+    expect(fieldLinkByIdentifier("quest.a", model(), "task.epistemic_aim")).toEqual({
+      status: "link",
+      text: "[Epistemic aim](obsidian://ekphrasis?id=quest.a&field=task.epistemic_aim)",
+    });
+  });
+
+  it("percent-encodes the brackets and quotes of the field path, and labels an item by its list", () => {
+    expect(fieldLinkByIdentifier("quest.a", model(), "foils[1]")).toEqual({
+      status: "link",
+      text: "[Foils #2](obsidian://ekphrasis?id=quest.a&field=foils%5B1%5D)",
+    });
+    expect(fieldLinkByIdentifier("quest.a", model(), 'notes["a b"]')).toEqual({
+      status: "link",
+      text: "[a b](obsidian://ekphrasis?id=quest.a&field=notes%5B%22a%20b%22%5D)",
+    });
+  });
+
+  it("designates the root of an untitled record by a URI without a field, named by the identifier", () => {
+    expect(fieldLinkByIdentifier("quest.a", model(), "")).toEqual({
+      status: "link",
+      text: "[quest.a](obsidian://ekphrasis?id=quest.a)",
+    });
+  });
+
+  it("refuses a field absent from the form", () => {
+    expect(fieldLinkByIdentifier("quest.a", model(), "task.missing")).toEqual({
+      status: "refused",
+      reason: "The form holds no field `task.missing`.",
     });
   });
 });

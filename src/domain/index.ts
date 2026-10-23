@@ -85,6 +85,7 @@ export {
   fieldLinkOfLinktext,
   fieldLinkOfQuery,
   fieldLinkOfUri,
+  fieldOfFollowedSubpath,
   fieldOfSubpath,
   LINK_ACTION,
   LINK_PARAMETERS,
@@ -101,3 +102,10 @@ export {
   type IdentifierDeclaration,
 } from "./links/record-identifier";
 export { IdentifierIndex, type IdentifierResolution } from "./links/identifier-index";
+export {
+  destinationText,
+  fieldPathCompletions,
+  subpathQueryAt,
+  type FieldPathCompletion,
+  type SubpathQuery,
+} from "./links/link-completion";

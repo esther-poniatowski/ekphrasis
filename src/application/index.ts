@@ -31,4 +31,9 @@ export {
 } from "./instance-session";
 export { ValidationService, type ValidationReport } from "./validation-service";
 export { IdentifierIndexService } from "./identifier-index-service";
-export { fieldLinkByPath, type FieldLinkText } from "./field-link-text";
+export {
+  fieldLinkByIdentifier,
+  fieldLinkByPath,
+  linkTextOf,
+  type FieldLinkText,
+} from "./field-link-text";

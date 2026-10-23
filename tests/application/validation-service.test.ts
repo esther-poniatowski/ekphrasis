@@ -130,6 +130,22 @@ describe("defects of the schema", () => {
     }
   });
 
+  it("reports a keyword `x-identifier` designating no declared field, at the root", () => {
+    const schema: JsonValue = {
+      type: "object",
+      "x-identifier": "identity.id",
+      properties: { id: { type: "string" } },
+    };
+    expect(validate(schema, "id: a\n").schemaIssues).toEqual([
+      {
+        path: "",
+        message:
+          "The keyword `x-identifier` names the field `identity.id`, which the properties of the schema do not declare.",
+      },
+    ]);
+    expect(validate({ ...schema, "x-identifier": "id" }, "id: a\n").schemaIssues).toEqual([]);
+  });
+
   it("compiles a schema set once", () => {
     let compilations = 0;
     const counting: SchemaValidator = {
