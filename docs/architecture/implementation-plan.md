@@ -34,7 +34,7 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
 | Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
 | Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
-| Domain | `src/domain/links/` | Parser and printer of field links, declaration and value of the identifier of a record, index of identifiers |
+| Domain | `src/domain/links/` | Parser and printer of field links, declaration and value of the identifier of a record, index of identifiers, completion of field paths in links |
 | Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating in the order of checks), session of an open instance, settings |
 | Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, writer of scalar texts, splice of text edits |
 | Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |

@@ -13,29 +13,14 @@ The handoff carries the state of the implementation of ekphrasis from one agent 
 
 The milestones *Bound form*, *Saving of scalars*, *Validation* and *Collections* are complete, together with the corrections that followed the check of *Validation*, and every step of each is checked in the [roadmap](../TODO.md). Their [manual protocols](../tests/manual/_index.md) passed inside Obsidian, the last one, the protocol of collections, on 2026-10-20. The repository is published at `https://github.com/esther-poniatowski/ekphrasis`. The rules across files run as custom checkers, as the [decision on rules across files](architecture/implementation-plan.md#^rules-across-files) records.
 
-The milestone *Guidance and navigation* is complete: its [protocol](../tests/manual/protocols/guidance-navigation.md) passed inside Obsidian on 2026-10-22, and every step is checked in the roadmap. The user approved on 2026-10-22 the extension of the question schema of the gnomon fixtures, made by that milestone. The observations of the protocol gave the section *Corrections after the check of Guidance and navigation* of the roadmap. The five corrections are implemented since 2026-10-22. Component tests cover them, and the feature notes specify them. The [protocol of the corrections](../tests/manual/protocols/corrections-guidance.md) passed inside Obsidian on 2026-10-23, after two fixes: the size of the icons of the outline, and the installation of the spike plugin. Their steps are checked in the roadmap. The user added a sixth step, a command and a button showing or hiding every instruction, still open.
+The milestone *Guidance and navigation* is complete: its [protocol](../tests/manual/protocols/guidance-navigation.md) passed inside Obsidian on 2026-10-22, and every step is checked in the roadmap. The user approved on 2026-10-22 the extension of the question schema of the gnomon fixtures, made by that milestone. The observations of the protocol gave the section *Corrections after the check of Guidance and navigation* of the roadmap. The five corrections are implemented since 2026-10-22. Component tests cover them, and the feature notes specify them. The [protocol of the corrections](../tests/manual/protocols/corrections-guidance.md) passed inside Obsidian on 2026-10-23, after two fixes: the size of the icons of the outline, and the installation of the spike plugin. Their steps are checked in the roadmap. The user added a sixth step, a command and a button showing or hiding every instruction, implemented on 2026-10-23.
 
 The milestone *Links* follows, added by the user on 2026-10-21 before *Instance creation*. Its first two steps are done:
 
 - the user accepted on 2026-10-23 the [decision on record identifiers](adr/record-identifiers.md): a module of ekphrasis for the index, links by identifier written as URIs `obsidian://ekphrasis?id=…&field=…`, and a root keyword `x-identifier` naming the field path of the identifier;
-- the spikes ran on 2026-10-23, and the [implementation plan](architecture/implementation-plan.md) records their four verdicts. A followed link passes its subpath to the view of the plugin; a link resolves to a YAML file only with its extension; the suggestions of the plugin show in Markdown links only, not in wikilinks; and the URI handler receives its links inside the vault. The spike plugin is retired.
+- the spikes ran on 2026-10-23, and the [implementation plan](architecture/implementation-plan.md) records their four verdicts. The spike plugin is retired.
 
-The parts of *Links* that no verdict of a spike can change are written and unit-tested since 2026-10-23. These modules stay unreferenced by the composition root until their wiring:
-
-- the [parser of field links](../src/domain/links/field-link.ts), and the [declaration of the identifier](../src/domain/links/record-identifier.ts) by the keyword `x-identifier`, declared by the schemas of the gnomon fixtures;
-- the [index of identifiers](../src/domain/links/identifier-index.ts), kept by the [index service](../src/application/identifier-index-service.ts) behind the port `RecordIdentifiers`, and fed by the [routing of the changes of the vault](../src/adapters/obsidian/identifier-events.ts) through the [watcher of the vault](../src/adapters/obsidian/identifier-watcher.ts);
-- the [text of a link to a field](../src/application/field-link-text.ts), behind the port `LinkFormatter`, and the [command *Copy link to field*](../src/adapters/obsidian/copy-field-link.ts).
-
-Every roadmap step of *Links* stays unticked until its modules are wired and checked inside Obsidian. The wiring can proceed now that the spikes have run, through the edits below:
-
-1. In `defectsOf` of the [validation service](../src/application/validation-service.ts), append `identifierDefects(root)`, so that the form reports a defective `x-identifier`.
-2. In `onload` of the [plugin class](../src/adapters/obsidian/plugin.ts), build one `IdentifierIndexService`, and call `watchRecordIdentifiers(this, index)`. The service takes the parser, a `FileSchemaLoader` over the `VaultFileSource`, and the settings.
-3. In `updateSettings` of the plugin class, call `rebuildRecordIdentifiers` when the path rules change.
-4. In the [registration of the commands](../src/adapters/obsidian/commands.ts), move `COPY_FIELD_LINK_COMMAND` into `COMMANDS`, and call `registerCopyFieldLink` from `registerCommands`.
-5. Make the command copy a link by identifier, written by `printIdentifierUri`, when `identifierOf(path)` of the index returns an identifier, as the decision states, since the verdict on the URI handler is positive.
-6. Write the following of links and the suggestions of field paths. A link by path is followed from the ephemeral state `{subpath}` passed to the view, and a link by identifier through `registerObsidianProtocolHandler(LINK_ACTION, …)` and `fieldLinkOfQuery`. The suggestions are registered by `registerEditorSuggest`, and show in Markdown links only.
-
-The exit criterion of *Links* calls for a protocol of links in `tests/manual/protocols/`, written after the current run.
+The other steps of *Links* are implemented, wired into the plugin and unit-tested since 2026-10-23. These steps cover the following of field links by path and by identifier, the suggestions of field paths in Markdown links, the command *Copy link to field*, and the index of identifiers. The sixth step of the corrections is implemented as well. Their roadmap steps are ticked as awaiting the check inside Obsidian. The [protocol of links](../tests/manual/protocols/links.md) checks them, and awaits its first run by the user. Its records lie in `tests/manual/scenarios/`: the note `field-links.md`, the record `links.yml` with its schema, the records `twin-a.yml` and `twin-b.yml`, and the notes reached by the links. The roadmap step verifying the links of values inside Obsidian stays open until that run passes.
 
 The user also accepted on 2026-10-23 three choices made by the corrections: the buttons of the outline fold its own entries, the buttons of the form sit in the header of the view, and a value of `x-align` other than `left` falls back to `center` without a warning.
 
@@ -82,12 +67,10 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. Two questions on the command *Copy link to field* await the protocol of links:
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. Two questions on field links await the first run of the [protocol of links](../tests/manual/protocols/links.md), each in a section of its own:
 
 - whether Obsidian closes a wikilink whose subpath ends with a bracket, such as `[[q.yml#foils[0]]]`, at its final `]]`, as the [parser of field links](../src/domain/links/field-link.ts) does;
-- whether a link written from the vault root, as the command writes it, resolves from a note in a subfolder when the setting of Obsidian asks for relative paths;
-
-The user decided on 2026-10-23 the text of a link to an item: the label of its list followed by the label of the item, such as `Foils #2`, as the specification of [links](features/links.md) states. The [text of a link to a field](../src/application/field-link-text.ts) still writes the label of the item alone.
+- whether a link written from the vault root, as the command *Copy link to field* writes it, resolves from a note in a subfolder when the setting of Obsidian asks for relative paths.
 
 ## Provenance
 
@@ -103,6 +86,7 @@ The user decided on 2026-10-23 the text of a link to an item: the label of its l
 - The signatures of `MarkdownRenderer.render`, `renderMath`, `finishRenderMath`, `Keymap.isModEvent`, `Component.addChild` and `removeChild`, `Workspace.getRightLeaf` and `revealLeaf` were checked against the installed `obsidian.d.ts` on 2026-10-20.
 - The sizes of the consumer records were measured on 2026-10-20: the longest question record of gnomon holds 52 string values, the longest of 339 characters; the largest geonexus record, `notation.yml`, holds 1091 string values, none rendered since its schema declares no rendered kind.
 - The signatures of `FileManager.generateMarkdownLink(file, sourcePath, subpath?, alias?)` and of the events `create`, `modify`, `delete` and `rename` of `Vault` were read in the installed `obsidian.d.ts` (1.13.1) on 2026-10-23.
+- The signatures of `WorkspaceLeaf.setViewState(viewState, eState?)`, `View.setEphemeralState(state)`, `EditorSuggest` with `onTrigger`, `getSuggestions`, `renderSuggestion` and `selectSuggestion`, and `ObsidianProtocolData`, whose values are strings, were read in the installed `obsidian.d.ts` (1.13.1) on 2026-10-23.
 - The source ranges of collections were observed on 2026-10-20 with `yaml` 2.9.1, and the [edits of collections](../src/domain/edit/collection-edits.ts) rely on them. The range of a mapping item of a block sequence ends after the line break of its last line. The range of a block sequence includes the comment lines between its items. The range of a flow collection spans its brackets or braces, and excludes any comment after the closing one.
 
 ## Decision log
@@ -140,5 +124,7 @@ The design decisions and their rationale are recorded in the [architecture decis
 - The size of a batch of renderings, fifteen values or 40 ms, lives in `DEFAULT_QUEUE_OPTIONS` of the [queue of renderings](../src/adapters/obsidian/ui/rendering/render-queue.ts). The protocol of guidance and navigation records each batch longer than 50 ms reported in the console; such a report calls for a smaller batch.
 - Obsidian lists a plugin of the test vault only when its folder is a real folder: a symbolic link to a whole folder is not listed. A plugin installed by `scripts/test-vault.mjs` is therefore a real folder holding links to its files, as ekphrasis is.
 - A link to a YAML file without its extension, such as `[[guidance#subject.system]]`, stays unresolved, and a click on it creates a note named after the link.
+- A followed link reaches the [instance view](../src/adapters/obsidian/views/instance-view.ts) as the ephemeral state `{subpath}`, possibly before the form of the file is built. Therefore, the view keeps the subpath until the session holds the state of the current text. When a new route opens an instance at a field, that route must pass the subpath in the same way, as the [opener of field links](../src/adapters/obsidian/field-link-opener.ts) does through `setViewState`.
+- The command *Copy link to field* reads the index of identifiers. Therefore, when the identifier of a record was edited a moment earlier, the command can still link the record by its former identifier, until the event `modify` of the vault reaches the index.
 - The question schema of the fixtures restates the comments and the placeholders of the question template of gnomon. The [acceptance test of guidance](../tests/acceptance/guidance.test.ts) compares them when the corpus of gnomon is named, so a change of that template is reported there, and the fixture schema must follow it.
 

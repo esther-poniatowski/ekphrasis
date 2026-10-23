@@ -33,6 +33,8 @@ A help button beside each label displays the instructions and the examples of th
 - the header of each column of a table, whose instructions display above the table under the name of the column, since the cells of a column share them;
 - the title of the form, for the instructions of the root schema.
 
+The instructions of every field show at once through the button with the information icon in the header of the view, or through the command *Show or hide all instructions*. Once every instruction is shown, the same button or command hides them all. The button displays in the form view only, and is marked as active while every instruction is shown. The folding of the sections stays unchanged: the instructions of a folded group display below its heading, and those of its fields display once it unfolds. A help button still shows or hides the instructions of its own field afterwards.
+
 An empty control displays the first example as placeholder text, after the mark `—` of an [unfilled value](#^unfilled-display).
 
 ## Rendered values

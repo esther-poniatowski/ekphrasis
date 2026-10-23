@@ -45,10 +45,12 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Cross clearing the search field of the outline.
 - Buttons folding and unfolding every section, in the header of the form view, and every entry, at the top of the outline.
 - Keyword `x-align`, `left` or `center`, aligning the formula of a field of kind `latex` in its control or its table cell, `center` by default.
-- Parser of field links by path and by identifier, not yet used by the plugin.
-- Keyword `x-identifier` at the root of a schema, with its schema defect, read by no part of the plugin yet.
-- Index of record identifiers, updated from the changes of the vault, not yet started by the plugin.
-- Text of the link copied by the command *Copy link to field*, whose command is not yet registered.
+- Following of field links by path, from a note or from a value of a form. A followed link opens the instance in the form view at the designated field, and a notice names a field path that is malformed or designates no field.
+- Field links by identifier, written as URIs `obsidian://ekphrasis?id=…&field=…`, resolved through an index of the record identifiers of the vault. The index follows the changes of the vault and of the path rules, and a notice lists the files of an ambiguous identifier.
+- Keyword `x-identifier` at the root of a schema, naming the field of the identifier of a record, with a schema defect when it designates no declared field.
+- Command *Copy link to field*, copying a link by identifier when no other file declares the identifier of the record, and else a link by path in the link format of Obsidian. The text of a link to an item joins the label of its list and the position of the item, such as `Foils #2`.
+- Suggestions of the field paths of a YAML instance after the hash sign of a Markdown link.
+- Button of the header of the form view and command *Show or hide all instructions*, showing or hiding the instructions of every field at once.
 - Keyword `x-identifier: id` in the gnomon fixtures.
 
 ### Changed
