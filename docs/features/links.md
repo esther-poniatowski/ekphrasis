@@ -32,7 +32,7 @@ Three further forms of a link by path are admitted:
 - a link with an empty path, such as `[[#task.epistemic_aim]]`, designates a field of the instance holding the link;
 - a Markdown link writes each space of its path and of its field path as `%20`, or encloses its destination in angle brackets, as in `[aim](<my records/intermittency.yml#task.epistemic_aim>)`.
 
-A link to a note takes the same form, as `[[note#Heading]]` does. Therefore, the subpath of a link is read as a field path only when the path of the link resolves to a YAML file.
+A link to a note takes the same form, as `[[note#Heading]]` does. Therefore, the subpath of a link is read as a field path only when the path of the link resolves to a YAML file. The path must hold the extension of the file, `.yml` or `.yaml`, since Obsidian resolves no link to a YAML file without its extension, and a click on such a link creates a note.
 
 ## Field links by identifier
 
@@ -78,7 +78,7 @@ A malformed field link opens no file. A notice then states its defect:
 
 Two aids write field links:
 
-- typing a hash sign after the path of an instance in a link suggests the field paths of that instance, as Obsidian suggests the headings of a note;
+- typing a hash sign after the path of an instance in a Markdown link, as in `[aim](intermittency.yml#`, suggests the field paths of that instance, as Obsidian suggests the headings of a note. In a wikilink, the suggestion of headings of Obsidian takes over, so no field path is suggested there;
 - the command *Copy link to field* copies a link to the focused field, by identifier when the record declares an identifier through `x-identifier`, and else by path.
 
 The command writes a link by path in the link format chosen in the settings of Obsidian, Markdown link or wikilink. The text of the link is the label of the field. The note that will receive the link is unknown at the copy, so the path of the link starts from the vault root. Before the copy, the command parses the link written. When the parsed link designates another field, the command copies no link, and a notice shows the link written. The link written designates another field when the link format alters a bracket, a quote or a space of the field path.

@@ -83,9 +83,9 @@ Three facts used under *Options weighed* are settled by the API declarations of 
 - `MetadataCache.getFirstLinkpathDest(linkpath, sourcePath)` returns `TFile | null`, `TFile` being the type of every file of the vault, and `parseLinktext(linktext)` splits a link into a path and a subpath starting with `#`;
 - the API declares no event fired by a click on an unresolved link, and no method of one plugin reaching another.
 
-Two premises of the recommended syntax remain unverified, and the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md) tests them in a test vault:
+The two premises of the recommended syntax were confirmed in a test vault on 2026-10-23, by the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md):
 
-- a click on a link `obsidian://ekphrasis?…`, in the reading view and in the live preview of a note, reaches the handler of the plugin without leaving the vault;
-- such a link without the parameter `vault` acts on the open vault.
+- a click on a link `obsidian://…`, in the reading view and in the live preview of a note, reaches the handler of the plugin without leaving the vault;
+- such a link without the parameter `vault` acts on the open vault. With the parameter, Obsidian consumes `vault` to choose the vault, and the handler receives the other parameters only.
 
 A negative verdict on either premise reopens the choice of syntax before the last step of *Links*.

@@ -85,17 +85,17 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Corrections after the check of Guidance and navigation
 
-- [ ] **Outline**: add a button clearing the search field, marked by a cross.
-- [ ] **Form view**: add buttons folding and unfolding every section, in the header of the form view and at the top of the outline, beside the commands *Collapse all* and *Expand all*.
-- [ ] **Form view**: separate the information icon of the title of the form from its last letter.
-- [ ] **Field kinds**: read the keyword `x-align`, `left` or `center`, on a field of kind `latex` and on a column of a table, with `center` as default.
-- [ ] **Form view**: verify that `Enter` and `Space` open the instructions of a focused help button.
+- [x] **Outline**: add a button clearing the search field, marked by a cross. (2026-10-23)
+- [x] **Form view**: add buttons folding and unfolding every section, in the header of the form view and at the top of the outline, beside the commands *Collapse all* and *Expand all*. (2026-10-23)
+- [x] **Form view**: separate the information icon of the title of the form from its last letter. (2026-10-23)
+- [x] **Field kinds**: read the keyword `x-align`, `left` or `center`, on a field of kind `latex` and on a column of a table, with `center` as default. (2026-10-23)
+- [x] **Form view**: verify that `Enter` and `Space` open the instructions of a focused help button. (2026-10-23)
 - [ ] **Form view**: provide a command and a button showing or hiding the instructions of every field at once, independently of the folding of sections.
 
 ## Links
 
 - [x] **Links**: decide, in a decision record, the location of the index of identifiers (a module of ekphrasis or a separate plugin), the syntax of a link by identifier, and the declaration of the identifier of a record type. Accepted by the user on 2026-10-23, in the [decision on record identifiers](docs/adr/record-identifiers.md). (2026-10-23)
-- [ ] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign.
+- [x] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign. Verdicts recorded in the [implementation plan](docs/architecture/implementation-plan.md). (2026-10-23)
 - [ ] **Links**: verify that the Markdown links and the wikilinks of a value resolve as in a note stored in the folder of the instance, including relative paths, encoded spaces and subpaths of notes, and that an external link such as `https://…` opens in the browser.
 - [ ] **Links**: parse field links by path, and open the target instance in the form view at the designated field, from a value of a form and from a note.
 - [ ] **Links**: suggest the field paths of an instance after a hash sign in a link.

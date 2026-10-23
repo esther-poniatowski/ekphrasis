@@ -160,7 +160,14 @@ On 2026-10-22, the declarations of the API, in `obsidian` 1.13.1 and in `obsidia
 - `getFirstLinkpathDest(linkpath, sourcePath)` returns `TFile | null`, `TFile` being the type of every file of the vault, and `parseLinktext` splits a link into a path and a subpath starting with `#`; no declaration states which forms of the path of a YAML file resolve;
 - `registerEditorSuggest` admits a suggest of a plugin, whose `onTrigger` decides at each key press whether it applies; no declaration states the order among the suggests, nor whether the suggestions of headings yield to a plugin.
 
-The remaining part of each premise needs a test vault. The disposable plugin of the folder `spikes/` tests it, through the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md).
+The [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md) settled the remaining part of each premise in a test vault on 2026-10-23, through a disposable plugin retired after the run. Four verdicts bear on the milestone:
+
+- Following a link to a YAML file opens it in the view of the plugin, and then passes the subpath to that view as the ephemeral state `{subpath: "#subject.system"}`. The verdict holds for wikilinks and Markdown links, and for a field path holding brackets, such as `#rows[1].name`.
+- A link resolves to a YAML file only when its path holds the extension of the file, as in `guidance.yml`, `./guidance.yml` or `../gnomon/question.yml`. A link without the extension, such as `[[guidance#subject.system]]`, stays unresolved, and a click on it creates a note `guidance.md`.
+- A suggestion of the plugin triggers after a hash sign in a Markdown link, such as `[system](guidance.yml#`. In a wikilink, such as `[[guidance.yml#`, the suggestion of headings of Obsidian takes over and offers no match, so no suggestion of the plugin shows.
+- A click on a link `obsidian://ekphrasis-spike?…`, in the reading view and in the live preview of a note, reaches the handler of the plugin inside the vault. Obsidian consumes the parameter `vault`, so the handler never receives it.
+
+One case remains unverified: whether a link whose path starts from the vault root, as the command *Copy link to field* writes it, resolves from a note stored in a subfolder.
 
 A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), accepted on 2026-10-23, settles three choices:
 
