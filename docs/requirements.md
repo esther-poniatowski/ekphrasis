@@ -15,6 +15,7 @@ The requirements of ekphrasis are the properties needed from the plugin by a pro
 - **Typed controls**: each field must be edited through a control suited to its kind, from single words and choices to Markdown paragraphs, LaTeX formulas, lists and tables. ^typed-controls
 - **Instructions on demand**: the instructions and the examples of each field must be displayable at the field, and hidden otherwise. ^instructions-on-demand
 - **Rendered content**: Markdown and LaTeX values must display as Obsidian renders them in a note. ^rendered-content
+- **Images**: a form must display the images of its record, such as SVG and PNG files of the vault, embedded in its values or held by a field. ^images
 
 ## Navigation
 

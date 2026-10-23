@@ -118,6 +118,12 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Tags**: display the tree of tags in a side panel, with the number of files of each tag, and open the files of a tag.
 - [ ] **Tags**: browse the tags by a search that combines and excludes tags.
 
+## Images
+
+- [ ] **Images**: decide the name of the kind of a field holding an image, the form of its value (a path from the vault root, a path from the instance, or an embed such as `![[diagram.svg]]`), and the formats admitted.
+- [ ] **Images**: verify that an image embedded in a value of kind `markdown-line` or `markdown`, as `![[diagram.svg]]` or `![diagram](diagram.png)`, displays in the rendered value, for SVG and PNG files.
+- [ ] **Images**: display the image held by a field, and provide a control choosing another image file of the vault.
+
 ## Instance creation
 
 - [ ] **Tooling**: measure the time per file of the corpus tests on geonexus, which grew from about 2 minutes on 2026-10-02 to 41 minutes on 2026-10-20, find the cause, and correct it or record the remaining cost.

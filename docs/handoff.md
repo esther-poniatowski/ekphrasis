@@ -39,7 +39,7 @@ The exit criterion of *Links* calls for a protocol of links in `tests/manual/pro
 
 The user also accepted on 2026-10-23 three choices made by the corrections: the buttons of the outline fold its own entries, the buttons of the form sit in the header of the view, and a value of `x-align` other than `left` falls back to `center` without a warning.
 
-After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). Each opens with a decision of the user and a spike, as the roadmap lists. The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
+After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). Each opens with a decision of the user and a spike, as the roadmap lists. The user added on 2026-10-23 a third milestone after them, *Images*, specified by the note on [images](features/images.md). The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 

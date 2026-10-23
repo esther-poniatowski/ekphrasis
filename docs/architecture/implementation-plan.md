@@ -7,7 +7,7 @@ aliases:
 ---
 # Implementation plan
 
-The implementation plan orders the construction of ekphrasis into thirteen milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
+The implementation plan orders the construction of ekphrasis into fourteen milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
 
 > [!TIP] Ordering rule
 > A milestone precedes another when the second depends on its modules, or when it tests a premise on which the second depends. Among independent milestones, the milestone whose failure would change the most decisions comes first.
@@ -194,6 +194,16 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 **Exit criterion.** The tree lists the tags of the geonexus specifications, nested by their slashes, and a search combining one tag and excluding another lists the expected files.
 
 **Risks.** Whether the tag pane and the search of Obsidian list any tag of a YAML file is unverified, so a spike opens the milestone. Three choices remain open until then: the values that may carry tags, whether the tree also lists the tags of notes, and the syntax of the search.
+
+### Images
+
+**Goal.** A form displays the images of its record, embedded in its values or held by a field, as the specification of [images](../features/images.md) details.
+
+**Modules.** Verification of the images embedded in rendered values, a field kind holding an image, its display, and a control choosing an image file of the vault.
+
+**Exit criterion.** A record of the test vault displays an SVG image and a PNG image, one embedded in a Markdown value and one held by a field, and the control of the field replaces its image by another file.
+
+**Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian.
 
 ### Instance creation
 
