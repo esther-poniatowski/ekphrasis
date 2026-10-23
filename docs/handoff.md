@@ -20,6 +20,23 @@ The milestone *Links* follows, added by the user on 2026-10-21 before *Instance 
 - the user accepted on 2026-10-23 the [decision on record identifiers](adr/record-identifiers.md): a module of ekphrasis for the index, links by identifier written as URIs `obsidian://ekphrasis?id=…&field=…`, and a root keyword `x-identifier` naming the field path of the identifier;
 - the spikes run in the section *Spikes of the milestone Links* of the same protocol, through the disposable plugin of `spikes/`. The spikes test the subpath of a followed link, the paths of a YAML file resolved from a note, the suggestions after a hash sign, and the URI handler. The [implementation plan](architecture/implementation-plan.md) records the part of each premise settled by the declarations of the API.
 
+The parts of *Links* that no verdict of a spike can change are written and unit-tested since 2026-10-23. These modules stay unreferenced by the composition root, so the bundle tested by the protocol behaves as before:
+
+- the [parser of field links](../src/domain/links/field-link.ts), and the [declaration of the identifier](../src/domain/links/record-identifier.ts) by the keyword `x-identifier`, declared by the schemas of the gnomon fixtures;
+- the [index of identifiers](../src/domain/links/identifier-index.ts), kept by the [index service](../src/application/identifier-index-service.ts) behind the port `RecordIdentifiers`, and fed by the [routing of the changes of the vault](../src/adapters/obsidian/identifier-events.ts) through the [watcher of the vault](../src/adapters/obsidian/identifier-watcher.ts);
+- the [text of a link to a field](../src/application/field-link-text.ts), behind the port `LinkFormatter`, and the [command *Copy link to field*](../src/adapters/obsidian/copy-field-link.ts).
+
+Every roadmap step of *Links* stays unticked until its modules are wired and checked inside Obsidian. The wiring follows the run of the protocol of the corrections, through the edits below:
+
+1. In `defectsOf` of the [validation service](../src/application/validation-service.ts), append `identifierDefects(root)`, so that the form reports a defective `x-identifier`.
+2. In `onload` of the [plugin class](../src/adapters/obsidian/plugin.ts), build one `IdentifierIndexService`, and call `watchRecordIdentifiers(this, index)`. The service takes the parser, a `FileSchemaLoader` over the `VaultFileSource`, and the settings.
+3. In `updateSettings` of the plugin class, call `rebuildRecordIdentifiers` when the path rules change.
+4. In the [registration of the commands](../src/adapters/obsidian/commands.ts), move `COPY_FIELD_LINK_COMMAND` into `COMMANDS`, and call `registerCopyFieldLink` from `registerCommands`.
+5. After a positive verdict on the URI handler, make the command copy a link by identifier, written by `printIdentifierUri`, when `identifierOf(path)` of the index returns an identifier, as the decision states. The command copies links by path only until then.
+6. Write the following of links and the suggestions of field paths after the verdicts of the spikes. A link by path is followed from the subpath passed to the view, and a link by identifier through `registerObsidianProtocolHandler(LINK_ACTION, …)` and `fieldLinkOfQuery`.
+
+The exit criterion of *Links* calls for a protocol of links in `tests/manual/protocols/`, written after the current run.
+
 The user also accepted on 2026-10-23 three choices made by the corrections: the buttons of the outline fold its own entries, the buttons of the form sit in the header of the view, and a value of `x-align` other than `left` falls back to `center` without a warning.
 
 After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). Each opens with a decision of the user and a spike, as the roadmap lists. The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
@@ -65,7 +82,11 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. Three questions on the command *Copy link to field* await the protocol of links:
+
+- whether Obsidian closes a wikilink whose subpath ends with a bracket, such as `[[q.yml#foils[0]]]`, at its final `]]`, as the [parser of field links](../src/domain/links/field-link.ts) does;
+- whether a link written from the vault root, as the command writes it, resolves from a note in a subfolder when the setting of Obsidian asks for relative paths;
+- whether the label of the field serves as the text of the link, since an item is labelled by its position, such as `#1`.
 
 ## Provenance
 
@@ -80,6 +101,7 @@ The open decisions are recorded where they are settled: the roadmap steps openin
 - The comments and placeholders of the question template of gnomon were read in `src/gnomon/data/templates/question.yml` on 2026-10-20. The library `yaml` 2.9.1 attaches the comment after a scalar value to that value as `comment`, the comment after the key of a collection to the collection as `commentBefore`, and the comments before the first key to the document.
 - The signatures of `MarkdownRenderer.render`, `renderMath`, `finishRenderMath`, `Keymap.isModEvent`, `Component.addChild` and `removeChild`, `Workspace.getRightLeaf` and `revealLeaf` were checked against the installed `obsidian.d.ts` on 2026-10-20.
 - The sizes of the consumer records were measured on 2026-10-20: the longest question record of gnomon holds 52 string values, the longest of 339 characters; the largest geonexus record, `notation.yml`, holds 1091 string values, none rendered since its schema declares no rendered kind.
+- The signatures of `FileManager.generateMarkdownLink(file, sourcePath, subpath?, alias?)` and of the events `create`, `modify`, `delete` and `rename` of `Vault` were read in the installed `obsidian.d.ts` (1.13.1) on 2026-10-23.
 - The source ranges of collections were observed on 2026-10-20 with `yaml` 2.9.1, and the [edits of collections](../src/domain/edit/collection-edits.ts) rely on them. The range of a mapping item of a block sequence ends after the line break of its last line. The range of a block sequence includes the comment lines between its items. The range of a flow collection spans its brackets or braces, and excludes any comment after the closing one.
 
 ## Decision log

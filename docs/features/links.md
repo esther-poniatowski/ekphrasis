@@ -26,17 +26,59 @@ A field link by path appends the [field path](field-paths.md) of the field to th
 [[intermittency.yml#task.epistemic_aim]]
 ```
 
+Three further forms of a link by path are admitted:
+
+- a link without a hash sign, such as `[[intermittency.yml]]`, designates the root of the instance;
+- a link with an empty path, such as `[[#task.epistemic_aim]]`, designates a field of the instance holding the link;
+- a Markdown link writes each space of its path and of its field path as `%20`, or encloses its destination in angle brackets, as in `[aim](<my records/intermittency.yml#task.epistemic_aim>)`.
+
+A link to a note takes the same form, as `[[note#Heading]]` does. Therefore, the subpath of a link is read as a field path only when the path of the link resolves to a YAML file.
+
 ## Field links by identifier
 
-A field link by identifier names the record by the value of its identifier, then the field by its field path. Such a link stays valid after a move or a rename of the file of the record, as long as the identifier of the record stays unchanged. Its resolution needs an index of the identifiers declared across the vault. The syntax of the link, the declaration of the identifier of a record type, and the location of the index remain open, and the proposed [decision on record identifiers](../adr/record-identifiers.md) weighs them.
+A field link by identifier names the record by the value of its identifier, then the field by its field path. Such a link stays valid after a move or a rename of the file of the record, as long as the identifier of the record stays unchanged. The link is a URI of Obsidian handled by ekphrasis, as the [decision on record identifiers](../adr/record-identifiers.md) records:
+
+```markdown
+[epistemic aim](obsidian://ekphrasis?id=quest.pendulum.sustained-oscillation&field=task.epistemic_aim)
+```
+
+The URI takes three parameters, each percent-encoded:
+
+| Parameter | Value | Absence |
+| --- | --- | --- |
+| `id` | Identifier of the record | Makes the link malformed |
+| `field` | Field path of the field, such as `maturity%5B%22task.aim%22%5D` for `maturity["task.aim"]` | Designates the root of the record |
+| `vault` | Name of the vault | Leaves the choice of the vault to Obsidian |
+
+The schema of a record type names the field holding the identifier by the keyword `x-identifier`, among the [keywords of ekphrasis](schemas.md). The identifier of a record is the text of that field. When that field is absent or empty, or holds a value other than a text, the record declares no identifier.
+
+Ekphrasis keeps an index that maps each identifier to the files declaring it. The index reads each YAML file of the vault through the schema bound to that file. Then, the index follows the changes of the vault and of the settings:
+
+- a file created, changed or renamed is read;
+- a deleted file leaves the index;
+- a change of a schema file reads again every file whose binding reads that schema file;
+- a change of the path rules of the settings reads every file again, since a rule can bind a file to another schema.
+
+An identifier declared by several files is ambiguous: a link to it opens no file, and a notice lists the files. Files of different record types can also declare the same identifier, since the identifiers of geonexus are unique within one type only.
 
 ## Following a link
 
 Following a field link, from a value of a form or from a note, opens the target instance in the form view. The form then moves to the field, as a click on an entry of the [outline](outline.md) does: the groups containing the field expand, and its control receives the focus. When the field path designates no field of the instance, the form opens at its top, and a notice names the path not found.
 
+A malformed field link opens no file. A notice then states its defect:
+
+- a wikilink not closed by `]]`, or a Markdown link outside the form `[text](destination)`;
+- a space in the destination of a Markdown link, outside angle brackets;
+- a hash sign followed by no field path;
+- a malformed field path, or a field path holding a wildcard, since a link designates one field;
+- a malformed percent-encoding;
+- a URI of ekphrasis without the parameter `id`, or repeating a parameter.
+
 ## Writing links
 
-Two aids write field links by path:
+Two aids write field links:
 
 - typing a hash sign after the path of an instance in a link suggests the field paths of that instance, as Obsidian suggests the headings of a note;
-- the command *Copy link to field* copies a link to the focused field, in the link format set in the settings of Obsidian, Markdown link or wikilink.
+- the command *Copy link to field* copies a link to the focused field, by identifier when the record declares an identifier through `x-identifier`, and else by path.
+
+The command writes a link by path in the link format chosen in the settings of Obsidian, Markdown link or wikilink. The text of the link is the label of the field. The note that will receive the link is unknown at the copy, so the path of the link starts from the vault root. Before the copy, the command parses the link written. When the parsed link designates another field, the command copies no link, and a notice shows the link written. The link written designates another field when the link format alters a bracket, a quote or a space of the field path.

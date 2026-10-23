@@ -34,6 +34,7 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
 | Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
 | Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
+| Domain | `src/domain/links/` | Parser and printer of field links, declaration and value of the identifier of a record, index of identifiers |
 | Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating in the order of checks), session of an open instance, settings |
 | Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, writer of scalar texts, splice of text edits |
 | Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |
@@ -161,7 +162,11 @@ On 2026-10-22, the declarations of the API, in `obsidian` 1.13.1 and in `obsidia
 
 The remaining part of each premise needs a test vault. The disposable plugin of the folder `spikes/` tests it, through the [protocol of the corrections](../../tests/manual/protocols/corrections-guidance.md).
 
-A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), proposed on 2026-10-22, weighs that syntax, the declaration of the identifier of a record type, and the location of the index. The user decides among its options.
+A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), accepted on 2026-10-23, settles three choices:
+
+- a link by identifier is a URI of Obsidian handled by ekphrasis;
+- the keyword `x-identifier` declares the field of the identifier of a record type;
+- a module of ekphrasis holds the index of identifiers.
 
 ### Metadata
 

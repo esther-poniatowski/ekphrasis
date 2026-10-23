@@ -65,7 +65,7 @@ The form displays every unfilled value as an empty control, as the [form view](f
 
 ## Keywords of ekphrasis
 
-Ekphrasis adds six keywords, each prefixed by `x-`:
+Ekphrasis adds seven keywords, each prefixed by `x-`:
 
 | Keyword | Position | Value | Effect |
 | --- | --- | --- | --- |
@@ -75,5 +75,8 @@ Ekphrasis adds six keywords, each prefixed by `x-`:
 | `x-align` | Field of kind `latex`, or column of a table | `left` or `center` | Alignment of the formula in its control or its cell, `center` by default |
 | `x-unfilled` | Root | Sequence of JSON values | Values counted as unfilled, in addition to the null value |
 | `x-version` | Root | Version identifier | [Version](schema-editor.md#^schema-version) of the schema |
+| `x-identifier` | Root | [Field path](field-paths.md), such as `identity.id` | Field holding the identifier of each record, named by the [links by identifier](links.md) |
+
+Every record of a type must hold its identifier at the same path. Therefore, the keyword `x-identifier` must designate a declared property, reached from the root through the keyword `properties` of each group or of its alternatives. When the value of the keyword is no field path, holds a wildcard, or designates no declared property, the form reports a defect of the schema.
 
 Ekphrasis ignores every other keyword prefixed by `x-`. Therefore, a project can keep extension keywords of its own in the same schema, for the checkers that read them.

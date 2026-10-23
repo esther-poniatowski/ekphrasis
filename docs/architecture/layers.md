@@ -11,7 +11,7 @@ Four layers divide the source code of ekphrasis, and each layer depends only on 
 
 | Layer | Folder | Responsibility | Admitted dependencies |
 | --- | --- | --- | --- |
-| Domain | `src/domain/` | Form model built from a schema and an instance, field kinds, field paths, unfilled values, predefined checkers, issues, scalar styles and text of an edited node | None |
+| Domain | `src/domain/` | Form model built from a schema and an instance, field kinds, field paths, field links, unfilled values, predefined checkers, issues, scalar styles and text of an edited node | None |
 | Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating), model of the settings | Domain |
 | Infrastructure | `src/infrastructure/` | Port implementations that call third-party libraries or Node (e.g. the YAML parser, the JSON Schema validator, the Python process) | Domain, application |
 | Adapters | `src/adapters/` | Composition root, and every module that calls the API of Obsidian (e.g. views, commands, settings tab) | All layers |
@@ -38,5 +38,6 @@ The code of each feature is divided according to whether it calls the API of Obs
 | [Outline](../features/outline.md) | Entries of the outline, names of items, restriction to the entries with issues, search of fields | — | — | Outline view, channel following the active form, move of the form to a field |
 | [Saving](../features/saving.md) | Scalar styles, plan of the edits of a commit, expected document | Use case that commits an edit and confirms it by parsing again, session of an open instance, port for the document editor | Text of each scalar, splice into the source text | Commit triggers of the controls, writes through the vault, reaction to changes from outside |
 | [Validation](../features/validation.md) | Unfilled values, conversion of the errors of the validator to field paths, predefined checkers, paths of rules, issues | Order of checks, port for the schema validator | JSON Schema validator | Display of issues, command *Validate instance*, rendering of formulas for the checker `latex` |
+| [Links](../features/links.md) | Parser and printer of field links, declaration and value of record identifiers, index of identifiers | Use case that indexes the identifiers of the vault, port for resolving them, text of a link to a field, port for the link format | — | Events of the vault feeding the index, command *Copy link to field*, opening of an instance at a field, suggestions of field paths, handler of the URIs of ekphrasis |
 | [Custom checkers](../features/custom-checkers.md) | — | Port for the checker runner | Python process and its message protocol | Interpreter and modules in the settings tab |
 | [Schema editor](../features/schema-editor.md) | — | Meta-schema of the schema dialect | — | Preview panel, command *Create schema* |

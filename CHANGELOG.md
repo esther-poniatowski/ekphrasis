@@ -45,6 +45,11 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Cross clearing the search field of the outline.
 - Buttons folding and unfolding every section, in the header of the form view, and every entry, at the top of the outline.
 - Keyword `x-align`, `left` or `center`, aligning the formula of a field of kind `latex` in its control or its table cell, `center` by default.
+- Parser of field links by path and by identifier, not yet used by the plugin.
+- Keyword `x-identifier` at the root of a schema, with its schema defect, read by no part of the plugin yet.
+- Index of record identifiers, updated from the changes of the vault, not yet started by the plugin.
+- Text of the link copied by the command *Copy link to field*, whose command is not yet registered.
+- Keyword `x-identifier: id` in the gnomon fixtures.
 
 ### Changed
 
