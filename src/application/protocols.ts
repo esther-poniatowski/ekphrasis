@@ -2,9 +2,10 @@
  * Ports of the application layer.
  *
  * Interfaces through which the application consumes capabilities implemented in outer layers
- * (dependency inversion): parsing, editing and schema loading (infrastructure), and host file
- * access (adapters). The port of record identifiers is implemented by the application itself, so
- * that the resolution of links by identifier does not depend on the module holding the index.
+ * (dependency inversion): parsing, editing and schema loading (infrastructure), host file access
+ * and the link format of the host (adapters). The port of record identifiers is implemented by
+ * the application itself, so that the resolution of links by identifier does not depend on the
+ * module holding the index.
  */
 import type {
   IdentifierResolution,
@@ -64,4 +65,13 @@ export interface SchemaValidator {
 export interface RecordIdentifiers {
   /** Files declaring `identifier`: one, several (ambiguous), or none. */
   resolve(identifier: string): IdentifierResolution;
+}
+
+/** Writer of links in the link format set in the host, Markdown link or wikilink. */
+export interface LinkFormatter {
+  /**
+   * Text of a link to the file at the vault path `path`, with `subpath` (empty, or starting with
+   * `#`) and the displayed text `alias` (empty for the default text of the host).
+   */
+  linkTo(path: string, subpath: string, alias: string): string;
 }

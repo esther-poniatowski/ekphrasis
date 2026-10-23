@@ -9,6 +9,7 @@ export type {
   DocumentParser,
   FileSource,
   InstanceValidator,
+  LinkFormatter,
   RecordIdentifiers,
   SchemaLoader,
   SchemaValidator,
@@ -30,3 +31,4 @@ export {
 } from "./instance-session";
 export { ValidationService, type ValidationReport } from "./validation-service";
 export { IdentifierIndexService } from "./identifier-index-service";
+export { fieldLinkByPath, type FieldLinkText } from "./field-link-text";
