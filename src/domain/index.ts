@@ -94,3 +94,9 @@ export {
   type FieldLink,
   type RecordTarget,
 } from "./links/field-link";
+export {
+  identifierDeclaration,
+  identifierDefects,
+  readIdentifier,
+  type IdentifierDeclaration,
+} from "./links/record-identifier";

@@ -5,7 +5,7 @@
 # paths with values admitted by `additionalProperties`, a nullable field, the unfilled values
 # `open`, `[]` and `{}`, the conditional rule of gnomon in which the epistemic aim decides the
 # required fields (its entries for the question record, from `by_aim` of `requirements.yml`),
-# written with `required-when` at the root
+# written with `required-when` at the root, the field of the identifier declared by `x-identifier`
 # guidance: every key of the question template of gnomon, with its admitted values, and with
 # instructions and examples that restate the comments and the placeholders of the template
 
@@ -22,6 +22,7 @@ description: >-
 type: object
 required: [title, statement, id, type, status, subject, task]
 x-unfilled: [open, [], {}]
+x-identifier: id
 x-rules:
   - check: required-when
     field: task.required_accuracy.outputs_to_match

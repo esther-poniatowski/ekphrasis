@@ -57,6 +57,14 @@ export class SchemaView {
     return this.string("x-align");
   }
 
+  /**
+   * Value written under the keyword `x-identifier`, unchecked, or `null` when it is absent. A
+   * well-formed value, read at the root schema, is the field path of the identifier of a record.
+   */
+  get declaredIdentifier(): JsonValue | null {
+    return this.keyword("x-identifier")?.value ?? null;
+  }
+
   /** Name written under the keyword `x-kind`, unchecked. */
   get declaredKind(): string | null {
     return this.string("x-kind");

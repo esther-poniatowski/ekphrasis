@@ -2,7 +2,7 @@
 # declares its records by templates and Python checkers, without a JSON Schema.
 # constructs: tables derived from sequences of scalar mappings, records derived from a nested
 # list column, the kinds `label`, `markdown-line` and `latex` declared by `x-kind`, a `const`
-# record type, the unfilled value `open`
+# record type, the unfilled value `open`, the field of the identifier declared by `x-identifier`
 
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: target-system.schema.yaml
@@ -10,6 +10,7 @@ title: Target system
 type: object
 required: [title, id, type, status, target_type, reference_class]
 x-unfilled: [open]
+x-identifier: id
 properties:
   title:
     type: string
