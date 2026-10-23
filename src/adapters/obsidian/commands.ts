@@ -17,6 +17,7 @@ export const COMMANDS = {
   expandAll: { id: "expand-all", name: "Expand all" },
   showOutline: { id: "show-outline", name: "Show outline" },
   searchFields: { id: "search-fields", name: "Search the fields" },
+  toggleInstructions: { id: "toggle-all-instructions", name: "Show or hide all instructions" },
   copyFieldLink: { id: "copy-link-to-field", name: "Copy link to field" },
 } as const;
 
@@ -102,6 +103,17 @@ export function registerCommands(plugin: Plugin, identifiers: RecordIdentifiers)
       },
     });
   }
+
+  // Shows the instructions of every field of the form, or hides them all.
+  plugin.addCommand({
+    ...COMMANDS.toggleInstructions,
+    checkCallback: (checking) => {
+      const view = workspace.getActiveViewOfType(InstanceView);
+      if (view === null || view.mode !== "form") return false;
+      if (!checking) view.toggleAllInstructions();
+      return true;
+    },
+  });
 
   registerCopyFieldLink(plugin, COMMANDS.copyFieldLink, identifiers);
 }

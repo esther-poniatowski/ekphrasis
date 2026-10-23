@@ -26,4 +26,5 @@ export const ICONS = {
   outline: "list-tree",
   collapseAll: "chevrons-down-up",
   expandAll: "chevrons-up-down",
+  instructions: "info",
 } as const;

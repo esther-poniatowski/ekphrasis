@@ -144,6 +144,51 @@ describe("instructions on demand", () => {
   });
 });
 
+describe("every instruction at once", () => {
+  const shownHelp = (container: Element): (string | undefined)[] =>
+    Array.from(
+      container.querySelectorAll<HTMLElement>(".ekphrasis-help"),
+      (panel) => panel.dataset["help"],
+    );
+
+  it("shows the instructions of every field, without unfolding a folded section", async () => {
+    const { container, help } = await renderGuided();
+    help.setAll(true);
+    expect(help.allShown).toBe(true);
+    expect(shownHelp(container)).toHaveLength(4);
+    expect(row(container, "subject").dataset["folded"]).toBe("true");
+    expect(element(row(container, "subject"), ".ekphrasis-help").textContent).toContain(
+      "What the question is about.",
+    );
+    expect(element(container, ".ekphrasis-form-header .ekphrasis-help").textContent).toBe(
+      "Fill the record before any answer.",
+    );
+  });
+
+  it("lets a help button hide one field after every instruction is shown, and hides them all again", async () => {
+    const { container, help } = await renderGuided();
+    help.setAll(true);
+    fireEvent.click(element(row(container, "title"), ".ekphrasis-help-button"));
+    expect(row(container, "title").querySelector(".ekphrasis-help")).toBeNull();
+    expect(shownHelp(container)).toHaveLength(3);
+    help.setAll(false);
+    expect(help.allShown).toBe(false);
+    expect(shownHelp(container)).toEqual([]);
+    fireEvent.click(element(row(container, "title"), ".ekphrasis-help-button"));
+    expect(shownHelp(container)).toHaveLength(1);
+  });
+
+  it("hides every instruction again for a newly opened file", async () => {
+    const { container, help } = await renderGuided();
+    help.setAll(true);
+    help.reset();
+    expect(help.allShown).toBe(false);
+    // The reset displays nothing by itself; the next click displays the form again.
+    fireEvent.click(element(row(container, "title"), ".ekphrasis-help-button"));
+    expect(shownHelp(container)).toHaveLength(1);
+  });
+});
+
 describe("rendered values", () => {
   it("displays the values of the rendered kinds through the renderer, without an editor", async () => {
     const { container } = await renderGuided();

@@ -102,6 +102,8 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   private readonly modeAction: HTMLElement;
   /** Buttons of the header folding and unfolding every section, shown in the form view only. */
   private readonly foldActions: readonly HTMLElement[];
+  /** Button of the header showing or hiding every instruction, shown in the form view only. */
+  private readonly instructionsAction: HTMLElement;
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -135,11 +137,15 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
     this.modeAction = this.addAction(ICONS.sourceView, "Open the source view", () =>
       this.toggleMode(),
     );
-    // Each action added displays before the previous ones, so the order reads collapse, expand.
+    // Each action added displays before the previous ones, so the order reads instructions,
+    // collapse, expand.
     this.foldActions = [
       this.addAction(ICONS.expandAll, "Expand all", () => this.foldAll(false)),
       this.addAction(ICONS.collapseAll, "Collapse all", () => this.foldAll(true)),
     ];
+    this.instructionsAction = this.addAction(ICONS.instructions, "Show all instructions", () =>
+      this.toggleAllInstructions(),
+    );
   }
 
   getViewType(): string {
@@ -271,6 +277,14 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
     this.folds.setAll(folded);
   }
 
+  /**
+   * Shows the instructions of every field, or hides them all when the last change of every field
+   * showed them, independently of the folding of the sections.
+   */
+  toggleAllInstructions(): void {
+    this.help.setAll(!this.help.allShown);
+  }
+
   /** Switches between the form view and the source view. */
   toggleMode(): void {
     const mode = this.mode === "form" ? "source" : "form";
@@ -390,6 +404,12 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
     this.formEl.toggle(mode === "form");
     this.sourceEl.toggle(mode === "source");
     for (const action of this.foldActions) action.toggle(mode === "form");
+    this.instructionsAction.toggle(mode === "form");
+    this.instructionsAction.toggleClass("is-active", this.help.allShown);
+    this.instructionsAction.setAttr(
+      "aria-label",
+      this.help.allShown ? "Hide all instructions" : "Show all instructions",
+    );
     setIcon(this.modeAction, mode === "form" ? ICONS.sourceView : ICONS.formView);
     this.modeAction.setAttr(
       "aria-label",
