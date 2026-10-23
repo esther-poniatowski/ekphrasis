@@ -82,11 +82,12 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. Three questions on the command *Copy link to field* await the protocol of links:
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder. Two questions on the command *Copy link to field* await the protocol of links:
 
 - whether Obsidian closes a wikilink whose subpath ends with a bracket, such as `[[q.yml#foils[0]]]`, at its final `]]`, as the [parser of field links](../src/domain/links/field-link.ts) does;
 - whether a link written from the vault root, as the command writes it, resolves from a note in a subfolder when the setting of Obsidian asks for relative paths;
-- whether the label of the field serves as the text of the link, since an item is labelled by its position, such as `#1`.
+
+The user decided on 2026-10-23 the text of a link to an item: the label of its list followed by the label of the item, such as `Foils #2`, as the specification of [links](features/links.md) states. The [text of a link to a field](../src/application/field-link-text.ts) still writes the label of the item alone.
 
 ## Provenance
 
