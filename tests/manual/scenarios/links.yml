@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=links.schema.yaml
+# Manual test record of the milestone Links: links in values, and the command Copy link to field.
+id: scenario.links
+by_path: |
+  1. Wikilink to a field: [[guidance.yml#subject.system]]
+  2. Wikilink to a row: [[guidance.yml#rows[1].name]]
+  3. Markdown link to another folder: [aim](../gnomon/question.yml#task.epistemic_aim)
+  4. Field absent from the record: [[guidance.yml#subject.missing]]
+  5. Malformed field path: [[guidance.yml#subject..system]]
+by_identifier: |
+  6. Link by identifier: [aim by identifier](obsidian://ekphrasis?id=quest.pendulum.sustained-oscillation&field=task.epistemic_aim)
+  7. Ambiguous identifier: [twin](obsidian://ekphrasis?id=scenario.twin)
+  8. Unknown identifier: [unknown](obsidian://ekphrasis?id=scenario.nobody)
+notes: |
+  9. Note in the folder: [[link-target]]
+  10. Heading of a note: [[link-target#Second section]]
+  11. Block of a note: [[link-target#^block-a]]
+  12. Relative path with encoded spaces: [spaced](notes%20with%20space/spaced%20note.md)
+  13. Markdown link to a heading: [section](link-target.md#Second%20section)
+external: "14. External link: [Obsidian](https://obsidian.md)"
+foils:
+  - name: laminar
+  - name: turbulent
+nested:
+  a key: a value under a key holding a space

@@ -1,0 +1,26 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: links.schema.yaml
+title: Links
+description: A schema exercising the links of values, the identifier of a record and the command Copy link to field.
+type: object
+x-identifier: id
+properties:
+  id:
+    type: string
+    x-kind: label
+    description: Identifier of the record, declared by the keyword x-identifier of the schema.
+  by_path: { type: string, x-kind: markdown }
+  by_identifier: { type: string, x-kind: markdown }
+  notes: { type: string, x-kind: markdown }
+  external: { type: string, x-kind: markdown-line }
+  foils:
+    title: Foils
+    type: array
+    items:
+      type: object
+      properties:
+        name: { type: string }
+  nested:
+    type: object
+    properties:
+      a key: { type: string }

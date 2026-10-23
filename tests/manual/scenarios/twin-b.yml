@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=twin.schema.yaml
+# Manual test record of the milestone Links: twin b, declaring the identifier `scenario.twin` of twin a.
+id: scenario.twin
+note: twin b

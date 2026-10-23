@@ -1,0 +1,9 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: twin.schema.yaml
+title: Twin
+description: A schema of two records declaring the same identifier, for the links by an ambiguous identifier.
+type: object
+x-identifier: id
+properties:
+  id: { type: string, x-kind: label }
+  note: { type: string }
