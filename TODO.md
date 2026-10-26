@@ -68,7 +68,8 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group. (2026-10-20)
 - [x] **Saving**: write a new collection under a block mapping in flow form when every sibling holding the same key writes it in flow form. (2026-10-20)
 - [x] **Field kinds**: remove the keys of the previous alternative when another alternative is chosen, after a confirmation when one of them holds a filled value. (2026-10-20)
-- [ ] **Field kinds**: let the author toggle a field of kind `list` between two layouts: an expanded control with one row per item, and a compact inline control modelled on list-valued Obsidian properties. Changing the layout must not edit the YAML file.
+- [ ] **Schemas**: decide whether an invalid or misplaced `x-list-layout` is reported as a schema defect or ignored.
+- [ ] **Field kinds**: implement compact and expanded controls for `list`, selected initially by `x-list-layout` with `compact` as its default. Keep a manual choice until the view closes or displays another file. Changing the layout must not edit the YAML file.
 
 ## Guidance and navigation
 

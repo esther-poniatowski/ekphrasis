@@ -33,13 +33,24 @@ A collection kind holds several values, each filled through the control of its o
 | Kind | Value in the YAML file | Control | Derived from |
 | --- | --- | --- | --- |
 | `choices` | Sequence of admitted values, each at most once | Checkboxes | `type: array` with `items.enum` and `uniqueItems: true` |
-| `list` | Sequence of scalars | List of inputs, with buttons to add, remove and reorder items | `type: array` with scalar `items` |
+| `list` | Sequence of scalars | Compact inline inputs or expanded rows of inputs, with a toggle between them | `type: array` with scalar `items` |
 | `group` | Mapping with declared keys | Collapsible section, holding one field per key | `type: object` with `properties` |
 | `table` | Sequence of mappings whose values are scalars | Table with one row per item and one column per key, with buttons to add, remove and reorder rows | `type: array` whose `items` declare scalar properties only |
 | `keyed-table` | Mapping from identifiers to mappings whose values are scalars | Table whose first column holds the identifier, with an input naming a new entry and buttons removing entries | `type: object` whose `additionalProperties` or `patternProperties` declare scalar properties only |
 | `records` | Sequence of mappings with nested values | Sequence of collapsible groups, with buttons to add, remove and reorder groups | `type: array` whose `items` declare a nested property |
 | `keyed-records` | Mapping from identifiers to mappings with nested values | Sequence of collapsible groups, each headed by its identifier, with an input naming a new entry and buttons removing entries | `type: object` whose `additionalProperties` or `patternProperties` declare a nested property |
 | `alternatives` | Value matching one of several subschemas | Selector of the alternative, followed by the fields of the selected alternative | `oneOf` of object schemas |
+
+A field of kind `list` opens in the compact layout. The declaration `x-list-layout: expanded` overrides that default. The compact layout follows list-valued Obsidian properties and edits its scalar items inline. By contrast, the expanded layout places one control per row.
+
+Both layouts let the author:
+
+- edit an item;
+- add an item;
+- remove an item;
+- reorder items.
+
+A control at the field toggles between the layouts. During that view, the chosen layout stays active while the view displays the file. When the view closes or displays another file, it forgets the choice. Therefore, reopening the file restores the layout declared by its schema, or the compact default. Switching layouts changes no source text. The [rationale for list layouts](../adr/list-layouts.md) compares the alternatives. ^list-layouts
 
 Each column of a table takes the scalar kind of its property, so a cell can hold a formula or a line of Markdown. A table grows by one row at a time. The new row displays as a draft, and its first committed cell writes it into the file, as specified for [new entries](saving.md#^structural-edits). An issue on a cell displays in that cell. A new entry of a keyed kind is named before its draft displays, and its identifier must differ from the identifiers already present.
 

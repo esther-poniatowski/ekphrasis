@@ -16,5 +16,6 @@ Records the design choices of ekphrasis, each binding on every later change of t
 - [Python checkers](python-checkers.md): explains why custom checkers run in one persistent Python process, on desktop only
 - [Source view](source-view.md): explains why the YAML text is edited in an editor supplied by ekphrasis
 - [Field rendering](field-rendering.md): explains why Markdown and LaTeX values render through the renderers of Obsidian
+- [List layouts](list-layouts.md): fixes the initial layout of a list and the lifetime of a manual choice
 - [Form interface framework](form-interface-framework.md): explains why the form view and the outline are built with Preact, rather than with plain DOM components or Svelte
 - [Record identifiers](record-identifiers.md): weighs how a link designates a record by its identifier

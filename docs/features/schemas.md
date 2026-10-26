@@ -65,11 +65,12 @@ The form displays every unfilled value as an empty control, as the [form view](f
 
 ## Keywords of ekphrasis
 
-Ekphrasis adds seven keywords, each prefixed by `x-`:
+Ekphrasis adds eight keywords, each prefixed by `x-`:
 
 | Keyword | Position | Value | Effect |
 | --- | --- | --- | --- |
 | `x-kind` | Any field | Name of a [field kind](field-kinds.md) | Control through which the field is filled |
+| `x-list-layout` | Field of kind `list` | `compact` or `expanded` | [Initial layout](field-kinds.md#^list-layouts) of the list, `compact` by default |
 | `x-rules` | Any field, or the root | Sequence of rule declarations | [Rules](validation.md) checked in addition to the standard keywords |
 | `x-collapsed` | Group or collection | `true` or `false` | Whether the field is folded when the form opens |
 | `x-align` | Field of kind `latex`, or column of a table | `left` or `center` | Alignment of the formula in its control or its cell, `center` by default |
