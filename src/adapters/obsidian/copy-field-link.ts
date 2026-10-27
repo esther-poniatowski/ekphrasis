@@ -4,7 +4,8 @@
  *
  * The link designates the record by its identifier when the index of identifiers resolves the
  * identifier of the record to its file alone, as a URI of ekphrasis written as a Markdown link.
- * Otherwise, the link designates the file by its path, in the link format set in the settings of
+ * Otherwise, the link designates the file by its path, and the notice of the copy names the
+ * identifier when several files declare it, in the link format set in the settings of
  * Obsidian, through `FileManager.generateMarkdownLink`. The note that will hold the link is
  * unknown when the link is copied, so a link by path is written as from the vault root.
  */
@@ -69,14 +70,22 @@ export function registerCopyFieldLink(
 }
 
 /**
- * Identifier of the record at `path` when it designates that record alone, and else `null`, so a
- * record whose identifier is ambiguous is linked by its path.
+ * Designation of the record at `path` by a copied link: its identifier when that identifier
+ * designates the record alone, and else its path, together with the identifier when several files
+ * declare it.
  */
-function uniqueIdentifier(identifiers: RecordIdentifiers, path: string): string | null {
+type Designation =
+  | { readonly by: "identifier"; readonly identifier: string }
+  | { readonly by: "path"; readonly ambiguousIdentifier: string | null };
+
+function designationOf(identifiers: RecordIdentifiers, path: string): Designation {
   const identifier = identifiers.identifierOf(path);
-  if (identifier === null) return null;
+  if (identifier === null) return { by: "path", ambiguousIdentifier: null };
   const resolution = identifiers.resolve(identifier);
-  return resolution.status === "found" && resolution.path === path ? identifier : null;
+  if (resolution.status === "found" && resolution.path === path) {
+    return { by: "identifier", identifier };
+  }
+  return { by: "path", ambiguousIdentifier: resolution.status === "ambiguous" ? identifier : null };
 }
 
 async function copyLink(
@@ -87,12 +96,12 @@ async function copyLink(
   fieldId: string,
 ): Promise<void> {
   let result: FieldLinkText;
+  const designation = designationOf(identifiers, path);
   try {
-    const identifier = uniqueIdentifier(identifiers, path);
     result =
-      identifier === null
-        ? fieldLinkByPath(formatter, path, model, fieldId)
-        : fieldLinkByIdentifier(identifier, model, fieldId);
+      designation.by === "identifier"
+        ? fieldLinkByIdentifier(designation.identifier, model, fieldId)
+        : fieldLinkByPath(formatter, path, model, fieldId);
   } catch (error) {
     if (!(error instanceof EkphrasisError)) throw error;
     new Notice(error.message);
@@ -103,5 +112,10 @@ async function copyLink(
     return;
   }
   await navigator.clipboard.writeText(result.text);
-  new Notice(`Link copied: ${result.text}`);
+  const ambiguous = designation.by === "path" ? designation.ambiguousIdentifier : null;
+  new Notice(
+    ambiguous === null
+      ? `Link copied: ${result.text}`
+      : `Link copied by path, since several files declare the identifier \`${ambiguous}\`: ${result.text}`,
+  );
 }
