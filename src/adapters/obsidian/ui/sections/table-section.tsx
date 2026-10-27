@@ -260,7 +260,7 @@ function TableRow({
     <tr data-path={row.id} data-issue={fieldMark(rowIssues) ?? undefined}>
       {identifier !== undefined && <td class="ekphrasis-table-key">{identifier}</td>}
       {row.children.map((cell) => (
-        <td key={cell.key} data-path={cell.id}>
+        <td key={cell.key} data-path={cell.id} data-kind={cell.kind}>
           <Cell field={cell} readOnly={readOnly || row.lock !== null} />
         </td>
       ))}

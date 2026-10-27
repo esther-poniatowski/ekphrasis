@@ -9,6 +9,7 @@ This checklist verifies inside Obsidian the field links of the milestone *Links*
 - the command *Copy link to field*, in each link format of Obsidian;
 - the index of identifiers kept up to date after an edit, a rename and a change of the path rules;
 - the command and the button showing or hiding every instruction.
+- the width of the choice columns of a table.
 
 Two sections settle the questions left open by the unit tests. The first asks whether Obsidian closes a wikilink whose field path ends with a bracket at its final `]]`. The second asks whether a link written from the vault root resolves from a note stored in a subfolder. The roadmap steps of *Links* are ticked once their items pass. Each item states an action, then the expected result after the arrow. Tick an item when the result matches, and write any deviation under *Observations*, with the message of the developer console (`Cmd+Option+I`, tab *Console*) when the console shows a message.
 
@@ -141,6 +142,13 @@ This section settles the second open question. The question asks whether a link 
 - [ ] Run *Ekphrasis: Show or hide all instructions* again. → Every instruction hides.
 - [ ] Run *Ekphrasis: Toggle form and source view*. → The source view displays, without the information button in the header.
 - [ ] Run *Ekphrasis: Toggle form and source view* again. → The form displays, and the information button shows again.
+
+## Columns of a table
+
+The table *rows* of `scenarios/collections.yml` holds the columns *name* and *symbol*, of kind `text`, and the column *unit*, of kind `choice`. The cell *unit* of the row *time* holds `km`, outside the admitted values, so it displays an issue.
+
+- [ ] Open `scenarios/collections.yml`, and compare the columns of the table *rows*. → The column *unit* is as wide as its dropdown, and the columns *name* and *symbol* share the remaining width of the table.
+- [ ] Look at the cell *unit* of the row *time*. → Its message wraps within the column *unit*, and the column keeps the width of its dropdown.
 
 ## Reset
 

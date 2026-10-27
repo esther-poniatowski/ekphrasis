@@ -447,6 +447,17 @@ textarea.ekphrasis-control {
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
+/* A choice column takes the width of its dropdown, and the other columns share the remaining
+   width. The messages of a choice cell wrap within that width, so they never widen the column. */
+.ekphrasis-table td[data-kind="choice"] {
+  width: 1%;
+}
+
+.ekphrasis-table td[data-kind="choice"] .ekphrasis-control {
+  min-width: 6rem;
+  max-width: 12rem;
+}
+
 .ekphrasis-table-key {
   font-family: var(--font-monospace);
   overflow-wrap: anywhere;
