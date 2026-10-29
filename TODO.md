@@ -106,7 +106,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Schema registry
 
-- [ ] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. Implemented on 2026-10-29; awaits the run of the [protocol of the schema registry](tests/manual/protocols/schema-registry.md).
+- [x] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. (2026-10-29)
 
 ## Metadata
 

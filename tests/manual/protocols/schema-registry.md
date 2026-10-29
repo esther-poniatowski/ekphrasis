@@ -1,6 +1,6 @@
 # Test protocol: Schema registry
 
-This checklist verifies inside Obsidian the binding of a record by its top-level field `_schema`, resolved through the schema registry named in the settings, as the specification of [instance files](../../docs/features/instance-files.md#^binding-sources) states:
+This checklist verifies inside Obsidian the binding of a record by its top-level field `_schema`, resolved through the schema registry named in the settings, as the specification of [instance files](../../../docs/features/instance-files.md#^binding-sources) states:
 
 - the field `_schema` hidden from the form of a bound record;
 - the field `_schema` taking precedence over a modeline;
