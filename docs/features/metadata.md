@@ -16,6 +16,8 @@ The metadata of an instance is held by one field of the instance, its metadata b
 - the setting *Metadata field* of the plugin names it for every instance of the vault;
 - the keyword `x-metadata` at the root of a schema names it for the instances of that schema, by its [field path](field-paths.md).
 
+The setting is empty by default, so an instance holds a metadata block only when the setting or its schema names one. A project whose content holds a key `metadata` therefore keeps that key in its form. The vaults of geonexus set the setting to `metadata`.
+
 The specifications of geonexus, for instance, hold their metadata under the key `metadata`, whose schema declares the keys of the frontmatter of a note:
 
 ```yaml
@@ -29,7 +31,7 @@ metadata:
 
 ## Display
 
-The metadata block displays apart from the fields of the form, as a panel of properties above them. The panel can be folded, and a setting shows or hides it, as Obsidian shows or hides the properties of its notes. Each key of the block keeps the control of its [kind](field-kinds.md), its instructions and its [validation](validation.md).
+The metadata block displays apart from the fields of the form, as a panel of properties above them. The panel can be folded, and a setting shows or hides it, as Obsidian shows or hides the properties of its notes. Each key of the block keeps the control of its [kind](field-kinds.md), its instructions and its [validation](validation.md). The [outline](outline.md) opens on one entry *Metadata*, holding an entry per key, and the summary at the top of the form counts the issues of the block with those of the other fields.
 
 ## Aliases
 

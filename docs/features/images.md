@@ -15,4 +15,6 @@ A value of kind `markdown-line` or `markdown` can embed an image, as a note does
 
 ## Fields holding an image
 
-A field can hold an image: its value designates an image file of the vault, and the form displays that image in place of the text of the value. A control next to the image chooses another file. The name of the kind of such a field, the form of its value, and the formats admitted remain open, as the [roadmap](../../TODO.md) records.
+A field of kind `image` holds an image. Its value is the path of an image file, written from the folder of the instance, as the path of a modeline is, such as `figures/diagram.svg`. The form displays that image in place of the text of the value, and a control next to the image chooses another file of the vault. The formats admitted are those that Obsidian displays natively: SVG, PNG, JPEG, GIF and WebP.
+
+A path written from the folder of the instance stays valid when the folder of a project moves to another vault, and a custom checker reads it outside Obsidian. Obsidian rewrites the links of a renamed file in notes only, so the value of a field is not rewritten when its image is renamed. How the size or the scale of an image is set remains open, as the [roadmap](../../TODO.md) records.

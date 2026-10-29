@@ -193,7 +193,7 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Exit criterion.** The tree lists the tags of the geonexus specifications, nested by their slashes, and a search combining one tag and excluding another lists the expected files.
 
-**Risks.** Whether the tag pane and the search of Obsidian list any tag of a YAML file is unverified, so a spike opens the milestone. Three choices remain open until then: the values that may carry tags, whether the tree also lists the tags of notes, and the syntax of the search.
+**Risks.** Whether the tag pane and the search of Obsidian list any tag of a YAML file is unverified, so a spike opens the milestone. The user decided on 2026-10-29 the values that may carry tags, the joined tree of instances and notes, and the syntax of the search, as the specification of [tags](../features/tags.md) records. A tag pane of Obsidian listing the tags of YAML files would reopen the joined tree.
 
 ### Images
 
@@ -203,7 +203,7 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Exit criterion.** A record of the test vault displays an SVG image and a PNG image, one embedded in a Markdown value and one held by a field, and the control of the field replaces its image by another file.
 
-**Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian.
+**Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian. The way the size or the scale of an image is set remains to be decided.
 
 ### Instance creation
 

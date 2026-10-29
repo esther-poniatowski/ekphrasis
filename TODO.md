@@ -110,7 +110,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Metadata
 
-- [ ] **Metadata**: decide the default of the setting *Metadata field*, and whether the keys of the metadata block also appear in the outline and in the summary of issues.
+- [x] **Metadata**: decide the default of the setting *Metadata field*, and whether the keys of the metadata block also appear in the outline and in the summary of issues. Decided by the user on 2026-10-29, as the specification of the milestone records. (2026-10-29)
 - [ ] **Metadata**: confirm in a test vault whether a plugin can add the aliases of YAML instances to the link suggestions of Obsidian, or must provide a suggestion of its own.
 - [ ] **Metadata**: read the setting *Metadata field* and the keyword `x-metadata`, and display the metadata block as a foldable panel of properties above the form, shown or hidden by a setting.
 - [ ] **Metadata**: suggest the aliases of instances in links, and fill the display text of a link inserted from an alias.
@@ -118,7 +118,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Tags
 
-- [ ] **Tags**: decide which values may carry tags written as `#tag` (values of kind `markdown-line` and `markdown` only, or every string), whether the tree also lists the tags of notes, and the syntax of the search, for instance the syntax of the search of Obsidian.
+- [x] **Tags**: decide which values may carry tags written as `#tag` (values of kind `markdown-line` and `markdown` only, or every string), whether the tree also lists the tags of notes, and the syntax of the search, for instance the syntax of the search of Obsidian. Decided by the user on 2026-10-29, as the specification of the milestone records. (2026-10-29)
 - [ ] **Tags**: confirm in a test vault whether the tag pane and the search of Obsidian list any tag of a YAML file.
 - [ ] **Tags**: collect the tags of each instance from its metadata block and from its values, and nest them by their slashes.
 - [ ] **Tags**: display the tree of tags in a side panel, with the number of files of each tag, and open the files of a tag.
@@ -126,7 +126,8 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Images
 
-- [ ] **Images**: decide the name of the kind of a field holding an image, the form of its value (a path from the vault root, a path from the instance, or an embed such as `![[diagram.svg]]`), and the formats admitted.
+- [x] **Images**: decide the name of the kind of a field holding an image, the form of its value (a path from the vault root, a path from the instance, or an embed such as `![[diagram.svg]]`), and the formats admitted. Decided by the user on 2026-10-29: the kind `image`, a path from the folder of the instance, and the formats SVG, PNG, JPEG, GIF and WebP. (2026-10-29)
+- [ ] **Images**: decide how the size or the scale of an image is set: by a keyword of the schema fixing the width of the field, by a size written with the value, or by a zoom control of the form that the file does not keep.
 - [ ] **Images**: verify that an image embedded in a value of kind `markdown-line` or `markdown`, as `![[diagram.svg]]` or `![diagram](diagram.png)`, displays in the rendered value, for SVG and PNG files.
 - [ ] **Images**: display the image held by a field, and provide a control choosing another image file of the vault.
 
