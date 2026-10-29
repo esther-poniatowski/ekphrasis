@@ -16,10 +16,14 @@ The requirements of ekphrasis are the properties needed from the plugin by a pro
 - **Instructions on demand**: the instructions and the examples of each field must be displayable at the field, and hidden otherwise. ^instructions-on-demand
 - **Rendered content**: Markdown and LaTeX values must display as Obsidian renders them in a note. ^rendered-content
 - **Images**: a form must display the images of its record, such as SVG and PNG files of the vault, embedded in its values or held by a field. ^images
+- **Field formats**: internal links with a display text, web addresses, email addresses, telephone numbers, tasks and dates of several precisions must each be edited through a control of their own. ^field-formats
+- **List editing**: an item must be insertable at any position of a list, movable by dragging, and orderable by a declared mode. ^list-editing
+- **Conditional fields**: the value of a field must determine which of its dependent subfields the form displays. ^conditional-fields
 
 ## Navigation
 
 - **Visible structure**: keys must be distinguished from the areas holding the values, and each nested group must be collapsible. ^visible-structure
+- **Schema styles**: the presentation of the forms of a schema, such as the widths of its fields, their icons and the placement of their labels, must be declarable apart from the schema. ^schema-styles
 - **Outline**: a side panel must display the structure of the instance, and a click on an entry of that panel must move the form to the field. ^outline
 - **Links in values**: the Markdown links and the wikilinks of a value must resolve as in a note stored in the folder of the instance. ^links-in-values
 - **Field links**: a link must be able to designate a field of a YAML instance, by the path of its file or by the identifier of its record, together with its field path. Following such a link, from a form or from a note, must open the form at that field. ^field-links
@@ -31,6 +35,7 @@ The requirements of ekphrasis are the properties needed from the plugin by a pro
 
 - **Declared rules**: validity rules must be declarable in the schema at four scopes: one field, the whole instance, a relation between fields, and a condition on other fields. ^declared-rules
 - **Custom checkers**: a rule beyond the predefined checkers must be implementable in Python and registered in the plugin. ^custom-checkers
+- **Custom kinds**: a user must be able to define a field kind of their own, with its control and its checker. ^custom-kinds
 - **Visible issues**: each missing or invalid field must be highlighted in the form and in the outline. ^visible-issues
 
 ## Integrity

@@ -7,7 +7,7 @@ aliases:
 ---
 # Implementation plan
 
-The implementation plan orders the construction of ekphrasis into fourteen milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
+The implementation plan orders the construction of ekphrasis into twenty milestones, from the toolchain to the schema editor. Each milestone delivers a form usable in a vault, so that every later milestone extends a working plugin. The steps of each milestone, with their state, are listed once in the [roadmap](../../TODO.md). This note fixes the goal of each milestone, the modules it creates, its exit criterion and the risks it must resolve.
 
 > [!TIP] Ordering rule
 > A milestone precedes another when the second depends on its modules, or when it tests a premise on which the second depends. Among independent milestones, the milestone whose failure would change the most decisions comes first.
@@ -175,11 +175,31 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 - the keyword `x-identifier` declares the field of the identifier of a record type;
 - a module of ekphrasis holds the index of identifiers.
 
+### Form presentation
+
+**Goal.** The form reads as concisely as the properties of a note, and the outline stays at hand in the right sidebar, as the [requirement on visible structure](../requirements.md#^visible-structure) demands. The steps come from the pilot of 2026-10-29 on the contacts and the exchanges of geonexus.
+
+**Modules.** Rows of fields with an icon of their kind, one appearance and one font size for every text control, help buttons and descriptions of options on demand, editing of long single-line values, and the outline opened in the right sidebar.
+
+**Exit criterion.** A contact record of geonexus displays every field as a row with its icon, its name and its control, with no control shifted by a dropdown or a help button, and the outline opens in the right sidebar with the plugin.
+
+**Risks.** A long single-line value either wraps or scrolls, and the choice is left to a step of the milestone. The rows of fields become the pattern of the panel of properties of *Metadata*, so this milestone precedes it.
+
+### Schema styles
+
+**Goal.** The presentation of the forms of a schema is declared apart from the schema, as the [requirement on schema styles](../requirements.md#^schema-styles) demands.
+
+**Modules.** Decision record on the declaration of styles, reading of the style of a schema, widths by presets, icons of fields, placement of a control below its label, and captions of alternatives.
+
+**Exit criterion.** A style declared for the contact schema of geonexus sets a compact width on one column, places one control below its label and renames the caption of one alternative, while the schema stays unchanged.
+
+**Risks.** The schema dialect already holds presentation keywords: `x-collapsed`, `x-align`, `x-list-layout` and `x-image-width`. The decision record states which of them move to the style, so it precedes the milestones that add further presentation keywords.
+
 ### Metadata
 
 **Goal.** The metadata of an instance displays apart from its form, as the properties of a note, and its aliases serve links, as the specification of [metadata](../features/metadata.md) details.
 
-**Modules.** Reading of the setting *Metadata field* and of the keyword `x-metadata`, panel of properties above the form, suggestions of aliases in links, and links of the metadata block.
+**Modules.** Reading of the setting *Metadata field* and of the keyword `x-metadata`, panel of properties above the form, suggestions of aliases in links, links of the metadata block, and the schema of the record displayed as a link with its version.
 
 **Exit criterion.** The metadata block of a geonexus audience record displays as a panel of properties, its link `index` opens its target, and its alias is suggested in a link of a note and fills the display text of the link inserted.
 
@@ -205,6 +225,40 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian. The width of an image is set by the keyword `x-image-width` of its field, or by its value, as the specification of [images](../features/images.md) records.
 
+### Field kinds
+
+**Goal.** Internal links with a display text, web addresses, email addresses, telephone numbers and tasks are each edited through a control of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
+
+**Modules.** Decision on the names and the value forms of the kinds, and one control per kind.
+
+**Exit criterion.** A contact record of geonexus edits its web and email addresses through their kinds, and each address opens its application.
+
+### Dates
+
+**Goal.** Dates of several precisions are edited through controls of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
+
+**Modules.** Decision on the value of each variant, controls with placeholders and pickers, validation of each variant.
+
+**Exit criterion.** Each temporal expression of the contact records of geonexus, calendar date, range and relative date, is edited through its control and passes the checks of geonexus.
+
+**Risks.** The temporal schema of geonexus writes each date as an object among alternatives, and the pilot of 2026-10-29 found that a schema alone renders it poorly. The decision on the value forms states whether the kind adapts to those objects or the records change.
+
+### List editing
+
+**Goal.** Lists are displayed inline when flat, and their items are inserted at any position, dragged and ordered, as the [requirement on list editing](../requirements.md#^list-editing) and the [decision on list layouts](../adr/list-layouts.md) demand.
+
+**Modules.** Compact and expanded layouts, insertion between items, reordering by dragging, ordering modes.
+
+**Exit criterion.** A list of a geonexus record is displayed inline, an item is inserted between two others and dragged to another position, and an ordering mode sorts the list, each edit keeping the comments of the file.
+
+### Conditional fields
+
+**Goal.** The value of a field determines which of its dependent subfields the form displays, as the [requirement on conditional fields](../requirements.md#^conditional-fields) demands.
+
+**Modules.** Decision on the constructs that select the subfields, model of the displayed subfields, and the fate of the filled subfields that a new value excludes.
+
+**Exit criterion.** In a contact record of geonexus, choosing the origin *peer-introduction* displays the field naming the introducer, and choosing another origin hides it.
+
 ### Instance creation
 
 **Goal.** A command creates a new record from its schema.
@@ -215,9 +269,9 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 ### Custom checkers
 
-**Goal.** The Python checks of a project run from the form.
+**Goal.** The Python checks of a project run from the form, and a user defines field kinds of their own, as the [requirement on custom kinds](../requirements.md#^custom-kinds) demands.
 
-**Modules.** Python process, message protocol, runner script, registration in the settings, timeouts, discarding of stale results.
+**Modules.** Python process, message protocol, runner script, registration in the settings, timeouts, discarding of stale results, and custom field kinds pairing a control with a checker.
 
 **Exit criterion.** One existing checker of each consumer project runs from a schema rule and reports at the correct field.
 

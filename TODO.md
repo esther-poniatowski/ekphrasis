@@ -68,8 +68,6 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Form view**: draw a vertical guide along each nested group, so that each field reads as part of its group. (2026-10-20)
 - [x] **Saving**: write a new collection under a block mapping in flow form when every sibling holding the same key writes it in flow form. (2026-10-20)
 - [x] **Field kinds**: remove the keys of the previous alternative when another alternative is chosen, after a confirmation when one of them holds a filled value. (2026-10-20)
-- [ ] **Schemas**: decide whether an invalid or misplaced `x-list-layout` is reported as a schema defect or ignored.
-- [ ] **Field kinds**: implement compact and expanded controls for `list`, selected initially by `x-list-layout` with `compact` as its default. Keep a manual choice until the view closes or displays another file. Changing the layout must not edit the YAML file.
 
 ## Guidance and navigation
 
@@ -108,6 +106,25 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 - [x] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. (2026-10-29)
 
+## Form presentation
+
+- [ ] **Form view**: display each field as a row, as Obsidian displays the properties of a note: an icon of its kind at the left, its name in bold, and its control in the remaining width.
+- [ ] **Form view**: give every text control one font size, the smallest used now, and one appearance: a white fill, a gray border and rounded corners.
+- [ ] **Form view**: draw the arrow of a dropdown without shifting the control, align the help button of a field at the right of its label, and separate the help buttons of the headers of a table from their names.
+- [ ] **Form view**: show the descriptions of the options of a choice on demand, with the instructions of the field, instead of always.
+- [ ] **Form view**: remove the messages *No items* and *No rows*, since the button adding an item already states that the collection is empty.
+- [ ] **Form view**: lighten the vertical guide drawn along each nested group.
+- [ ] **Form view**: decide how a long value of a single-line text control stays editable, wrapped onto several lines or scrolled by a bar along the bottom of the control, then implement it.
+- [ ] **Outline**: open the outline in the right sidebar when the plugin loads, so that its icon sits beside the outline and the backlinks of Obsidian, and keep it following the active form without running the command *Show outline*.
+- [ ] **Outline**: adopt the style of the outline of Obsidian.
+- [ ] **Outline**: omit the items of a list of scalars from the outline.
+
+## Schema styles
+
+- [ ] **Schema styles**: decide, in a decision record, where the presentation of the forms of a schema is declared apart from the schema, the format of that declaration and its binding to the schema, and which presentation keywords of the schema it takes over among `x-collapsed`, `x-align`, `x-list-layout` and `x-image-width`.
+- [ ] **Schema styles**: apply the style of a schema: the width of each field and column by the presets `compact`, `normal` and `wide`, the icon of each field, and the placement of a control below its label.
+- [ ] **Schema styles**: let the style name the caption of an alternative, in place of the caption *Alternative*.
+
 ## Metadata
 
 - [x] **Metadata**: decide the default of the setting *Metadata field*, and whether the keys of the metadata block also appear in the outline and in the summary of issues. Decided by the user on 2026-10-29, as the specification of the milestone records. (2026-10-29)
@@ -115,6 +132,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Metadata**: read the setting *Metadata field* and the keyword `x-metadata`, and display the metadata block as a foldable panel of properties above the form, shown or hidden by a setting.
 - [ ] **Metadata**: suggest the aliases of instances in links, and fill the display text of a link inserted from an alias.
 - [ ] **Metadata**: render and resolve the links of the metadata block as the links of the properties of a note.
+- [ ] **Metadata**: display the schema of the record as a clickable link to its file, with the version of the schema beside it, apart from the fields of the content.
 
 ## Tags
 
@@ -131,6 +149,32 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Images**: verify that an image embedded in a value of kind `markdown-line` or `markdown`, as `![[diagram.svg]]` or `![diagram](diagram.png)`, displays in the rendered value, for SVG and PNG files.
 - [ ] **Images**: display the image held by a field at the width set by `x-image-width` or by its value, and provide a control choosing another image file of the vault.
 
+## Field kinds
+
+- [ ] **Field kinds**: decide the name, the form of the value and the control of each kind below, and whether a standard keyword such as `format: email` or `format: uri` derives it.
+- [ ] **Field kinds**: add a kind of internal link holding a display text and a path, edited as two inputs and displayed as a link.
+- [ ] **Field kinds**: add kinds of web address, email address and telephone number, each displayed as a link opening its application, such as the address `someone@example.org` opening the mail application.
+- [ ] **Field kinds**: add a kind of task, a checkbox with its text.
+
+## Dates
+
+- [ ] **Dates**: decide the form of the value of each variant (calendar date, partial date of a year or of a year and a month, range, date relative to an event, each with an optional time), and whether a value keeps the objects of the temporal schema of geonexus or becomes a string in ISO 8601.
+- [ ] **Dates**: provide the control of each variant, with a placeholder giving its expected format, and dropdowns of the year and the month or a calendar.
+- [ ] **Dates**: validate each variant, including the order of the two dates of a range.
+
+## List editing
+
+- [ ] **Schemas**: decide whether an invalid or misplaced `x-list-layout` is reported as a schema defect or ignored.
+- [ ] **Field kinds**: implement compact and expanded controls for `list`, selected initially by `x-list-layout` with `compact` as its default. Keep a manual choice until the view closes or displays another file. Changing the layout must not edit the YAML file.
+- [ ] **Field kinds**: insert an item at the top of a list or between two items, and not only at its end.
+- [ ] **Field kinds**: reorder the items of a list by dragging them.
+- [ ] **Field kinds**: decide the ordering modes of a list (lexical, chronological, custom, each reversible), and whether a mode is declared for the field and kept at each edit or applied once by a command, then implement them.
+
+## Conditional fields
+
+- [ ] **Conditional fields**: decide which constructs select the subfields displayed by the value of a field (`if` with `then` and `else`, `dependentSchemas`, a `oneOf` whose alternatives differ by a constant), and what happens to the filled subfields that a new value excludes.
+- [ ] **Conditional fields**: display only the subfields that the current values admit, and update them when a value changes.
+
 ## Instance creation
 
 - [ ] **Tooling**: measure the time per file of the corpus tests on geonexus, which grew from about 2 minutes on 2026-10-02 to 41 minutes on 2026-10-20, find the cause, and correct it or record the remaining cost.
@@ -143,6 +187,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Custom checkers**: embed the runner script in the bundle, start the Python process with the interpreter of the settings, and exchange one JSON message per line.
 - [ ] **Custom checkers**: register the checker modules and their names in the settings tab.
 - [ ] **Custom checkers**: bound each call by a timeout, discard stale results, and provide the command *Restart Python checkers*.
+- [ ] **Custom kinds**: decide how a user defines a field kind (a name, a control among the existing ones, a custom checker, a rendering), then implement it.
 
 ## Schema editor
 
