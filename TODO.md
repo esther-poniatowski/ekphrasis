@@ -134,6 +134,19 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Metadata**: render and resolve the links of the metadata block as the links of the properties of a note.
 - [ ] **Metadata**: display the schema of the record as a clickable link to its file, with the version of the schema beside it, apart from the fields of the content.
 
+## Field kinds
+
+- [ ] **Field kinds**: decide the name, the form of the value and the control of each kind below, and whether a standard keyword such as `format: email` or `format: uri` derives it.
+- [ ] **Field kinds**: add a kind of internal link holding a display text and a path, edited as two inputs and displayed as a link.
+- [ ] **Field kinds**: add kinds of web address, email address and telephone number, each displayed as a link opening its application, such as the address `someone@example.org` opening the mail application.
+- [ ] **Field kinds**: add a kind of task, a checkbox with its text.
+
+## Dates
+
+- [ ] **Dates**: decide the form of the value of each variant (calendar date, partial date of a year or of a year and a month, range, date relative to an event, each with an optional time), and whether a value keeps the objects of the temporal schema of geonexus or becomes a string in ISO 8601.
+- [ ] **Dates**: provide the control of each variant, with a placeholder giving its expected format, and dropdowns of the year and the month or a calendar.
+- [ ] **Dates**: validate each variant, including the order of the two dates of a range.
+
 ## Tags
 
 - [x] **Tags**: decide which values may carry tags written as `#tag` (values of kind `markdown-line` and `markdown` only, or every string), whether the tree also lists the tags of notes, and the syntax of the search, for instance the syntax of the search of Obsidian. Decided by the user on 2026-10-29, as the specification of the milestone records. (2026-10-29)
@@ -148,19 +161,6 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Images**: decide how the size or the scale of an image is set: by a keyword of the schema fixing the width of the field, by a size written with the value, or by a zoom control of the form that the file does not keep. Decided by the user on 2026-10-29: the keyword `x-image-width` of the field, overridden by a value written as a mapping `{path, width}`. (2026-10-29)
 - [ ] **Images**: verify that an image embedded in a value of kind `markdown-line` or `markdown`, as `![[diagram.svg]]` or `![diagram](diagram.png)`, displays in the rendered value, for SVG and PNG files.
 - [ ] **Images**: display the image held by a field at the width set by `x-image-width` or by its value, and provide a control choosing another image file of the vault.
-
-## Field kinds
-
-- [ ] **Field kinds**: decide the name, the form of the value and the control of each kind below, and whether a standard keyword such as `format: email` or `format: uri` derives it.
-- [ ] **Field kinds**: add a kind of internal link holding a display text and a path, edited as two inputs and displayed as a link.
-- [ ] **Field kinds**: add kinds of web address, email address and telephone number, each displayed as a link opening its application, such as the address `someone@example.org` opening the mail application.
-- [ ] **Field kinds**: add a kind of task, a checkbox with its text.
-
-## Dates
-
-- [ ] **Dates**: decide the form of the value of each variant (calendar date, partial date of a year or of a year and a month, range, date relative to an event, each with an optional time), and whether a value keeps the objects of the temporal schema of geonexus or becomes a string in ISO 8601.
-- [ ] **Dates**: provide the control of each variant, with a placeholder giving its expected format, and dropdowns of the year and the month or a calendar.
-- [ ] **Dates**: validate each variant, including the order of the two dates of a range.
 
 ## List editing
 

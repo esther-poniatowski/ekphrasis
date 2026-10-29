@@ -205,6 +205,24 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Risks.** The link suggestions of Obsidian draw the aliases of notes from their frontmatter. Whether a plugin can add the aliases of YAML instances to those suggestions is unverified, so a spike opens the milestone. The milestone builds on the suggestions of field paths of *Links*.
 
+### Field kinds
+
+**Goal.** Internal links with a display text, web addresses, email addresses, telephone numbers and tasks are each edited through a control of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
+
+**Modules.** Decision on the names and the value forms of the kinds, and one control per kind.
+
+**Exit criterion.** A contact record of geonexus edits its web and email addresses through their kinds, and each address opens its application.
+
+### Dates
+
+**Goal.** Dates of several precisions are edited through controls of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
+
+**Modules.** Decision on the value of each variant, controls with placeholders and pickers, validation of each variant.
+
+**Exit criterion.** Each temporal expression of the contact records of geonexus, calendar date, range and relative date, is edited through its control and passes the checks of geonexus.
+
+**Risks.** The temporal schema of geonexus writes each date as an object among alternatives, and the pilot of 2026-10-29 found that a schema alone renders it poorly. The decision on the value forms states whether the kind adapts to those objects or the records change.
+
 ### Tags
 
 **Goal.** The tags of instances join a tree of tags, displayed and searched in a side panel, as the specification of [tags](../features/tags.md) details.
@@ -224,24 +242,6 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 **Exit criterion.** A record of the test vault displays an SVG image and a PNG image, one embedded in a Markdown value and one held by a field, and the control of the field replaces its image by another file.
 
 **Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian. The width of an image is set by the keyword `x-image-width` of its field, or by its value, as the specification of [images](../features/images.md) records.
-
-### Field kinds
-
-**Goal.** Internal links with a display text, web addresses, email addresses, telephone numbers and tasks are each edited through a control of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
-
-**Modules.** Decision on the names and the value forms of the kinds, and one control per kind.
-
-**Exit criterion.** A contact record of geonexus edits its web and email addresses through their kinds, and each address opens its application.
-
-### Dates
-
-**Goal.** Dates of several precisions are edited through controls of their own, as the [requirement on field formats](../requirements.md#^field-formats) demands.
-
-**Modules.** Decision on the value of each variant, controls with placeholders and pickers, validation of each variant.
-
-**Exit criterion.** Each temporal expression of the contact records of geonexus, calendar date, range and relative date, is edited through its control and passes the checks of geonexus.
-
-**Risks.** The temporal schema of geonexus writes each date as an object among alternatives, and the pilot of 2026-10-29 found that a schema alone renders it poorly. The decision on the value forms states whether the kind adapts to those objects or the records change.
 
 ### List editing
 
