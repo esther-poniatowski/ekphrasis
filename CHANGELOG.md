@@ -50,7 +50,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Keyword `x-identifier` at the root of a schema, naming the field of the identifier of a record, with a schema defect when it designates no declared field.
 - Command *Copy link to field*, copying a link by identifier when no other file declares the identifier of the record, and else a link by path in the link format of Obsidian. The text of a link to an item joins the label of its list and the position of the item, such as `Foils #2`.
 - Suggestions of the field paths of a YAML instance after the hash sign of a Markdown link.
-- Button of the header of the form view and command *Show or hide all instructions*, showing or hiding the instructions of every field at once.
+- Button of the header of the form view, and commands *Show all instructions* and *Hide all instructions*, showing or hiding the instructions of every field at once.
 - Keyword `x-identifier: id` in the gnomon fixtures.
 
 ### Changed

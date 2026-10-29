@@ -589,7 +589,13 @@ textarea.ekphrasis-control {
   color: var(--text-accent);
 }
 
-/* The instructions of a field span its row, between its label and its control. */
+/* The instructions of a field span the row below its label and its control, so showing them
+   never moves the control. */
+.ekphrasis-field > .ekphrasis-field-content {
+  grid-row: 1;
+  grid-column: 2;
+}
+
 .ekphrasis-help {
   grid-column: 1 / -1;
   margin: var(--size-2-1) 0 var(--size-2-2);

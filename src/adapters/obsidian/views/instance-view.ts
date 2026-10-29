@@ -282,7 +282,12 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
    * showed them, independently of the folding of the sections.
    */
   toggleAllInstructions(): void {
-    this.help.setAll(!this.help.allShown);
+    this.showAllInstructions(!this.help.allShown);
+  }
+
+  /** Shows the instructions of every field when `shown` holds, and else hides them all. */
+  showAllInstructions(shown: boolean): void {
+    this.help.setAll(shown);
   }
 
   /** Switches between the form view and the source view. */
