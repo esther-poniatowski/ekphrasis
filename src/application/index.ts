@@ -6,6 +6,7 @@
  */
 export type {
   DocumentEditor,
+  BindingResolver,
   DocumentParser,
   FileSource,
   InstanceValidator,
@@ -31,6 +32,7 @@ export {
 } from "./instance-session";
 export { ValidationService, type ValidationReport } from "./validation-service";
 export { IdentifierIndexService } from "./identifier-index-service";
+export { BindingService } from "./binding-service";
 export {
   fieldLinkByIdentifier,
   fieldLinkByPath,

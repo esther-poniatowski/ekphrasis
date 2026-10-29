@@ -163,16 +163,19 @@ class FormModelBuilder {
       properties: readonly PropertySchema[],
       requiredKeys: ReadonlySet<string>,
     ): Field[] =>
-      properties.map(({ key, schema: property }) => {
+      properties.flatMap(({ key, schema: property }) => {
+        if (site.path.length === 0 && key === "_schema") return [];
         const entry = byKey.get(key);
-        return this.field({
-          ...this.childSite(site, key),
-          label: property.title ?? keyLabel(key),
-          schema: property,
-          node: entry?.value ?? null,
-          required: requiredKeys.has(key),
-          lock: entry?.lock ?? site.lock,
-        });
+        return [
+          this.field({
+            ...this.childSite(site, key),
+            label: property.title ?? keyLabel(key),
+            schema: property,
+            node: entry?.value ?? null,
+            required: requiredKeys.has(key),
+            lock: entry?.lock ?? site.lock,
+          }),
+        ];
       });
     const children = declaredFields(declared, required);
     const declaredKeys = new Set(declared.map(({ key }) => key));

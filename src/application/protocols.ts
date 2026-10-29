@@ -9,6 +9,7 @@
  */
 import type {
   IdentifierResolution,
+  BindingResult,
   JsonValue,
   SchemaSet,
   SourceEdit,
@@ -34,6 +35,11 @@ export interface DocumentEditor {
 export interface FileSource {
   /** Text of the file at the vault path `path`, or `null` when no such file exists. */
   read(path: string): Promise<string | null>;
+}
+
+/** Resolves the schema binding of an instance, including any configured schema registry. */
+export interface BindingResolver {
+  resolve(path: string, text: string): Promise<BindingResult>;
 }
 
 /**

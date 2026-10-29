@@ -16,7 +16,6 @@ import {
   identifierDeclaration,
   instanceValue,
   readIdentifier,
-  resolveBinding,
   SchemaView,
   type IdentifierResolution,
   type YamlNode,
@@ -24,6 +23,7 @@ import {
 } from "../domain";
 import { SchemaError, YamlParseError } from "../errors";
 import type { DocumentParser, FileSource, RecordIdentifiers, SchemaLoader } from "./protocols";
+import { BindingService } from "./binding-service";
 import type { EkphrasisSettings } from "./settings";
 
 /** Field of the identifier declared by one schema, with the schema files read to find it. */
@@ -32,6 +32,8 @@ interface SchemaDeclaration {
   readonly field: YamlPath | null;
   /** Vault paths of the schema files read, or of the file that failed to load. */
   readonly documents: readonly string[];
+  /** Logical record contract declared by the root `_schema` property. */
+  readonly contract: string | null;
 }
 
 /** Identifier declared by one file, with the schema files on which it depends. */
@@ -41,6 +43,7 @@ interface FileDeclaration {
 }
 
 export class IdentifierIndexService implements RecordIdentifiers {
+  private readonly bindings: BindingService;
   private readonly index = new IdentifierIndex();
   /** Schema files read to index each file, so a change of one indexes the file again. */
   private readonly dependencies = new Map<string, readonly string[]>();
@@ -57,8 +60,10 @@ export class IdentifierIndexService implements RecordIdentifiers {
     private readonly parser: DocumentParser,
     private readonly files: FileSource,
     private readonly schemas: SchemaLoader,
-    private readonly settings: () => EkphrasisSettings,
-  ) {}
+    settings: () => EkphrasisSettings,
+  ) {
+    this.bindings = new BindingService(parser, files, settings);
+  }
 
   resolve(identifier: string): IdentifierResolution {
     return this.index.resolve(identifier);
@@ -131,10 +136,22 @@ export class IdentifierIndexService implements RecordIdentifiers {
     const none: FileDeclaration = { identifier: null, dependencies: [] };
     const text = await this.files.read(path);
     if (text === null) return none;
-    const result = resolveBinding(path, text, this.settings().pathRules);
-    if (result.status !== "bound") return none;
+    const result = await this.bindings.resolve(path, text);
+    if (result.status === "unbound") return none;
+    if (result.status === "invalid") {
+      return {
+        identifier: null,
+        dependencies: result.registryPath === undefined ? [] : [result.registryPath],
+      };
+    }
     const schema = await this.schemaDeclaration(result.binding.schemaPath);
-    const dependencies = schema.documents;
+    const dependencies = [
+      ...(result.binding.registryPath === undefined ? [] : [result.binding.registryPath]),
+      ...schema.documents,
+    ];
+    if (result.binding.source === "schema-field" && schema.contract !== result.binding.reference) {
+      return { identifier: null, dependencies };
+    }
     if (schema.field === null) return { identifier: null, dependencies };
     let tree: YamlNode;
     try {
@@ -159,13 +176,21 @@ export class IdentifierIndexService implements RecordIdentifiers {
     try {
       const schemas = await this.schemas.load(schemaPath);
       const declaration = identifierDeclaration(SchemaView.root(schemas));
+      const contract = SchemaView.root(schemas)
+        .properties()
+        .find(({ key }) => key === "_schema")?.schema.constValue?.value;
       return {
         field: declaration.status === "declared" ? declaration.path : null,
         documents: schemas.paths,
+        contract: typeof contract === "string" ? contract : null,
       };
     } catch (error) {
       if (!(error instanceof SchemaError)) throw error;
-      return { field: null, documents: [...new Set([schemaPath, error.schemaPath])] };
+      return {
+        field: null,
+        documents: [...new Set([schemaPath, error.schemaPath])],
+        contract: null,
+      };
     }
   }
 }

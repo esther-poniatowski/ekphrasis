@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, parseSettings } from "../../src/application";
 
 describe("settings", () => {
+  it("keeps a schema registry path", () => {
+    expect(parseSettings({ schemaRegistry: "specs/schema-registry.yml" }).schemaRegistry).toBe(
+      "specs/schema-registry.yml",
+    );
+  });
+
   it("keeps the well-formed path rules in their order", () => {
     const raw = {
       pathRules: [

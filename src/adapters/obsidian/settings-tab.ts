@@ -40,10 +40,24 @@ export class EkphrasisSettingTab extends PluginSettingTab {
           ),
       );
     new Setting(containerEl)
+      .setName("Schema registry")
+      .setDesc(
+        "Vault path of the YAML registry that maps logical schema identifiers to schema files. " +
+          "Records declaring _schema use this registry before compatibility bindings.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("specs/schema-registry.yml")
+          .setValue(this.host.settings.schemaRegistry)
+          .onChange((schemaRegistry) =>
+            this.host.updateSettings({ ...this.host.settings, schemaRegistry }),
+          ),
+      );
+    new Setting(containerEl)
       .setName("Path rules")
       .setDesc(
         "Each rule binds the files matched by a glob pattern, such as records/**/*.yml, to a " +
-          "schema given by its path from the vault root. A file without a modeline takes the " +
+          "schema given by its path from the vault root. A file without _schema or a modeline takes the " +
           "schema of the first matching rule.",
       )
       .setHeading();

@@ -1,4 +1,5 @@
 {
+  "schemaRegistry": "",
   "pathRules": [
     {
       "pattern": "gnomon/question.yml",

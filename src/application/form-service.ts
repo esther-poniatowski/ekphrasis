@@ -5,7 +5,7 @@
 import {
   buildFormModel,
   ItemIdentities,
-  resolveBinding,
+  SchemaView,
   type BindingSource,
   type FormModel,
   type SchemaBinding,
@@ -13,20 +13,23 @@ import {
   type YamlNode,
 } from "../domain";
 import { SchemaError, YamlParseError } from "../errors";
-import type { DocumentParser, SchemaLoader } from "./protocols";
+import type { DocumentParser, FileSource, SchemaLoader } from "./protocols";
+import { BindingService } from "./binding-service";
 import type { EkphrasisSettings } from "./settings";
 import type { ValidationReport, ValidationService } from "./validation-service";
 
 /** Outcome of opening an instance, one variant per stage that can stop the pipeline. */
 export type FormState =
-  /** No modeline and no path rule names a schema: the file opens in the source view. */
+  /** No schema field, modeline or path rule binds the file: it opens in the source view. */
   | { readonly status: "unbound" }
-  /** A modeline or a rule names a schema outside the vault. */
+  /** A declared binding cannot resolve to a schema in the vault. */
   | {
       readonly status: "invalid-binding";
       readonly source: BindingSource;
       readonly reference: string;
       readonly reason: string;
+      /** Vault paths whose change can make this binding valid. */
+      readonly schemaPaths: readonly string[];
     }
   /** The text of the instance fails to parse. */
   | {
@@ -57,12 +60,17 @@ export interface FormReady {
 }
 
 export class FormService {
+  private readonly bindings: BindingService;
+
   constructor(
     private readonly parser: DocumentParser,
     private readonly schemas: SchemaLoader,
     private readonly validation: ValidationService,
-    private readonly settings: () => EkphrasisSettings,
-  ) {}
+    settings: () => EkphrasisSettings,
+    files: FileSource = { read: () => Promise.resolve(null) },
+  ) {
+    this.bindings = new BindingService(parser, files, settings);
+  }
 
   /**
    * Opens the instance at the vault path `path`, holding `text`. The items of sequences take
@@ -73,11 +81,12 @@ export class FormService {
     text: string,
     identities: ItemIdentities = new ItemIdentities(),
   ): Promise<FormState> {
-    const result = resolveBinding(path, text, this.settings().pathRules);
+    const result = await this.bindings.resolve(path, text);
     if (result.status === "unbound") return result;
     if (result.status === "invalid") {
-      const { source, reference, reason } = result;
-      return { status: "invalid-binding", source, reference, reason };
+      const { source, reference, reason, registryPath } = result;
+      const schemaPaths = registryPath === undefined ? [] : [registryPath];
+      return { status: "invalid-binding", source, reference, reason, schemaPaths };
     }
     const { binding } = result;
     let tree: YamlNode;
@@ -89,12 +98,34 @@ export class FormService {
     }
     try {
       const schemas = await this.schemas.load(binding.schemaPath);
+      const declared = SchemaView.root(schemas)
+        .properties()
+        .find(({ key }) => key === "_schema")?.schema.constValue?.value;
+      if (binding.source === "schema-field" && declared !== binding.reference) {
+        throw new SchemaError(
+          `The registry binds \`${binding.reference}\` to this schema, but the constant of its ` +
+            `\`_schema\` property is ${
+              declared === undefined ? "absent" : `\`${String(declared)}\``
+            }.`,
+          binding.schemaPath,
+        );
+      }
       const model = buildFormModel(schemas, tree, text, identities);
       const report = this.validation.validate(schemas, model, tree);
-      return { status: "form", binding, model, report, schemas, schemaPaths: schemas.paths };
+      const schemaPaths = [
+        ...(binding.registryPath === undefined ? [] : [binding.registryPath]),
+        ...schemas.paths,
+      ];
+      return { status: "form", binding, model, report, schemas, schemaPaths };
     } catch (error) {
       if (!(error instanceof SchemaError)) throw error;
-      const schemaPaths = [...new Set([binding.schemaPath, error.schemaPath])];
+      const schemaPaths = [
+        ...new Set([
+          ...(binding.registryPath === undefined ? [] : [binding.registryPath]),
+          binding.schemaPath,
+          error.schemaPath,
+        ]),
+      ];
       return { status: "schema-error", binding, error, schemaPaths };
     }
   }

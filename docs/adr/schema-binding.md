@@ -10,16 +10,17 @@ status: accepted
 
 > [!QUESTION] Goal: how does ekphrasis find the schema of an instance?
 
-The form, the skeleton and the checks all derive from the schema, so an instance must resolve to its schema before it opens as a form. The projects served follow different conventions: one project binds files to schemas by path patterns, and another identifies each record type by a key of the data.
+The schema determines the form, the skeleton and the checks. Therefore, Ekphrasis must select the schema before opening a record as a form. Each served project chooses one of three sources. The record can declare a logical identifier or a modeline. Otherwise, the vault can impose a path pattern.
 
 ## Decision
 
-A modeline comment in the file names its schema, and the path rules of the settings bind the files without a modeline, in the order fixed by the [sources of a binding](../features/instance-files.md#^binding-sources).
+Ekphrasis first resolves a top-level `_schema` field through a configured registry. When that field is absent, a modeline names the schema. If the record has neither field nor modeline, the first matching path rule names the schema. The [binding sources](../features/instance-files.md#^binding-sources) record this order.
 
 ## Constraints
 
-- **Unchanged data**: the binding must leave the data read by programs unchanged.
-- **Portable files**: an instance must be able to carry its binding, so that a moved file keeps its schema.
+- **Explicit data**: a canonical record contract must be readable by every consumer.
+- **Portable files**: a moved instance must keep its schema contract.
+- **Stable identity**: the contract identifier must not depend on the local path of the schema.
 - **Existing layouts**: a project whose folder layout already determines the record type must not have to edit its files.
 - **Interoperability**: the binding should be readable by YAML tools outside Obsidian.
 
@@ -27,14 +28,16 @@ A modeline comment in the file names its schema, and the path rules of the setti
 
 | Option | Benefit | Cost |
 | --- | --- | --- |
-| Modeline comment `# yaml-language-server: $schema=<path>` | The data stays unchanged, the file carries its binding, and the YAML language server reads the same line | A tool that rewrites the file without its comments drops the binding |
-| Key of the data naming the schema, such as `$schema` | Programs read the binding | Every record carries a key foreign to its type, and each schema forbidding additional properties must admit that key |
+| Logical `_schema` resolved through a registry | Programs share one portable identity, whereas each vault selects a local path | The vault must generate and configure a registry |
+| Modeline comment `# yaml-language-server: $schema=<path>` | The file carries a path that the YAML language server also reads | A move can invalidate the relative path, and a tool that rewrites comments can remove it |
 | Key of the data naming the record type, such as `type` | Many records already carry such a key | The name of the key and its values differ between projects, so each project needs a mapping in the settings |
 | Path rules in the settings | The files carry no line for the binding | A file moved to another folder loses its schema, and the binding is stored outside the project |
-| Modeline, and else path rules | A file can carry its binding, a folder can bind its files without editing them, and a file can override the rule of its folder | Two sources of binding must be kept consistent |
+| `_schema`, modeline, then path rules | Canonical records carry a stable contract, whereas existing layouts retain compatibility | Three routes require explicit precedence |
 
 ## Consequences
 
-- The modeline takes precedence, so a single file can depart from the schema of its folder.
+- If the registry does not map a declared `_schema` value, Ekphrasis reports an error. Ekphrasis does not fall back to another source.
+- Ekphrasis verifies that the mapped schema declares the same value as the constant of its root `_schema` property.
+- Ekphrasis omits the reserved root property from the content form.
+- The modeline and path rules remain available to files without `_schema`.
 - The command *Create instance* writes a modeline only when no path rule binds the new path.
-- No key of the data selects a schema, so the data of an instance never names its schema.

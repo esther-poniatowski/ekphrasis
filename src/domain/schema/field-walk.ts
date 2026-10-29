@@ -10,7 +10,7 @@ import type { PropertySchema, SchemaView } from "./schema-view";
 /** Bound on the depth of the walk, so a recursive schema terminates. */
 const MAX_DEPTH = 16;
 
-/** Properties displayed for a group: its own, then those of the alternatives of its `oneOf`. */
+/** Properties declared for a group: its own, then those of the alternatives of its `oneOf`. */
 export function displayedProperties(schema: SchemaView): PropertySchema[] {
   return [
     ...schema.properties(),
@@ -34,6 +34,7 @@ export function walkFieldSchemas(
     visited.add(identity);
     visit(schema, path);
     for (const { key, schema: property } of displayedProperties(schema)) {
+      if (path.length === 0 && key === "_schema") continue;
       walk(property, [...path, key]);
     }
     const items = schema.items();

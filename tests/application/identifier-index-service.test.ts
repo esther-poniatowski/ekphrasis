@@ -174,6 +174,29 @@ describe("IdentifierIndexService", () => {
     expect(index.identifierOf("a.yml")).toBe("quest.a");
   });
 
+  it("indexes a logical record again once its registry entry is added", async () => {
+    const vault: Record<string, string> = {
+      "schemas.yml": "schemas: {}\n",
+      "record.schema.yaml": [
+        "type: object",
+        "x-identifier: id",
+        "properties:",
+        "  _schema: { const: 'vault:record@1' }",
+        "  id: { type: string }",
+        "",
+      ].join("\n"),
+      "a.yml": "_schema: vault:record@1\nid: quest.a\n",
+    };
+    const settings = () => ({ ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml" });
+    const index = service(vault, settings);
+    await index.rebuild(["a.yml"]);
+    expect(index.identifierOf("a.yml")).toBeNull();
+
+    vault["schemas.yml"] = "schemas:\n  vault:record@1: record.schema.yaml\n";
+    await index.dependencyChanged("schemas.yml");
+    expect(index.identifierOf("a.yml")).toBe("quest.a");
+  });
+
   it("loads each schema once across the files bound to it", async () => {
     const vault = {
       "record.schema.yaml": RECORD_SCHEMA,

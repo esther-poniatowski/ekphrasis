@@ -39,15 +39,16 @@ A feature is checked once every step labelled with that feature is checked in th
 
 To fill a record, the record type is declared by a schema, and the new record is created by a command. The syntax below belongs to features still open in the [roadmap](TODO.md).
 
-The schema `schemas/term.schema.yaml` declares a glossary term with three required fields:
+The schema `schemas/term.schema.yaml` declares a versioned glossary-term contract with three content fields:
 
 ```yaml
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: term.schema.yaml
 title: Glossary term
 type: object
-required: [id, label, gloss]
+required: [_schema, id, label, gloss]
 properties:
+  _schema: {const: 'example:term@1'}
   id:
     type: string
     x-kind: label
@@ -65,10 +66,18 @@ properties:
         max: 30
 ```
 
-For the new file `glossary/entropy.yaml`, the command *Create instance* writes the skeleton below, bound to the schema by its first line, and opens it as a form:
+The configured registry maps the logical identifier to the schema file:
 
 ```yaml
-# yaml-language-server: $schema=../schemas/term.schema.yaml
+schema_version: 1
+schemas:
+  'example:term@1': 'schemas/term.schema.yaml'
+```
+
+The file `glossary/entropy.yaml` declares that identifier and opens as a form:
+
+```yaml
+_schema: example:term@1
 id:
 label:
 gloss:

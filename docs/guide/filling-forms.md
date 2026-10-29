@@ -7,7 +7,7 @@ aliases:
 ---
 # Filling a form
 
-Ekphrasis must already be installed in the vault, following the [installation steps](installation.md). The schema of the record must exist in the vault, and must be known to the plugin through a path rule or the schema folder of the settings, as specified for [instance creation](../features/instance-creation.md). The schema itself is written following the guide on [writing a schema](writing-schemas.md).
+Follow the [installation steps](installation.md) to install Ekphrasis in the vault. Keep the schema in the same vault. The record can resolve the schema through the configured registry, a modeline or a path rule. The [binding sources](../features/instance-files.md#^binding-sources) specify their order. Follow the guide on [writing a schema](writing-schemas.md) to define the schema.
 
 ## Creating a record
 

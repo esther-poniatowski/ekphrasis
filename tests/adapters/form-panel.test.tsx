@@ -111,15 +111,31 @@ describe("boxes at the top of the form", () => {
 });
 
 describe("message of an unbound file", () => {
-  it("names the line of the modeline after its place in the file", async () => {
+  it("presents the three binding routes in precedence order", async () => {
     const container = renderPanel(await stateOf(""));
     const text = container.textContent ?? "";
-    expect(text).toContain("bind it to a schema by one of two methods:");
+    expect(text).toContain("bind it to a schema by one of three methods:");
     expect(text).not.toContain("ways");
-    const [modeline, rule] = Array.from(container.querySelectorAll(".ekphrasis-message-list > li"));
+    const [field, modeline, rule] = Array.from(
+      container.querySelectorAll(".ekphrasis-message-list > li"),
+    );
+    expect(field?.textContent).toBe("declare its logical identifier in a top-level _schema field;");
     expect(modeline?.textContent).toBe(
       "write at the top of the file the line # yaml-language-server: $schema=path/to/schema.yaml;",
     );
     expect(rule?.textContent).toBe("add a path rule in the settings of ekphrasis.");
+  });
+
+  it("states why a logical contract cannot resolve", () => {
+    const container = renderPanel({
+      status: "invalid-binding",
+      source: "schema-field",
+      reference: "vault:record@1",
+      reason: "the identifier is absent from the registry",
+      schemaPaths: ["schemas.yml"],
+    });
+    expect(container.textContent).toContain(
+      "The logical contract vault:record@1 cannot be resolved because the identifier is absent from the registry.",
+    );
   });
 });

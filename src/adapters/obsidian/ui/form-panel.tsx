@@ -54,6 +54,7 @@ export interface FormPanelProps {
 }
 
 const BINDING_SOURCES: Readonly<Record<SchemaBinding["source"], string>> = {
+  "schema-field": "the _schema field",
   modeline: "the modeline",
   "path-rule": "a path rule",
 };
@@ -73,8 +74,11 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
     case "unbound":
       return (
         <Message title="This file is bound to no schema" onOpenSource={onOpenSource}>
-          <p>To display it as a form, bind it to a schema by one of two methods:</p>
+          <p>To display it as a form, bind it to a schema by one of three methods:</p>
           <ul class="ekphrasis-message-list">
+            <li>
+              declare its logical identifier in a top-level <code>_schema</code> field;
+            </li>
             <li>
               write at the top of the file the line{" "}
               <code># yaml-language-server: $schema=path/to/schema.yaml</code>;
@@ -87,9 +91,18 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
       return (
         <Message title="Schema not found" onOpenSource={onOpenSource}>
           <p>
-            {`The ${state.source === "modeline" ? "modeline" : "path rule"} names the schema `}
-            <code>{state.reference}</code>
-            {`, but ${state.reason}.`}
+            {state.source === "schema-field" ? (
+              <>
+                The logical contract <code>{state.reference}</code>
+                {` cannot be resolved because ${state.reason}.`}
+              </>
+            ) : (
+              <>
+                {`The ${BINDING_SOURCES[state.source]} names the schema `}
+                <code>{state.reference}</code>
+                {`, but ${state.reason}.`}
+              </>
+            )}
           </p>
         </Message>
       );
@@ -104,7 +117,9 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
         <Message title="Schema not loaded" onOpenSource={onOpenSource}>
           <p>
             The schema <code>{state.binding.schemaPath}</code>
-            {`, named by ${BINDING_SOURCES[state.binding.source]}, could not be loaded:`}
+            {state.binding.source === "schema-field"
+              ? ", resolved from the logical contract, could not be loaded:"
+              : `, named by ${BINDING_SOURCES[state.binding.source]}, could not be loaded:`}
           </p>
           <p class="ekphrasis-message-detail">
             <InlineText text={state.error.message} />
@@ -184,7 +199,9 @@ function FormRoot({
         <FieldHelp helpKey={root.uid} guidance={root} />
         <div class="ekphrasis-form-binding">
           Schema <code>{binding.schemaPath}</code>
-          {`, named by ${BINDING_SOURCES[binding.source]}.`}
+          {binding.source === "schema-field"
+            ? ", resolved from the logical contract."
+            : `, named by ${BINDING_SOURCES[binding.source]}.`}
         </div>
       </div>
       {notice}

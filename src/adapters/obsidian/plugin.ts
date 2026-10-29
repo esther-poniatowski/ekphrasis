@@ -76,7 +76,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       OBSIDIAN_CHECKER_ENVIRONMENT,
     );
     const files = new VaultFileSource(this.app.vault);
-    const forms = new FormService(parser, new FileSchemaLoader(files), validation, settings);
+    const forms = new FormService(parser, new FileSchemaLoader(files), validation, settings, files);
     const identifiers = new IdentifierIndexService(
       parser,
       files,
@@ -150,8 +150,9 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
   private applySettings(settings: EkphrasisSettings): void {
     const rulesChanged =
       JSON.stringify(settings.pathRules) !== JSON.stringify(this.settings.pathRules);
+    const registryChanged = settings.schemaRegistry !== this.settings.schemaRegistry;
     this.settings = settings;
-    if (rulesChanged) this.rebuildIdentifiersSoon();
+    if (rulesChanged || registryChanged) this.rebuildIdentifiersSoon();
     this.refreshViewsSoon();
   }
 

@@ -9,6 +9,7 @@ export * from "./paths/field-path";
 export * from "./binding/binding";
 export { GlobPattern } from "./binding/glob";
 export { readModeline } from "./binding/modeline";
+export { readSchemaField } from "./binding/schema-field";
 export * from "./schema/json";
 export { collectReferences, parseReference } from "./schema/reference";
 export * from "./schema/schema-set";

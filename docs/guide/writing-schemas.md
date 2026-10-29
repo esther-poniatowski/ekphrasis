@@ -38,12 +38,21 @@ The kind of each field selects its control, as listed under [field kinds](../fea
 
 ## Binding the records
 
-To open records as forms, the author binds them to the schema in one of two ways:
+To open records as forms, the author selects one of three binding routes:
 
+- a top-level `_schema` field resolved through the schema registry configured in Ekphrasis;
 - a path rule in the settings of the plugin, such as the pattern `notation/*.yaml` assigned to the schema `schemas/notation.schema.yaml`;
 - a modeline at the top of each record, `# yaml-language-server: $schema=../schemas/notation.schema.yaml`, written by the command *Create instance* when no path rule binds the new file.
 
-The precedence of the two ways is specified under [schema binding](../features/instance-files.md#^binding-sources).
+For the first route, the concrete schema requires `_schema` and fixes its logical identifier:
+
+```yaml
+required: [_schema, symbol, meaning]
+properties:
+  _schema: {const: 'example:notation@1'}
+```
+
+The registry maps that identifier to `schemas/notation.schema.yaml`. The [binding sources](../features/instance-files.md#^binding-sources) apply the three routes in their declared order.
 
 ## Guiding the author
 

@@ -43,6 +43,25 @@ describe("form model", () => {
     });
   });
 
+  it("hides only the reserved root _schema field", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          _schema: { const: "vault:record@1" },
+          nested: {
+            type: "object",
+            properties: { _schema: { type: "string" } },
+          },
+        },
+      },
+      "_schema: vault:record@1\nnested:\n  _schema: domain value\n",
+    );
+    if (model.root.kind !== "group") throw new Error("expected a group");
+    expect(model.root.children.map(({ key }) => key)).toEqual(["nested"]);
+    expect(fieldAt(model.root, "nested._schema")).toMatchObject({ value: "domain value" });
+  });
+
   it("builds the fields of keys admitted by a pattern, and lists the other keys apart", () => {
     const model = build(
       {

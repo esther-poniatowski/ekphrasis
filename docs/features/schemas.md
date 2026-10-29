@@ -15,7 +15,7 @@ A schema is a file written in JSON or in YAML, conventionally with the extension
 
 ## Fields
 
-The form follows the structure of the schema: each property of an object schema becomes a field, in the order of the keyword `properties`. The standard keywords below fix how a field is presented and filled:
+The form follows the schema structure. Each property of an object schema becomes a field, in the order declared by `properties`. Ekphrasis uses the reserved root property `_schema` to resolve the record contract, and omits that property from the content form. The following standard keywords control how each content field appears and accepts input:
 
 | Keyword | Effect in the form |
 | --- | --- |
