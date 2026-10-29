@@ -28,6 +28,9 @@ coverage/
 ## Test Vault (built by `npm run test-vault` from `tests/manual/` and `tests/fixtures/`)
 examples/test-vault/
 
+## Obsidian state of a vault opened on the repository root
+/.obsidian/
+
 ## Example Vault (keep only the shared schemas)
 examples/vault/.obsidian/*
 !examples/vault/.obsidian/yaml-schemas/
