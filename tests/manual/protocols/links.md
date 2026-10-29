@@ -1,6 +1,6 @@
 # Test protocol: Links
 
-This checklist verifies inside Obsidian the field links of the milestone *Links*, as the specification of [links](../../docs/features/links.md) states them:
+This checklist verifies inside Obsidian the field links of the milestone *Links*, as the specification of [links](../../../docs/features/links.md) states them:
 
 - the following of a field link by path, from a note and from a value of a form;
 - the following of a field link by identifier, through the URIs `obsidian://ekphrasis?…`, from a note, from a value and from another application;

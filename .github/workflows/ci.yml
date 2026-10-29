@@ -24,6 +24,8 @@ jobs:
         run: npm run typecheck
       - name: Run tests (vitest)
         run: npm test
+      - name: Check links of the documentation
+        run: npm run check:links
       - name: Build plugin bundle (esbuild)
         run: npm run build
       - name: Upload plugin artifacts

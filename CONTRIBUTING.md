@@ -86,6 +86,7 @@ To verify a change, each quality check runs through one npm command:
 | `npm run lint` | ESLint | Lint the code, and enforce the boundaries between layers |
 | `npm run typecheck` | TypeScript | Check the types in strict mode |
 | `npm test` | Vitest | Run the unit tests |
+| `npm run check:links` | `scripts/check-links.mjs` | Check that each relative link of the Markdown files reaches its file, heading or block |
 | `npm run build` | esbuild | Build the production bundle |
 
 ### Commit message format

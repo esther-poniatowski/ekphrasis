@@ -66,7 +66,7 @@ The synthetic fixtures of `tests/fixtures/` reproduce the constructs below, and 
 
 ## Open questions
 
-The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. One further question awaits the user: whether a link checker joins `scripts/`, since the checker used during the documentation work lived in a temporary folder.
+The open decisions are recorded where they are settled: the roadmap steps opening with *decide* or *evaluate*, and the risks of each milestone in the implementation plan. The links of the Markdown files are checked by `npm run check:links`, in the continuous integration as well.
 
 ## Provenance
 
