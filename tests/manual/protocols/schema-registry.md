@@ -27,40 +27,40 @@ The records of this protocol lie in the folder `scenarios/registry` of the test 
 - `broken.yml` declares `scenario:registered@1`, and its last line holds an unclosed bracket;
 - `registry-links.md` holds two links by identifier.
 
-- [ ] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
+- [x] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
 
 ## No registry set
 
-- [ ] Open *Settings → Ekphrasis*. → The setting *Schema registry* is empty.
-- [ ] Open `scenarios/registry/bound.yml`. → The message *Schema not found* reads: *The logical contract `scenario:registered@1` cannot be resolved because no schema registry is available.* No form displays, although no path rule or modeline applies.
-- [ ] Open `scenarios/registry/registry-links.md` in the reading view, and click link 1. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.registered`.* shows.
+- [x] Open *Settings → Ekphrasis*. → The setting *Schema registry* is empty.
+- [x] Open `scenarios/registry/bound.yml`. → The message *Schema not found* reads: *The logical contract `scenario:registered@1` cannot be resolved because no schema registry is available.* No form displays, although no path rule or modeline applies.
+- [x] Open `scenarios/registry/registry-links.md` in the reading view, and click link 1. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.registered`.* shows.
 
 ## Registry absent
 
-- [ ] In *Settings → Ekphrasis*, set *Schema registry* to `scenarios/registry/missing.yml`. Open `scenarios/registry/bound.yml`. → The message *Schema not found* states that the registry `scenarios/registry/missing.yml` is absent.
+- [x] In *Settings → Ekphrasis*, set *Schema registry* to `scenarios/registry/missing.yml`. Open `scenarios/registry/bound.yml`. → The message *Schema not found* states that the registry `scenarios/registry/missing.yml` is absent.
 
 ## Bound record
 
-- [ ] Set *Schema registry* to `scenarios/registry/schemas.yml`. Return to `bound.yml`. → The form titled *Registered record* displays, without reloading the file. The line below the title reads *Schema `scenarios/registry/registered.schema.yaml`, resolved from the logical contract.*
-- [ ] Look at the fields of the form. → The form shows *id* and *Name*, and no field *_schema*. The top of the form reports no issue.
-- [ ] Change *Name* to `bound and edited`, and press `Tab`. Run *Ekphrasis: Toggle form and source view*. → The source shows `name: bound and edited`, and the line `_schema: scenario:registered@1` unchanged.
-- [ ] Run *Ekphrasis: Toggle form and source view* again. Open `registry-links.md` in the reading view, and click link 1. → The form of `scenarios/registry/bound.yml` opens.
+- [x] Set *Schema registry* to `scenarios/registry/schemas.yml`. Return to `bound.yml`. → The form titled *Registered record* displays, without reloading the file. The line below the title reads *Schema `scenarios/registry/registered.schema.yaml`, resolved from the logical contract.*
+- [x] Look at the fields of the form. → The form shows *id* and *Name*, and no field *_schema*. The top of the form reports no issue.
+- [x] Change *Name* to `bound and edited`, and press `Tab`. Run *Ekphrasis: Toggle form and source view*. → The source shows `name: bound and edited`, and the line `_schema: scenario:registered@1` unchanged.
+- [x] Run *Ekphrasis: Toggle form and source view* again. Open `registry-links.md` in the reading view, and click link 1. → The form of `scenarios/registry/bound.yml` opens.
 
 ## Precedence over a modeline
 
-- [ ] Open `scenarios/registry/precedence.yml`. → The form titled *Registered record* displays, not the form *Corrections* named by its modeline, and the line below the title names `scenarios/registry/registered.schema.yaml`, resolved from the logical contract.
+- [x] Open `scenarios/registry/precedence.yml`. → The form titled *Registered record* displays, not the form *Corrections* named by its modeline, and the line below the title names `scenarios/registry/registered.schema.yaml`, resolved from the logical contract.
 
 ## Failures of the binding
 
-- [ ] Open `scenarios/registry/unknown.yml`. → The message *Schema not found* reads: *The logical contract `scenario:absent@1` cannot be resolved because the schema identifier is absent from the registry.*
-- [ ] Open `scenarios/registry/mismatch.yml`. → The message *Schema not loaded* names the schema `scenarios/registry/registered.schema.yaml`, resolved from the logical contract, and states that the registry binds `scenario:mismatch@1` to this schema, but the constant of its `_schema` property is `scenario:registered@1`.
-- [ ] Open `registry-links.md` in the reading view, and click link 2. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.mismatch`.* shows, since a record whose contract mismatches enters no index.
-- [ ] Open `scenarios/registry/broken.yml`. → The message *Invalid YAML* names the line of `name`, and offers to open the source view. No message states that the schema is missing.
+- [x] Open `scenarios/registry/unknown.yml`. → The message *Schema not found* reads: *The logical contract `scenario:absent@1` cannot be resolved because the schema identifier is absent from the registry.*
+- [x] Open `scenarios/registry/mismatch.yml`. → The message *Schema not loaded* names the schema `scenarios/registry/registered.schema.yaml`, resolved from the logical contract, and states that the registry binds `scenario:mismatch@1` to this schema, but the constant of its `_schema` property is `scenario:registered@1`.
+- [x] Open `registry-links.md` in the reading view, and click link 2. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.mismatch`.* shows, since a record whose contract mismatches enters no index.
+- [x] Open `scenarios/registry/broken.yml`. → The message *Invalid YAML* names the line of `name`, and offers to open the source view. No message states that the schema is missing.
 
 ## Change of the registry
 
-- [ ] Open `scenarios/registry/late.yml`. → The message *Schema not found* states that the schema identifier `scenario:late@1` is absent from the registry.
-- [ ] Split the pane, and open `scenarios/registry/schemas.yml` in the new pane. Under `schemas:`, add the line `  'scenario:late@1': 'scenarios/registry/late.schema.yaml'`, aligned with the two other entries, and let the file save. → The pane of `late.yml` displays the form titled *Late record*, without reopening the file, and the line below the title names `scenarios/registry/late.schema.yaml`.
+- [x] Open `scenarios/registry/late.yml`. → The message *Schema not found* states that the schema identifier `scenario:late@1` is absent from the registry.
+- [x] Split the pane, and open `scenarios/registry/schemas.yml` in the new pane. Under `schemas:`, add the line `  'scenario:late@1': 'scenarios/registry/late.schema.yaml'`, aligned with the two other entries, and let the file save. → The pane of `late.yml` displays the form titled *Late record*, without reopening the file, and the line below the title names `scenarios/registry/late.schema.yaml`.
 
 ## Reset
 
