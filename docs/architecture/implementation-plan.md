@@ -203,7 +203,7 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Exit criterion.** A record of the test vault displays an SVG image and a PNG image, one embedded in a Markdown value and one held by a field, and the control of the field replaces its image by another file.
 
-**Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian. The way the size or the scale of an image is set remains to be decided.
+**Risks.** The rendered values of a form are narrow, and an embedded image takes the width set by the Markdown renderer. Whether that width suits a field of the form is unverified, so the first check observes it inside Obsidian. The width of an image is set by the keyword `x-image-width` of its field, or by its value, as the specification of [images](../features/images.md) records.
 
 ### Instance creation
 

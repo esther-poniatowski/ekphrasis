@@ -17,4 +17,18 @@ A value of kind `markdown-line` or `markdown` can embed an image, as a note does
 
 A field of kind `image` holds an image. Its value is the path of an image file, written from the folder of the instance, as the path of a modeline is, such as `figures/diagram.svg`. The form displays that image in place of the text of the value, and a control next to the image chooses another file of the vault. The formats admitted are those that Obsidian displays natively: SVG, PNG, JPEG, GIF and WebP.
 
-A path written from the folder of the instance stays valid when the folder of a project moves to another vault, and a custom checker reads it outside Obsidian. Obsidian rewrites the links of a renamed file in notes only, so the value of a field is not rewritten when its image is renamed. How the size or the scale of an image is set remains open, as the [roadmap](../../TODO.md) records.
+A path written from the folder of the instance stays valid when the folder of a project moves to another vault, and a custom checker reads it outside Obsidian. Obsidian rewrites the links of a renamed file in notes only, so the value of a field is not rewritten when its image is renamed.
+
+Two sources set the width of a displayed image, the second overriding the first:
+
+- the keyword `x-image-width` of the field sets the width of each of its images, in pixels or as a percentage of the width of the field, such as `320px` or `50%`. Without it, an image takes the width of the field, and never exceeds its own width;
+- a value written as a mapping holding the keys `path` and `width` sets the width of its own image, in the same units. A value written as a plain path takes the width of the field.
+
+```yaml
+figure: figures/diagram.svg
+detail:
+  path: figures/detail.png
+  width: 320px
+```
+
+The schema of a field of kind `image` admits both forms of the value, so that JSON Schema validates the width and a custom checker reads the path and the width directly.

@@ -127,9 +127,9 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Images
 
 - [x] **Images**: decide the name of the kind of a field holding an image, the form of its value (a path from the vault root, a path from the instance, or an embed such as `![[diagram.svg]]`), and the formats admitted. Decided by the user on 2026-10-29: the kind `image`, a path from the folder of the instance, and the formats SVG, PNG, JPEG, GIF and WebP. (2026-10-29)
-- [ ] **Images**: decide how the size or the scale of an image is set: by a keyword of the schema fixing the width of the field, by a size written with the value, or by a zoom control of the form that the file does not keep.
+- [x] **Images**: decide how the size or the scale of an image is set: by a keyword of the schema fixing the width of the field, by a size written with the value, or by a zoom control of the form that the file does not keep. Decided by the user on 2026-10-29: the keyword `x-image-width` of the field, overridden by a value written as a mapping `{path, width}`. (2026-10-29)
 - [ ] **Images**: verify that an image embedded in a value of kind `markdown-line` or `markdown`, as `![[diagram.svg]]` or `![diagram](diagram.png)`, displays in the rendered value, for SVG and PNG files.
-- [ ] **Images**: display the image held by a field, and provide a control choosing another image file of the vault.
+- [ ] **Images**: display the image held by a field at the width set by `x-image-width` or by its value, and provide a control choosing another image file of the vault.
 
 ## Instance creation
 

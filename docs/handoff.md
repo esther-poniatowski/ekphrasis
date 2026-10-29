@@ -23,7 +23,7 @@ The user also accepted on 2026-10-23 three choices made by the corrections: the 
 
 On 2026-10-26, the user accepted the [list-layout policy](adr/list-layouts.md). The roadmap leaves two steps unchecked: define the diagnostic rule, then implement the layouts.
 
-After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). The user took their opening decisions on 2026-10-29, and each now opens with a spike, as the roadmap lists. The user added on 2026-10-23 a third milestone after them, *Images*, specified by the note on [images](features/images.md). Its decision on the size or the scale of an image remains open. The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
+After *Links*, two milestones added by the user on 2026-10-23 follow: *Metadata*, specified by the note on [metadata](features/metadata.md), and *Tags*, specified by the note on [tags](features/tags.md). The user took their opening decisions on 2026-10-29, and each now opens with a spike, as the roadmap lists. The user added on 2026-10-23 a third milestone after them, *Images*, specified by the note on [images](features/images.md). The milestone *Instance creation* then opens with the measure of the slow corpus tests of geonexus.
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 

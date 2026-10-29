@@ -74,6 +74,7 @@ Ekphrasis adds eight keywords, each prefixed by `x-`:
 | `x-rules` | Any field, or the root | Sequence of rule declarations | [Rules](validation.md) checked in addition to the standard keywords |
 | `x-collapsed` | Group or collection | `true` or `false` | Whether the field is folded when the form opens |
 | `x-align` | Field of kind `latex`, or column of a table | `left` or `center` | Alignment of the formula in its control or its cell, `center` by default |
+| `x-image-width` | Field of kind `image` | Width in pixels or as a percentage, such as `320px` or `50%` | [Width](images.md) of each image of the field, unless its value sets its own; the width of the field by default |
 | `x-unfilled` | Root | Sequence of JSON values | Values counted as unfilled, in addition to the null value |
 | `x-version` | Root | Version identifier | [Version](schema-editor.md#^schema-version) of the schema |
 | `x-identifier` | Root | [Field path](field-paths.md), such as `identity.id` | Field holding the identifier of each record, named by the [links by identifier](links.md) |
