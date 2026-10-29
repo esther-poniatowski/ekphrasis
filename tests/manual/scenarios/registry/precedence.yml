@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../corrections-guidance.schema.yaml
+# Manual test record of the schema registry: its field `_schema` takes precedence over its modeline.
+_schema: scenario:registered@1
+id: scenario.precedence
+name: bound by the field, not by the modeline

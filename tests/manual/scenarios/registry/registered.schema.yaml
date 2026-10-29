@@ -1,0 +1,11 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: registered.schema.yaml
+title: Registered record
+description: A schema reached through the schema registry, by the logical identifier `scenario:registered@1`.
+type: object
+x-identifier: id
+required: [_schema, id, name]
+properties:
+  _schema: { const: 'scenario:registered@1' }
+  id: { type: string, x-kind: label }
+  name: { type: string, title: Name }

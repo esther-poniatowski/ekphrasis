@@ -1,0 +1,4 @@
+# Manual test record of the schema registry: bound by its field `_schema` through the registry.
+_schema: scenario:registered@1
+id: scenario.registered
+name: bound through the registry

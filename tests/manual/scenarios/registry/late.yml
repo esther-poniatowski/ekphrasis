@@ -1,0 +1,3 @@
+# Manual test record of the schema registry: bound once the protocol adds its identifier to the registry.
+_schema: scenario:late@1
+name: bound after the registry changes

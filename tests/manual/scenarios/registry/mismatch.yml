@@ -1,0 +1,4 @@
+# Manual test record of the schema registry: the registry maps its identifier to a schema declaring another one.
+_schema: scenario:mismatch@1
+id: scenario.mismatch
+name: mismatched contract

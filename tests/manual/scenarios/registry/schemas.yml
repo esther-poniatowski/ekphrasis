@@ -1,0 +1,5 @@
+# Manual test registry of the binding by a schema registry: maps each logical identifier to a schema, by its path from the vault root.
+schema_version: 1
+schemas:
+  'scenario:registered@1': 'scenarios/registry/registered.schema.yaml'
+  'scenario:mismatch@1': 'scenarios/registry/registered.schema.yaml'

@@ -1,0 +1,9 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: late.schema.yaml
+title: Late record
+description: A schema that the registry names only once the protocol adds its identifier `scenario:late@1`.
+type: object
+required: [_schema, name]
+properties:
+  _schema: { const: 'scenario:late@1' }
+  name: { type: string, title: Name }

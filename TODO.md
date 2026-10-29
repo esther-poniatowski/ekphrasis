@@ -104,6 +104,10 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Links**: provide the command *Copy link to field*, in the link format set in the settings of Obsidian. (2026-10-29)
 - [x] **Links**: index the identifiers of the records of the vault, and resolve the field links by identifier. (2026-10-29)
 
+## Schema registry
+
+- [ ] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. Implemented on 2026-10-29; awaits the run of the [protocol of the schema registry](tests/manual/protocols/schema-registry.md).
+
 ## Metadata
 
 - [ ] **Metadata**: decide the default of the setting *Metadata field*, and whether the keys of the metadata block also appear in the outline and in the summary of issues.

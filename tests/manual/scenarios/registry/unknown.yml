@@ -1,0 +1,3 @@
+# Manual test record of the schema registry: its identifier is absent from the registry.
+_schema: scenario:absent@1
+name: unknown identifier

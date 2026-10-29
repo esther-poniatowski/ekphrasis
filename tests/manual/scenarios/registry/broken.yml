@@ -1,0 +1,4 @@
+# Manual test record of the schema registry: bound by its field `_schema`, although its text fails to parse.
+_schema: scenario:registered@1
+id: scenario.broken
+name: [unclosed

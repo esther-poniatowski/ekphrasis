@@ -14,6 +14,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Switch between the form view and the source view, by a header button and by the command *Toggle form and source view*.
 - Notice reporting an extension already owned by another plugin, and the command *Open in ekphrasis*.
 - Binding of each instance to its schema, by a modeline or by the path rules of the settings tab.
+- Binding of a record by its top-level field `_schema`, whose logical identifier resolves through the registry named by the setting *Schema registry*, before the modeline and the path rules. The form omits `_schema`, and a schema whose `_schema` declares another identifier is refused.
 - Loading of schemas written in JSON or in YAML, with references across files.
 - Form model, with the kind of each field declared by `x-kind` or derived from the standard keywords, and one control per scalar kind.
 - Labels of declared properties without a title, read with their underscores and hyphens as spaces.
