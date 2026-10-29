@@ -458,6 +458,56 @@ textarea.ekphrasis-control {
   max-width: 12rem;
 }
 
+/* A selected option's description does not participate in the intrinsic width of its choice
+   column. It instead takes the width fixed by the dropdown and wraps within that width. */
+.ekphrasis-table td[data-kind="choice"] .ekphrasis-option-description {
+  width: 0;
+  min-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* A mapping alternative nested in a table cell uses the column heading as its section heading.
+   Its selector and selected fields stay in one row when the available width permits it. */
+.ekphrasis-table td[data-kind="alternatives"] > .ekphrasis-group {
+  min-width: 26rem;
+  margin: 0;
+}
+
+.ekphrasis-table td[data-kind="alternatives"] > .ekphrasis-group > .ekphrasis-group-heading {
+  display: none;
+}
+
+.ekphrasis-table td[data-kind="alternatives"] > .ekphrasis-group > .ekphrasis-group-body {
+  display: flex;
+  gap: var(--size-4-3);
+  align-items: flex-start;
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+.ekphrasis-table
+  td[data-kind="alternatives"]
+  > .ekphrasis-group
+  > .ekphrasis-group-body
+  > .ekphrasis-field {
+  display: block;
+  flex: 1;
+  min-width: 6rem;
+  padding: 0;
+}
+
+.ekphrasis-table
+  td[data-kind="alternatives"]
+  > .ekphrasis-group
+  > .ekphrasis-group-body
+  > .ekphrasis-field
+  > .ekphrasis-field-label {
+  padding-top: 0;
+  padding-bottom: var(--size-2-1);
+}
+
 .ekphrasis-table-key {
   font-family: var(--font-monospace);
   overflow-wrap: anywhere;
