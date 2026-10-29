@@ -4,6 +4,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-29
+
 ### Added
 
 - Domain model of YAML documents, carrying source ranges.

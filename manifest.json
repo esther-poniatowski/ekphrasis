@@ -1,7 +1,7 @@
 {
   "id": "ekphrasis",
   "name": "Ekphrasis",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "minAppVersion": "1.5.0",
   "description": "Fills YAML files through forms generated from JSON Schemas, with instructions, validity checks and continuous saving.",
   "author": "Esther Poniatowski",
