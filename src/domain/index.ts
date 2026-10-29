@@ -103,9 +103,11 @@ export {
 } from "./links/record-identifier";
 export { IdentifierIndex, type IdentifierResolution } from "./links/identifier-index";
 export {
+  completionInsertion,
   destinationText,
   fieldPathCompletions,
   subpathQueryAt,
+  type CompletionInsertion,
   type FieldPathCompletion,
   type SubpathQuery,
 } from "./links/link-completion";

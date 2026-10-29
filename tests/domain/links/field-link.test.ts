@@ -43,7 +43,8 @@ describe("field links by path", () => {
       ["subject", "foils", 1, "symbol"],
     ],
     ["[second foil](q.yml#subject.foils[1])", "q.yml", ["subject", "foils", 1]],
-    ['[[q.yml#maturity["task.aim"]]]', "q.yml", ["maturity", "task.aim"]],
+    ['[[q.yml#maturity["task.aim"]|aim]]', "q.yml", ["maturity", "task.aim"]],
+    ["[[links.yml#foils[1]|turbulent]]", "links.yml", ["foils", 1]],
     ["[[q.yml]]", "q.yml", []],
     ["[[#task.aim]]", "", ["task", "aim"]],
   ])("parses %s", (text, linkpath, field) => {
@@ -81,6 +82,8 @@ describe("field links by path", () => {
 
   it.each([
     ["[[q.yml#task.aim", "is not closed"],
+    ["[[links.yml#foils[1]]]", "ends at its first"],
+    ['[[q.yml#maturity["task.aim"]]]', "ends at its first"],
     ["[aim](q.yml#task.aim", "must take the form"],
     ["[aim] (q.yml#task.aim)", "must take the form"],
     ["[aim](my records/q.yml#task.aim)", "holds a space"],

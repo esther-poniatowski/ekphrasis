@@ -104,6 +104,29 @@ export function destinationText(id: string, angled: boolean): string {
   );
 }
 
+/** Text inserted to complete a link, and the offset of the cursor after it, from its start. */
+export interface CompletionInsertion {
+  readonly text: string;
+  readonly cursor: number;
+}
+
+/**
+ * Insertion of the field path `id` at the cursor of a Markdown link, followed by the characters
+ * closing the link (`)`, or `>)` inside angle brackets) that `textAfter`, the text of the line after
+ * the cursor, does not already hold. The cursor lands after the closing parenthesis.
+ */
+export function completionInsertion(
+  id: string,
+  angled: boolean,
+  textAfter: string,
+): CompletionInsertion {
+  const closing = angled ? ">)" : ")";
+  let present = 0;
+  while (present < closing.length && textAfter[present] === closing[present]) present += 1;
+  const text = destinationText(id, angled) + closing.slice(present);
+  return { text, cursor: text.length + present };
+}
+
 function decoded(text: string): string {
   try {
     return decodeURIComponent(text);

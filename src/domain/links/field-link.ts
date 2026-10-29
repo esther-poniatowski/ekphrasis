@@ -10,6 +10,9 @@
  * the decision on record identifiers records. A link without a field path designates the root of
  * the instance.
  *
+ * A wikilink ends at its first `]]`, as in Obsidian, so a wikilink whose field path ends with a
+ * bracket needs a displayed text, as `[[q.yml#foils[1]|turbulent]]`.
+ *
  * The parser does not decide whether the path of a link reaches a YAML file: a link by path to a
  * note, such as `[[note#Heading]]`, parses as well, and the caller interprets the result only once
  * the path resolves to an instance.
@@ -169,6 +172,11 @@ export function fieldLinkOfQuery(
 function parseWikilink(link: string): FieldLink {
   if (!link.endsWith("]]")) {
     throw new FieldLinkError(`The wikilink \`${link}\` is not closed by \`]]\`.`);
+  }
+  if (link.indexOf("]]") !== link.length - 2) {
+    throw new FieldLinkError(
+      `The wikilink \`${link}\` ends at its first \`]]\`, as in Obsidian. A field path ending with a bracket needs a displayed text, as \`[[file.yml#items[1]|text]]\`.`,
+    );
   }
   const content = link.slice(2, -2);
   const bar = content.indexOf("|");

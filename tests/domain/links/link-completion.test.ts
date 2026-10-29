@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildFormModel,
+  completionInsertion,
   destinationText,
   fieldPathCompletions,
   parseFieldLink,
@@ -101,7 +102,19 @@ describe("field path written in a destination", () => {
     expect(destinationText(id, angled)).toBe(text);
     const destination = angled ? `<q.yml#${text}>` : `q.yml#${text}`;
     expect(parseFieldLink(`[x](${destination})`)?.field).toEqual(
-      parseFieldLink(`[[q.yml#${id}]]`)?.field,
+      parseFieldLink(`[[q.yml#${id}|x]]`)?.field,
     );
+  });
+});
+
+describe("insertion completing a link", () => {
+  it.each([
+    ["subject.system", false, "", "subject.system)", 15],
+    ["subject.system", false, ") and more", "subject.system", 15],
+    ['notes["a b"]', true, "", 'notes["a b"]>)', 14],
+    ['notes["a b"]', true, ">", 'notes["a b"])', 14],
+    ['notes["a b"]', true, ">) and more", 'notes["a b"]', 14],
+  ])("inserts %s, angled %s, before %j as %s", (id, angled, after, text, cursor) => {
+    expect(completionInsertion(id, angled, after)).toEqual({ text, cursor });
   });
 });

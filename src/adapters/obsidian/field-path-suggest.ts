@@ -17,7 +17,7 @@ import {
 } from "obsidian";
 import type { FormService } from "../../application";
 import {
-  destinationText,
+  completionInsertion,
   fieldPathCompletions,
   subpathQueryAt,
   type FieldPathCompletion,
@@ -74,8 +74,12 @@ export class FieldPathSuggest extends EditorSuggest<FieldPathCompletion> {
   selectSuggestion(value: FieldPathCompletion): void {
     const context = this.context;
     if (context === null) return;
-    const angled = queryBefore(context.editor, context.end)?.angled ?? false;
-    context.editor.replaceRange(destinationText(value.id, angled), context.start, context.end);
+    const { editor, start, end } = context;
+    const angled = queryBefore(editor, end)?.angled ?? false;
+    const after = editor.getLine(end.line).slice(end.ch);
+    const insertion = completionInsertion(value.id, angled, after);
+    editor.replaceRange(insertion.text, start, end);
+    editor.setCursor({ line: start.line, ch: start.ch + insertion.cursor });
   }
 
   /** File reached by the link of `subpath` from the note `source`, when it is a YAML file. */
