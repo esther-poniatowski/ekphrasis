@@ -92,7 +92,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Form view**: separate the information icon of the title of the form from its last letter. (2026-10-23)
 - [x] **Field kinds**: read the keyword `x-align`, `left` or `center`, on a field of kind `latex` and on a column of a table, with `center` as default. (2026-10-23)
 - [x] **Form view**: verify that `Enter` and `Space` open the instructions of a focused help button. (2026-10-23)
-- [ ] **Form view**: provide a command and a button showing or hiding the instructions of every field at once, independently of the folding of sections. Implemented on 2026-10-23; awaits the run of the [protocol of the corrections of links](tests/manual/protocols/corrections-links.md).
+- [x] **Form view**: provide a command and a button showing or hiding the instructions of every field at once, independently of the folding of sections. (2026-10-29)
 
 ## Links
 
@@ -100,9 +100,9 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign. Verdicts recorded in the [implementation plan](docs/architecture/implementation-plan.md). (2026-10-23)
 - [x] **Links**: verify that the Markdown links and the wikilinks of a value resolve as in a note stored in the folder of the instance, including relative paths, encoded spaces and subpaths of notes, and that an external link such as `https://…` opens in the browser. (2026-10-29)
 - [x] **Links**: parse field links by path, and open the target instance in the form view at the designated field, from a value of a form and from a note. (2026-10-29)
-- [ ] **Links**: suggest the field paths of an instance after a hash sign in a link. Implemented on 2026-10-23; awaits the run of the [protocol of the corrections of links](tests/manual/protocols/corrections-links.md).
+- [x] **Links**: suggest the field paths of an instance after a hash sign in a link. (2026-10-29)
 - [x] **Links**: provide the command *Copy link to field*, in the link format set in the settings of Obsidian. (2026-10-29)
-- [ ] **Links**: index the identifiers of the records of the vault, and resolve the field links by identifier. Implemented on 2026-10-23; awaits the run of the [protocol of the corrections of links](tests/manual/protocols/corrections-links.md).
+- [x] **Links**: index the identifiers of the records of the vault, and resolve the field links by identifier. (2026-10-29)
 
 ## Metadata
 
