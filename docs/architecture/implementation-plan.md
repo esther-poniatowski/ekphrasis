@@ -167,7 +167,7 @@ The [protocol of the corrections](../../tests/manual/protocols/corrections-guida
 - A suggestion of the plugin triggers after a hash sign in a Markdown link, such as `[system](guidance.yml#`. In a wikilink, such as `[[guidance.yml#`, the suggestion of headings of Obsidian takes over and offers no match, so no suggestion of the plugin shows.
 - A click on a link `obsidian://ekphrasis-spike?…`, in the reading view and in the live preview of a note, reaches the handler of the plugin inside the vault. Obsidian consumes the parameter `vault`, so the handler never receives it.
 
-One case remains unverified: whether a link whose path starts from the vault root, as the command *Copy link to field* writes it, resolves from a note stored in a subfolder.
+The [protocol of links](../../tests/manual/protocols/links.md) verified on 2026-10-29 two further cases. A link whose path starts from the vault root, as the command *Copy link to field* writes it, resolves from a note stored in a subfolder. Obsidian ends a wikilink at its first `]]`, so a wikilink whose field path ends with a bracket needs a displayed text.
 
 A link by identifier also needs a syntax that the Markdown renderer of Obsidian passes to ekphrasis, since an identifier is not a path. The [decision on record identifiers](../adr/record-identifiers.md), accepted on 2026-10-23, settles three choices:
 
