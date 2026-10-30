@@ -15,6 +15,9 @@ properties:
   abstract:
     type: string
     description: A long line of plain text, which wraps in its input.
+  remarks:
+    type: string
+    description: Plain text written on two lines in the file, whose line breaks the input keeps.
   summary:
     type: string
     x-kind: markdown-line

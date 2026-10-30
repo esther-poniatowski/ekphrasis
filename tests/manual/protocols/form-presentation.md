@@ -8,8 +8,8 @@ This checklist verifies inside Obsidian the presentation of the form and of the 
 - the descriptions of the options of a choice, shown with the instructions of the field;
 - the empty collections, displayed without a message;
 - the light guide along each nested group;
-- the long single-line values, wrapped in their inputs and kept on one line in the file;
-- the outline, opened in the right sidebar with the plugin, in the style of the outline of Obsidian, without the items of the lists of scalars.
+- the long single-line values, wrapped in their inputs and kept on one line in the file, and the values written on several lines, which keep their line breaks;
+- the outline, opened in the right sidebar at the first load of the plugin and left closed once the author closes it, in the style of the outline of Obsidian, without the items of the lists of scalars.
 
 The roadmap steps of *Form presentation* are ticked once their items pass. Each item states an action, then the expected result after the arrow. Tick an item when the result matches, and write any deviation under *Observations*, with the message of the developer console (`Cmd+Option+I`, tab *Console*) when the console shows a message.
 
@@ -18,7 +18,7 @@ The roadmap steps of *Form presentation* are ticked once their items pass. Each 
 
 ## Setup
 
-The record `scenarios/presentation.yml` holds one field of each kind, bound to `scenarios/presentation.schema.yaml` by its modeline. Its collections *aliases*, *steps*, *terms* and *sources* are empty, and its fields *keywords*, *aliases* and *history › notes* are lists of scalars.
+The record `scenarios/presentation.yml` holds one field of each kind, bound to `scenarios/presentation.schema.yaml` by its modeline. Its field *remarks* is plain text written on two lines. Its collections *aliases*, *steps*, *terms* and *sources* are empty, and its fields *keywords*, *aliases* and *history › notes* are lists of scalars.
 
 - [ ] Run `npm run build` and `npm run test-vault` from the root of the repository, then quit Obsidian and open the test vault again. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
 
@@ -70,7 +70,9 @@ The record `scenarios/presentation.yml` holds one field of each kind, bound to `
 - [ ] Click at the end of the value of *abstract*, type ` More.`, then press `Enter`. → No line break is inserted, the cursor stays in the input, and the value ends with *More.*
 - [ ] Click the rendered value of *prose*, select its two lines with the mouse in the editor that opens, and copy them with `Cmd+C`. Click at the end of the value of *title*, type a space, and paste with `Cmd+V`. → The pasted text joins the value on the same line: *Onset of oscillation First line of the prose. Second line of the prose.*
 - [ ] Click the rendered value of *summary*, type ` again` at its end, and press `Enter`. → No line break is inserted, and the value is saved: leaving the field renders *A line with emphasis that the form renders again*, with *emphasis* in italics.
-- [ ] Run *Ekphrasis: Toggle form and source view*. → The source view shows `abstract:`, `title:` and `summary:` each on one line, with the text typed and pasted above. Run the command again to return to the form view.
+- [ ] Look at the field *remarks*. → Its input shows *First remark.* and *Second remark.* on two lines, as in the file.
+- [ ] Click at the end of *Second remark.*, press `Enter`, type `Third remark.`, then press `Tab`. → `Enter` inserts a line break, and the input shows three lines, the last one reading *Third remark.*
+- [ ] Run *Ekphrasis: Toggle form and source view*. → The source view shows `abstract:`, `title:` and `summary:` each on one line, with the text typed and pasted above, and `remarks: |` followed by the three remarks, each on its own line. Run the command again to return to the form view.
 
 ## Style of the outline
 
@@ -87,6 +89,8 @@ The record `scenarios/presentation.yml` holds one field of each kind, bound to `
 
 - [ ] Quit Obsidian and open the test vault again. → The right sidebar holds one tab of the outline of ekphrasis, beside the outline and the backlinks of Obsidian, and no second one.
 - [ ] Open `scenarios/presentation.yml`, then click the tab of the outline of ekphrasis. → The panel lists the entries of `presentation.yml`.
+- [ ] Right-click the tab of the outline of ekphrasis, and choose *Close*. Quit Obsidian and open the test vault again. → The right sidebar holds no tab of the outline of ekphrasis.
+- [ ] Open `scenarios/presentation.yml`, then run *Ekphrasis: Show outline*. → The outline opens in the right sidebar and lists the entries of `presentation.yml`.
 
 ## Contact record of geonexus
 
@@ -96,7 +100,7 @@ This section checks the exit criterion of the milestone in the vault of geonexus
 
 ## Reset
 
-To restore the records, run `npm run test-vault` from the root of the repository: it copies the scenario records and the fixtures afresh into the test vault.
+To restore the records, run `npm run test-vault` from the root of the repository: it copies the scenario records and the fixtures afresh into the test vault, and restores the data of the plugin, so the outline opens again at the next load as at a first load.
 
 ## Observations
 

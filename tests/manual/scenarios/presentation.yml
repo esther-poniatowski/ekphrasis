@@ -3,6 +3,9 @@
 code: pendulum
 title: Onset of oscillation
 abstract: A long line of plain text that runs well past the width of its input, so that the input wraps it onto several lines and grows to show the whole value, while the file keeps the value on this single line.
+remarks: |
+  First remark.
+  Second remark.
 summary: A line with *emphasis* that the form renders
 prose: |
   First line of the prose.
