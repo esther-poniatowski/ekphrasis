@@ -108,17 +108,17 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Form presentation
 
-- [ ] **Form view**: display each field as a row, as Obsidian displays the properties of a note: an icon of its kind at the left, its name in bold, and its control in the remaining width.
-- [ ] **Form view**: give every text control one font size, the smallest used now, and one appearance: a white fill, a gray border and rounded corners.
-- [ ] **Form view**: draw the arrow of a dropdown without shifting the control, align the help button of a field at the right of its label, and separate the help buttons of the headers of a table from their names.
-- [ ] **Form view**: show the descriptions of the options of a choice on demand, with the instructions of the field, instead of always.
-- [ ] **Form view**: remove the messages *No items* and *No rows*, since the button adding an item already states that the collection is empty.
-- [ ] **Form view**: lighten the vertical guide drawn along each nested group.
+- [ ] **Form view**: display each field as a row, as Obsidian displays the properties of a note: an icon of its kind at the left, its name in bold, and its control in the remaining width. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Form view**: give every text control one font size, the smallest used now, and one appearance: a white fill, a gray border and rounded corners. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Form view**: draw the arrow of a dropdown without shifting the control, align the help button of a field at the right of its label, and separate the help buttons of the headers of a table from their names. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Form view**: show the descriptions of the options of a choice on demand, with the instructions of the field, instead of always. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Form view**: remove the messages *No items* and *No rows*, since the button adding an item already states that the collection is empty. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Form view**: lighten the vertical guide drawn along each nested group. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
 - [x] **Form view**: decide how a long value of a single-line text control stays editable: wrapped onto several lines, as the user decided on 2026-10-30. (2026-10-30)
-- [ ] **Form view**: wrap a long value of the kinds `text`, `markdown-line` and `latex` onto several lines, keeping it on one line in the file, as the specification of [field kinds](docs/features/field-kinds.md) states.
-- [ ] **Outline**: open the outline in the right sidebar when the plugin loads, so that its icon sits beside the outline and the backlinks of Obsidian, and keep it following the active form without running the command *Show outline*.
-- [ ] **Outline**: adopt the style of the outline of Obsidian.
-- [ ] **Outline**: omit the items of a list of scalars from the outline.
+- [ ] **Form view**: wrap a long value of the kinds `text`, `markdown-line` and `latex` onto several lines, keeping it on one line in the file, as the specification of [field kinds](docs/features/field-kinds.md) states. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Outline**: open the outline in the right sidebar when the plugin loads, so that its icon sits beside the outline and the backlinks of Obsidian, and keep it following the active form without running the command *Show outline*. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Outline**: adopt the style of the outline of Obsidian. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
+- [ ] **Outline**: omit the items of a list of scalars from the outline. Implemented on 2026-10-30; awaits the run of the [protocol of form presentation](tests/manual/protocols/form-presentation.md).
 
 ## Schema styles
 

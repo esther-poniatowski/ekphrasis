@@ -4,6 +4,26 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+### Added
+
+- Icon of the kind of each field at the left of its label, drawn from the Lucide set of Obsidian, with the icons of the property types of Obsidian for the closest kinds.
+- Outline opened in the right sidebar when the plugin loads, beside the outline and the backlinks of Obsidian.
+
+### Changed
+
+- Fields displayed as concise rows, as the properties of a note, with their names in bold and the help button closing the label on its right.
+- One font size and one appearance for every control holding text, in a row as in a cell: the font size of the inputs of Obsidian, and the fill, the gray border and the rounded corners of the form fields of the theme.
+- Marks of the issues of a field drawn as a bar beside its control, so they no longer move the control.
+- Help buttons of the headers of a table set apart from the names of their columns.
+- Descriptions of the options of a choice listed with the instructions of the field, on demand, instead of below the dropdown.
+- Long values of the kinds `text`, `markdown-line` and `latex` wrapped in their inputs, which grow to show the whole value; the key `Enter` commits the value, and a pasted line break becomes a space, so the file keeps the value on one line.
+- Lighter vertical guide along the fields of each nested group.
+- Outline drawn in the style of the outline of Obsidian, without entries for the items of the lists of scalars.
+
+### Removed
+
+- Messages *No items.*, *No rows.* and *No entries.* of the empty collections that a button or an input extends.
+
 ## [0.1.0] - 2026-10-29
 
 ### Added

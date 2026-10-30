@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=presentation.schema.yaml
+# Manual test record of the milestone Form presentation.
+code: pendulum
+title: Onset of oscillation
+abstract: A long line of plain text that runs well past the width of its input, so that the input wraps it onto several lines and grows to show the whole value, while the file keeps the value on this single line.
+summary: A line with *emphasis* that the form renders
+prose: |
+  First line of the prose.
+  Second line of the prose.
+formula: '\omega = \sqrt{g / \ell}'
+count: 3
+done: false
+status: posed
+aspects: [temporal]
+keywords: [oscillation, damping, resonance]
+aliases: []
+context:
+  place: laboratory
+  setting:
+    medium: air
+    scale: small
+measures:
+  - quantity: period
+    unit: s
+    accuracy: fine
+  - quantity: length
+    unit: m
+    accuracy: rough
+steps: []
+terms: {}
+sources: {}
+history:
+  - date: '2026-10-01'
+    notes: [first swing, second swing]
+answer:
+  verdict: pending

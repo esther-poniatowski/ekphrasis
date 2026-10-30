@@ -18,5 +18,6 @@ Verifies inside Obsidian the behaviours of ekphrasis that unit tests cannot reac
 - [Test protocol: Links](protocols/links.md): verifies inside Obsidian the following, the suggestion and the copy of field links
 - [Test protocol: Corrections after the check of Links](protocols/corrections-links.md): verifies inside Obsidian the corrections made after the check of links
 - [Test protocol: Schema registry](protocols/schema-registry.md): verifies inside Obsidian the binding of records through the schema registry
+- [Test protocol: Form presentation](protocols/form-presentation.md): verifies inside Obsidian the presentation of the rows of fields, of their controls and of the outline
 - [Scenario records](scenarios): supplies the records and the schemas of the protocols, copied into the test vault at each build
 - [Settings of the test vault](vault-settings.json): fixes the settings from which every protocol starts

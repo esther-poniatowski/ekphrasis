@@ -1,0 +1,119 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: presentation.schema.yaml
+title: Presentation
+description: A schema exercising the presentation of the form. Each field holds one kind, so each row shows the icon of its kind.
+type: object
+properties:
+  code:
+    type: string
+    x-kind: label
+    description: One word naming the record.
+  title:
+    type: string
+    description: The name of the record, in one line.
+    examples: [Onset of oscillation]
+  abstract:
+    type: string
+    description: A long line of plain text, which wraps in its input.
+  summary:
+    type: string
+    x-kind: markdown-line
+    description: One line of Markdown.
+  prose:
+    type: string
+    x-kind: markdown
+  formula:
+    type: string
+    x-kind: latex
+  count:
+    type: integer
+    minimum: 1
+  done:
+    type: boolean
+  status:
+    description: The state of the record.
+    oneOf:
+      - { const: posed, title: Posed, description: The question awaits an answer. }
+      - { const: answered, title: Answered, description: An answer is recorded. }
+      - { const: dropped, title: Dropped }
+  aspects:
+    type: array
+    uniqueItems: true
+    items:
+      oneOf:
+        - { const: spatial, title: Spatial, description: The record concerns positions in space. }
+        - { const: temporal, title: Temporal, description: The record concerns instants or durations. }
+  keywords:
+    type: array
+    items: { type: string }
+  aliases:
+    type: array
+    items: { type: string }
+  context:
+    type: object
+    description: A group holding a nested group.
+    properties:
+      place: { type: string }
+      setting:
+        type: object
+        properties:
+          medium: { type: string }
+          scale: { enum: [small, large] }
+  measures:
+    type: array
+    description: One row per measure.
+    items:
+      type: object
+      properties:
+        quantity:
+          type: string
+          description: The measured quantity.
+        unit:
+          type: string
+          description: The unit, as written in the SI.
+          examples: [m, s]
+        accuracy:
+          description: The accuracy of the measure.
+          oneOf:
+            - { const: rough, description: Within an order of magnitude. }
+            - { const: fine, description: Within a few percent. }
+  steps:
+    type: array
+    items:
+      type: object
+      properties:
+        order: { type: integer }
+        action: { type: string }
+  terms:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        label: { type: string }
+        note: { type: string }
+  sources:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        title: { type: string }
+        pages: { type: array, items: { type: string } }
+  history:
+    type: array
+    items:
+      type: object
+      properties:
+        date: { type: string }
+        notes: { type: array, items: { type: string } }
+  answer:
+    oneOf:
+      - title: Short
+        type: object
+        required: [verdict]
+        properties:
+          verdict: { type: string }
+      - title: Detailed
+        type: object
+        required: [argument]
+        properties:
+          argument: { type: string, x-kind: markdown }
