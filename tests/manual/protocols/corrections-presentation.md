@@ -16,22 +16,22 @@ The roadmap steps of these corrections are ticked once their items pass. Each it
 
 The record `scenarios/presentation.yml` is the record of the [protocol of form presentation](form-presentation.md).
 
-- [ ] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
+- [x] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
 
 ## Options on one column
 
-- [ ] Open `scenarios/presentation.yml`, and click the help button of *status*. → Under *Options*, *Posed (posed)* and *Answered (answered)* form a first column, and their descriptions start on one vertical line, as the messages of the box *Schema warnings* start after their paths.
-- [ ] Click the help button of the column *accuracy* in the header of the table *measures*. → The options *rough* and *fine* form a first column, and their descriptions start on one vertical line.
+- [x] Open `scenarios/presentation.yml`, and click the help button of *status*. → Under *Options*, *Posed (posed)* and *Answered (answered)* form a first column, and their descriptions start on one vertical line, as the messages of the box *Schema warnings* start after their paths.
+- [x] Click the help button of the column *accuracy* in the header of the table *measures*. → The options *rough* and *fine* form a first column, and their descriptions start on one vertical line.
 
 ## Headings of the sections
 
-- [ ] Compare the headings *keywords*, *context* and *measures* with the row *code*. → The icon and the name of each heading start at the same horizontal position as the icon and the name of *code*. The chevron of each heading stands in the margin at the left of its icon.
-- [ ] Look at the group *setting* inside *context*, and at the field *place* above it. → The icon of *setting* starts at the same horizontal position as the icon of *place*. The chevron of *setting* stands at the left of its icon, to the right of the vertical guide of *context*.
-- [ ] Compare the help buttons of *context* and *measures* with those of *code* and *title*. → The four help buttons stand on one vertical line.
-- [ ] Look under the headings *context*, *measures* and *history*. → No horizontal line runs under a heading. A vertical guide runs down from under the chevron of each unfolded heading, along its fields.
-- [ ] Look at the chevrons and the help buttons of the form. → Each shows its icon only, with no gray box behind it.
-- [ ] Narrow the pane by dragging the edge of the right sidebar to the left. → The help buttons of *context* and *measures* stay on the vertical line of those of *code* and *title*. Restore the width.
-- [ ] Click the chevron of *context*. → The group folds, and the chevron turns to the right without moving the icon or the name. Click it again to unfold the group.
+- [x] Compare the headings *keywords*, *context* and *measures* with the row *code*. → The icon and the name of each heading start at the same horizontal position as the icon and the name of *code*. The chevron of each heading stands in the margin at the left of its icon.
+- [x] Look at the group *setting* inside *context*, and at the field *place* above it. → The icon of *setting* starts at the same horizontal position as the icon of *place*. The chevron of *setting* stands at the left of its icon, to the right of the vertical guide of *context*.
+- [x] Compare the help buttons of *context* and *measures* with those of *code* and *title*. → The four help buttons stand on one vertical line.
+- [x] Look under the headings *context*, *measures* and *history*. → No horizontal line runs under a heading. A vertical guide runs down from under the chevron of each unfolded heading, along its fields.
+- [x] Look at the chevrons and the help buttons of the form. → Each shows its icon only, with no gray box behind it.
+- [x] Narrow the pane by dragging the edge of the right sidebar to the left. → The help buttons of *context* and *measures* stay on the vertical line of those of *code* and *title*. Restore the width.
+- [x] Click the chevron of *context*. → The group folds, and the chevron turns to the right without moving the icon or the name. Click it again to unfold the group.
 
 ## Reset
 
