@@ -906,32 +906,28 @@ td[data-revealed] {
 
 .ekphrasis-outline-list,
 .ekphrasis-outline-results {
-  margin: 0;
-  padding-left: 0;
+  margin-block: 0;
   list-style: none;
 }
 
-.ekphrasis-outline-list .ekphrasis-outline-list {
-  margin-left: var(--size-4-2);
-  padding-left: var(--size-4-1);
-  border-left: 1px solid var(--background-modifier-border);
+/* The entries take the classes of the tree of the core outline, so the style sheet of Obsidian
+   indents them, draws their guides and their triangles, and highlights the focused one. Only the
+   list at the top drops the indentation of a list. */
+.ekphrasis-outline > .ekphrasis-outline-list,
+.ekphrasis-outline-results {
+  padding-left: 0;
 }
 
-.ekphrasis-outline-entry {
+.ekphrasis-outline-entry .tree-item-flair-outer {
   display: flex;
   gap: var(--size-2-2);
   align-items: center;
-  border-radius: var(--radius-s);
 }
 
-.ekphrasis-outline-entry[data-focused] {
-  background-color: var(--background-modifier-active-hover);
+.ekphrasis-outline-triangle {
+  display: flex;
 }
 
-.ekphrasis-outline-fold,
-.ekphrasis-outline-fold:hover,
-.ekphrasis-outline-name,
-.ekphrasis-outline-name:hover,
 .ekphrasis-outline-result,
 .ekphrasis-outline-result:hover {
   height: auto;
@@ -945,18 +941,13 @@ td[data-revealed] {
   cursor: pointer;
 }
 
-.ekphrasis-outline-fold {
-  flex: 0 0 1em;
-  color: var(--text-faint);
-}
-
-.ekphrasis-outline-name {
+.ekphrasis-outline-result .ekphrasis-outline-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ekphrasis-outline-name:hover {
+.ekphrasis-outline-result:hover .ekphrasis-outline-name {
   color: var(--text-accent);
 }
 
@@ -980,7 +971,6 @@ td[data-revealed] {
 }
 
 .ekphrasis-outline-count {
-  margin-left: auto;
   padding: 0 var(--size-4-1);
   border-radius: var(--radius-s);
   color: var(--text-error);

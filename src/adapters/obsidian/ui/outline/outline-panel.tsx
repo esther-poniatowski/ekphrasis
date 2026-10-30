@@ -8,8 +8,11 @@
  * independently of the form, one at a time or all at once by the buttons at the top of the panel;
  * the folded state, the search and the toggle belong to the panel of one file.
  *
- * The search field and its clear button take the classes of the search fields of Obsidian, whose
- * style sheet draws the magnifier and the cross, and hides the cross while the field is empty.
+ * The panel takes the classes of the core outline of Obsidian, so the style sheet of Obsidian and
+ * of its theme draws it: the entries as the items of a tree, with their triangles folding them
+ * and their guides, and the buttons at the top as the buttons of a navigation header. The search
+ * field and its clear button take the classes of the search fields of Obsidian, whose style sheet
+ * draws the magnifier and the cross, and hides the cross while the field is empty.
  */
 import type { ComponentChildren, JSX } from "preact";
 import { useState } from "preact/hooks";
@@ -23,6 +26,7 @@ import {
   type OutlineMatch,
   type YamlPath,
 } from "../../../../domain";
+import { Icon, type IconPainter } from "../icon";
 
 /** Number of search results displayed, so a short query lists a readable selection. */
 const MAX_RESULTS = 50;
@@ -34,9 +38,16 @@ export interface OutlinePanelProps {
   readonly focusedId: string | null;
   /** Moves the form to the field at `path`, showing its instructions when `showHelp` holds. */
   readonly onReveal: (path: YamlPath, showHelp: boolean) => void;
+  /** Painter of the triangles folding the entries. */
+  readonly paintIcon: IconPainter;
 }
 
-export function OutlinePanel({ form, focusedId, onReveal }: OutlinePanelProps): JSX.Element {
+export function OutlinePanel({
+  form,
+  focusedId,
+  onReveal,
+  paintIcon,
+}: OutlinePanelProps): JSX.Element {
   const [query, setQuery] = useState("");
   const [onlyIssues, setOnlyIssues] = useState(false);
   const [folded, setFolded] = useState<ReadonlySet<string>>(new Set());
@@ -54,7 +65,7 @@ export function OutlinePanel({ form, focusedId, onReveal }: OutlinePanelProps): 
   return (
     <div class="ekphrasis-outline">
       <div class="ekphrasis-outline-toolbar">
-        <div class="ekphrasis-outline-actions">
+        <div class="nav-buttons-container ekphrasis-outline-actions">
           <ActionButton label="Collapse all" onClick={() => setFolded(sectionUids(entries))}>
             <path d="m7 20 5-5 5 5" />
             <path d="m7 4 5 5 5-5" />
@@ -107,6 +118,7 @@ export function OutlinePanel({ form, focusedId, onReveal }: OutlinePanelProps): 
           folded={folded}
           onToggle={toggleFold}
           onReveal={(path) => onReveal(path, false)}
+          paintIcon={paintIcon}
         />
       ) : (
         <SearchResults matches={matches} onChoose={(path) => onReveal(path, true)} />
@@ -118,65 +130,103 @@ export function OutlinePanel({ form, focusedId, onReveal }: OutlinePanelProps): 
   );
 }
 
+/**
+ * Entries of `entries`, each drawn as an item of the tree of the core outline: a click on the line
+ * of an entry moves the form to its field, and a click on its triangle folds its entries.
+ */
 function EntryList({
   entries,
   focusedId,
   folded,
   onToggle,
   onReveal,
+  paintIcon,
+  nested = false,
 }: {
   readonly entries: readonly OutlineEntry[];
   readonly focusedId: string | null;
   readonly folded: ReadonlySet<string>;
   readonly onToggle: (uid: string) => void;
   readonly onReveal: (path: YamlPath) => void;
+  readonly paintIcon: IconPainter;
+  readonly nested?: boolean;
 }): JSX.Element {
   return (
-    <ul class="ekphrasis-outline-list">
+    <ul class={nested ? "tree-item-children ekphrasis-outline-list" : "ekphrasis-outline-list"}>
       {entries.map((entry) => {
         const isFolded = folded.has(entry.uid);
         const foldable = entry.section && entry.children.length > 0;
+        const focused = entry.id === focusedId;
         return (
           <li
             key={entry.uid}
-            class="ekphrasis-outline-item"
+            class={`tree-item ekphrasis-outline-item${isFolded ? " is-collapsed" : ""}`}
             data-path={entry.id}
             data-folded={isFolded ? true : undefined}
           >
             <div
-              class="ekphrasis-outline-entry"
-              data-focused={entry.id === focusedId ? true : undefined}
+              class={[
+                "tree-item-self is-clickable ekphrasis-outline-entry",
+                foldable ? "mod-collapsible" : "",
+                focused ? "is-active" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              data-focused={focused ? true : undefined}
               data-issue={entry.mark ?? undefined}
+              onClick={() => onReveal(entry.path)}
             >
-              {foldable ? (
-                <button
-                  type="button"
-                  class="ekphrasis-outline-fold"
+              {foldable && (
+                <div
+                  class={`tree-item-icon collapse-icon ekphrasis-outline-fold${isFolded ? " is-collapsed" : ""}`}
+                  role="button"
+                  tabIndex={0}
                   aria-expanded={!isFolded}
                   aria-label={isFolded ? `Expand ${entry.name}` : `Collapse ${entry.name}`}
-                  onClick={() => onToggle(entry.uid)}
+                  onClick={(event) => {
+                    // The triangle folds the entry without moving the form to its field.
+                    event.stopPropagation();
+                    onToggle(entry.uid);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onToggle(entry.uid);
+                  }}
                 >
-                  {isFolded ? "▸" : "▾"}
-                </button>
-              ) : (
-                <span class="ekphrasis-outline-fold" aria-hidden="true" />
+                  <Icon
+                    icon="right-triangle"
+                    paint={paintIcon}
+                    class="ekphrasis-outline-triangle"
+                  />
+                </div>
               )}
-              <button
-                type="button"
-                class="ekphrasis-outline-name"
-                onClick={() => onReveal(entry.path)}
+              <div
+                class="tree-item-inner ekphrasis-outline-name"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") return;
+                  event.preventDefault();
+                  onReveal(entry.path);
+                }}
               >
                 {entry.name}
-              </button>
-              {entry.mark !== null && (
-                <span
-                  class={`ekphrasis-outline-mark mod-${entry.mark}`}
-                  aria-label={MARK_LABELS[entry.mark]}
-                  title={MARK_LABELS[entry.mark]}
-                />
-              )}
-              {entry.section && entry.issueCount > 0 && (
-                <span class="ekphrasis-outline-count">{entry.issueCount}</span>
+              </div>
+              {(entry.mark !== null || (entry.section && entry.issueCount > 0)) && (
+                <div class="tree-item-flair-outer">
+                  {entry.mark !== null && (
+                    <span
+                      class={`ekphrasis-outline-mark mod-${entry.mark}`}
+                      aria-label={MARK_LABELS[entry.mark]}
+                      title={MARK_LABELS[entry.mark]}
+                    />
+                  )}
+                  {entry.section && entry.issueCount > 0 && (
+                    <span class="tree-item-flair ekphrasis-outline-count">{entry.issueCount}</span>
+                  )}
+                </div>
               )}
             </div>
             {foldable && !isFolded && (
@@ -186,6 +236,8 @@ function EntryList({
                 folded={folded}
                 onToggle={onToggle}
                 onReveal={onReveal}
+                paintIcon={paintIcon}
+                nested
               />
             )}
           </li>
@@ -225,7 +277,7 @@ function ActionButton({
   return (
     <button
       type="button"
-      class="clickable-icon ekphrasis-outline-action"
+      class="clickable-icon nav-action-button ekphrasis-outline-action"
       aria-label={label}
       onClick={onClick}
     >

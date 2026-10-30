@@ -80,9 +80,22 @@ describe("outline of a form", () => {
           ["#2", ["count", "name"]],
         ],
       ],
-      ["tags", ["x", "#2"]],
+      ["tags", []],
       "kinds",
     ]);
+  });
+
+  it("lists the items of a sequence of scalars only on demand", () => {
+    const built = model();
+    const tags = (scalarItems: boolean): unknown =>
+      names(buildOutline(built, IssueIndex.of(built, []), { scalarItems })).at(-2);
+    expect(tags(false)).toEqual(["tags", []]);
+    expect(tags(true)).toEqual(["tags", ["x", "#2"]]);
+  });
+
+  it("counts the issues of the omitted items of a sequence of scalars at its entry", () => {
+    const tags = outline([issue(["tags", 0], "minLength", "too short")])[4];
+    expect(tags).toMatchObject({ name: "tags", issueCount: 1, children: [] });
   });
 
   it("marks the entries with issues, and counts the issues within each section", () => {

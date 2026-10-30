@@ -3,7 +3,7 @@
  * feature note on the outline specifies. The panel follows the source of the outline channel,
  * and displays its form again at each change reported by the channel.
  */
-import { ItemView, type WorkspaceLeaf } from "obsidian";
+import { ItemView, setIcon, type WorkspaceLeaf } from "obsidian";
 import { h, render } from "preact";
 import { ICONS, OUTLINE_VIEW_TYPE } from "../constants";
 import { OutlinePanel } from "../ui/outline/outline-panel";
@@ -59,6 +59,7 @@ export class OutlineView extends ItemView {
         form: source?.form ?? null,
         focusedId: source?.focusedId ?? null,
         onReveal: (path, showHelp) => source?.reveal(path, showHelp),
+        paintIcon: setIcon,
       }),
       this.contentEl,
     );

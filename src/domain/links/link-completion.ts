@@ -78,7 +78,8 @@ export function fieldPathCompletions(model: FormModel, query: string): FieldPath
       visit(entry.children, names);
     }
   };
-  visit(buildOutline(model, IssueIndex.of(model, [])), []);
+  // A link may designate an item of a list, so the items of the sequences of scalars are proposed.
+  visit(buildOutline(model, IssueIndex.of(model, []), { scalarItems: true }), []);
   const needle = query.toLowerCase();
   if (needle === "") return all;
   const starting = all.filter(({ id }) => id.toLowerCase().startsWith(needle));

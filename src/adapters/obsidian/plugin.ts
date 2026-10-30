@@ -1,7 +1,8 @@
 /**
  * Plugin class: composition root, lifecycle, and registration of the Obsidian integration
  * points (views, extensions, commands, settings tab, vault events, index of record identifiers,
- * suggestions of field paths and handler of the URIs of ekphrasis).
+ * suggestions of field paths and handler of the URIs of ekphrasis). Once the workspace is
+ * restored, the outline opens in the right sidebar.
  */
 import { debounce, loadMathJax, Notice, Plugin, type TAbstractFile } from "obsidian";
 import {
@@ -32,6 +33,7 @@ import { createDefaultRegistry } from "./ui/default-registry";
 import { VaultFileSource } from "./vault-file-source";
 import { InstanceView } from "./views/instance-view";
 import { OutlineChannel } from "./views/outline-channel";
+import { placeOutline } from "./views/outline-placement";
 import { OutlineView } from "./views/outline-view";
 
 /**
@@ -105,6 +107,12 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
         }),
     );
     this.registerView(OUTLINE_VIEW_TYPE, (leaf) => new OutlineView(leaf, outline));
+    // The outline opens in the right sidebar with the plugin, once the workspace is restored.
+    this.app.workspace.onLayoutReady(() => {
+      placeOutline(this.app.workspace).catch((error: unknown) =>
+        console.error("ekphrasis: the outline could not be opened.", error),
+      );
+    });
 
     const refused = registerExtensions(YAML_EXTENSIONS, (extensions) =>
       this.registerExtensions(extensions, INSTANCE_VIEW_TYPE),

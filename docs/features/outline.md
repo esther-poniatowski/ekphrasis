@@ -7,11 +7,13 @@ aliases:
 ---
 # Outline
 
-The outline displays the structure of the active instance in a side panel, as the [requirement on an outline](../requirements.md#^outline) demands. The outline lets an author move through a long instance, as the core outline of Obsidian does for the headings of a note. The command *Show outline* opens the panel in the right sidebar.
+The outline displays the structure of the active instance in a side panel, as the [requirement on an outline](../requirements.md#^outline) demands. The outline lets an author move through a long instance, as the core outline of Obsidian does for the headings of a note.
+
+The panel opens in the right sidebar when the plugin loads, so its tab sits beside the outline and the backlinks of Obsidian, and it follows the active form without any command. The workspace restored at the next launch of Obsidian holds the panel already, so no second panel opens. The command *Show outline* reveals the panel, and opens it again after the author closed it. The panel takes the style of the outline of Obsidian: each entry is drawn as an item of its tree, with the triangle folding its entries, the guide along its nested entries, and the highlight of the focused entry, in the colours and the sizes of the theme.
 
 ## Entries
 
-Each group, collection and field of the form appears as an entry, nested under the entry of its parent in the order of the form. An entry carries the label of its field. An item of a sequence appears under the value of its first field of kind `label` or `text` when that field is filled, and under its position otherwise. A scalar item of one of these kinds appears under its own value. A field of kind `alternatives` holds the entries of the alternative that its value matches. The values checked in a field of kind `choices` form one control, so they carry no entries of their own.
+Each group, collection and field of the form appears as an entry, nested under the entry of its parent in the order of the form. An entry carries the label of its field. An item of a sequence appears under the value of its first field of kind `label` or `text` when that field is filled, and under its position otherwise. The items of a list of scalars carry no entries, since each such item is a value rather than a field to reach: the entry of the list counts their issues. The summary of issues still names a scalar item of kind `label` or `text` by its own value. A field of kind `alternatives` holds the entries of the alternative that its value matches. The values checked in a field of kind `choices` form one control, so they carry no entries of their own.
 
 ## Navigation
 

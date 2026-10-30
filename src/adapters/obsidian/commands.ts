@@ -3,9 +3,10 @@
  */
 import type { Plugin, Workspace } from "obsidian";
 import type { RecordIdentifiers } from "../../application";
-import { INSTANCE_VIEW_TYPE, isYamlExtension, OUTLINE_VIEW_TYPE } from "./constants";
+import { INSTANCE_VIEW_TYPE, isYamlExtension } from "./constants";
 import { registerCopyFieldLink } from "./copy-field-link";
 import { InstanceView } from "./views/instance-view";
+import { placeOutline } from "./views/outline-placement";
 import { OutlineView } from "./views/outline-view";
 
 /** Identifiers and names of the commands, shared with the notices that cite them. */
@@ -27,12 +28,8 @@ export const COMMANDS = {
  * so that its panel is visible.
  */
 async function revealOutline(workspace: Workspace): Promise<OutlineView | null> {
-  let leaf = workspace.getLeavesOfType(OUTLINE_VIEW_TYPE)[0] ?? null;
-  if (leaf === null) {
-    leaf = workspace.getRightLeaf(false);
-    if (leaf === null) return null;
-    await leaf.setViewState({ type: OUTLINE_VIEW_TYPE, active: false });
-  }
+  const leaf = await placeOutline(workspace);
+  if (leaf === null) return null;
   await workspace.revealLeaf(leaf);
   return leaf.view instanceof OutlineView ? leaf.view : null;
 }

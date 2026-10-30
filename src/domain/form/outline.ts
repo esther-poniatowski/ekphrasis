@@ -1,13 +1,15 @@
 /**
  * Outline of a form: one entry per group, collection and field of the form model, nested as the
  * form nests them, with the issues of each entry, as the feature note on the outline specifies.
+ * The items of a sequence of scalars hold no entries, unless the caller asks for them.
  *
  * The outline is plain data derived from the form model and its issues, so the outline panel,
  * the search of fields and the summary of issues name a field the same way.
  */
 import type { YamlPath } from "../model";
 import { dominantMark, type IssueIndex, type IssueMark } from "../validation/issues";
-import type { Field, FormModel } from "./model";
+import { isScalarKind } from "./kinds";
+import type { Field, FormModel, SequenceField } from "./model";
 import { fieldChain } from "./navigation";
 
 export interface OutlineEntry {
@@ -34,9 +36,24 @@ export interface OutlineMatch {
   readonly trail: readonly string[];
 }
 
+/** Choice of the entries of an outline. */
+export interface OutlineOptions {
+  /**
+   * Whether the items of a sequence of scalars hold entries. The outline panel omits them, since
+   * such items are values rather than fields to reach; the completion of field links keeps them.
+   */
+  readonly scalarItems?: boolean;
+}
+
 /** Entries of the fields of `model`, the root excluded, with the issues of `issues`. */
-export function buildOutline(model: FormModel, issues: IssueIndex): OutlineEntry[] {
-  return displayedChildren(model.root).map((field) => entryOf(field, issues));
+export function buildOutline(
+  model: FormModel,
+  issues: IssueIndex,
+  { scalarItems = false }: OutlineOptions = {},
+): OutlineEntry[] {
+  return displayedChildren(model.root, scalarItems).map((field) =>
+    entryOf(field, issues, scalarItems),
+  );
 }
 
 /**
@@ -105,8 +122,8 @@ function isFilledText(field: Field): field is Field & { readonly value: string }
   );
 }
 
-function entryOf(field: Field, issues: IssueIndex): OutlineEntry {
-  const children = displayedChildren(field);
+function entryOf(field: Field, issues: IssueIndex, scalarItems: boolean): OutlineEntry {
+  const children = displayedChildren(field, scalarItems);
   return {
     id: field.id,
     uid: field.uid,
@@ -115,17 +132,19 @@ function entryOf(field: Field, issues: IssueIndex): OutlineEntry {
     section: field.kind !== "choices" && ("children" in field || "items" in field),
     mark: dominantMark(issues.at(field.id)),
     issueCount: issues.countWithin(field.path),
-    children: children.map((child) => entryOf(child, issues)),
+    children: children.map((child) => entryOf(child, issues, scalarItems)),
   };
 }
 
 /**
  * Fields displayed inside `field`: the fields of a mapping, those of the alternative that its
  * value matches for the kind `alternatives`, and the items of a sequence. The checked values of
- * a field of kind `choices` form one control, so they hold no entries.
+ * a field of kind `choices` form one control, so they hold no entries. The items of a sequence of
+ * scalars, such as a field of kind `list`, hold entries only when `scalarItems` holds.
  */
-function displayedChildren(field: Field): readonly Field[] {
+function displayedChildren(field: Field, scalarItems: boolean): readonly Field[] {
   if (field.kind === "choices") return [];
+  if (!scalarItems && "items" in field && holdsScalars(field)) return [];
   if ("children" in field) {
     const selected = field.selectedAlternative;
     return selected === null
@@ -133,6 +152,12 @@ function displayedChildren(field: Field): readonly Field[] {
       : (field.alternativeChildren[selected] ?? field.children);
   }
   return "items" in field ? field.items : [];
+}
+
+/** Whether the items of `field` are scalars, as its template of a next item or its first item shows. */
+function holdsScalars(field: SequenceField): boolean {
+  const item = field.next ?? field.items[0];
+  return item !== undefined && isScalarKind(item.kind);
 }
 
 function normalized(text: string): string {
