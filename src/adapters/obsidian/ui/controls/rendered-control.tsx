@@ -15,6 +15,7 @@ import { isRenderedKind } from "../rendering/value-renderer";
 import { TextInput } from "./text-control";
 import { TextArea } from "./text-area";
 import { useTextDraft } from "./use-text-draft";
+import { WrappingInput } from "./wrapping-input";
 
 export function RenderedControl({ field, readOnly, onCommit }: ScalarControlProps): JSX.Element {
   const draft = useTextDraft(field, onCommit);
@@ -69,7 +70,7 @@ export function RenderedControl({ field, readOnly, onCommit }: ScalarControlProp
   return kind === "markdown" ? (
     <TextArea field={field} readOnly={readOnly} draft={binding} inputRef={bindEditor} />
   ) : (
-    <TextInput
+    <WrappingInput
       field={field}
       readOnly={readOnly}
       draft={binding}

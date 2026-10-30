@@ -1,7 +1,7 @@
 /**
  * Text of scalar values in the controls.
  */
-import type { JsonValue, ScalarField, ScalarValue } from "../../../../domain";
+import type { ChoiceOption, JsonValue, ScalarField, ScalarValue } from "../../../../domain";
 
 /** Text displayed for `value`; the null value displays as an empty control. */
 export function formatScalar(value: ScalarValue | JsonValue): string {
@@ -24,4 +24,10 @@ export function displayedValue(field: ScalarField): ScalarValue {
 export function placeholderOf(field: ScalarField): string {
   const [example] = field.examples;
   return example === undefined ? UNFILLED_MARK : `${UNFILLED_MARK} ${formatScalar(example)}`;
+}
+
+/** Label of an admitted value: its title followed by the value, or the value alone. */
+export function optionLabel(option: ChoiceOption): string {
+  const value = formatScalar(option.value);
+  return option.title === null || option.title === value ? value : `${option.title} (${value})`;
 }

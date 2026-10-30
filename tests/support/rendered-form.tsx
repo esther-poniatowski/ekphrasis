@@ -17,6 +17,7 @@ import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
 import type { LossRequest } from "../../src/adapters/obsidian/ui/form-context";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
 import { HelpState } from "../../src/adapters/obsidian/ui/help-state";
+import { NO_ICONS } from "../../src/adapters/obsidian/ui/icon";
 import { IMMEDIATE_SCHEDULER } from "../../src/adapters/obsidian/ui/rendering/render-queue";
 import { TEXT_RENDERER } from "../../src/adapters/obsidian/ui/rendering/value-renderer";
 import type { PathRule, YamlPath } from "../../src/domain";
@@ -75,6 +76,7 @@ export async function renderForm(
       help={help}
       renderer={TEXT_RENDERER}
       scheduler={IMMEDIATE_SCHEDULER}
+      paintIcon={NO_ICONS}
       reveal={(path) => reveals.push(path)}
       onOpenSource={() => undefined}
     />

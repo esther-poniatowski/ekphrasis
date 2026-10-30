@@ -16,7 +16,7 @@ import {
   type SequenceField,
 } from "../../../../domain";
 import type { ControlProps } from "../control-registry";
-import { FieldHelp, HelpButton, hasGuidance, type Guidance } from "../field-help";
+import { FieldHelp, guidanceOf, HelpButton, hasGuidance, type Guidance } from "../field-help";
 import { DisabledNote, forbidsItself, useDisabling } from "../disabled-note";
 import { LockNote, useLockDisclosure } from "../field-label";
 import { FieldView } from "../field-view";
@@ -43,11 +43,10 @@ interface Column extends Guidance {
 function columnsOf(template: Field | null | undefined): Column[] {
   if (template == null || !("children" in template)) return [];
   return template.children.map((child) => ({
+    ...guidanceOf(child),
     key: String(child.path.at(-1)),
     label: child.label,
     required: child.required,
-    description: child.description,
-    examples: child.examples,
   }));
 }
 
@@ -221,7 +220,6 @@ function TableFrame({
               <tbody>{rows}</tbody>
             </table>
           </div>
-          {rows.length === 0 && <div class="ekphrasis-empty">No rows.</div>}
           {adder}
         </div>
       )}

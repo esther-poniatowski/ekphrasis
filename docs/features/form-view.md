@@ -11,15 +11,38 @@ The form view displays an instance bound to a schema as a form, in which each fi
 
 ## Layout
 
-The fields of the instance appear in the order of the schema. Each field occupies one row with three parts:
+The fields of the instance appear in the order of the schema. Each field occupies one concise row, as Obsidian displays the properties of a note, with three parts:
 
-- the label, taken from the keyword `title` or else from the key, and marked when the schema requires the field, or when a [conditional rule](#^conditional-controls) requires it under the current values. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written;
-- the control of its [kind](field-kinds.md), placed in a content area whose background sets it apart from the label;
-- a status marker, showing whether the field is filled, missing or invalid.
+- the label, opened by the [icon of the kind](#^kind-icons) of the field, followed by its name in bold. The name is taken from the keyword `title` or else from the key, and marked when the schema requires the field, or when a [conditional rule](#^conditional-controls) requires it under the current values. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written. The help button of the field closes the label on its right, so the help buttons of the rows align;
+- the control of its [kind](field-kinds.md), in the remaining width of the row;
+- a status marker, a bar at the left of the control, showing whether the field is missing, invalid or holding a warning. The bar lies in the gap between the label and the control, so it never moves the control.
 
-A group opens a section headed by its label, and the fields of the group are indented under that heading, along a vertical guide that marks the extent of the group. Each group and each collection can be collapsed and expanded. The button at the start of its heading folds it alone. The commands *Collapse all* and *Expand all* fold or unfold every section at once, as do the two buttons of the same names in the header of the view. These buttons display in the form view only. When the form opens, the keyword `x-collapsed` of the schema fixes which of them are folded.
+Every control holding text takes one font size and one appearance, in a row as in a cell. The font size is that of the inputs of Obsidian, set by the variable `--font-ui-small` of the theme. The appearance is that of the form fields of the theme: a fill, white in the light theme, a gray border and rounded corners. The rule covers the inputs, the multi-line inputs, the dropdowns and the rendered values. A single-line control takes the height of an input of Obsidian, and the name of its label stands level with its first line. A dropdown draws its arrow inside its own frame, so it takes the width and the height of the other controls.
 
-Each item of a sequence carries two buttons moving it one position up or down, and a button removing it. Each entry of a mapping keyed by identifiers carries a button removing it. A button below each collection adds an item, a row or an entry. The new entry displays as a draft until a value is committed inside it, as specified for [saving](saving.md#^structural-edits). The layout thereby satisfies the [requirement on visible structure](../requirements.md#^visible-structure).
+The icon of each kind is drawn from the Lucide set bundled with Obsidian. Where Obsidian gives a property type an icon, the kind closest to that type takes the same icon: ^kind-icons
+
+| Kind | Icon | Property type of Obsidian with this icon |
+| --- | --- | --- |
+| `label` | `whole-word` | None |
+| `text` | `text` | Text |
+| `markdown-line` | `letter-text` | None |
+| `markdown` | `pilcrow` | None |
+| `latex` | `sigma` | None |
+| `number` | `binary` | Number |
+| `boolean` | `check-square` | Checkbox |
+| `choice` | `circle-dot` | None |
+| `choices` | `list-checks` | None |
+| `list` | `list` | List |
+| `group` | `braces` | None |
+| `table` | `table` | None |
+| `keyed-table` | `table-properties` | None |
+| `records` | `layers` | None |
+| `keyed-records` | `key-round` | None |
+| `alternatives` | `split` | None |
+
+A group opens a section headed by its label, and the fields of the group are indented under that heading, along a light vertical guide that marks the extent of the group. The guide takes the colour of the indentation guides of Obsidian at half their strength, and their full colour while the pointer is over the group. Each group and each collection can be collapsed and expanded. The button at the start of its heading folds it alone. The commands *Collapse all* and *Expand all* fold or unfold every section at once, as do the two buttons of the same names in the header of the view. These buttons display in the form view only. When the form opens, the keyword `x-collapsed` of the schema fixes which of them are folded.
+
+Each item of a sequence carries two buttons moving it one position up or down, and a button removing it. Each entry of a mapping keyed by identifiers carries a button removing it. A button below each collection adds an item, a row or an entry. That button also shows that a collection is empty, so an empty collection displays no message. The new entry displays as a draft until a value is committed inside it, as specified for [saving](saving.md#^structural-edits). The layout thereby satisfies the [requirement on visible structure](../requirements.md#^visible-structure).
 
 ## Text and focus
 
@@ -27,10 +50,10 @@ The text of the form can be selected and copied, including the labels, the schem
 
 ## Instructions and examples
 
-A help button beside each label displays the instructions and the examples of the field in the row below that label and its control, so the control keeps its place, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. The button responds to a click, and to the keys `Enter` and `Space` while it holds the focus. The button ignores hover, since touch devices have no hover. A field carries the button when its schema declares the keyword `description` or `examples`. The instructions are rendered as Markdown, and the examples follow them, each written as in the file. The button shows the information icon, distinct from the circled question mark of a locked value. Three places carry the button besides the label of a scalar field:
+A help button at the right of each label displays the instructions and the examples of the field in the row below that label and its control, so the control keeps its place, as the [keywords of the schema](schemas.md#^field-keywords) declare them. A second click hides them, so the form stays compact while the author needs no help, as the [requirement on instructions on demand](../requirements.md#^instructions-on-demand) demands. The button responds to a click, and to the keys `Enter` and `Space` while it holds the focus. The button ignores hover, since touch devices have no hover. A field carries the button when its schema declares the keyword `description` or `examples`, or when an admitted value of the field carries a description. The instructions are rendered as Markdown. The descriptions of the admitted values of a field of kind `choice` or `choices` follow them under *Options*, each after the title and the value it describes, so they display on demand rather than always. The examples come last, each written as in the file. The button shows the information icon, distinct from the circled question mark of a locked value. Three places carry the button besides the label of a scalar field: ^option-descriptions
 
 - the heading of a group or a collection, whose instructions display below the heading, also while the section is folded;
-- the header of each column of a table, whose instructions display above the table under the name of the column, since the cells of a column share them;
+- the header of each column of a table, whose instructions display above the table under the name of the column, since the cells of a column share them. The button stands apart from the name of the column;
 - the title of the form, for the instructions of the root schema.
 
 The instructions of every field show at once through the button with the information icon in the header of the view, or through the command *Show all instructions*. Once every instruction is shown, the same button hides them all, as does the command *Hide all instructions*. The button displays in the form view only, and is marked as active while every instruction is shown. The folding of the sections stays unchanged: the instructions of a folded group display below its heading, and those of its fields display once it unfolds. A help button still shows or hides the instructions of its own field afterwards.

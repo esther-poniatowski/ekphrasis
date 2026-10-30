@@ -1,7 +1,8 @@
 /**
  * Section of a sequence field, headed by its label and the count of the issues within it,
  * holding one field per item, each with the actions moving it up or down and removing it. A
- * button adds an item: the next item displays as a draft, written by its first edited value. It
+ * button adds an item: the next item displays as a draft, written by its first edited value. The
+ * button also shows that an empty sequence holds no item, so no message states it. It
  * displays the kinds `list` and `records`, and every sequence kind without a control of its own.
  */
 import type { JSX } from "preact";
@@ -66,7 +67,6 @@ export function SequenceSection({
       {!fold.folded && (
         <div class="ekphrasis-group-body">
           {rows}
-          {rows.length === 0 && <div class="ekphrasis-empty">No items.</div>}
           <AddButton
             label="Add an item"
             disabled={readOnly || next === null || drafted !== null}

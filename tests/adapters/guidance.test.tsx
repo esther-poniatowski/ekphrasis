@@ -236,14 +236,14 @@ describe("rendered values", () => {
 
   it("displays the editor of an empty value at once, with its placeholder", async () => {
     const { container } = await renderGuided();
-    const input = element<HTMLInputElement>(row(container, "note"), "input");
+    const input = element<HTMLTextAreaElement>(row(container, "note"), "textarea");
     expect(input.placeholder).toBe("—");
   });
 
   it("opens the editor at the focus of the rendered value, and renders the committed text", async () => {
     const { container, session } = await renderGuided();
     fireEvent.focus(element(row(container, "summary"), ".ekphrasis-rendered"));
-    const input = element<HTMLInputElement>(row(container, "summary"), "input");
+    const input = element<HTMLTextAreaElement>(row(container, "summary"), "textarea");
     expect(input.value).toBe("A *short* line");
     expect(input.ownerDocument.activeElement).toBe(input);
     fireEvent.input(input, { target: { value: "A *new* line" } });

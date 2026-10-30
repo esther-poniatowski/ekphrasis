@@ -1,6 +1,7 @@
 /**
  * Hook binding a text control to its draft: the control commits its text when it loses the
- * focus, when typing pauses for the commit delay of the settings, and when it is removed.
+ * focus, when typing pauses for the commit delay of the settings, when it is removed, and at the
+ * request of the control, as the key `Enter` of a single-line value requests it.
  */
 import { useEffect, useReducer, useRef, useState } from "preact/hooks";
 import { valueFromText, type ScalarField, type ScalarValue } from "../../../../domain";
@@ -15,6 +16,8 @@ export interface TextDraftBinding {
   readonly onBlur: () => void;
   /** Records the text typed, and commits it once typing pauses for the commit delay. */
   readonly onInput: (text: string) => void;
+  /** Commits at once the text typed since the last commit, if any. */
+  readonly onCommit: () => void;
 }
 
 export function useTextDraft(
@@ -56,5 +59,6 @@ export function useTextDraft(
       rerender(0);
       timer.current = window.setTimeout(flush, commitDelay);
     },
+    onCommit: flush,
   };
 }

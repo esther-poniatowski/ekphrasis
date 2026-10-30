@@ -21,11 +21,12 @@ import {
 } from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
-import { FieldHelp, HelpButton, hasGuidance } from "./field-help";
+import { FieldHelp, guidanceOf, HelpButton, hasGuidance } from "./field-help";
 import { FieldView } from "./field-view";
 import type { FoldState } from "./fold-state";
 import { FormContext, type LossRequest } from "./form-context";
 import type { HelpState } from "./help-state";
+import type { IconPainter } from "./icon";
 import { InlineText } from "./inline-text";
 import { IssueSummary } from "./issue-summary";
 import type { RenderScheduler } from "./rendering/render-queue";
@@ -48,6 +49,8 @@ export interface FormPanelProps {
   readonly help: HelpState;
   readonly renderer: ValueRenderer;
   readonly scheduler: RenderScheduler;
+  /** Painter of the icons of the field kinds. */
+  readonly paintIcon: IconPainter;
   /** Moves the form to the field at a path, unfolding the sections containing it. */
   readonly reveal: (path: YamlPath) => void;
   readonly onOpenSource: () => void;
@@ -142,6 +145,7 @@ function EditableForm({
   help,
   renderer,
   scheduler,
+  paintIcon,
   reveal,
 }: FormPanelProps & {
   readonly form: FormReady;
@@ -165,6 +169,7 @@ function EditableForm({
         help,
         renderer,
         scheduler,
+        paintIcon,
         reveal,
       }}
     >
@@ -188,15 +193,15 @@ function FormRoot({
   return (
     <div class="ekphrasis-form">
       <div class="ekphrasis-form-header">
-        {(model.title !== null || hasGuidance(root)) && (
+        {(model.title !== null || hasGuidance(guidanceOf(root))) && (
           <div class="ekphrasis-form-title">
             {model.title !== null && <span>{model.title}</span>}
-            {hasGuidance(root) && (
+            {hasGuidance(guidanceOf(root)) && (
               <HelpButton helpKey={root.uid} label={model.title ?? "the record"} />
             )}
           </div>
         )}
-        <FieldHelp helpKey={root.uid} guidance={root} />
+        <FieldHelp helpKey={root.uid} guidance={guidanceOf(root)} />
         <div class="ekphrasis-form-binding">
           Schema <code>{binding.schemaPath}</code>
           {binding.source === "schema-field"

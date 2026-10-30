@@ -59,7 +59,7 @@ function renderCollections(text = TEXT): Promise<RenderedForm> {
 }
 
 /** Types `value` into `input`, then leaves it, so its control commits. */
-function type(input: HTMLInputElement, value: string): void {
+function type(input: HTMLInputElement | HTMLTextAreaElement, value: string): void {
   fireEvent.focus(input);
   fireEvent.input(input, { target: { value } });
   fireEvent.blur(input);
@@ -72,11 +72,11 @@ describe("table", () => {
   it("adds a row as a draft, written by its first cell, in the same input", async () => {
     const { container, session } = await renderCollections();
     fireEvent.click(element(container, '[data-path="rows"] .ekphrasis-add'));
-    const input = element<HTMLInputElement>(container, '[data-path="rows[1].name"] input');
+    const input = element<HTMLTextAreaElement>(container, '[data-path="rows[1].name"] textarea');
     expect(session.text).not.toContain("- name: b");
     type(input, "b");
     expect(session.text).toContain("rows:\n  - name: a\n  - name: b\n");
-    expect(element(container, '[data-path="rows[1].name"] input')).toBe(input);
+    expect(element(container, '[data-path="rows[1].name"] textarea')).toBe(input);
   });
 
   it("removes a row by its action", async () => {
@@ -121,7 +121,7 @@ describe("keyed records", () => {
     const key = element<HTMLInputElement>(terms, ".ekphrasis-key-adder input");
     fireEvent.input(key, { target: { value: "a-term" } });
     fireEvent.click(element(terms, ".ekphrasis-key-adder button"));
-    type(element<HTMLInputElement>(container, '[data-path="terms.a-term.label"] input'), "A");
+    type(element<HTMLTextAreaElement>(container, '[data-path="terms.a-term.label"] textarea'), "A");
     expect(session.text).toContain("terms:\n  a-term:\n    label: A\n  b-term:\n");
   });
 

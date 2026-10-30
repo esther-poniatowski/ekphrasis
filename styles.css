@@ -85,14 +85,9 @@
 .ekphrasis-form-binding,
 .ekphrasis-empty,
 .ekphrasis-alternative,
-.ekphrasis-extra-heading,
-.ekphrasis-option-description {
+.ekphrasis-extra-heading {
   color: var(--text-muted);
   font-size: var(--font-ui-small);
-}
-
-.ekphrasis-option-description {
-  margin-top: var(--size-2-2);
 }
 
 /* Warnings about the schema, framed like a warning callout of the theme. */
@@ -149,27 +144,55 @@ ul.ekphrasis-path-messages {
   overflow-wrap: anywhere;
 }
 
+/* A field is one row, as Obsidian displays a property: the icon of its kind and its name in bold,
+   then its control in the remaining width. The rows below the first one hold the instructions,
+   the notes and the issues of the field. */
 .ekphrasis-field {
   display: grid;
   grid-template-columns: minmax(8rem, 1fr) 3fr;
-  gap: var(--size-4-3);
+  column-gap: var(--size-4-3);
+  row-gap: var(--size-2-1);
   align-items: start;
-  padding: var(--size-4-1) 0;
+  padding: var(--size-2-1) 0;
 }
 
+/* The label takes the height of a single-line control, so its name stands level with the first
+   line of the control; the help button closes the label on the right. */
 .ekphrasis-field-label {
   display: flex;
-  gap: var(--size-2-2);
-  align-items: baseline;
-  padding-top: var(--size-4-1);
+  gap: var(--size-2-3);
+  align-items: center;
+  min-height: var(--input-height);
   color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-semibold);
   overflow-wrap: anywhere;
 }
 
+.ekphrasis-field-name {
+  min-width: 0;
+}
+
+.ekphrasis-field-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--icon-color);
+}
+
+.ekphrasis-field-icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  stroke-width: var(--icon-xs-stroke-width);
+}
+
+/* The hover state is named too, since the reset of the help button below sets its margins. */
+.ekphrasis-field-label > .ekphrasis-help-button,
+.ekphrasis-field-label > .ekphrasis-help-button:hover {
+  margin-left: auto;
+}
+
 .ekphrasis-field-content {
-  background-color: var(--background-secondary);
-  border-radius: var(--radius-s);
-  padding: var(--size-2-2);
+  position: relative;
   min-width: 0;
 }
 
@@ -237,17 +260,32 @@ ul.ekphrasis-path-messages {
   color: rgb(var(--color-orange-rgb));
 }
 
-/* The content of a field with issues is marked on its left edge, in the colour of its mark. */
-.ekphrasis-field[data-issue="invalid"] > .ekphrasis-field-content {
-  box-shadow: inset 3px 0 0 var(--text-error);
+/* The content of a field with issues is marked by a bar in the gap at its left, in the colour of
+   its mark, so the mark never moves the control. */
+.ekphrasis-field[data-issue] > .ekphrasis-field-content::before,
+.ekphrasis-table-cell[data-issue]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--size-4-2));
+  width: 3px;
+  border-radius: var(--radius-s);
 }
 
-.ekphrasis-field[data-issue="missing"] > .ekphrasis-field-content {
-  box-shadow: inset 3px 0 0 var(--text-accent);
+.ekphrasis-field[data-issue="invalid"] > .ekphrasis-field-content::before,
+.ekphrasis-table-cell[data-issue="invalid"]::before {
+  background-color: var(--text-error);
 }
 
-.ekphrasis-field[data-issue="warning"] > .ekphrasis-field-content {
-  box-shadow: inset 3px 0 0 rgb(var(--color-orange-rgb));
+.ekphrasis-field[data-issue="missing"] > .ekphrasis-field-content::before,
+.ekphrasis-table-cell[data-issue="missing"]::before {
+  background-color: var(--text-accent);
+}
+
+.ekphrasis-field[data-issue="warning"] > .ekphrasis-field-content::before,
+.ekphrasis-table-cell[data-issue="warning"]::before {
+  background-color: rgb(var(--color-orange-rgb));
 }
 
 /* Count of the issues within a group, beside its label. */
@@ -276,8 +314,62 @@ ul.ekphrasis-path-messages {
   font-weight: var(--font-semibold);
 }
 
+/* Every control holding text takes one font size, the smallest used by the text controls of
+   Obsidian, and one appearance: a white fill, a gray border and rounded corners. A single-line
+   control and the first line of a wrapped one take the height of an input of Obsidian. */
 .ekphrasis-control {
   width: 100%;
+}
+
+.ekphrasis-form input[type="text"].ekphrasis-control,
+.ekphrasis-form textarea.ekphrasis-control,
+.ekphrasis-form .ekphrasis-rendered.ekphrasis-control,
+.ekphrasis-form select.ekphrasis-control {
+  box-sizing: border-box;
+  min-height: var(--input-height);
+  margin: 0;
+  border: var(--input-border-width) solid var(--background-modifier-border);
+  border-radius: var(--input-radius);
+  background-color: var(--background-modifier-form-field);
+  box-shadow: none;
+  color: var(--text-normal);
+  font-family: inherit;
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-form input[type="text"].ekphrasis-control,
+.ekphrasis-form textarea.ekphrasis-control,
+.ekphrasis-form .ekphrasis-rendered.ekphrasis-control {
+  padding: var(--input-padding);
+  line-height: calc(var(--input-height) - 2 * var(--size-4-1) - 2 * var(--input-border-width));
+}
+
+/* The dropdown keeps the padding of Obsidian on its right, where its arrow is drawn inside the
+   control, so the arrow neither widens nor moves it. */
+.ekphrasis-form select.ekphrasis-control {
+  height: var(--input-height);
+}
+
+.ekphrasis-form input[type="text"].ekphrasis-control:hover,
+.ekphrasis-form textarea.ekphrasis-control:hover,
+.ekphrasis-form .ekphrasis-rendered.ekphrasis-control:hover,
+.ekphrasis-form select.ekphrasis-control:hover {
+  border-color: var(--background-modifier-border-hover);
+}
+
+.ekphrasis-form input[type="text"].ekphrasis-control:focus,
+.ekphrasis-form textarea.ekphrasis-control:focus,
+.ekphrasis-form select.ekphrasis-control:focus-visible {
+  border-color: var(--background-modifier-border-focus);
+}
+
+/* An input of one row that grows with its wrapped value; its height is fitted by the control. */
+textarea.ekphrasis-wrapping {
+  display: block;
+  resize: none;
+  overflow-y: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* Mark of an unfilled value beside a toggle, which has no empty state. */
@@ -301,9 +393,8 @@ ul.ekphrasis-path-messages {
   font-size: var(--font-ui-small);
 }
 
-textarea.ekphrasis-control {
+textarea.ekphrasis-control:not(.ekphrasis-wrapping) {
   resize: vertical;
-  font-family: inherit;
 }
 
 .ekphrasis-yaml-text {
@@ -324,16 +415,18 @@ textarea.ekphrasis-control {
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-/* A vertical guide runs along the fields of each group, from under the fold button of its heading,
-   so each field reads as part of its group. */
+/* A light vertical guide runs along the fields of each group, from under the fold button of its
+   heading, so each field reads as part of its group; it darkens while the pointer is over the
+   group. Its colours are those of the indentation guides of Obsidian, at half their strength. */
 .ekphrasis-group-body {
   margin-left: calc(var(--icon-xs) / 2);
   padding-left: var(--size-4-4);
-  border-left: 1px solid var(--background-modifier-border);
+  border-left: var(--indentation-guide-width) solid
+    color-mix(in oklch, var(--indentation-guide-color) 50%, transparent);
 }
 
 .ekphrasis-group-body:hover {
-  border-left-color: var(--background-modifier-border-hover);
+  border-left-color: var(--indentation-guide-color-active);
 }
 
 /* The button folding a section; the theme styles of buttons are reset so only its chevron shows. */
@@ -365,9 +458,6 @@ textarea.ekphrasis-control {
   transform: rotate(-90deg);
 }
 
-.ekphrasis-group-heading > .ekphrasis-field-label {
-  padding-top: 0;
-}
 
 /* Actions of an item or an entry: moving it up or down, and removing it. */
 .ekphrasis-item-actions {
@@ -441,6 +531,17 @@ textarea.ekphrasis-control {
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
+/* The help button of a column stands apart from the name of the column. */
+.ekphrasis-table th .ekphrasis-help-button,
+.ekphrasis-table th .ekphrasis-help-button:hover {
+  margin-left: var(--size-4-2);
+  vertical-align: middle;
+}
+
+.ekphrasis-table th .ekphrasis-required {
+  margin-left: var(--size-2-1);
+}
+
 .ekphrasis-table td {
   vertical-align: top;
   padding: var(--size-2-1);
@@ -456,15 +557,6 @@ textarea.ekphrasis-control {
 .ekphrasis-table td[data-kind="choice"] .ekphrasis-control {
   min-width: 6rem;
   max-width: 12rem;
-}
-
-/* A selected option's description does not participate in the intrinsic width of its choice
-   column. It instead takes the width fixed by the dropdown and wraps within that width. */
-.ekphrasis-table td[data-kind="choice"] .ekphrasis-option-description {
-  width: 0;
-  min-width: 100%;
-  overflow-wrap: anywhere;
-  white-space: normal;
 }
 
 /* A mapping alternative nested in a table cell uses the column heading as its section heading.
@@ -504,7 +596,7 @@ textarea.ekphrasis-control {
   > .ekphrasis-group-body
   > .ekphrasis-field
   > .ekphrasis-field-label {
-  padding-top: 0;
+  min-height: 0;
   padding-bottom: var(--size-2-1);
 }
 
@@ -518,19 +610,13 @@ textarea.ekphrasis-control {
 }
 
 .ekphrasis-table-cell {
+  position: relative;
   min-width: 6rem;
 }
 
-.ekphrasis-table-cell[data-issue="invalid"] {
-  box-shadow: inset 3px 0 0 var(--text-error);
-}
-
-.ekphrasis-table-cell[data-issue="missing"] {
-  box-shadow: inset 3px 0 0 var(--text-accent);
-}
-
-.ekphrasis-table-cell[data-issue="warning"] {
-  box-shadow: inset 3px 0 0 rgb(var(--color-orange-rgb));
+/* The bar marking a cell with issues lies in the padding of the cell, at the left of its control. */
+.ekphrasis-table-cell[data-issue]::before {
+  left: calc(-1 * var(--size-2-1));
 }
 
 /* Checkboxes of the admitted values of a field of kind `choices`. */
@@ -670,27 +756,35 @@ textarea.ekphrasis-control {
   margin-bottom: 0;
 }
 
+.ekphrasis-help-options ul,
 .ekphrasis-help-examples ul {
   margin: var(--size-2-1) 0 0;
   padding-left: var(--size-4-4);
 }
 
-.ekphrasis-help-examples-label {
+.ekphrasis-help-options + .ekphrasis-help-examples,
+.ekphrasis-help-text + .ekphrasis-help-options {
+  margin-top: var(--size-2-2);
+}
+
+.ekphrasis-help-label {
   color: var(--text-faint);
 }
 
-/* A rendered value reads as its control: a click on it opens the editor. */
+.ekphrasis-help-option {
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+}
+
+/* A rendered value reads as its control, with the appearance of the text controls: a click on it
+   opens the editor. */
 .ekphrasis-rendered.ekphrasis-control {
-  min-height: var(--input-height);
-  padding: var(--size-2-2) var(--size-4-2);
-  border-radius: var(--radius-s);
   cursor: text;
   overflow-wrap: anywhere;
 }
 
-.ekphrasis-rendered.ekphrasis-control:hover,
 .ekphrasis-rendered.ekphrasis-control:focus-visible {
-  background-color: var(--background-modifier-hover);
+  border-color: var(--background-modifier-border-focus);
 }
 
 .ekphrasis-rendered[aria-readonly="true"] {

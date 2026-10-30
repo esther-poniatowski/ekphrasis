@@ -21,6 +21,6 @@ describe("columns of a table", () => {
     );
 
     expect(form.container.querySelector("td[data-kind='choice'] select")).not.toBeNull();
-    expect(form.container.querySelector("td[data-kind='text'] input")).not.toBeNull();
+    expect(form.container.querySelector("td[data-kind='text'] textarea")).not.toBeNull();
   });
 });

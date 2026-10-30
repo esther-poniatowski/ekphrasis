@@ -1,24 +1,41 @@
 /**
- * Instructions of a field on demand: a help button beside its label, and the panel below the
- * label holding the instructions of the keyword `description`, rendered as Markdown, and the
- * values of the keyword `examples`. The panel shows and hides at each click of the button, or at
- * each press of `Enter` or `Space` on the focused button, rather than at hover, since touch
- * devices have no hover.
+ * Instructions of a field on demand: a help button at the right of its label, and the panel below
+ * the label holding the instructions of the keyword `description`, rendered as Markdown, the
+ * descriptions of the admitted values of a choice, and the values of the keyword `examples`. The
+ * panel shows and hides at each click of the button, or at each press of `Enter` or `Space` on the
+ * focused button, rather than at hover, since touch devices have no hover.
  */
 import type { JSX } from "preact";
-import type { JsonValue } from "../../../domain";
-import { formatScalar } from "./controls/scalar-format";
+import type { ChoiceOption, Field, JsonValue } from "../../../domain";
+import { formatScalar, optionLabel } from "./controls/scalar-format";
 import { useFormContext } from "./form-context";
 import { RenderedValue } from "./rendering/rendered-value";
 
 /** Instructions and examples of one field, or of one column of a table. */
 export interface Guidance {
   readonly description: string | null;
+  /** Admitted values of a choice that carry a description, in the order of the schema. */
+  readonly options: readonly ChoiceOption[];
   readonly examples: readonly JsonValue[];
 }
 
+/**
+ * Guidance of `field`: its instructions, its examples, and the described options of a field of
+ * kind `choice`, or of the items of a field of kind `choices`.
+ */
+export function guidanceOf(field: Field): Guidance {
+  const next = "next" in field ? field.next : null;
+  const options =
+    "options" in field ? field.options : next !== null && "options" in next ? next.options : [];
+  return {
+    description: field.description,
+    options: options.filter((option) => option.description !== null),
+    examples: field.examples,
+  };
+}
+
 export const hasGuidance = (guidance: Guidance): boolean =>
-  guidance.description !== null || guidance.examples.length > 0;
+  guidance.description !== null || guidance.options.length > 0 || guidance.examples.length > 0;
 
 /** Button showing and hiding the instructions of the help key `helpKey`, named after `label`. */
 export function HelpButton({
@@ -73,18 +90,29 @@ export function FieldHelp({
 }): JSX.Element | null {
   const { help } = useFormContext();
   if (!help.isShown(helpKey) || !hasGuidance(guidance)) return null;
-  const { description, examples } = guidance;
+  const { description, options, examples } = guidance;
   return (
     <div class="ekphrasis-help" data-help={helpKey}>
       {title !== null && <div class="ekphrasis-help-title">{title}</div>}
       {description !== null && (
         <RenderedValue kind="markdown" text={description} immediate class="ekphrasis-help-text" />
       )}
+      {options.length > 0 && (
+        <div class="ekphrasis-help-options">
+          <span class="ekphrasis-help-label">Options</span>
+          <ul>
+            {options.map((option, index) => (
+              <li key={index}>
+                <span class="ekphrasis-help-option">{optionLabel(option)}</span>
+                {`: ${option.description ?? ""}`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {examples.length > 0 && (
         <div class="ekphrasis-help-examples">
-          <span class="ekphrasis-help-examples-label">
-            {examples.length === 1 ? "Example" : "Examples"}
-          </span>
+          <span class="ekphrasis-help-label">{examples.length === 1 ? "Example" : "Examples"}</span>
           <ul>
             {examples.map((example, index) => (
               <li key={index}>

@@ -71,7 +71,6 @@ export function KeyedRecordsSection({
       {!fold.folded && (
         <div class="ekphrasis-group-body">
           {entries}
-          {entries.length === 0 && <div class="ekphrasis-empty">No entries.</div>}
           <ExtraEntries entries={field.extraEntries} />
           <KeyAdder
             keys={keys}

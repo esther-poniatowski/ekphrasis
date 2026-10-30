@@ -6,7 +6,7 @@
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../../domain";
-import { FieldHelp } from "../field-help";
+import { FieldHelp, guidanceOf } from "../field-help";
 import { FieldLabel, type LockDisclosure } from "../field-label";
 import { useFormContext } from "../form-context";
 import { IssueCount } from "../issue-list";
@@ -57,7 +57,7 @@ export function SectionHeading({
         <IssueCount count={issues.countWithin(field.path)} />
         {actions}
       </div>
-      <FieldHelp helpKey={field.uid} guidance={field} />
+      <FieldHelp helpKey={field.uid} guidance={guidanceOf(field)} />
     </>
   );
 }

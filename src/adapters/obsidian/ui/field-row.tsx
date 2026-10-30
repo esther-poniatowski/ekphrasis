@@ -6,7 +6,7 @@
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../domain";
-import { FieldHelp } from "./field-help";
+import { FieldHelp, guidanceOf } from "./field-help";
 import { FieldLabel, LockNote, useLockDisclosure } from "./field-label";
 import { useFormContext } from "./form-context";
 import { DisabledNote, forbidsItself, useDisabling } from "./disabled-note";
@@ -36,7 +36,7 @@ export function FieldRow({
       data-disabled={forbidsItself(field, disabling) ? true : undefined}
     >
       <FieldLabel field={field} disclosure={disclosure} />
-      <FieldHelp helpKey={field.uid} guidance={field} />
+      <FieldHelp helpKey={field.uid} guidance={guidanceOf(field)} />
       {actions === null ? (
         <div class="ekphrasis-field-content">{children}</div>
       ) : (

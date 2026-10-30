@@ -1,15 +1,18 @@
 /**
- * Single-line input, for the kinds `label`, `text` and `number`, for the editor of the kinds
- * `markdown-line` and `latex`, and for any scalar value that the control of its kind cannot hold.
+ * Single-line input, for the kinds `label` and `number`, and for any scalar value that the
+ * control of its kind cannot hold. A value of kind `text` displays in an input that wraps it.
  */
 import type { JSX } from "preact";
 import type { ScalarControlProps } from "../control-registry";
 import { placeholderOf } from "./scalar-format";
 import { useTextDraft, type TextDraftBinding } from "./use-text-draft";
+import { WrappingInput } from "./wrapping-input";
 
 export function TextControl({ field, readOnly, onCommit }: ScalarControlProps): JSX.Element {
   const draft = useTextDraft(field, onCommit);
   const { kind } = field;
+  if (kind === "text")
+    return <WrappingInput field={field} readOnly={readOnly} draft={draft} spellcheck />;
   return (
     <TextInput
       field={field}
