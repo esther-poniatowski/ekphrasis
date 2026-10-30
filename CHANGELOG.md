@@ -16,7 +16,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Marks of the issues of a field drawn as a bar beside its control, so they no longer move the control.
 - Help buttons of the headers of a table set apart from the names of their columns.
 - Descriptions of the options of a choice listed with the instructions of the field, on demand, instead of below the dropdown.
-- Long values of the kinds `text`, `markdown-line` and `latex` wrapped in their inputs, which grow to show the whole value; the key `Enter` commits the value, and a pasted line break becomes a space, so the file keeps the value on one line.
+- Long values of the kinds `text`, `markdown-line` and `latex` wrapped in their inputs, which grow to show the whole value; the key `Enter` commits the value, and a pasted line break becomes a space, so the file keeps the value on one line. A value already holding a line break keeps its line breaks.
 - Lighter vertical guide along the fields of each nested group.
 - Outline drawn in the style of the outline of Obsidian, without entries for the items of the lists of scalars.
 

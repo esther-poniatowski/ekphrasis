@@ -154,6 +154,20 @@ describe("wrapped single-line values", () => {
     expect(session.text).toContain("summary: A *line* with a break\n");
   });
 
+  it("keeps the line breaks of a value that already holds one, at the key Enter and at a paste", async () => {
+    const { container, session } = await renderPresented(
+      TEXT.replace("title: Pendulum\n", "title: |\n  First line.\n  Second line.\n"),
+    );
+    const area = element<HTMLTextAreaElement>(row(container, "title"), "textarea");
+    expect(area.value).toBe("First line.\nSecond line.\n");
+    fireEvent.focus(area);
+    expect(fireEvent.keyDown(area, { key: "Enter" })).toBe(true);
+    fireEvent.input(area, { target: { value: "First line.\nSecond line.\nThird line.\n" } });
+    expect(area.value).toBe("First line.\nSecond line.\nThird line.\n");
+    fireEvent.blur(area);
+    expect(session.text).toContain("title: |\n  First line.\n  Second line.\n  Third line.\n");
+  });
+
   it("reads a pair carriage return and line feed as one line break", () => {
     expect(withoutLineBreaks("a\r\nb\rc\nd")).toBe("a b c d");
   });

@@ -3,8 +3,11 @@
  * and the editors of the kinds `markdown-line` and `latex`: a text area of one row, which grows
  * to show the whole value, so the end of the value stays editable.
  *
- * The value stays on one line in the file. The key `Enter` commits the value instead of inserting
- * a line break, and each line break that reaches the input, by a paste or a drop, becomes a space.
+ * A value on one line stays on one line in the file. The key `Enter` commits the value instead of
+ * inserting a line break, and each line break that reaches the input, by a paste or a drop,
+ * becomes a space. A value already holding a line break, such as a block scalar of the file, keeps
+ * its line breaks instead, so that an edit loses no line of it: the key `Enter` inserts a line
+ * break, and a pasted line break stays.
  */
 import type { JSX } from "preact";
 import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
@@ -16,6 +19,11 @@ export function withoutLineBreaks(text: string): string {
   return text.replace(/\r\n?|\n/g, " ");
 }
 
+/** Whether `text` holds a line break, so that the input keeps its line breaks. */
+export function holdsLineBreak(text: string): boolean {
+  return /[\r\n]/.test(text);
+}
+
 export function WrappingInput({
   field,
   readOnly,
@@ -24,6 +32,7 @@ export function WrappingInput({
   spellcheck,
 }: EditorProps & { readonly spellcheck: boolean }): JSX.Element {
   const element = useRef<HTMLTextAreaElement | null>(null);
+  const multiline = holdsLineBreak(draft.text);
   useLayoutEffect(() => fitHeight(element.current), [draft.text]);
   useEffect(() => {
     const area = element.current;
@@ -54,11 +63,13 @@ export function WrappingInput({
       onBlur={draft.onBlur}
       onKeyDown={(event) => {
         // A key pressed while an input method composes a character belongs to that composition.
-        if (event.key !== "Enter" || event.isComposing) return;
+        if (multiline || event.key !== "Enter" || event.isComposing) return;
         event.preventDefault();
         draft.onCommit();
       }}
-      onInput={(event) => draft.onInput(singleLine(event.currentTarget))}
+      onInput={(event) =>
+        draft.onInput(multiline ? event.currentTarget.value : singleLine(event.currentTarget))
+      }
     />
   );
 }
