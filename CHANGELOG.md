@@ -7,7 +7,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 ### Added
 
 - Icon of the kind of each field at the left of its label, drawn from the Lucide set of Obsidian, with the icons of the property types of Obsidian for the closest kinds.
-- Outline opened in the right sidebar when the plugin loads, beside the outline and the backlinks of Obsidian.
+- Outline opened in the right sidebar at the first load of the plugin, beside the outline and the backlinks of Obsidian; a closed outline stays closed at the next loads.
 
 ### Changed
 

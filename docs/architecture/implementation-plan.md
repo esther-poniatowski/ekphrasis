@@ -181,7 +181,7 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Modules.** Rows of fields with an icon of their kind, one appearance and one font size for every text control, help buttons and descriptions of options on demand, editing of long single-line values, and the outline opened in the right sidebar.
 
-**Exit criterion.** A contact record of geonexus displays every field as a row with its icon, its name and its control, with no control shifted by a dropdown or a help button, and the outline opens in the right sidebar with the plugin.
+**Exit criterion.** A contact record of geonexus displays every field as a row with its icon, its name and its control, with no control shifted by a dropdown or a help button, and the outline opens in the right sidebar at the first load of the plugin.
 
 **Risks.** A long single-line value wraps onto several lines, as the user decided on 2026-10-30, so its input must keep the value on one line in the file. The rows of fields become the pattern of the panel of properties of *Metadata*, so this milestone precedes it.
 

@@ -9,7 +9,7 @@ aliases:
 
 The outline displays the structure of the active instance in a side panel, as the [requirement on an outline](../requirements.md#^outline) demands. The outline lets an author move through a long instance, as the core outline of Obsidian does for the headings of a note.
 
-The panel opens in the right sidebar when the plugin loads, so its tab sits beside the outline and the backlinks of Obsidian, and it follows the active form without any command. The workspace restored at the next launch of Obsidian holds the panel already, so no second panel opens. The command *Show outline* reveals the panel, and opens it again after the author closed it. The panel takes the style of the outline of Obsidian: each entry is drawn as an item of its tree, with the triangle folding its entries, the guide along its nested entries, and the highlight of the focused entry, in the colours and the sizes of the theme.
+The panel opens in the right sidebar at the first load of the plugin, so its tab sits beside the outline and the backlinks of Obsidian, and it follows the active form without any command. The data of the plugin records that first opening. Afterwards, the workspace restored by Obsidian decides, as for the panels of Obsidian itself: it holds the panel at the next launch, so no second panel opens, unless the author closed the panel, which then stays closed. The command *Show outline* reveals the panel, and opens it again after the author closed it. The panel takes the style of the outline of Obsidian: each entry is drawn as an item of its tree, with the triangle folding its entries, the guide along its nested entries, and the highlight of the focused entry, in the colours and the sizes of the theme.
 
 ## Entries
 

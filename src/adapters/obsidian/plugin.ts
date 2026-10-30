@@ -2,7 +2,7 @@
  * Plugin class: composition root, lifecycle, and registration of the Obsidian integration
  * points (views, extensions, commands, settings tab, vault events, index of record identifiers,
  * suggestions of field paths and handler of the URIs of ekphrasis). Once the workspace is
- * restored, the outline opens in the right sidebar.
+ * restored at the first load of the plugin, the outline opens in the right sidebar.
  */
 import { debounce, loadMathJax, Notice, Plugin, type TAbstractFile } from "obsidian";
 import {
@@ -33,7 +33,11 @@ import { createDefaultRegistry } from "./ui/default-registry";
 import { VaultFileSource } from "./vault-file-source";
 import { InstanceView } from "./views/instance-view";
 import { OutlineChannel } from "./views/outline-channel";
-import { placeOutline } from "./views/outline-placement";
+import {
+  OUTLINE_PLACED_KEY,
+  outlinePlacedIn,
+  placeOutlineAtFirstLoad,
+} from "./views/outline-placement";
 import { OutlineView } from "./views/outline-view";
 
 /**
@@ -49,6 +53,8 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
   override settings: EkphrasisSettings = DEFAULT_SETTINGS;
   /** Index of the identifiers of the records of the vault, built in `onload`. */
   private identifiers: IdentifierIndexService | null = null;
+  /** Whether the outline was placed at an earlier load, as the data of the plugin records. */
+  private outlinePlaced = false;
 
   private readonly refreshViewsSoon = debounce(
     () => this.instanceViews().forEach((view) => void view.refresh()),
@@ -66,7 +72,9 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
   );
 
   override async onload(): Promise<void> {
-    this.settings = parseSettings(await this.loadData());
+    const data: unknown = await this.loadData();
+    this.settings = parseSettings(data);
+    this.outlinePlaced = outlinePlacedIn(data);
     const parser = new YamlDocumentParser();
     const settings = (): EkphrasisSettings => this.settings;
     // The checker `latex` renders through MathJax, which Obsidian loads on demand.
@@ -107,9 +115,12 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
         }),
     );
     this.registerView(OUTLINE_VIEW_TYPE, (leaf) => new OutlineView(leaf, outline));
-    // The outline opens in the right sidebar with the plugin, once the workspace is restored.
+    // The outline opens in the right sidebar at the first load, once the workspace is restored.
     this.app.workspace.onLayoutReady(() => {
-      placeOutline(this.app.workspace).catch((error: unknown) =>
+      placeOutlineAtFirstLoad(this.app.workspace, this.outlinePlaced, async () => {
+        this.outlinePlaced = true;
+        await this.saveStoredData();
+      }).catch((error: unknown) =>
         console.error("ekphrasis: the outline could not be opened.", error),
       );
     });
@@ -148,7 +159,12 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
 
   async updateSettings(settings: EkphrasisSettings): Promise<void> {
     this.applySettings(settings);
-    await this.saveData(settings);
+    await this.saveStoredData();
+  }
+
+  /** Saves the settings, with the record of the placement of the outline. */
+  private async saveStoredData(): Promise<void> {
+    await this.saveData({ ...this.settings, [OUTLINE_PLACED_KEY]: this.outlinePlaced });
   }
 
   /**
