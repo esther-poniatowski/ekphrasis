@@ -122,10 +122,10 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Corrections after the check of Form presentation
 
-- [ ] **Form view**: align the descriptions of the options listed in the instructions of a field on one column, as the messages of the issues of a field are aligned.
-- [ ] **Form view**: draw the chevron of a group or a collection outside the column of icons, so that its icon and its name align with those of the fields at the same depth.
-- [ ] **Form view**: align the help button of a group or a collection with the help buttons of the scalar fields at the same depth.
-- [ ] **Form view**: remove the horizontal line under the heading of a group or a collection, and keep only the vertical guide along its fields.
+- [ ] **Form view**: align the descriptions of the options listed in the instructions of a field on one column, as the messages of the issues of a field are aligned. Implemented on 2026-10-30; awaits the run of the [protocol of the corrections of form presentation](tests/manual/protocols/corrections-presentation.md).
+- [ ] **Form view**: draw the chevron of a group or a collection outside the column of icons, so that its icon and its name align with those of the fields at the same depth. Implemented on 2026-10-30; awaits the run of the [protocol of the corrections of form presentation](tests/manual/protocols/corrections-presentation.md).
+- [ ] **Form view**: align the help button of a group or a collection with the help buttons of the scalar fields at the same depth. Implemented on 2026-10-30; awaits the run of the [protocol of the corrections of form presentation](tests/manual/protocols/corrections-presentation.md).
+- [ ] **Form view**: remove the horizontal line under the heading of a group or a collection, and keep only the vertical guide along its fields. Implemented on 2026-10-30; awaits the run of the [protocol of the corrections of form presentation](tests/manual/protocols/corrections-presentation.md).
 - [ ] **Form view**: undo the last edit of a text control with `Cmd+Z`.
 
 ## Schema styles
