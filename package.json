@@ -1,6 +1,6 @@
 {
   "name": "ekphrasis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Fills YAML files in Obsidian through forms generated from JSON Schemas.",
   "author": "Esther Poniatowski",

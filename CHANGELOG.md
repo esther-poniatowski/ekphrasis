@@ -4,6 +4,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-30
+
 ### Added
 
 - Icon of the kind of each field at the left of its label, drawn from the Lucide set of Obsidian, with the icons of the property types of Obsidian for the closest kinds.
@@ -29,6 +31,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 ### Fixed
 
 - Fill of the theme drawn behind the buttons reduced to their icons: the fold buttons, the help buttons, the lock symbols, the links of fields and the results of the search of the outline.
+- Schemas materialized under `.schema-resources/` read through a restricted low-level fallback when Obsidian omits them from its indexed file model.
 
 ## [0.1.0] - 2026-10-29
 
