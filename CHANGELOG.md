@@ -18,11 +18,17 @@ Every notable change to the project is recorded in this changelog. The format fo
 - Descriptions of the options of a choice listed with the instructions of the field, on demand, instead of below the dropdown.
 - Long values of the kinds `text`, `markdown-line` and `latex` wrapped in their inputs, which grow to show the whole value; the key `Enter` commits the value, and a pasted line break becomes a space, so the file keeps the value on one line. A value already holding a line break keeps its line breaks.
 - Lighter vertical guide along the fields of each nested group.
+- Headings of the groups and the collections laid out as the rows of fields, without a line under them: the fold button stands in the margin, so the icons, the names and the help buttons align with those of the fields at the same depth.
+- Options of a choice and their descriptions listed in two columns in the instructions of the field.
 - Outline drawn in the style of the outline of Obsidian, without entries for the items of the lists of scalars.
 
 ### Removed
 
 - Messages *No items.*, *No rows.* and *No entries.* of the empty collections that a button or an input extends.
+
+### Fixed
+
+- Fill of the theme drawn behind the buttons reduced to their icons: the fold buttons, the help buttons, the lock symbols, the links of fields and the results of the search of the outline.
 
 ## [0.1.0] - 2026-10-29
 

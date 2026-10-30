@@ -104,7 +104,7 @@ export function FieldHelp({
             {options.map((option, index) => (
               <li key={index}>
                 <span class="ekphrasis-help-option">{optionLabel(option)}</span>
-                {`: ${option.description ?? ""}`}
+                <span>{option.description}</span>
               </li>
             ))}
           </ul>

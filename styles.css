@@ -123,9 +123,11 @@
   margin-right: var(--size-4-2);
 }
 
-/* Messages preceded by their paths, in the boxes at the top of the form: two columns, so each
-   message starts after the longest path. A path wider than half the box wraps. */
-ul.ekphrasis-path-messages {
+/* Messages preceded by their paths, in the boxes at the top of the form, and descriptions preceded
+   by their options, in the instructions of a choice: two columns, so each message or description
+   starts after the longest path or option. A path or an option wider than half the box wraps. */
+ul.ekphrasis-path-messages,
+.ekphrasis-help-options > ul {
   display: grid;
   grid-template-columns: fit-content(50%) 1fr;
   column-gap: var(--size-4-3);
@@ -135,7 +137,8 @@ ul.ekphrasis-path-messages {
   list-style: none;
 }
 
-.ekphrasis-path-messages > li {
+.ekphrasis-path-messages > li,
+.ekphrasis-help-options > ul > li {
   display: contents;
 }
 
@@ -144,12 +147,19 @@ ul.ekphrasis-path-messages {
   overflow-wrap: anywhere;
 }
 
+/* Columns of the row of a field and of the heading of a section, and width of the fold button of
+   a heading with its gap, which the heading sets in the margin at the left of its label. */
+.ekphrasis-form {
+  --ekphrasis-row-columns: minmax(8rem, 1fr) 3fr;
+  --ekphrasis-fold-width: calc(var(--icon-xs) + var(--size-2-2));
+}
+
 /* A field is one row, as Obsidian displays a property: the icon of its kind and its name in bold,
    then its control in the remaining width. The rows below the first one hold the instructions,
    the notes and the issues of the field. */
 .ekphrasis-field {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) 3fr;
+  grid-template-columns: var(--ekphrasis-row-columns);
   column-gap: var(--size-4-3);
   row-gap: var(--size-2-1);
   align-items: start;
@@ -200,9 +210,11 @@ ul.ekphrasis-path-messages {
   color: var(--text-accent);
 }
 
-/* The lock symbol is a button; the theme styles of buttons are reset so only its icon shows. */
-.ekphrasis-lock,
-.ekphrasis-lock:hover {
+/* The lock symbol is a button; the theme styles of buttons are reset so only its icon shows. Each
+   reset of a button names the element, so it outranks the rule `button:not(.clickable-icon)` of
+   Obsidian, which fills a button. */
+button.ekphrasis-lock,
+button.ekphrasis-lock:hover {
   display: inline-flex;
   align-self: center;
   height: auto;
@@ -408,19 +420,32 @@ textarea.ekphrasis-control:not(.ekphrasis-wrapping) {
   margin: var(--size-4-2) 0;
 }
 
+/* The heading of a section takes the columns of the row of a field, as its component states. */
 .ekphrasis-group-heading {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--ekphrasis-row-columns);
+  column-gap: var(--size-4-3);
+  align-items: center;
+}
+
+.ekphrasis-group-tail {
   display: flex;
   gap: var(--size-2-2);
   align-items: center;
-  border-bottom: 1px solid var(--background-modifier-border);
+  min-width: 0;
 }
 
 /* A light vertical guide runs along the fields of each group, from under the fold button of its
    heading, so each field reads as part of its group; it darkens while the pointer is over the
-   group. Its colours are those of the indentation guides of Obsidian, at half their strength. */
+   group. Its colours are those of the indentation guides of Obsidian, at half their strength.
+   The fields of the group start one fold width to the right of its heading, so the fold buttons of
+   their own headings stand under the icon of that heading. */
 .ekphrasis-group-body {
-  margin-left: calc(var(--icon-xs) / 2);
-  padding-left: var(--size-4-4);
+  margin-left: calc(var(--icon-xs) / 2 - var(--ekphrasis-fold-width));
+  padding-left: calc(
+    2 * var(--ekphrasis-fold-width) - var(--icon-xs) / 2 - var(--indentation-guide-width)
+  );
   border-left: var(--indentation-guide-width) solid
     color-mix(in oklch, var(--indentation-guide-color) 50%, transparent);
 }
@@ -429,12 +454,16 @@ textarea.ekphrasis-control:not(.ekphrasis-wrapping) {
   border-left-color: var(--indentation-guide-color-active);
 }
 
-/* The button folding a section; the theme styles of buttons are reset so only its chevron shows. */
-.ekphrasis-fold,
-.ekphrasis-fold:hover {
+/* The button folding a section, in the margin at the left of the label of its heading, level with
+   the name; the theme styles of buttons are reset so only its chevron shows. */
+button.ekphrasis-fold,
+button.ekphrasis-fold:hover {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--ekphrasis-fold-width));
   display: inline-flex;
-  flex: none;
-  height: auto;
+  align-items: center;
+  height: var(--input-height);
   margin: 0;
   padding: 0;
   color: var(--text-faint);
@@ -701,8 +730,8 @@ textarea.ekphrasis-control:not(.ekphrasis-wrapping) {
 /* ---- Guidance and navigation ------------------------------------------------------------- */
 
 /* The help button resets the theme styles of buttons, as the lock symbol does. */
-.ekphrasis-help-button,
-.ekphrasis-help-button:hover {
+button.ekphrasis-help-button,
+button.ekphrasis-help-button:hover {
   display: inline-flex;
   align-self: center;
   height: auto;
@@ -756,7 +785,6 @@ textarea.ekphrasis-control:not(.ekphrasis-wrapping) {
   margin-bottom: 0;
 }
 
-.ekphrasis-help-options ul,
 .ekphrasis-help-examples ul {
   margin: var(--size-2-1) 0 0;
   padding-left: var(--size-4-4);
@@ -858,8 +886,8 @@ td[data-revealed] {
   color: rgb(var(--color-orange-rgb));
 }
 
-.ekphrasis-field-link,
-.ekphrasis-field-link:hover {
+button.ekphrasis-field-link,
+button.ekphrasis-field-link:hover {
   height: auto;
   padding: 0;
   border: none;
@@ -928,8 +956,8 @@ td[data-revealed] {
   display: flex;
 }
 
-.ekphrasis-outline-result,
-.ekphrasis-outline-result:hover {
+button.ekphrasis-outline-result,
+button.ekphrasis-outline-result:hover {
   height: auto;
   padding: var(--size-2-1) 0;
   border: none;

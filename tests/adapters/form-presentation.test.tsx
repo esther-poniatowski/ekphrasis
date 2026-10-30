@@ -173,15 +173,22 @@ describe("wrapped single-line values", () => {
   });
 });
 
+/** Option and description of each item of the list of options `options`, as two cells. */
+function cells(options: Element): string[][] {
+  return Array.from(options.querySelectorAll("li"), (item) =>
+    Array.from(item.children, (cell) => cell.textContent ?? ""),
+  );
+}
+
 describe("descriptions of the options of a choice", () => {
   it("shows the described options with the instructions of the field, on demand", async () => {
     const { container } = await renderPresented();
     expect(row(container, "status").textContent).not.toContain("awaits an answer");
     fireEvent.click(element(row(container, "status"), ".ekphrasis-help-button"));
     const options = element(row(container, "status"), ".ekphrasis-help-options");
-    expect(Array.from(options.querySelectorAll("li"), (item) => item.textContent)).toEqual([
-      "Posed (posed): The question awaits an answer.",
-      "Answered (answered): An answer is recorded.",
+    expect(cells(options)).toEqual([
+      ["Posed (posed)", "The question awaits an answer."],
+      ["Answered (answered)", "An answer is recorded."],
     ]);
   });
 
@@ -190,9 +197,10 @@ describe("descriptions of the options of a choice", () => {
     expect(container.textContent).not.toContain("being filled");
     help.setAll(true);
     const rows = row(container, "rows");
-    expect(element(rows, ".ekphrasis-help-options").textContent).toContain(
-      "open: The row is being filled.",
-    );
+    expect(cells(element(rows, ".ekphrasis-help-options"))).toContainEqual([
+      "open",
+      "The row is being filled.",
+    ]);
     expect(element(rows, "td[data-kind='choice']").textContent).not.toContain("being filled");
   });
 });

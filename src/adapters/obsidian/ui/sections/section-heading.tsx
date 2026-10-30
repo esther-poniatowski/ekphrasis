@@ -1,8 +1,11 @@
 /**
  * Heading of a group or a collection: the button folding the section, the label of the field,
  * the count of the issues within it, and the actions of an item or an entry, such as moving it.
- * The instructions of the field follow the heading while they are shown, also when the section
- * is folded.
+ * The heading is laid out as the row of a field: its label fills the column of the labels, so its
+ * help button stands in line with those of the fields, and the count and the actions take the
+ * column of the controls. The fold button stands in the margin at the left of the label, so the
+ * icon and the name align with those of the fields at the same depth. The instructions of the
+ * field follow the heading while they are shown, also when the section is folded.
  */
 import type { ComponentChildren, JSX } from "preact";
 import type { Field } from "../../../../domain";
@@ -54,8 +57,10 @@ export function SectionHeading({
           <ChevronIcon />
         </button>
         <FieldLabel field={field} disclosure={disclosure} />
-        <IssueCount count={issues.countWithin(field.path)} />
-        {actions}
+        <div class="ekphrasis-group-tail">
+          <IssueCount count={issues.countWithin(field.path)} />
+          {actions}
+        </div>
       </div>
       <FieldHelp helpKey={field.uid} guidance={guidanceOf(field)} />
     </>
