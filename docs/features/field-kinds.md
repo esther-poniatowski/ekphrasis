@@ -24,6 +24,8 @@ A scalar kind holds one value per field:
 | `boolean` | `true` or `false` | Toggle | `type: boolean` |
 | `choice` | One of the admitted values | Dropdown | `enum`, or `oneOf` of `const` values |
 
+The input of the kinds `text`, `markdown-line` and `latex` wraps a long value onto several lines, and grows to show the whole value, so that the end of the value stays editable. The value stays on one line in the file: the key `Enter` commits it instead of inserting a line break, and a line break pasted into the input becomes a space.
+
 Two kinds carry an implicit rule. The kind `label` admits one word only, and the kind `markdown-line` admits no line break. [Validation](validation.md) checks both rules like any declared rule. In a `oneOf` of `const` values, each value may carry a `title` and a `description`, and the dropdown displays both.
 
 ## Collection kinds

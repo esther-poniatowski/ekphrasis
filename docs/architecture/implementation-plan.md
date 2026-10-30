@@ -183,7 +183,7 @@ A link by identifier also needs a syntax that the Markdown renderer of Obsidian 
 
 **Exit criterion.** A contact record of geonexus displays every field as a row with its icon, its name and its control, with no control shifted by a dropdown or a help button, and the outline opens in the right sidebar with the plugin.
 
-**Risks.** A long single-line value either wraps or scrolls, and the choice is left to a step of the milestone. The rows of fields become the pattern of the panel of properties of *Metadata*, so this milestone precedes it.
+**Risks.** A long single-line value wraps onto several lines, as the user decided on 2026-10-30, so its input must keep the value on one line in the file. The rows of fields become the pattern of the panel of properties of *Metadata*, so this milestone precedes it.
 
 ### Schema styles
 
