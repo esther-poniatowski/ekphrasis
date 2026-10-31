@@ -105,14 +105,15 @@ A key present in the file and absent from the schema displays as YAML text in a 
 
 ## Schema defects
 
-A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. Four defects found by [validation](validation.md) are reported in the same place:
+A keyword `x-kind` naming no field kind is reported at the top of the form, and its field takes the kind derived from the other keywords. Five defects found by [validation](validation.md) are reported in the same place:
 
 - a malformed rule declaration;
 - a schema refused by the validator;
-- a required property absent from the properties of its group and of the alternatives of its group, since the form displays no field for it. The property may be required by a rule `required-when`, or by a keyword `required` or `dependentRequired` applying to the group, such as one inside a branch `then`;
-- a value of the keyword `x-unfilled` enumerated by a field, through `enum`, `const` or a `oneOf` of `const` values, since the form displays that value as an empty control.
+- a required property absent from the properties of its group, of the schemas that its group composes, and of the alternatives of its group, since the form displays no field for it. The property may be required by a rule `required-when`, or by a keyword `required` or `dependentRequired` applying to the group, such as one inside a branch `then`;
+- a value of the keyword `x-unfilled` enumerated by a field, through `enum`, `const` or a `oneOf` of `const` values, since the form displays that value as an empty control;
+- a conflict between the schemas [composed](schemas.md#^composition) for one field, which one control cannot express: disjoint types, disjoint admitted values, or alternatives declared by several `oneOf`.
 
-The last two defects concern the schema alone, so each is reported once per field schema. Its path holds `[*]` for the items of a sequence, and `*` for the entries of a mapping. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema. The form view then displays the path of the schema with the reason, and offers to open the source view.
+The last three defects concern the schema alone, so each is reported once per field schema. Its path holds `[*]` for the items of a sequence, and `*` for the entries of a mapping. The form cannot open when its schema fails to load: when a schema file is missing or malformed, or when a `$ref` designates no schema, such as an [absolute URI](schemas.md#^absolute-references) that nothing resolves. The form view then displays the path of the schema with the reason, and offers to open the source view.
 
 ## Source view
 

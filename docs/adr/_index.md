@@ -19,3 +19,5 @@ Records the design choices of ekphrasis, each binding on every later change of t
 - [List layouts](list-layouts.md): fixes the initial layout of a list and the lifetime of a manual choice
 - [Form interface framework](form-interface-framework.md): explains why the form view and the outline are built with Preact, rather than with plain DOM components or Svelte
 - [Record identifiers](record-identifiers.md): weighs how a link designates a record by its identifier
+- [Absolute references](absolute-references.md): explains why a `$ref` by absolute URI resolves through the resources of the schema registry, and never over the network
+- [Schema composition](schema-composition.md): explains how the form merges the subschemas composed by `$ref` and `allOf`, and what it does when their constraints conflict

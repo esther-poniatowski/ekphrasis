@@ -105,6 +105,8 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Schema registry
 
 - [x] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. (2026-10-29)
+- [ ] **Schema registry**: resolve a `$ref` by absolute URI through the key `resources` of a registry of version 2, as the [decision on absolute references](docs/adr/absolute-references.md) proposes, and confirm it inside Obsidian on a base schema held in `.schema-resources/`.
+- [ ] **Schema registry**: merge the subschemas composed by `allOf` into the form and read the root keywords through them, as the [decision on schema composition](docs/adr/schema-composition.md) proposes, and confirm it inside Obsidian on a consumer root schema.
 
 ## Form presentation
 

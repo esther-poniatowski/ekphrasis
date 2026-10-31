@@ -28,16 +28,16 @@ The [form pipeline](form-pipeline.md) fixes the stages, and the folders below pl
 | Layer | Folder | Modules |
 | --- | --- | --- |
 | Domain | `src/domain/form/` | Form model, field kinds and their derivation, identifiers of sequence items |
-| Domain | `src/domain/schema/` | Interpretation of a JSON Schema object: properties, required fields, conditions, keywords prefixed `x-`; schema documents prepared for the validator |
+| Domain | `src/domain/schema/` | Interpretation of a JSON Schema object with its compositions by `$ref` and `allOf`: properties, required fields, conditions, keywords prefixed `x-`; schema documents prepared for the validator |
 | Domain | `src/domain/paths/` | Parser and printer of field paths |
 | Domain | `src/domain/validation/` | Issues and their placement, unfilled values, conversion of the errors of the validator to field paths, predefined checkers, expansion of the relative paths of rules |
 | Domain | `src/domain/edit/` | Scalar styles, text of an edited node, text edits for insertions and removals, skeleton of a new instance |
-| Domain | `src/domain/binding/` | Reading of the modeline, glob matching of path rules, resolution of the schema of an instance |
+| Domain | `src/domain/binding/` | Reading of the modeline and of the schema registry, glob matching of path rules, resolution of the schema of an instance |
 | Domain | `src/domain/files/` | Vault paths, and resolution of the relative paths written in modelines and in `$ref` |
 | Domain | `src/domain/links/` | Parser and printer of field links, declaration and value of the identifier of a record, index of identifiers, completion of field paths in links |
 | Application | `src/application/` | Ports, use cases (opening a form, committing an edit, creating an instance, validating in the order of checks), session of an open instance, settings |
 | Infrastructure | `src/infrastructure/yaml/` | Parser with source ranges and tokens, writer of scalar texts, splice of text edits |
-| Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, JSON Schema validator |
+| Infrastructure | `src/infrastructure/schema/` | Loader of JSON and YAML schemas with resolution of `$ref`, including absolute URIs through the registry, JSON Schema validator |
 | Infrastructure | `src/infrastructure/python/` | Python process, message protocol, embedded runner script |
 | Adapters | `src/adapters/obsidian/views/` | Instance view hosting the form and the source view, outline view |
 | Adapters | `src/adapters/obsidian/ui/` | Preact components: form root, one control per field kind, registry of controls |

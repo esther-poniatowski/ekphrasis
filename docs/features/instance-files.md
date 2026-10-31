@@ -40,6 +40,18 @@ schemas:
   'geonexus:project@1': 'utils/schemas/project.schema.yaml'
 ```
 
+A registry of version 2 adds the top-level mapping `resources`, which relates each absolute `$id`, written exactly as in its schema file, to the path of that file from the vault root. A `$ref` by absolute URI resolves through that mapping, as the specification of [schemas](schemas.md#^absolute-references) states:
+
+```yaml
+schema_version: 2
+schemas:
+  'vault:note@1': 'schemas/note.schema.yaml'
+resources:
+  'https://example.org/tool/note@1/base.schema.yaml': '.schema-resources/tool/note/base.schema.yaml'
+```
+
+A registry without the key `schema_version` reads as version 1. A registry declaring another version, declaring `resources` under version 1, or mapping a key of `resources` other than an absolute URI is invalid.
+
 A record declares the logical identifier rather than the local path:
 
 ```yaml

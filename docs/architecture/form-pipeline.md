@@ -10,8 +10,8 @@ aliases:
 The form pipeline turns the text of an instance into a form, and turns each commit of the form back into text. Opening an instance, or any change of its file, runs five stages, each taking the output of its predecessor:
 
 1. **Parsing** converts the text into a tree that keeps the source range, the scalar style and the comments of each node.
-2. **Binding** resolves the schema of the instance, from its modeline or else from the path rules, and loads the schema with its references.
-3. **Modelling** combines the schema and the tree into the form model: one field per property of the schema, holding its kind, its rules, its field path and, when the file contains it, its node.
+2. **Binding** resolves the schema of the instance, from its field `_schema` through the registry, else from its modeline or from the path rules, and loads the schema with its references. An absolute `$ref` resolves through the resources of the same registry, read through the port `SchemaResources`.
+3. **Modelling** combines the schema and the tree into the form model. The model holds one field per property of the schema and of the schemas that it composes by `$ref` and `allOf`. Each field holds its kind, its rules, its field path and, when the file contains it, its node.
 4. **Validation** attaches the issues of the checks to the fields of the model.
 5. **Presentation** builds the controls of the form view and the entries of the outline from the model.
 
@@ -26,6 +26,10 @@ Only presentation and writing depend on Obsidian.
 ## Form model
 
 The form model is a pure function of the schema and the tree, so unit tests build it without Obsidian. Each field of the model records its [field path](../features/field-paths.md) and the source range of its node. Therefore, a control, an issue and an entry of the outline refer to the same field through the same path.
+
+## Composed schemas
+
+The schema view of the domain reads each subschema together with the schemas that it composes, through `$ref` and `allOf`. The schema set expands that composition into layers. The view then reads an annotation at its nearest layer, and merges a constraint over every layer, as the decision on [schema composition](../adr/schema-composition.md) records. The builder, the derivation of kinds, the declaration of the identifier and the checks of the schema therefore read one composition, whereas Ajv validates the schemas as written.
 
 ## Timing of validation
 
