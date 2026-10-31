@@ -3,11 +3,13 @@
  * field per declared property, so such a property has no field, and an author told that it is
  * missing cannot find where to fill it.
  *
- * Five declarations can require a property: the keyword `required`, the keyword
- * `dependentRequired`, the keyword `required` inside the branches `then` and `else` and inside
- * the subschemas of `allOf`, and the rule `required-when` of the keyword `x-rules`. A property
- * counts as declared when the keyword `properties` of its group declares it, or the keyword
- * `properties` of an alternative of the `oneOf` of that group, since the form displays both.
+ * Four declarations can require a property: the keyword `required`, the keyword
+ * `dependentRequired`, the keyword `required` inside the branches `then` and `else`, and the rule
+ * `required-when` of the keyword `x-rules`. Each declaration is read in the group and in every
+ * subschema that the group composes by `$ref` or `allOf`. A property counts as declared when the keyword
+ * `properties` of its group, or of a subschema that the group composes, declares it, or the
+ * keyword `properties` of an alternative of the `oneOf` of that group, since the form displays
+ * each of them.
  */
 import type { SchemaIssue } from "../form/model";
 import {
@@ -18,7 +20,7 @@ import {
   type PatternSegment,
 } from "../paths/field-path";
 import { displayedProperties, walkFieldSchemas } from "../schema/field-walk";
-import { isJsonObject, type JsonValue } from "../schema/json";
+import { isJsonObject } from "../schema/json";
 import type { PropertySchema, SchemaView } from "../schema/schema-view";
 
 /** Defects of the schema `root`, each naming the required property that no field displays. */
@@ -56,32 +58,31 @@ export function undeclaredRequirements(root: SchemaView): SchemaIssue[] {
 /**
  * Calls `found` with each key that `scope` requires of its value, and the declaration that
  * requires it. The scope is the schema of a group, or a subschema applying to the same value: a
- * branch, an alternative, or a subschema of `allOf`.
+ * branch or an alternative. A declaration of a subschema that the scope composes is named as
+ * such.
  */
 function requirementsOf(
   scope: SchemaView,
   keyword: string,
   found: (key: string, source: string) => void,
 ): void {
-  for (const key of scope.required) found(key, keyword);
-  for (const [trigger, keys] of scope.dependentRequired) {
-    for (const key of keys) {
-      found(key, `the keyword \`dependentRequired\` when \`${trigger}\` is present`);
+  scope.parts().forEach((part, index) => {
+    const where = index === 0 ? "" : " inside a subschema composed by `$ref` or `allOf`";
+    for (const key of part.required) found(key, keyword + where);
+    for (const [trigger, keys] of part.dependentRequired) {
+      for (const key of keys) {
+        found(key, `the keyword \`dependentRequired\`${where} when \`${trigger}\` is present`);
+      }
     }
-  }
-  for (const branch of scope.branches()) {
-    requirementsOf(branch.schema, `the keyword \`${branch.keyword}\``, found);
-  }
-  for (const part of scope.allOf()) {
-    requirementsOf(part, "the keyword `required` inside `allOf`", found);
-  }
+    for (const branch of part.branches()) {
+      requirementsOf(branch.schema, `the keyword \`${branch.keyword}\`${where}`, found);
+    }
+  });
 }
 
 /** Paths of the fields named by the rules `required-when` of `schema`; malformed ones are skipped. */
 function requiredWhenFields(schema: SchemaView): PatternSegment[][] {
-  const rules = schema.rules;
-  if (!Array.isArray(rules)) return [];
-  return (rules as readonly JsonValue[]).flatMap((rule) => {
+  return schema.rules.flatMap((rule) => {
     if (!isJsonObject(rule) || rule["check"] !== "required-when") return [];
     const field = rule["field"];
     if (typeof field !== "string") return [];

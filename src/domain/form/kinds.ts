@@ -3,7 +3,7 @@
  * and else the standard keywords, following the tables of the feature note on field kinds.
  */
 import type { JsonScalar } from "../schema/json";
-import { isJsonScalar } from "../schema/json";
+import { isJsonScalar, jsonEquals } from "../schema/json";
 import type { SchemaView } from "../schema/schema-view";
 
 export const SCALAR_KINDS = [
@@ -53,18 +53,62 @@ export interface ChoiceOption {
 }
 
 /**
- * Admitted values of `schema`, from the keyword `enum`, a `oneOf` of `const` values, or a single
- * `const`. Returns `null` when the schema does not enumerate its values.
+ * Admitted values of `schema`: those enumerated by every subschema that it composes and that
+ * enumerates its values, in the order of the nearest one, each with the first title and the first
+ * description declared for it. Returns `null` when no subschema enumerates its values. When the
+ * subschemas admit no common value, the values of the nearest one, which the form then follows.
  */
 export function choiceOptions(schema: SchemaView): ChoiceOption[] | null {
-  const values = schema.enumValues;
+  const lists = enumerations(schema);
+  const [nearest] = lists;
+  if (nearest === undefined) return null;
+  const common = commonOptions(lists);
+  return common.length > 0 ? common : nearest;
+}
+
+/**
+ * Options admitted by every list of `lists`, in the order of the first list, each with the first
+ * title and the first description that a list declares for its value. Empty when the lists admit
+ * no common value, or when there is no list.
+ */
+export function commonOptions(lists: readonly (readonly ChoiceOption[])[]): ChoiceOption[] {
+  const [nearest = [], ...others] = lists;
+  const all = lists.flat();
+  return nearest
+    .filter((option) =>
+      others.every((options) => options.some((other) => jsonEquals(other.value, option.value))),
+    )
+    .map((option) => {
+      const declared = all.filter((other) => jsonEquals(other.value, option.value));
+      return {
+        value: option.value,
+        title: declared.find((other) => other.title !== null)?.title ?? null,
+        description: declared.find((other) => other.description !== null)?.description ?? null,
+      };
+    });
+}
+
+/**
+ * Admitted values enumerated by each layer of `schema` that enumerates them, nearest first: by
+ * the keyword `enum`, a `oneOf` of `const` values, or a single `const`.
+ */
+export function enumerations(schema: SchemaView): ChoiceOption[][] {
+  return schema.parts().flatMap((part) => {
+    const options = layerOptions(part);
+    return options === null ? [] : [options];
+  });
+}
+
+/** Admitted values enumerated by the single layer `part`, or `null` when it enumerates none. */
+function layerOptions(part: SchemaView): ChoiceOption[] | null {
+  const values = part.enumValues;
   if (values !== null) {
     const scalars = values.filter(isJsonScalar);
     return scalars.length === 0
       ? null
       : scalars.map((value) => ({ value, title: null, description: null }));
   }
-  const alternatives = schema.oneOf();
+  const alternatives = part.oneOf();
   if (alternatives.length > 0) {
     const options = alternatives.map((alternative) => {
       const constant = alternative.constValue;
@@ -74,7 +118,7 @@ export function choiceOptions(schema: SchemaView): ChoiceOption[] | null {
     });
     return options.every((option) => option !== null) ? options : null;
   }
-  const constant = schema.constValue;
+  const constant = part.constValue;
   return constant === null ? null : [{ value: constant.value, title: null, description: null }];
 }
 
@@ -90,9 +134,23 @@ export interface KindResolution {
 export function resolveKind(schema: SchemaView): KindResolution {
   const declared = schema.declaredKind;
   if (declared !== null && isFieldKind(declared)) {
-    return { kind: declared, unknownDeclaredKind: null };
+    return { kind: declaredKind(schema, declared), unknownDeclaredKind: null };
   }
   return { kind: deriveKind(schema, 0), unknownDeclaredKind: declared };
+}
+
+/**
+ * Kind of a field whose nearest keyword `x-kind` names the kind `declared`. A scalar kind
+ * declared by a subschema farther than the nearest subschema enumerating the admitted values
+ * yields to the kind `choice`, since a narrowing `enum` written over a base that declares a text
+ * control restricts the answers to a list.
+ */
+function declaredKind(schema: SchemaView, declared: FieldKind): FieldKind {
+  if (!isScalarKind(declared) || declared === "choice") return declared;
+  const parts = schema.parts();
+  const declaring = parts.findIndex((part) => part.declaredKind !== null);
+  const enumerating = parts.findIndex((part) => layerOptions(part) !== null);
+  return enumerating >= 0 && enumerating < declaring ? "choice" : declared;
 }
 
 /** Bound on the nesting examined to derive a kind, so a recursive schema terminates. */
@@ -100,7 +158,9 @@ const MAX_DEPTH = 16;
 
 function kindAt(schema: SchemaView, depth: number): FieldKind | null {
   const declared = schema.declaredKind;
-  return declared !== null && isFieldKind(declared) ? declared : deriveKind(schema, depth + 1);
+  return declared !== null && isFieldKind(declared)
+    ? declaredKind(schema, declared)
+    : deriveKind(schema, depth + 1);
 }
 
 /** Derives the kind of `schema` from its standard keywords only. */
@@ -146,7 +206,7 @@ function mappingKind(schema: SchemaView, depth: number): MappingKind {
 }
 
 /** Whether `schema` holds a `oneOf` of object schemas, each declaring properties. */
-function isAlternatives(schema: SchemaView): boolean {
+export function isAlternatives(schema: SchemaView): boolean {
   const alternatives = schema.oneOf();
   return (
     alternatives.length > 0 &&

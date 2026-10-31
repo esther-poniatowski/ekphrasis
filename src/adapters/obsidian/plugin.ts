@@ -11,6 +11,7 @@ import {
   FormService,
   IdentifierIndexService,
   parseSettings,
+  RegistryReader,
   ValidationService,
   type EkphrasisSettings,
 } from "../../application";
@@ -86,11 +87,18 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       OBSIDIAN_CHECKER_ENVIRONMENT,
     );
     const files = new VaultFileSource(this.app.vault);
-    const forms = new FormService(parser, new FileSchemaLoader(files), validation, settings, files);
+    const resources = new RegistryReader(parser, files, settings);
+    const forms = new FormService(
+      parser,
+      new FileSchemaLoader(files, resources),
+      validation,
+      settings,
+      files,
+    );
     const identifiers = new IdentifierIndexService(
       parser,
       files,
-      new FileSchemaLoader(files),
+      new FileSchemaLoader(files, resources),
       settings,
     );
     this.identifiers = identifiers;

@@ -8,9 +8,8 @@
  * item in both, so `foils[*].symbol` and `foils[*].name` relate the symbol and the name of each
  * foil. After that prefix, a wildcard is admitted in the subject path only.
  */
-import type { JsonValue } from "../../schema/json";
+import { jsonEquals, type JsonValue } from "../../schema/json";
 import { commonPrefixLength, hasWildcard } from "../instance-data";
-import { jsonEquals } from "../unfilled";
 import type {
   BoundRule,
   Checker,

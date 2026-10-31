@@ -50,6 +50,31 @@ export interface SchemaLoader {
   load(path: string): Promise<SchemaSet>;
 }
 
+/** Mapping of the configured schema registry from absolute `$id` strings to vault paths. */
+export type ResourceMapping =
+  | {
+      readonly status: "available";
+      readonly registryPath: string;
+      /** Each absolute `$id`, exactly as written in its schema file, with the vault path of that file. */
+      readonly resources: ReadonlyMap<string, string>;
+    }
+  | {
+      readonly status: "unavailable";
+      /** Why no mapping is available, such as `the registry \`specs/schemas.yml\` is absent`. */
+      readonly reason: string;
+      /** Vault path of the configured registry, when the settings name one inside the vault. */
+      readonly registryPath?: string;
+    };
+
+/**
+ * Locates the schema file of an absolute `$id` through the key `resources` of the configured
+ * schema registry, so that a `$ref` by absolute URI never reaches the network.
+ */
+export interface SchemaResources {
+  /** Mapping read at each call, so a change of the registry applies to the next load. */
+  resources(): Promise<ResourceMapping>;
+}
+
 /** Validator of instances against the schemas of one schema set, compiled once. */
 export interface InstanceValidator {
   /** Errors of `instance`, in the order of the validator. */

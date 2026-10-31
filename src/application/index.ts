@@ -12,7 +12,9 @@ export type {
   InstanceValidator,
   LinkFormatter,
   RecordIdentifiers,
+  ResourceMapping,
   SchemaLoader,
+  SchemaResources,
   SchemaValidator,
 } from "./protocols";
 export {
@@ -33,6 +35,7 @@ export {
 export { ValidationService, type ValidationReport } from "./validation-service";
 export { IdentifierIndexService } from "./identifier-index-service";
 export { BindingService } from "./binding-service";
+export { RegistryReader, type RegistryState } from "./registry-reader";
 export {
   fieldLinkByIdentifier,
   fieldLinkByPath,

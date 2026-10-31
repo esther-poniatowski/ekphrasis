@@ -34,3 +34,25 @@ function isJson(value: unknown): value is JsonValue {
   }
   return false;
 }
+
+/** Whether two JSON values are equal: same scalars, same items in order, same entries. */
+export function jsonEquals(a: JsonValue | undefined, b: JsonValue | undefined): boolean {
+  if (a === b) return true;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    const left = a as readonly JsonValue[];
+    const right = b as readonly JsonValue[];
+    return (
+      left.length === right.length && left.every((item, index) => jsonEquals(item, right[index]))
+    );
+  }
+  if (isJsonObject(a) && isJsonObject(b)) {
+    const keys = Object.keys(a);
+    return (
+      keys.length === Object.keys(b).length &&
+      keys.every(
+        (key) => Object.prototype.hasOwnProperty.call(b, key) && jsonEquals(a[key], b[key]),
+      )
+    );
+  }
+  return false;
+}

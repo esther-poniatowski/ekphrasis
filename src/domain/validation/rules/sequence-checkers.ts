@@ -4,9 +4,8 @@
  * without it, the items themselves are compared. Unfilled values are skipped.
  */
 import type { YamlPath } from "../../model";
-import type { JsonValue } from "../../schema/json";
+import { jsonEquals, type JsonValue } from "../../schema/json";
 import { hasWildcard } from "../instance-data";
-import { jsonEquals } from "../unfilled";
 import type { BoundRule, Checker, Finding, RuleArguments, RuleContext } from "./declaration";
 
 /** A filled value compared by a sequence checker, with its path and its position. */

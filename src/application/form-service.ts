@@ -55,7 +55,10 @@ export interface FormReady {
   readonly report: ValidationReport;
   /** Schemas of the model, kept so that a commit rebuilds the model without reloading them. */
   readonly schemas: SchemaSet;
-  /** Vault paths of the schema files read, so a change of one of them reopens the form. */
+  /**
+   * Vault paths of the schema files read, with the registry consulted, so a change of one of
+   * them reopens the form.
+   */
   readonly schemaPaths: readonly string[];
 }
 
@@ -113,8 +116,10 @@ export class FormService {
       const model = buildFormModel(schemas, tree, text, identities);
       const report = this.validation.validate(schemas, model, tree);
       const schemaPaths = [
-        ...(binding.registryPath === undefined ? [] : [binding.registryPath]),
-        ...schemas.paths,
+        ...new Set([
+          ...(binding.registryPath === undefined ? [] : [binding.registryPath]),
+          ...schemas.dependencies,
+        ]),
       ];
       return { status: "form", binding, model, report, schemas, schemaPaths };
     } catch (error) {
@@ -124,6 +129,7 @@ export class FormService {
           ...(binding.registryPath === undefined ? [] : [binding.registryPath]),
           binding.schemaPath,
           error.schemaPath,
+          ...error.dependencies,
         ]),
       ];
       return { status: "schema-error", binding, error, schemaPaths };

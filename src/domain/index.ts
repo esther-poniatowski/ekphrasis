@@ -10,6 +10,7 @@ export * from "./binding/binding";
 export { GlobPattern } from "./binding/glob";
 export { readModeline } from "./binding/modeline";
 export { readSchemaField } from "./binding/schema-field";
+export { readSchemaRegistry, type RegistryReading, type SchemaRegistry } from "./binding/registry";
 export * from "./schema/json";
 export { collectReferences, parseReference } from "./schema/reference";
 export * from "./schema/schema-set";
@@ -51,7 +52,7 @@ export {
   documentUri,
   type ValidatorDocument,
 } from "./schema/validator-documents";
-export { UnfilledValues, jsonEquals } from "./validation/unfilled";
+export { UnfilledValues } from "./validation/unfilled";
 export { InstanceData, instanceValue, pruneUnfilled } from "./validation/instance-data";
 export {
   dominantMark,
@@ -81,6 +82,7 @@ export { ConstraintIndex } from "./validation/constraints";
 export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";
 export { undeclaredRequirements } from "./validation/undeclared-requirements";
 export { admittedUnfilledValues } from "./validation/admitted-unfilled";
+export { compositionConflicts } from "./validation/composition-conflicts";
 export {
   FieldLinkError,
   fieldLinkOfLinktext,

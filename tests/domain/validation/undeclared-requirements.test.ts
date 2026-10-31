@@ -39,7 +39,10 @@ describe("required properties absent from the properties", () => {
       ],
       ["explanans", "The property `explanans` is required by the keyword `then`"],
       ["other", "The property `other` is required by the keyword `else`"],
-      ["joined", "The property `joined` is required by the keyword `required` inside `allOf`"],
+      [
+        "joined",
+        "The property `joined` is required by the keyword `required` inside a subschema composed by `$ref` or `allOf`",
+      ],
     ]);
   });
 

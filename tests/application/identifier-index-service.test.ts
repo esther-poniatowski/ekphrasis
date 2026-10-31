@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_SETTINGS,
   IdentifierIndexService,
+  RegistryReader,
   type EkphrasisSettings,
   type FileSource,
 } from "../../src/application";
@@ -193,6 +194,28 @@ describe("IdentifierIndexService", () => {
     expect(index.identifierOf("a.yml")).toBeNull();
 
     vault["schemas.yml"] = "schemas:\n  vault:record@1: record.schema.yaml\n";
+    await index.dependencyChanged("schemas.yml");
+    expect(index.identifierOf("a.yml")).toBe("quest.a");
+  });
+
+  it("indexes a record whose schema reads its identifier through `allOf` and the registry", async () => {
+    const uri = "https://example.org/tool/record@1/base.schema.yaml";
+    const vault: Record<string, string> = {
+      "schemas.yml": "schema_version: 2\nschemas: {}\nresources: {}\n",
+      "consumer.schema.yaml": `allOf:\n  - $ref: '${uri}'\n`,
+      "tool/base.schema.yaml": `$id: '${uri}'\n${RECORD_SCHEMA}`,
+      "a.yml": `${MODELINE("consumer.schema.yaml")}id: quest.a\n`,
+    };
+    const settings = () => ({ ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml" });
+    const files = new MemoryFileSource(vault);
+    const parser = new YamlDocumentParser();
+    const loader = new FileSchemaLoader(files, new RegistryReader(parser, files, settings));
+    const index = new IdentifierIndexService(parser, files, loader, settings);
+    await index.rebuild(["a.yml"]);
+    expect(index.identifierOf("a.yml")).toBeNull();
+
+    vault["schemas.yml"] =
+      `schema_version: 2\nschemas: {}\nresources:\n  '${uri}': tool/base.schema.yaml\n`;
     await index.dependencyChanged("schemas.yml");
     expect(index.identifierOf("a.yml")).toBe("quest.a");
   });

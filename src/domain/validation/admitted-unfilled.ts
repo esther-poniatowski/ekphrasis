@@ -12,7 +12,7 @@ import type { SchemaIssue } from "../form/model";
 import { printPatternPath } from "../paths/field-path";
 import { walkFieldSchemas } from "../schema/field-walk";
 import type { SchemaView } from "../schema/schema-view";
-import { jsonEquals } from "./unfilled";
+import { jsonEquals } from "../schema/json";
 
 /** Defects of the schema `root`, one per field that enumerates a value of `x-unfilled`. */
 export function admittedUnfilledValues(root: SchemaView): SchemaIssue[] {

@@ -49,6 +49,8 @@ export class SchemaError extends EkphrasisError {
     message: string,
     /** Vault path of the schema file at fault. */
     readonly schemaPath: string,
+    /** Further vault paths whose change can repair the failure, such as the schema registry. */
+    readonly dependencies: readonly string[] = [],
   ) {
     super(message);
   }

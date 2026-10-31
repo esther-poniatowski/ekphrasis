@@ -2,6 +2,15 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, FormService, type EkphrasisSettings } from "../../src/application";
 import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
+import {
+  BASE_PATH,
+  COMMON_PATH,
+  COMPOSED_SETTINGS,
+  COMPOSED_VAULT,
+  composedLoader,
+  REGISTRY_PATH,
+  ROOT_PATH,
+} from "../support/composed-vault";
 import { createValidation } from "../support/validation";
 
 const SCHEMA = "type: object\nproperties:\n  id: { type: string }\n";
@@ -129,5 +138,58 @@ describe("FormService", () => {
     const state = await service({}).open("q.yml", "# yaml-language-server: $schema=../s.yaml\n");
 
     expect(state).toMatchObject({ status: "invalid-binding", source: "modeline" });
+  });
+
+  it("opens a consumer root composing a base of another folder by its absolute `$id`", async () => {
+    const files = new MemoryFileSource(COMPOSED_VAULT);
+    const forms = new FormService(
+      new YamlDocumentParser(),
+      composedLoader(files),
+      createValidation(),
+      () => COMPOSED_SETTINGS,
+      files,
+    );
+    const state = await forms.open("notes/a.yml", "_schema: vault:note@1\nid: A1\nrole: other\n");
+
+    expect(state).toMatchObject({
+      status: "form",
+      binding: { source: "schema-field", schemaPath: ROOT_PATH },
+      schemaPaths: [REGISTRY_PATH, ROOT_PATH, BASE_PATH, COMMON_PATH],
+    });
+    if (state.status !== "form" || state.model.root.kind !== "group") return;
+    expect(state.model.title).toBe("Note");
+    expect(state.model.root.children.map((field) => [field.key, field.kind])).toEqual([
+      ["id", "text"],
+      ["role", "choice"],
+      ["gloss", "text"],
+    ]);
+    expect(state.report.issues.map((issue) => [issue.id, issue.checker])).toEqual([
+      ["id", "pattern"],
+      ["role", "enum"],
+    ]);
+    expect(state.report.schemaIssues).toEqual([]);
+  });
+
+  it("watches the registry of a schema whose absolute URI it does not map", async () => {
+    const files = new MemoryFileSource({
+      ...COMPOSED_VAULT,
+      [REGISTRY_PATH]: "schema_version: 2\nschemas:\n  'vault:note@1': schemas/note.schema.yaml\n",
+    });
+    const forms = new FormService(
+      new YamlDocumentParser(),
+      composedLoader(files),
+      createValidation(),
+      () => COMPOSED_SETTINGS,
+      files,
+    );
+    const state = await forms.open("notes/a.yml", "_schema: vault:note@1\nid: a\n");
+
+    expect(state).toMatchObject({
+      status: "schema-error",
+      schemaPaths: [REGISTRY_PATH, ROOT_PATH],
+    });
+    if (state.status === "schema-error") {
+      expect(state.error.message).toContain("referenced from `schemas/note.schema.yaml`");
+    }
   });
 });

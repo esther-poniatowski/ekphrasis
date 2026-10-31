@@ -30,7 +30,7 @@ import type { EkphrasisSettings } from "./settings";
 interface SchemaDeclaration {
   /** Path of the identifier field, or `null` when the schema declares none or fails to load. */
   readonly field: YamlPath | null;
-  /** Vault paths of the schema files read, or of the file that failed to load. */
+  /** Vault paths of the schema files read and of the registry consulted, or of the failure. */
   readonly documents: readonly string[];
   /** Logical record contract declared by the root `_schema` property. */
   readonly contract: string | null;
@@ -181,14 +181,14 @@ export class IdentifierIndexService implements RecordIdentifiers {
         .find(({ key }) => key === "_schema")?.schema.constValue?.value;
       return {
         field: declaration.status === "declared" ? declaration.path : null,
-        documents: schemas.paths,
+        documents: schemas.dependencies,
         contract: typeof contract === "string" ? contract : null,
       };
     } catch (error) {
       if (!(error instanceof SchemaError)) throw error;
       return {
         field: null,
-        documents: [...new Set([schemaPath, error.schemaPath])],
+        documents: [...new Set([schemaPath, error.schemaPath, ...error.dependencies])],
         contract: null,
       };
     }

@@ -285,16 +285,19 @@ class FormModelBuilder {
     };
   }
 
-  /** Entries of the keyword `x-rules` of the field; a value other than a sequence is reported. */
+  /**
+   * Entries of the keyword `x-rules` of the field, over the subschemas that it composes; a value
+   * other than a sequence is reported.
+   */
   private rulesOf(site: FieldSite): readonly JsonValue[] {
-    const rules = site.schema?.rules ?? null;
-    if (rules === null) return [];
-    if (Array.isArray(rules)) return rules as readonly JsonValue[];
-    this.issues.push({
-      path: printFieldPath(site.path),
-      message: "The keyword `x-rules` must hold a sequence of rule declarations.",
-    });
-    return [];
+    if (site.schema === null) return [];
+    if (site.schema.malformedRules) {
+      this.issues.push({
+        path: printFieldPath(site.path),
+        message: "The keyword `x-rules` must hold a sequence of rule declarations.",
+      });
+    }
+    return site.schema.rules;
   }
 
   /** Whether `node` is absent or holds an unfilled scalar, which fits every kind. */
@@ -356,11 +359,23 @@ function selectAlternative(
   return best;
 }
 
-/** Properties of a parent followed by those of its selected alternative, each key once. */
+/**
+ * Properties of a parent followed by those of its selected alternative, each key once. A key
+ * declared by both takes the conjunction of the two declarations, the parent nearest.
+ */
 function mergeProperties(
   parent: readonly PropertySchema[],
   alternative: readonly PropertySchema[],
 ): PropertySchema[] {
+  const own = new Map(alternative.map(({ key, schema }) => [key, schema]));
   const keys = new Set(parent.map(({ key }) => key));
-  return [...parent, ...alternative.filter(({ key }) => !keys.has(key))];
+  return [
+    ...parent.map(({ key, schema }) => {
+      const narrowed = own.get(key);
+      return narrowed === undefined
+        ? { key, schema }
+        : { key, schema: SchemaView.conjoin([schema, narrowed]) };
+    }),
+    ...alternative.filter(({ key }) => !keys.has(key)),
+  ];
 }

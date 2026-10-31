@@ -11,11 +11,13 @@
  * A schema set is compiled once, at its first validation, and reused for every commit. The
  * defects of the schema that no instance affects are found once as well, and reported with
  * every validation: a required property absent from the properties, a value declared unfilled
- * but admitted by a field, and a keyword `x-identifier` designating no declared field.
+ * but admitted by a field, a keyword `x-identifier` designating no declared field, and
+ * subschemas composed for one field whose constraints no single control can express.
  */
 import {
   admittedUnfilledValues,
   checkRules,
+  compositionConflicts,
   identifierDefects,
   InstanceData,
   issue,
@@ -47,8 +49,9 @@ export interface ValidationReport {
   readonly constraints: readonly Constraint[];
   /**
    * Defects of the schema found while validating: a schema refused by the validator, a required
-   * property absent from the properties, a value declared unfilled but admitted by a field, and
-   * rule declarations that are malformed or name no checker.
+   * property absent from the properties, a value declared unfilled but admitted by a field,
+   * conflicting constraints of composed subschemas, and rule declarations that are malformed or
+   * name no checker.
    */
   readonly schemaIssues: readonly SchemaIssue[];
 }
@@ -102,6 +105,7 @@ export class ValidationService {
         ...undeclaredRequirements(root),
         ...admittedUnfilledValues(root),
         ...identifierDefects(root),
+        ...compositionConflicts(root),
       ];
       this.defects.set(schemas, defects);
     }
