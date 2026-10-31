@@ -21,7 +21,6 @@ A schema is written in JSON Schema, draft 2020-12, in JSON or in YAML, and exten
 - **Single declaration**: the structure, the presentation and the rules of a record type must be declared in one file.
 - **Reuse by programs**: the programs of a project must validate instances against the same schema, through standard libraries in Python and in JavaScript.
 - **Expressivity**: the language must express nested structures, required, optional and conditional fields, default values, patterns and ranges.
-- **Existing schemas**: schemas already written in JSON Schema must work without conversion.
 
 ## Options weighed
 
@@ -29,7 +28,7 @@ A schema is written in JSON Schema, draft 2020-12, in JSON or in YAML, and exten
 | --- | --- | --- |
 | Dedicated form format, modeled on the form schema of GitHub issue forms | Each element carries its label, its instructions and its validations in a short syntax | Programs cannot validate instances with a standard library, and the model holds a flat list of elements, without nesting or conditions |
 | JSON Schema, with the presentation in a separate file, as in the UI schemas of form libraries | The schema stays free of extensions | Two files per record type must be kept consistent |
-| JSON Schema with keywords prefixed `x-` | One file per record type, standard validators, and existing schemas stay valid | The keywords of ekphrasis are unknown to other tools |
+| JSON Schema with keywords prefixed `x-` | One file per record type, and standard validators | The keywords of ekphrasis are unknown to other tools |
 
 ## Consequences
 

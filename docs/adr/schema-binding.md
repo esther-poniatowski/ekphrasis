@@ -21,18 +21,19 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 - **Explicit data**: a canonical record contract must be readable by every consumer.
 - **Portable files**: a moved instance must keep its schema contract.
 - **Stable identity**: the contract identifier must not depend on the local path of the schema.
-- **Existing layouts**: a project whose folder layout already determines the record type must not have to edit its files.
 - **Interoperability**: the binding should be readable by YAML tools outside Obsidian.
+- **Foreign formats**: a file whose format admits no additional key, such as the configuration of another tool, must be bound without a change to its data.
+- **Rewritten files**: a file that a program rewrites without its comments must keep its binding.
 
 ## Options weighed
 
 | Option | Benefit | Cost |
 | --- | --- | --- |
 | Logical `_schema` resolved through a registry | Programs share one portable identity, whereas each vault selects a local path | The vault must generate and configure a registry |
-| Modeline comment `# yaml-language-server: $schema=<path>` | The file carries a path that the YAML language server also reads | A move can invalidate the relative path, and a tool that rewrites comments can remove it |
-| Key of the data naming the record type, such as `type` | Many records already carry such a key | The name of the key and its values differ between projects, so each project needs a mapping in the settings |
-| Path rules in the settings | The files carry no line for the binding | A file moved to another folder loses its schema, and the binding is stored outside the project |
-| `_schema`, modeline, then path rules | Canonical records carry a stable contract, whereas existing layouts retain compatibility | Three routes require explicit precedence |
+| Modeline comment `# yaml-language-server: $schema=<path>` | The file carries a path that the YAML language server also reads, and a file whose format admits no additional key is bound by a comment | A move can invalidate the relative path, and a tool that rewrites comments can remove it |
+| Key of the data naming the record type, such as `type` | — | The name of the key and its values differ between projects, so each project needs a mapping in the settings |
+| Path rules in the settings | The files carry no line for the binding, so a file that admits no additional key and loses its comments when a program rewrites it keeps its schema | A file moved to another folder loses its schema, and the binding is stored outside the project |
+| `_schema`, modeline, then path rules | Canonical records carry a stable contract; a file of a foreign format is bound by a comment, and a rewritten file by its folder | Three routes require explicit precedence |
 
 ## Consequences
 

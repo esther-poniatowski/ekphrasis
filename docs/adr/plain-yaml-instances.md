@@ -19,15 +19,14 @@ An instance is a standalone file with the extension `.yaml` or `.yml`, as the sp
 ## Constraints
 
 - **Machine readability**: the [requirement on machine readability](../requirements.md#^machine-readability) calls for a file read by a standard YAML parser without preprocessing.
-- **Existing records**: the records of the projects served must open without a rename or a conversion.
 - **Source preservation**: the [requirement on source preservation](../requirements.md#^source-preservation) calls for a file whose text changes only at the edited value.
 
 ## Options weighed
 
 | Option | Benefit | Cost |
 | --- | --- | --- |
-| Standalone file with the extension `.yaml` or `.yml` | Every YAML tool recognizes the file, and existing records open unchanged | Obsidian indexes no link written in the file, and a plugin must register the extensions to open it |
-| Note whose name ends with the suffix `.yaml.md`, holding a frontmatter and a YAML body | Obsidian indexes the links of the values and the properties of the frontmatter | A parser reads a stream of two documents and must select the last one, every existing record must be renamed, and the Markdown parser of Obsidian reads some indented YAML lines as code |
+| Standalone file with the extension `.yaml` or `.yml` | Every YAML tool recognizes the file | Obsidian indexes no link written in the file, and a plugin must register the extensions to open it |
+| Note whose name ends with the suffix `.yaml.md`, holding a frontmatter and a YAML body | Obsidian indexes the links of the values and the properties of the frontmatter | A parser reads a stream of two documents and must select the last one, and the Markdown parser of Obsidian reads some indented YAML lines as code |
 | Note holding the YAML in a fenced code block | Obsidian highlights the block | A program must extract the block before parsing it, and Obsidian indexes no link inside the block |
 
 ## Consequences

@@ -32,7 +32,7 @@ The record recommends three choices. Its status stays `proposed` until the user 
 - **Links in notes**: a link written in a note is followed by Obsidian. Therefore, ekphrasis can reach such a link only through a hook. That hook must be declared by the API of Obsidian, since an undeclared hook can change without notice at each release of Obsidian.
 - **No side effect**: following a link must never create or modify a file.
 - **Consumer independence**: ekphrasis must read no keyword defined by a single consumer project, since it ignores every keyword prefixed `x-` outside its own, as the [keywords of ekphrasis](../features/schemas.md) state.
-- **Consumer identifiers**: the identifiers of both consumer projects must be indexable without changing their records:
+- **Consumer identifiers**: the identifiers of both consumer projects must be indexable:
   - in gnomon, every record holds its identifier at the root key `id`, prefixed by its type, such as `quest.TOPIC.NAME` or `system.TOPIC`. A reference names a symbol of another record by the identifier of that record and the symbol, as `system.TOPIC#SYMBOL`;
   - in geonexus, each schema names the key of the identifier for its own checker, under `x-checks.id_key`: `id` in the glossary and notation schemas, and `identity.id` in the project and audience schemas. An identifier is unique among the files of one type only.
 
