@@ -39,7 +39,7 @@ The parameters carry the following content:
 | `file` | Absolute path of the instance, so that the checker can read neighbouring files |
 | `arguments` | Further keys of the rule declaration |
 
-A returned item takes one of two forms. A string is reported as an issue at the field that declares the rule. A mapping with the keys `message`, `path` and `severity` is reported at its own path, a field path starting from the root of the instance. Therefore, an instance-scope checker can locate each issue at its field. An exception raised by the function is reported as one issue at the declaring field, with the message of the exception.
+A returned item takes one of two forms. A string is reported as an issue at the field that declares the rule. A mapping with the keys `message`, `path` and `severity` is reported at its own path, a field path starting from the root of the instance. Therefore, an instance-scope checker can locate each issue at its field. A mapping may also hold the key `discriminator`: a string naming the offending content, such as a symbol or a term, derived from that issue alone. The plugin ignores the key. When a domain tool runs the same function from its own command, the tool writes the key as the discriminator of its finding, in the [findings profile](https://github.com/esther-poniatowski/elenchos/blob/main/docs/profile.md) of the gate Elenchos. Therefore, two issues of one checker at one path keep distinct identities in the gate. An exception raised by the function is reported as one issue at the declaring field, with the message of the exception.
 
 ## Execution
 
