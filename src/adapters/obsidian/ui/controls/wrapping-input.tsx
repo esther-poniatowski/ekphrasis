@@ -61,7 +61,10 @@ export function WrappingInput({
       spellcheck={spellcheck}
       onFocus={draft.onFocus}
       onBlur={draft.onBlur}
+      onBeforeInput={draft.onBeforeInput}
       onKeyDown={(event) => {
+        draft.onKeyDown(event);
+        if (event.defaultPrevented) return;
         // A key pressed while an input method composes a character belongs to that composition.
         if (multiline || event.key !== "Enter" || event.isComposing) return;
         event.preventDefault();

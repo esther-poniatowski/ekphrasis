@@ -9,6 +9,11 @@
  * rewrites the text under the cursor. Once the draft loses the focus, such a text is displayed
  * as the value is written, `1.5`.
  *
+ * The draft also keeps the history of its edits for the keys of undo and redo: the texts of its
+ * successive commits, so one undo returns to the text of the previous commit, or drops the text
+ * typed since the last commit. A change made outside starts a new history, since the texts of the
+ * former one no longer describe the field.
+ *
  * The class depends on no interface library, so unit tests exercise it outside Obsidian.
  */
 import type { ScalarValue } from "../../../../domain";
@@ -19,11 +24,18 @@ export interface TakenValue {
   readonly value: ScalarValue;
 }
 
+/** Number of commits that the history of a draft keeps for undo. */
+const HISTORY_LIMIT = 100;
+
 export class TextDraft {
   private text: string;
   private value: ScalarValue;
   private dirty = false;
   private focused = false;
+  /** Texts of the successive commits, the last one being the text of the latest commit. */
+  private past: string[];
+  /** Texts undone, the last one being restored first by a redo. */
+  private undone: string[] = [];
 
   /**
    * @param value Value of the field when the control is created.
@@ -35,6 +47,7 @@ export class TextDraft {
   ) {
     this.value = value;
     this.text = formatScalar(value);
+    this.past = [this.text];
   }
 
   get displayed(): string {
@@ -50,6 +63,36 @@ export class TextDraft {
   input(text: string): void {
     this.text = text;
     this.dirty = true;
+    this.undone = [];
+  }
+
+  /**
+   * Restores the text of the previous commit, or the text of the latest commit when an edit
+   * followed it, and marks it for a commit. Returns whether a text was restored.
+   */
+  undo(): boolean {
+    const latest = this.past[this.past.length - 1] ?? this.text;
+    if (this.text !== latest) {
+      this.undone.push(this.text);
+      return this.restore(latest);
+    }
+    if (this.past.length < 2) return false;
+    this.undone.push(this.past.pop() ?? latest);
+    return this.restore(this.past[this.past.length - 1] ?? latest);
+  }
+
+  /** Restores the text that the last undo dropped, and marks it for a commit. */
+  redo(): boolean {
+    const text = this.undone.pop();
+    if (text === undefined) return false;
+    this.past.push(text);
+    return this.restore(text);
+  }
+
+  private restore(text: string): boolean {
+    this.text = text;
+    this.dirty = true;
+    return true;
   }
 
   focus(): void {
@@ -63,7 +106,11 @@ export class TextDraft {
    */
   blur(): void {
     this.focused = false;
-    if (!this.dirty && this.read(this.text) === this.value) this.text = formatScalar(this.value);
+    if (this.dirty || this.read(this.text) !== this.value) return;
+    const written = formatScalar(this.value);
+    // The text written replaces the text of the latest commit, which it stands for.
+    if (this.past[this.past.length - 1] === this.text) this.past[this.past.length - 1] = written;
+    this.text = written;
   }
 
   /**
@@ -74,6 +121,10 @@ export class TextDraft {
   take(): TakenValue | null {
     if (!this.dirty) return null;
     this.dirty = false;
+    if (this.text !== this.past[this.past.length - 1]) {
+      this.past.push(this.text);
+      if (this.past.length > HISTORY_LIMIT) this.past.shift();
+    }
     return { value: this.read(this.text) };
   }
 
@@ -87,5 +138,7 @@ export class TextDraft {
     if (this.dirty) return;
     if (this.focused && this.read(this.text) === value) return;
     this.text = formatScalar(value);
+    this.past = [this.text];
+    this.undone = [];
   }
 }

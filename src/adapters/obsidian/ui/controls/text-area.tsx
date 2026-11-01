@@ -21,6 +21,8 @@ export function TextArea({ field, readOnly, draft, inputRef }: EditorProps): JSX
       readOnly={readOnly}
       onFocus={draft.onFocus}
       onBlur={draft.onBlur}
+      onKeyDown={draft.onKeyDown}
+      onBeforeInput={draft.onBeforeInput}
       onInput={(event) => draft.onInput(event.currentTarget.value)}
     />
   );

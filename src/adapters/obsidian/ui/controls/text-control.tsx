@@ -71,6 +71,8 @@ export function TextInput({
       inputMode={inputMode}
       onFocus={draft.onFocus}
       onBlur={draft.onBlur}
+      onKeyDown={draft.onKeyDown}
+      onBeforeInput={draft.onBeforeInput}
       onInput={(event) => draft.onInput(event.currentTarget.value)}
     />
   );

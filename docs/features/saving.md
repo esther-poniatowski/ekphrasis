@@ -13,6 +13,8 @@ Ekphrasis saves every edit of the form into the YAML file, without a submission 
 
 A control commits its value when it loses the focus, and when typing pauses for the *commit delay* of the settings, one second by default. A dropdown, a toggle and a checkbox commit at each change. The empty option of a dropdown clears its field. Each commit writes the file at once through the vault of Obsidian, so other plugins and synchronization services observe each commit as an ordinary change of the file. Text typed in a field of kind `number` is written as a number when it reads as a decimal number, and as typed otherwise, such as the placeholder `open`.
 
+A control holding text keeps the history of its commits. The key `Cmd+Z`, `Ctrl+Z` outside macOS, and the item *Undo* of the menu *Edit* restore the text of the previous commit, or drop the text typed since the last commit, and commit the restored text at once. Therefore, the texts typed between two pauses are undone one after the other. The key `Cmd+Shift+Z`, `Ctrl+Shift+Z` or `Ctrl+Y`, and the item *Redo*, restore the text undone last. The control keeps this history while the file changes only through its own commits, and starts a new one at a change of its value made outside. The history of the browser is not used, since a control loses it whenever its own value is set by the control, as when a pasted line break becomes a space.
+
 ## Preserved text
 
 A commit changes only the text of the edited value, as the [requirement on source preservation](../requirements.md#^source-preservation) demands. Every other character of the file stays identical, in particular:

@@ -180,6 +180,71 @@ function cells(options: Element): string[][] {
   );
 }
 
+describe("undo and redo in a text control", () => {
+  it("undoes each commit at Mod+Z, and redoes it at Mod+Shift+Z", async () => {
+    const { container, session } = await renderPresented();
+    const area = element<HTMLTextAreaElement>(row(container, "title"), "textarea");
+    fireEvent.focus(area);
+    for (const text of ["Damped", "Damped pendulum"]) {
+      fireEvent.input(area, { target: { value: text } });
+      fireEvent.keyDown(area, { key: "Enter" });
+    }
+    expect(fireEvent.keyDown(area, { key: "z", metaKey: true })).toBe(false);
+    expect([area.value, session.text]).toEqual([
+      "Damped",
+      expect.stringContaining("title: Damped\n"),
+    ]);
+    fireEvent.keyDown(area, { key: "z", metaKey: true });
+    expect(session.text).toContain("title: Pendulum\n");
+    fireEvent.keyDown(area, { key: "z", metaKey: true, shiftKey: true });
+    expect([area.value, session.text]).toEqual([
+      "Damped",
+      expect.stringContaining("title: Damped\n"),
+    ]);
+  });
+
+  it("undoes a paste whose line breaks became spaces", async () => {
+    const { container, session } = await renderPresented();
+    const area = element<HTMLTextAreaElement>(row(container, "title"), "textarea");
+    fireEvent.focus(area);
+    fireEvent.input(area, { target: { value: "Pendulum First line\nSecond line" } });
+    fireEvent.blur(area);
+    expect(session.text).toContain("title: Pendulum First line Second line\n");
+    fireEvent.focus(area);
+    fireEvent.keyDown(area, { key: "z", metaKey: true });
+    expect([area.value, session.text]).toEqual([
+      "Pendulum",
+      expect.stringContaining("title: Pendulum\n"),
+    ]);
+  });
+
+  it("undoes in a value on several lines at the request of the menu Edit", async () => {
+    const { container, session } = await renderPresented(
+      TEXT.replace("title: Pendulum\n", "title: |\n  First line.\n  Second line.\n"),
+    );
+    const area = element<HTMLTextAreaElement>(row(container, "title"), "textarea");
+    fireEvent.focus(area);
+    fireEvent.input(area, { target: { value: "First line.\nSecond line.abc\n" } });
+    const request = new InputEvent("beforeinput", { inputType: "historyUndo", cancelable: true });
+    expect(fireEvent(area, request)).toBe(false);
+    expect([area.value, session.text]).toEqual([
+      "First line.\nSecond line.\n",
+      expect.stringContaining("title: |\n  First line.\n  Second line.\n"),
+    ]);
+  });
+
+  it("undoes in a single-line input of kind label", async () => {
+    const { container, session } = await renderPresented();
+    const input = element<HTMLInputElement>(row(container, "code"), "input");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { value: "q2" } });
+    fireEvent.blur(input);
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: "z", ctrlKey: true });
+    expect([input.value, session.text]).toEqual(["q1", expect.stringContaining("code: q1\n")]);
+  });
+});
+
 describe("descriptions of the options of a choice", () => {
   it("shows the described options with the instructions of the field, on demand", async () => {
     const { container } = await renderPresented();

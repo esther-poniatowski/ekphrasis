@@ -68,3 +68,48 @@ describe("draft of a text control", () => {
     expect(draft.displayed).toBe("b");
   });
 });
+
+describe("history of a draft", () => {
+  it("undoes the text typed since the last commit, then each commit, and redoes them", () => {
+    const draft = textDraft("a");
+    draft.focus();
+    draft.input("ab");
+    draft.take();
+    draft.input("abc");
+    expect([draft.undo(), draft.displayed, draft.take()]).toEqual([true, "ab", { value: "ab" }]);
+    expect([draft.undo(), draft.displayed, draft.take()]).toEqual([true, "a", { value: "a" }]);
+    expect(draft.undo()).toBe(false);
+    expect([draft.redo(), draft.displayed]).toEqual([true, "ab"]);
+    expect([draft.redo(), draft.displayed]).toEqual([true, "abc"]);
+    expect(draft.redo()).toBe(false);
+  });
+
+  it("forgets the texts undone once the author types", () => {
+    const draft = textDraft("a");
+    draft.input("ab");
+    draft.take();
+    draft.undo();
+    draft.input("ax");
+    expect(draft.redo()).toBe(false);
+  });
+
+  it("starts a new history at a change made outside", () => {
+    const draft = textDraft("a");
+    draft.input("ab");
+    draft.take();
+    draft.update("ab");
+    draft.update("changed outside");
+    expect([draft.undo(), draft.displayed]).toEqual([false, "changed outside"]);
+  });
+
+  it("undoes to the text written at the end of the focus, rather than the text typed", () => {
+    const draft = numberDraft(1);
+    draft.focus();
+    draft.input("1.50");
+    draft.take();
+    draft.update(1.5);
+    draft.blur();
+    expect(draft.displayed).toBe("1.5");
+    expect([draft.undo(), draft.displayed]).toEqual([true, "1"]);
+  });
+});
