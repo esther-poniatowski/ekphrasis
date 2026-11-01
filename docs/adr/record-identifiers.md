@@ -10,6 +10,8 @@ status: accepted
 
 > [!QUESTION] Goal: how does a link designate a record by its identifier, and how does ekphrasis find that record?
 
+**Amended** on 2026-11-01 by the decision of `geonexus` on [tool roles](https://github.com/esther-poniatowski/geonexus/blob/827474dca64daef110b9d7fe36a4127c2b32b167/docs/_decisions/tool-roles.md): the keyword `x-identifier` belongs to the addressing specification of Anagraphe, and the index of identifiers moves into the TypeScript package of Anagraphe.
+
 The [requirement on field links](../requirements.md#^field-links) admits two ways to designate the record of a field: the path of its file, or the identifier of the record. A link by identifier stays valid after a move or a rename of the file, as the specification of [links](../features/links.md) states. Resolving such a link raises three questions, to be settled before the last step of the milestone *Links*:
 
 1. which component maintains the index that maps each identifier to its file;
