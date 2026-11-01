@@ -128,7 +128,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Form view**: draw the chevron of a group or a collection outside the column of icons, so that its icon and its name align with those of the fields at the same depth. (2026-10-30)
 - [x] **Form view**: align the help button of a group or a collection with the help buttons of the scalar fields at the same depth. (2026-10-30)
 - [x] **Form view**: remove the horizontal line under the heading of a group or a collection, and keep only the vertical guide along its fields. (2026-10-30)
-- [ ] **Form view**: undo the last edit of a text control with `Cmd+Z`.
+- [ ] **Form view**: undo the last edit of a text control with `Cmd+Z`. Implemented on 2026-11-01; awaits the run of the [protocol of undo in text controls](tests/manual/protocols/text-undo.md).
 
 ## Schema styles
 
