@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Schema composition
-status: proposed
+status: accepted
 ---
 # Schema composition
 

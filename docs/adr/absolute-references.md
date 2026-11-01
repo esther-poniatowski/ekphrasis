@@ -4,7 +4,7 @@ tags:
 index: "[Architecture decisions](docs/adr/_index.md)"
 aliases:
   - Absolute references
-status: proposed
+status: accepted
 ---
 # Absolute references
 
