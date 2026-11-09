@@ -17,44 +17,44 @@ The roadmap step on undo in a text control is ticked once these items pass. Each
 
 The record `scenarios/presentation.yml` is the record of the [protocol of form presentation](form-presentation.md).
 
-- [ ] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
+- [x] Run `npm run build` and `npm run test-vault` from the root of the repository, then restart Obsidian, or disable and enable *Ekphrasis* in *Settings → Community plugins*. → No error notice appears, and the console holds no line starting with `ekphrasis:`.
 
 ## Texts typed between pauses
 
-- [ ] Open `scenarios/presentation.yml`. Click at the end of the value of *title*, type ` one`, pause, type ` two`, and pause. → The value reads *Onset of oscillation one two*.
-- [ ] Press `Cmd+Z`. → The value reads *Onset of oscillation one*, and the cursor stays in the input.
-- [ ] Press `Cmd+Z` again. → The value reads *Onset of oscillation*.
-- [ ] Press `Cmd+Shift+Z` twice. → The value reads *Onset of oscillation one*, then *Onset of oscillation one two*.
-- [ ] Type ` three` without a pause, and press `Cmd+Z` at once. → The value reads *Onset of oscillation one two*: the text typed since the last commit is dropped.
-- [ ] Click the input of *code*, then click back at the end of *title*, and press `Cmd+Z`. → The value reads *Onset of oscillation one*.
+- [x] Open `scenarios/presentation.yml`. Click at the end of the value of *title*, type ` one`, pause, type ` two`, and pause. → The value reads *Onset of oscillation one two*.
+- [x] Press `Cmd+Z`. → The value reads *Onset of oscillation one*, and the cursor stays in the input.
+- [x] Press `Cmd+Z` again. → The value reads *Onset of oscillation*.
+- [x] Press `Cmd+Shift+Z` twice. → The value reads *Onset of oscillation one*, then *Onset of oscillation one two*.
+- [x] Type ` three` without a pause, and press `Cmd+Z` at once. → The value reads *Onset of oscillation one two*: the text typed since the last commit is dropped.
+- [x] Click the input of *code*, then click back at the end of *title*, and press `Cmd+Z`. → The value reads *Onset of oscillation one*.
 
 ## Value on several lines
 
-- [ ] Click at the end of *Second remark.* in *remarks*, type `abc`, pause, and press `Cmd+Z`. → The input shows *First remark.* and *Second remark.* on two lines, with no letter of `abc` left.
-- [ ] Repeat the previous item twice, typing `abc` at different speeds. → Each time, `Cmd+Z` removes the three letters together.
+- [x] Click at the end of *Second remark.* in *remarks*, type `abc`, pause, and press `Cmd+Z`. → The input shows *First remark.* and *Second remark.* on two lines, with no letter of `abc` left.
+- [x] Repeat the previous item twice, typing `abc` at different speeds. → Each time, `Cmd+Z` removes the three letters together.
 - [ ] Type `d`, press `Enter`, type `e`, pause, then press `Cmd+Z`. → The input shows the two lines of the start, *First remark.* and *Second remark.*
 
 ## Paste joining several lines
 
-- [ ] Click the rendered value of *prose*, select its two lines in the editor that opens, and copy them with `Cmd+C`. Click at the end of the value of *title*, type a space, paste with `Cmd+V`, and pause. → The pasted text joins the value on the same line.
-- [ ] Press `Cmd+Z`. → The pasted text and the space typed before it disappear, as they were committed together: the value reads as before the paste.
+- [x] Click the rendered value of *prose*, select its two lines in the editor that opens, and copy them with `Cmd+C`. Click at the end of the value of *title*, type a space, paste with `Cmd+V`, and pause. → The pasted text joins the value on the same line.
+- [x] Press `Cmd+Z`. → The pasted text and the space typed before it disappear, as they were committed together: the value reads as before the paste.
 
 ## Menu Edit
 
-- [ ] Click at the end of *abstract*, type ` More.`, and pause. Open the menu *Edit* of Obsidian in the menu bar, and choose *Undo*. → The value no longer ends with *More.*
-- [ ] Open the menu *Edit* again, and choose *Redo*. → The value ends with *More.* again.
+- [x] Click at the end of *abstract*, type ` More.`, and pause. Open the menu *Edit* of Obsidian in the menu bar, and choose *Undo*. → The value no longer ends with *More.*
+- [x] Open the menu *Edit* again, and choose *Redo*. → The value ends with *More.* again.
 
 ## Editor of a Markdown value
 
-- [ ] Click the rendered value of *prose*. At the end of its second line, type ` Added.`, pause, then press `Cmd+Z`. → The editor shows the two lines of the start, without *Added.*
+- [x] Click the rendered value of *prose*. At the end of its second line, type ` Added.`, pause, then press `Cmd+Z`. → The editor shows the two lines of the start, without *Added.*
 
 ## Change made outside
 
-- [ ] Click at the end of *title*, type ` four`, and pause. Run *Ekphrasis: Toggle form and source view*, change the line of `title` to `title: Changed outside`, and run the command again to return to the form view. Click at the end of *title*, and press `Cmd+Z`. → The value stays *Changed outside*: the change made outside starts a new history.
+- [x] Click at the end of *title*, type ` four`, and pause. Run *Ekphrasis: Toggle form and source view*, change the line of `title` to `title: Changed outside`, and run the command again to return to the form view. Click at the end of *title*, and press `Cmd+Z`. → The value stays *Changed outside*: the change made outside starts a new history.
 
 ## Source of the file
 
-- [ ] Run *Ekphrasis: Toggle form and source view*. → The source shows `title: Changed outside`, `remarks: |` followed by its two remarks, and `prose: |` followed by its two lines, as the form displays them. Run the command again to return to the form view.
+- [x] Run *Ekphrasis: Toggle form and source view*. → The source shows `title: Changed outside`, `remarks: |` followed by its two remarks, and `prose: |` followed by its two lines, as the form displays them. Run the command again to return to the form view.
 
 ## Reset
 
@@ -63,3 +63,5 @@ To restore the records, run `npm run test-vault` from the root of the repository
 ## Observations
 
 ### Run 1
+
+- "Type `d`, press `Enter`, type `e`, pause, then press `Cmd+Z`.": Only `e` is removed, but it is the correct behavior.
