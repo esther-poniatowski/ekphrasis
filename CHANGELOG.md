@@ -4,6 +4,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-11
+
 ### Changed
 
 - Schema registries read the current marker `_schema: kleisis:schema-registry@2`. Existing registries may still use the explicit markers `schema_version: 1` and `schema_version: 2`.
