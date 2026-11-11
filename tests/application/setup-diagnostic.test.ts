@@ -32,6 +32,7 @@ import { createValidation } from "../support/validation";
 const REGISTRY = "specs/registry.yml";
 const CONTRACT = "schemas/note.schema.yaml";
 const BASE = ".schema-resources/tool/base.schema.yaml";
+const BASE_CHILD = ".schema-resources/tool/child.schema.yaml";
 const BASE_URI = "https://example.org/tool/base.schema.yaml";
 const RECORD = "notes/first.yml";
 const ABSOLUTE = (path: string): string => `/vault/${path}`;
@@ -53,8 +54,11 @@ const BASE_TEXT = [
   "type: object",
   "properties:",
   "  body: {type: string}",
+  "  child: {$ref: child.schema.yaml}",
   "",
 ].join("\n");
+
+const BASE_CHILD_TEXT = "type: string\n";
 
 const REGISTRY_TEXT = [
   "schema_version: 2",
@@ -86,6 +90,7 @@ const FILES: Readonly<Record<string, string>> = {
   [REGISTRY]: REGISTRY_TEXT,
   [CONTRACT]: CONTRACT_TEXT,
   [BASE]: BASE_TEXT,
+  [BASE_CHILD]: BASE_CHILD_TEXT,
   [RECORD]: RECORD_TEXT,
 };
 
@@ -101,6 +106,7 @@ interface VaultOptions {
 const HIDDEN = [".schema-resources", ".generated"];
 
 function memoryVault(options: VaultOptions, settings: () => EkphrasisSettings) {
+  void settings;
   const files = options.files ?? FILES;
   const hidden = options.hidden ?? HIDDEN;
   const isHidden = (path: string): boolean =>
@@ -110,12 +116,20 @@ function memoryVault(options: VaultOptions, settings: () => EkphrasisSettings) {
       const text = files[path] ?? null;
       if (text === null) return Promise.resolve(null);
       if (!isHidden(path)) return Promise.resolve(text);
-      const root = settings().schemaResourceRoot;
-      return Promise.resolve(path.startsWith(`${root}/`) ? text : null);
+      return Promise.resolve(null);
+    },
+    readSchema: (path, admitted) => {
+      const text = files[path] ?? null;
+      return Promise.resolve(text !== null && admitted ? text : null);
     },
   };
   const inspector: VaultInspector = {
-    isIndexedFile: (path) => path in files && !isHidden(path),
+    isIndexedFile: (path) =>
+      path in files &&
+      (!isHidden(path) ||
+        (options.indexedFolders ?? []).some(
+          (folder) => path === folder || path.startsWith(`${folder}/`),
+        )),
     isIndexedFolder: (path) => (options.indexedFolders ?? []).includes(path),
     exists: (path) =>
       Promise.resolve(
@@ -343,48 +357,6 @@ describe("the setup diagnostic", () => {
       expect(check(report, "registry.contracts").observed).toContain("is absent");
     });
 
-    it("suggests the resource directory that holds generated schemas outside the configured one", async () => {
-      const moved = ".generated/tool/base.schema.yaml";
-      const report = await diagnose({
-        vault: {
-          files: withFiles({
-            [BASE]: null,
-            [moved]: BASE_TEXT,
-            [REGISTRY]: REGISTRY_TEXT.replace(BASE, moved),
-          }),
-        },
-      });
-      expect(check(report, "registry.resources").status).toBe("fail");
-      expect(check(report, "resources.directory")).toMatchObject({ status: "fail" });
-      expect(check(report, "resources.directory").observed).toContain(
-        "the compatibility default `.schema-resources`",
-      );
-      expect(check(report, "resources.directory").action).toContain("`.generated/tool`");
-    });
-
-    it("reads generated schemas from the configured directory, not from the default", async () => {
-      const moved = ".generated/tool/base.schema.yaml";
-      const report = await diagnose({
-        settings: { ...SETTINGS, schemaResourceRoot: ".generated" },
-        vault: {
-          files: withFiles({
-            [BASE]: null,
-            [moved]: BASE_TEXT,
-            [REGISTRY]: REGISTRY_TEXT.replace(BASE, moved),
-          }),
-        },
-      });
-      expect(nonPassing(report)).toEqual([]);
-      expect(check(report, "resources.directory").observed).toContain("`.generated`");
-    });
-
-    it("fails on a resource directory that leaves the vault", async () => {
-      const report = await diagnose({
-        settings: { ...SETTINGS, schemaResourceRoot: "../outside" },
-      });
-      expect(check(report, "resources.directory").status).toBe("fail");
-    });
-
     it("fails on an absolute reference that no resource of the registry maps", async () => {
       const missing = "https://example.org/tool/missing.schema.yaml";
       const report = await diagnose({
@@ -411,8 +383,12 @@ describe("the setup diagnostic", () => {
     });
 
     it("explains a restart after a generated schema changed in an unindexed directory", async () => {
-      const report = await diagnose({ vault: { modified: { [BASE]: 5000 } }, loadedAt: 1000 });
+      const report = await diagnose({
+        vault: { modified: { [BASE_CHILD]: 5000 } },
+        loadedAt: 1000,
+      });
       expect(check(report, "resources.reload").status).toBe("warning");
+      expect(check(report, "resources.reload").details).toContain(BASE_CHILD);
       expect(check(report, "resources.reload").action).toContain("Restart Obsidian");
       const indexed = await diagnose({
         vault: { modified: { [BASE]: 5000 }, indexedFolders: [".schema-resources"] },

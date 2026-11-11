@@ -1,8 +1,8 @@
 /**
  * Checks of the route from the configured schema registry to the schemas of the forms: the
  * registry file and its version, the schema file of each contract with its references and its
- * composition, each resource mapped to an absolute `$id`, the schema resource directory, and the
- * changes of generated schemas that Obsidian does not report.
+ * composition, each resource mapped to an absolute `$id`, and the changes of generated schemas
+ * that Obsidian does not report.
  *
  * Every file is read through the same `FileSource` as the forms, so a file that the diagnostic
  * cannot read is a file that the forms cannot read either.
@@ -23,7 +23,7 @@ import {
 import { SchemaCompileError, SchemaError, YamlParseError } from "../../errors";
 import type { DocumentParser, FileSource, SchemaLoader, SchemaValidator } from "../protocols";
 import type { RegistryReader, RegistryState } from "../registry-reader";
-import { DEFAULT_SETTINGS, type EkphrasisSettings } from "../settings";
+import type { EkphrasisSettings } from "../settings";
 import type { VaultInspector } from "./ports";
 import { blocked, notPassed, passed, type CheckSubject, type DiagnosticCheck } from "./report";
 
@@ -46,7 +46,7 @@ export interface SchemaFacts {
   readonly registry: RegistryState;
   /** Logical identifiers of the registry, empty when it cannot be read. */
   readonly identifiers: readonly string[];
-  /** Vault paths of the files that a tool generates: the registry and every mapped schema. */
+  /** Vault paths of the registry and every schema reached from one of its mappings. */
   readonly generatedPaths: ReadonlySet<string>;
 }
 
@@ -70,12 +70,6 @@ const SUBJECTS = {
     consequence: "forms",
     dependency: "Schema registry version",
     affects: FORMS_OF_SCHEMA_FIELD,
-  },
-  directory: {
-    id: "resources.directory",
-    consequence: "forms",
-    dependency: "Schema resource directory",
-    affects: "forms whose schemas lie in a directory that Obsidian does not index",
   },
   contracts: {
     id: "registry.contracts",
@@ -135,7 +129,6 @@ export async function schemaChecks(
     generatedPaths: generated,
   });
 
-  const root = resourceRoot(settings.schemaResourceRoot);
   if (state.status === "unconfigured") {
     checks.push(
       dependencies.recordDeclaresSchema
@@ -153,7 +146,6 @@ export async function schemaChecks(
     for (const subject of [SUBJECTS.read, SUBJECTS.version, SUBJECTS.contracts]) {
       checks.push(notApplicable(subject));
     }
-    checks.push(await directoryCheck(vault, settings.schemaResourceRoot, root, []));
     return { checks, facts: facts([]) };
   }
   checks.push(passed(SUBJECTS.setting, `The registry is \`${settings.schemaRegistry.trim()}\`.`));
@@ -174,7 +166,6 @@ export async function schemaChecks(
     for (const subject of [SUBJECTS.contracts, SUBJECTS.resources, SUBJECTS.references]) {
       checks.push(blocked(subject, "the schema registry file"));
     }
-    checks.push(await directoryCheck(vault, settings.schemaResourceRoot, root, []));
     checks.push(blocked(SUBJECTS.composition, "the schema registry file"));
     return { checks, facts: facts([]) };
   }
@@ -192,9 +183,15 @@ export async function schemaChecks(
     if (path !== null && path !== "") generated.add(path);
   }
 
-  const locate = locator(dependencies.files, vault, root);
+  const locate = locator(dependencies.files, vault);
   const contracts = await contractChecks(dependencies, registry.schemas, locate);
   const resources = await resourceChecks(dependencies, registry.resources, locate);
+  for (const loaded of contracts.loaded) {
+    for (const path of loaded.schemas.paths) generated.add(path);
+  }
+  for (const schemas of resources.loaded) {
+    for (const path of schemas.paths) generated.add(path);
+  }
   checks.push(contracts.check, resources.check);
   checks.push(
     referenceCheck(
@@ -203,20 +200,9 @@ export async function schemaChecks(
       state.path,
     ),
   );
-  checks.push(
-    await directoryCheck(vault, settings.schemaResourceRoot, root, [
-      ...contracts.hidden,
-      ...resources.hidden,
-    ]),
-  );
   checks.push(compositionCheck(dependencies.validator, contracts.loaded));
-  checks.push(await reloadCheck(vault, root, [...generated], dependencies.loadedAt));
+  checks.push(await reloadCheck(vault, [...generated], dependencies.loadedAt));
   return { checks, facts: facts([...registry.schemas.keys()]) };
-}
-
-/** Vault directory selected by the setting, or `null` when the setting leaves the vault. */
-function resourceRoot(setting: string): string | null {
-  return resolveVaultPath("", setting.trim());
 }
 
 function supportedVersions(): string {
@@ -265,27 +251,20 @@ function registryFailure(state: Extract<RegistryState, { status: "invalid" }>): 
 }
 
 /** Reads a target of the registry through the file boundary of the forms. */
-function locator(
-  files: FileSource,
-  vault: VaultInspector,
-  root: string | null,
-): (target: string) => Promise<Located> {
+function locator(files: FileSource, vault: VaultInspector): (target: string) => Promise<Located> {
   return async (target) => {
     if (isUri(target)) return { status: "unreadable", reason: "is a web address, never fetched" };
     const path = resolveVaultPath("", target);
     if (path === null || path === "") {
       return { status: "unreadable", reason: "leaves the vault" };
     }
-    const text = await files.read(path);
+    const text =
+      files.readSchema === undefined ? await files.read(path) : await files.readSchema(path, true);
     if (text !== null) return { status: "readable", path, text };
     if (!(await vault.exists(path))) return { status: "unreadable", reason: "is absent" };
-    const outside =
-      root === null || root === "" || !path.startsWith(`${root}/`)
-        ? `lies outside the schema resource directory \`${root ?? ""}\``
-        : "lies in the schema resource directory but cannot be read";
     return {
       status: "unreadable",
-      reason: `exists, but Obsidian does not index it and it ${outside}`,
+      reason: "exists, but the guarded schema reader refuses it",
       hiddenPath: path,
     };
   };
@@ -365,10 +344,12 @@ async function resourceChecks(
 ): Promise<{
   readonly check: DiagnosticCheck;
   readonly documents: readonly ParsedDocument[];
+  readonly loaded: readonly SchemaSet[];
   readonly hidden: readonly string[];
 }> {
   const failures: string[] = [];
   const documents: ParsedDocument[] = [];
+  const loaded: SchemaSet[] = [];
   const hidden: string[] = [];
   for (const [uri, target] of resources) {
     const located = await locate(target);
@@ -383,6 +364,13 @@ async function resourceChecks(
       continue;
     }
     documents.push(parsed);
+    try {
+      loaded.push(await dependencies.loader.load(located.path));
+    } catch (error) {
+      if (!(error instanceof SchemaError)) throw error;
+      failures.push(`\`${uri}\` → \`${located.path}\`: ${error.message}`);
+      continue;
+    }
     const id = isJsonObject(parsed.root) ? parsed.root["$id"] : undefined;
     if (id !== uri) {
       const written = typeof id === "string" ? `\`${id}\`` : "absent";
@@ -404,10 +392,10 @@ async function resourceChecks(
           "fail",
           SUBJECTS.resources,
           `${failures.length} of ${total} ${plural(total, "resource")} do not resolve; the first: ${failures[0]}`,
-          "Materialize the schema resources again with the provisioning tool of your project, and check that the setting *Schema resource directory* names the directory that holds them.",
+          "Materialize the schema resources again with the provisioning tool of your project.",
           failures,
         );
-  return { check, documents, hidden };
+  return { check, documents, loaded, hidden };
 }
 
 function parseDocument(
@@ -467,68 +455,6 @@ function referenceCheck(
   );
 }
 
-/**
- * The schema resource directory: inside the vault, present when the registry maps files to it,
- * and holding every mapped file that Obsidian does not index.
- */
-async function directoryCheck(
-  vault: VaultInspector,
-  setting: string,
-  root: string | null,
-  hidden: readonly string[],
-): Promise<DiagnosticCheck> {
-  const configured =
-    setting.trim() === DEFAULT_SETTINGS.schemaResourceRoot
-      ? `the compatibility default \`${DEFAULT_SETTINGS.schemaResourceRoot}\``
-      : `\`${setting.trim()}\``;
-  if (root === null) {
-    return notPassed(
-      "fail",
-      SUBJECTS.directory,
-      `The setting names ${configured}, which leaves the vault; Ekphrasis reads no generated schema outside its indexed files.`,
-      "Enter under *Schema resource directory* a directory of the vault, such as `.schema-resources`.",
-    );
-  }
-  if (root === "") {
-    return notPassed(
-      "warning",
-      SUBJECTS.directory,
-      "The setting is empty, so Ekphrasis reads only the schemas that Obsidian indexes.",
-      "If your project materializes schemas in a hidden directory, enter that directory under *Schema resource directory*.",
-    );
-  }
-  if (hidden.length > 0) {
-    const suggestion = commonFolder(hidden);
-    return notPassed(
-      "fail",
-      SUBJECTS.directory,
-      `The setting names ${configured}, but ${hidden.length} ${plural(hidden.length, "schema file")} of the registry lie outside it and outside the files indexed by Obsidian.`,
-      suggestion === null
-        ? "Move the generated schemas into the schema resource directory, or change the setting *Schema resource directory*."
-        : `Enter \`${suggestion}\` under *Schema resource directory*, or move the generated schemas into ${configured}.`,
-      hidden,
-    );
-  }
-  const exists = await vault.exists(root);
-  return passed(
-    SUBJECTS.directory,
-    exists
-      ? `The setting names ${configured}, which exists in the vault.`
-      : `The setting names ${configured}, which does not exist; no schema of the registry needs it.`,
-  );
-}
-
-/** Deepest folder holding every path, or `null` when they share none. */
-function commonFolder(paths: readonly string[]): string | null {
-  const folders = paths.map((path) => path.split("/").slice(0, -1));
-  const first = folders[0] ?? [];
-  let length = 0;
-  while (length < first.length && folders.every((segments) => segments[length] === first[length])) {
-    length += 1;
-  }
-  return length === 0 ? null : first.slice(0, length).join("/");
-}
-
 /** Conflicts of composed layers and refusals of the validator, for every loaded contract. */
 function compositionCheck(
   validator: SchemaValidator,
@@ -568,38 +494,31 @@ function compositionCheck(
  */
 async function reloadCheck(
   vault: VaultInspector,
-  root: string | null,
   generated: readonly string[],
   loadedAt: number,
 ): Promise<DiagnosticCheck> {
-  if (root === null || root === "") {
-    return passed(SUBJECTS.reload, "No schema resource directory is configured.");
-  }
-  const inside = generated.filter((path) => path.startsWith(`${root}/`));
-  if (inside.length === 0) {
-    return passed(SUBJECTS.reload, `No schema of the registry lies in \`${root}\`.`);
-  }
-  if (vault.isIndexedFolder(root)) {
+  const hidden = generated.filter((path) => !vault.isIndexedFile(path));
+  if (hidden.length === 0) {
     return passed(
       SUBJECTS.reload,
-      `Obsidian indexes \`${root}\`, so a change of its schemas reopens the forms that use them.`,
+      "Obsidian indexes every schema named by the registry, so their changes reopen dependent forms.",
     );
   }
   const changed: string[] = [];
-  for (const path of inside) {
+  for (const path of hidden) {
     const modified = await vault.modifiedAt(path);
     if (modified !== null && modified > loadedAt) changed.push(path);
   }
   if (changed.length === 0) {
     return passed(
       SUBJECTS.reload,
-      `Obsidian does not index \`${root}\`, so Ekphrasis sees a change of its schemas only after a restart; none of the ${inside.length} mapped ${plural(inside.length, "schema")} changed since Ekphrasis loaded.`,
+      `Obsidian does not index ${hidden.length} mapped ${plural(hidden.length, "schema")}, so Ekphrasis sees their changes only after a restart; none changed since Ekphrasis loaded.`,
     );
   }
   return notPassed(
     "warning",
     SUBJECTS.reload,
-    `${changed.length} generated ${plural(changed.length, "schema")} in \`${root}\` changed after Ekphrasis loaded, and Obsidian reports no change in that directory.`,
+    `${changed.length} generated ${plural(changed.length, "schema")} changed after Ekphrasis loaded, and Obsidian reports no event for their hidden paths.`,
     "Restart Obsidian, or disable and enable Ekphrasis, so that the open forms and the links to records read the changed schemas.",
     changed,
   );

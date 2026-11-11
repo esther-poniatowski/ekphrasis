@@ -14,9 +14,73 @@ import {
   REGISTRY_PATH,
   ROOT_PATH,
 } from "../../support/composed-vault";
-import { DEFAULT_SETTINGS } from "../../../src/application";
+import { DEFAULT_SETTINGS, RegistryReader, type FileSource } from "../../../src/application";
+import { YamlDocumentParser } from "../../../src/infrastructure";
+
+class GuardedHiddenSource implements FileSource {
+  constructor(private readonly files: Readonly<Record<string, string>>) {}
+
+  read(path: string): Promise<string | null> {
+    return Promise.resolve(
+      path.startsWith(".") || path.includes("/.") ? null : (this.files[path] ?? null),
+    );
+  }
+
+  readSchema(path: string, admitted: boolean): Promise<string | null> {
+    return Promise.resolve(admitted ? (this.files[path] ?? null) : this.read(path));
+  }
+}
 
 describe("FileSchemaLoader", () => {
+  it.each([".kleisis/resources/dependency", "projects/child/.kleisis/resources/dependency"])(
+    "loads an admitted hidden schema closure below %s",
+    async (folder) => {
+      const root = `${folder}/root.schema.yaml`;
+      const child = `${folder}/child.schema.yaml`;
+      const registry = "specs/registry.yml";
+      const files = new GuardedHiddenSource({
+        [registry]: `_schema: kleisis:schema-registry@2\nschemas:\n  'tool:root@1': '${root}'\nresources: {}\n`,
+        [root]: "$ref: child.schema.yaml\n",
+        [child]: "title: Child\n",
+      });
+      const reader = new RegistryReader(new YamlDocumentParser(), files, () => ({
+        ...DEFAULT_SETTINGS,
+        schemaRegistry: registry,
+      }));
+
+      await expect(new FileSchemaLoader(files, reader).load(root)).resolves.toMatchObject({
+        paths: [root, child],
+      });
+    },
+  );
+
+  it("admits a hidden closure seeded only by a resource mapping", async () => {
+    const root = ".kleisis/resources/tool/root.schema.yaml";
+    const child = ".kleisis/resources/tool/child.schema.yaml";
+    const registry = "specs/registry.yml";
+    const files = new GuardedHiddenSource({
+      [registry]: `_schema: kleisis:schema-registry@2\nschemas: {}\nresources:\n  'https://example.org/tool/root': '${root}'\n`,
+      [root]: "$ref: child.schema.yaml\n",
+      [child]: "title: Child\n",
+    });
+    const reader = new RegistryReader(new YamlDocumentParser(), files, () => ({
+      ...DEFAULT_SETTINGS,
+      schemaRegistry: registry,
+    }));
+
+    await expect(new FileSchemaLoader(files, reader).load(root)).resolves.toMatchObject({
+      paths: [root, child],
+    });
+  });
+
+  it("refuses a hidden schema outside every registry closure", async () => {
+    const hidden = ".private/unregistered.schema.yaml";
+    const files = new GuardedHiddenSource({ [hidden]: "title: Private\n" });
+
+    await expect(new FileSchemaLoader(files).load(hidden)).rejects.toThrow(
+      `The schema file \`${hidden}\` does not exist.`,
+    );
+  });
   it("loads a YAML schema with the files that its references reach", async () => {
     const loader = new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT));
     const set = await loader.load("geonexus/schemas/glossary.schema.yaml");

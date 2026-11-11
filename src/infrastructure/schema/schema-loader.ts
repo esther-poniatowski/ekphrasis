@@ -37,7 +37,8 @@ export class FileSchemaLoader implements SchemaLoader {
 
   /**
    * Loads the schema at `path` with the documents that its references reach, in breadth-first
-   * order of discovery. The registry is read once, at the first absolute URI met.
+   * order of discovery. A guarded file source reads the registry once at the start of each load,
+   * so that only its exact schema closure can reach files omitted from Obsidian's index.
    *
    * @throws SchemaLoadError When a file is missing, fails to parse, or holds no JSON value, or
    *   when a file mapped to an absolute URI declares another `$id`.
@@ -55,13 +56,16 @@ export class FileSchemaLoader implements SchemaLoader {
     const expectedIds = new Map<string, string>();
     /** First file referencing each absolute URI that the registry leaves unresolved. */
     const unresolved = new Map<string, string>();
-    let mapping: ResourceMapping | null = null;
+    let mapping: ResourceMapping | null =
+      this.files.readSchema === undefined ? null : await this.registry.resources();
+    const admitted = new Set(mapping?.status === "available" ? mapping.schemaPaths : []);
     for (let next = queue.shift(); next !== undefined; next = queue.shift()) {
       const expected = expectedIds.get(next.path);
       const root = await this.read(
         next.path,
         next.referrer,
         expected === undefined ? [] : registryOf(mapping),
+        admitted.has(next.path),
       );
       if (expected !== undefined) checkDeclaredId(root, expected, next.path, mapping);
       documents.push({ path: next.path, root });
@@ -72,6 +76,7 @@ export class FileSchemaLoader implements SchemaLoader {
         if (target === null) continue;
         if (!isUri(target)) {
           if (queued.has(target)) continue;
+          if (admitted.has(next.path)) admitted.add(target);
           queued.add(target);
           queue.push({ path: target, referrer: next.path });
           continue;
@@ -105,8 +110,12 @@ export class FileSchemaLoader implements SchemaLoader {
     path: string,
     referrer: string | null,
     dependencies: readonly string[] = [],
+    admitted = false,
   ): Promise<JsonValue> {
-    const text = await this.files.read(path);
+    const text =
+      this.files.readSchema === undefined
+        ? await this.files.read(path)
+        : await this.files.readSchema(path, admitted);
     if (text === null) {
       const origin = referrer === null ? "" : `, referenced from \`${referrer}\`,`;
       throw new SchemaLoadError(

@@ -5,7 +5,7 @@ This protocol verifies two outcomes. First, an explicit completion target must r
 ## Setup
 
 - [x] Build Ekphrasis, prepare the test vault and run *Reload app without saving*. → Obsidian loads the current plugin bundle.
-- [x] Save the current bytes of `.obsidian/plugins/ekphrasis/data.json`. Copy a complete Gnomon inquiry into the disposable folder `gnomon-inquiry` of the vault. Copy its current view schemas and registry into the configured schema resources. → The producer can read the inquiry, and the original settings can be restored exactly.
+- [x] Save the current bytes of `.obsidian/plugins/ekphrasis/data.json`. Copy a complete Gnomon inquiry into the disposable folder `gnomon-inquiry` of the vault. Copy its current view schemas and registry to the exact vault paths recorded by the registry. → The producer can read the inquiry; restoring the saved file recovers the original configuration exactly.
 - [x] Set *Python interpreter* to the Gnomon environment. Set *Primary-view command* to `["-m", "gnomon", "views", "{vault}/gnomon-inquiry", "--scope", "{target}", "--output", "{vault}/views", "--result", "json"]`. → The command names the disposable inquiry, while Gnomon retains the target-to-view mapping.
 
 ## Selected view

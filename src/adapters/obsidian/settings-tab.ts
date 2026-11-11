@@ -69,20 +69,6 @@ export class EkphrasisSettingTab extends PluginSettingTab {
           ),
       );
     new Setting(containerEl)
-      .setName("Schema resource directory")
-      .setDesc(
-        "Vault directory containing generated schemas that Obsidian may omit from its file " +
-          "index. Ekphrasis permits low-level reads only inside this directory.",
-      )
-      .addText((text) =>
-        text
-          .setPlaceholder(".schema-resources")
-          .setValue(this.host.settings.schemaResourceRoot)
-          .onChange((schemaResourceRoot) =>
-            this.host.updateSettings({ ...this.host.settings, schemaResourceRoot }),
-          ),
-      );
-    new Setting(containerEl)
       .setName("Path rules")
       .setDesc(
         "Each rule binds the files matched by a glob pattern, such as records/**/*.yml, to a " +

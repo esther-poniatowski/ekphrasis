@@ -2,14 +2,12 @@
  * Model of the plugin settings, and their validation at the boundary where they are read from
  * the data file of the plugin.
  */
-import { resolveVaultPath, type JsonValue, type PathRule } from "../domain";
+import type { JsonValue, PathRule } from "../domain";
 import type { CustomCheckerRegistration } from "./protocols";
 
 export interface EkphrasisSettings {
   /** Vault path of the registry mapping logical schema identifiers to schema files. */
   readonly schemaRegistry: string;
-  /** Vault directory whose files may be read below Obsidian's indexed file model. */
-  readonly schemaResourceRoot: string;
   /** Path rules binding instances without a schema field or modeline, applied in this order. */
   readonly pathRules: readonly PathRule[];
   /** Pause of typing, in milliseconds, after which a text control commits its value. */
@@ -39,7 +37,6 @@ export const CUSTOM_CHECKER_TIMEOUT_LIMITS = {
 
 export const DEFAULT_SETTINGS: EkphrasisSettings = {
   schemaRegistry: "",
-  schemaResourceRoot: ".schema-resources",
   pathRules: [],
   commitDelay: 1000,
   pythonInterpreter: "",
@@ -65,7 +62,6 @@ export function parseSettings(raw: unknown): EkphrasisSettings {
       typeof record["schemaRegistry"] === "string"
         ? record["schemaRegistry"]
         : DEFAULT_SETTINGS.schemaRegistry,
-    schemaResourceRoot: schemaResourceRootOf(record["schemaResourceRoot"]),
     pathRules: rules.flatMap((rule) =>
       isRecord(rule) && typeof rule["pattern"] === "string" && typeof rule["schema"] === "string"
         ? [{ pattern: rule["pattern"], schema: rule["schema"] }]
@@ -151,10 +147,4 @@ export function resolveCustomCheckerModules(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-/** Canonical vault directory selected for low-level schema-resource reads. */
-function schemaResourceRootOf(raw: unknown): string {
-  if (typeof raw !== "string") return DEFAULT_SETTINGS.schemaResourceRoot;
-  return resolveVaultPath("", raw) ?? DEFAULT_SETTINGS.schemaResourceRoot;
 }

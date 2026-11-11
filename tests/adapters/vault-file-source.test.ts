@@ -40,43 +40,58 @@ describe("reading text from the Obsidian vault", () => {
     const { vault, adapterRead } = vaultWith({ adapterExists: true, text: "schema" });
 
     await expect(
-      new VaultFileSource(vault).read(".schema-resources/geonexus/project.schema.yaml"),
+      new VaultFileSource(vault).readSchema(
+        ".kleisis/resources/geonexus/project.schema.yaml",
+        true,
+      ),
     ).resolves.toBe("schema");
-    expect(adapterRead).toHaveBeenCalledWith(".schema-resources/geonexus/project.schema.yaml");
+    expect(adapterRead).toHaveBeenCalledWith(".kleisis/resources/geonexus/project.schema.yaml");
   });
 
-  it("reads only below the schema resource directory selected by the vault", async () => {
+  it("reads exact admitted paths in a child project's hidden resources", async () => {
     const { vault, adapterRead } = vaultWith({ adapterExists: true, text: "schema" });
-    let root = ".generated/schemas";
-    const files = new VaultFileSource(vault, () => root);
+    const files = new VaultFileSource(vault);
 
-    await expect(files.read(".generated/schemas/tool/base.schema.yaml")).resolves.toBe("schema");
-    await expect(files.read(".schema-resources/tool/base.schema.yaml")).resolves.toBeNull();
-    root = "project/resources";
-    await expect(files.read("project/resources/tool/base.schema.yaml")).resolves.toBe("schema");
-    expect(adapterRead).toHaveBeenCalledTimes(2);
+    await expect(
+      files.readSchema("projects/child/.kleisis/resources/tool/base.schema.yaml", true),
+    ).resolves.toBe("schema");
+    expect(adapterRead).toHaveBeenCalledTimes(1);
   });
 
   it.each([
-    ".private/secret.yaml",
-    ".schema-resources-private/secret.yaml",
-    ".schema-resources/../.private/secret.yaml",
+    ".git/config",
+    ".obsidian/plugins/data.json",
+    "projects/child/.git/config",
+    "projects/child/.obsidian/plugins/data.json",
+    "../outside.yaml",
   ])("does not use the adapter for another hidden path: %s", async (path) => {
     const { vault, adapterExists, adapterRead } = vaultWith({
       adapterExists: true,
       text: "private",
     });
 
-    await expect(new VaultFileSource(vault).read(path)).resolves.toBeNull();
+    await expect(new VaultFileSource(vault).readSchema(path, true)).resolves.toBeNull();
     expect(adapterExists).not.toHaveBeenCalled();
     expect(adapterRead).not.toHaveBeenCalled();
+  });
+
+  it("refuses a hidden file outside the admitted closure", async () => {
+    const { vault, adapterExists } = vaultWith({ adapterExists: true, text: "private" });
+
+    await expect(
+      new VaultFileSource(vault).readSchema(".private/secret.yaml", false),
+    ).resolves.toBeNull();
+    expect(adapterExists).not.toHaveBeenCalled();
   });
 
   it("returns null when a generated schema does not exist", async () => {
     const { vault, adapterRead } = vaultWith({ text: "unused" });
 
     await expect(
-      new VaultFileSource(vault).read(".schema-resources/geonexus/missing.schema.yaml"),
+      new VaultFileSource(vault).readSchema(
+        ".kleisis/resources/geonexus/missing.schema.yaml",
+        true,
+      ),
     ).resolves.toBeNull();
     expect(adapterRead).not.toHaveBeenCalled();
   });

@@ -5,7 +5,7 @@
  * The diagnostic only reads: it changes no file, no setting and no environment. It runs the
  * configured checker command once on the opened record, as one validation would.
  */
-import { readSchemaDeclaration, resolveVaultPath } from "../../domain";
+import { readSchemaDeclaration } from "../../domain";
 import type { DocumentParser, FileSource, SchemaLoader, SchemaValidator } from "../protocols";
 import type { RegistryReader } from "../registry-reader";
 import type { EkphrasisSettings } from "../settings";
@@ -40,7 +40,7 @@ export async function runSetupDiagnostic(
   dependencies: SetupDiagnosticDependencies,
 ): Promise<DiagnosticReport> {
   const started = dependencies.now();
-  const { settings, record } = dependencies;
+  const { record } = dependencies;
   const checks: DiagnosticCheck[] = [];
   let facts: SchemaFacts = {
     registry: { status: "unconfigured" },
@@ -56,9 +56,8 @@ export async function runSetupDiagnostic(
     facts = schemas.facts;
     return schemas.checks;
   });
-  const resourceRoot = resolveVaultPath("", settings.schemaResourceRoot.trim());
   await guarded(checks, { id: "record", name: "the opened record" }, () =>
-    recordChecks(record, facts, dependencies.vault, resourceRoot),
+    recordChecks(record, facts, dependencies.vault),
   );
   await guarded(checks, { id: "checkers", name: "the custom checkers" }, () =>
     checkerChecks({ ...dependencies, facts }),

@@ -64,12 +64,12 @@ The schema checks read every file through the file boundary of the forms. Theref
 - the schema of each contract: present, loadable with the closure of its references, and declaring the contract as the constant of its property `_schema`;
 - the file of each resource: present, and declaring as its root `$id` the URI mapped to it;
 - each absolute `$ref` written in a file of the registry: resolved through the key `resources` or a loaded `$id`, as the [absolute references](schemas.md#^absolute-references) require;
-- the setting *Schema resource directory*: a directory of the vault, whose default `.schema-resources` serves compatibility only;
+- the guarded schema closure: each hidden file is named by the registry or reached through a relative `$ref`;
 - the [composition](schemas.md#^composition) of each loaded contract: free of conflicts, and compiled by the validator.
 
-Obsidian omits some generated schema files from its indexed files, and the forms read such a file only below the configured resource directory. When a mapped schema exists outside both, the diagnostic names the directory that holds the generated schemas, for the researcher to enter in the settings.
+Obsidian omits some generated schema files from its indexed files. The forms read such a file only when the registry names it or an admitted schema reaches it through a relative `$ref`. The diagnostic reports a mapped file that the guarded reader refuses.
 
-Obsidian also reports no change of a file in a directory that it does not index. Therefore, the diagnostic compares the modification time of each mapped schema in that directory with the load of the plugin. A schema changed after the load requires a restart of Obsidian.
+Obsidian also reports no change of a file that it does not index. Therefore, the diagnostic compares the modification time of each unindexed mapped schema with the load of the plugin. A schema changed after the load requires a restart of Obsidian.
 
 ## Record checks
 

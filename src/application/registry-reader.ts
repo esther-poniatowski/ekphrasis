@@ -99,6 +99,9 @@ export class RegistryReader implements SchemaResources {
         status: "available",
         registryPath: state.path,
         resources: state.registry.resources,
+        schemaPaths: [...state.registry.schemas.values(), ...state.registry.resources.values()]
+          .map((target) => (isUri(target) ? null : resolveVaultPath("", target)))
+          .filter((path): path is string => path !== null && path !== ""),
       };
     }
     if (state.status === "unconfigured") {

@@ -37,6 +37,8 @@ export interface DocumentEditor {
 export interface FileSource {
   /** Text of the file at the vault path `path`, or `null` when no such file exists. */
   read(path: string): Promise<string | null>;
+  /** Host-guarded schema read; `admitted` authorizes an exact path in the current closure. */
+  readSchema?(path: string, admitted: boolean): Promise<string | null>;
 }
 
 /** Creation of a new YAML instance without overwriting a host file. */
@@ -63,6 +65,8 @@ export type ResourceMapping =
   | {
       readonly status: "available";
       readonly registryPath: string;
+      /** Vault paths named directly by `schemas` or `resources`. */
+      readonly schemaPaths: readonly string[];
       /** Each absolute `$id`, exactly as written in its schema file, with the vault path of that file. */
       readonly resources: ReadonlyMap<string, string>;
     }

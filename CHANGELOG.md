@@ -7,6 +7,11 @@ Every notable change to the project is recorded in this changelog. The format fo
 ### Changed
 
 - Schema registries read the current marker `_schema: kleisis:schema-registry@2`. Existing registries may still use the explicit markers `schema_version: 1` and `schema_version: 2`.
+- Hidden schemas are readable only when the registry names their exact paths or an admitted schema reaches them through a relative `$ref`.
+
+### Removed
+
+- The setting *Schema resource directory*. Stored values of `schemaResourceRoot` are ignored.
 
 ### Fixed
 

@@ -10,13 +10,13 @@ status: accepted
 
 > [!QUESTION] Goal: how does ekphrasis find the schema file designated by a `$ref` written as an absolute URI?
 
-A schema can compose a schema published by another project, such as the base schema of a tool, by a `$ref` to its absolute `$id`, for instance `https://example.org/tool/note@1/base.schema.yaml`. The file of that schema lies in the vault, in the configured schema resource directory filled by a provisioning tool, but its URI names no vault path. The directory defaults to `.schema-resources/` and can differ between projects. Until this decision, the loader skipped every absolute `$ref`, which resolved only when another reference had already loaded a file declaring that `$id`.
+A schema can compose the base schema published by another project through an absolute `$ref`, such as `https://example.org/tool/note@1/base.schema.yaml`. The registry records the exact vault path of that schema; the URI does not name a vault path. Previously, an absolute `$ref` resolved only if the target schema was already loaded.
 
 ## Decision
 
 An absolute `$ref` resolves through the key `resources` of the configured [schema registry](../features/instance-files.md#^binding-sources), as the specification of [schemas](../features/schemas.md#^absolute-references) details:
 
-1. The registry of version 2 adds the top-level mapping `resources`, from each absolute `$id`, exactly as written in its schema file, to the vault path of that file. A registry of version 1 omits that key, and a registry without the key `schema_version` reads as version 1.
+1. A current registry starts with `_schema: kleisis:schema-registry@2`. Its top-level key `resources` relates each absolute `$id`, exactly as written, to the vault path of its schema. A legacy registry starts with `schema_version`; the form marked `1` omits `resources`.
 2. The loader compares the URI of a `$ref`, without its fragment, with the keys of `resources` as exact strings. The loader then reads the mapped file, and the files reached by the references of that file.
 3. The root `$id` of the mapped file must equal the URI.
 4. A URI that the registry does not map still resolves when a loaded file declares it as its root `$id`. Otherwise the loader reports the URI, the referring file, and the reason: the URI is unmapped, no registry is configured, or the registry cannot be read.
@@ -44,7 +44,7 @@ The fallback on a loaded `$id` follows JSON Schema, in which a validator resolve
 
 ## Consequences
 
-- The registry reader of the application layer serves both the binding by `_schema` and the loader, through the port `SchemaResources`. The loader reads the registry once per load, at the first absolute URI met.
+- The registry reader of the application layer serves both the binding by `_schema` and the loader, through the port `SchemaResources`. A guarded loader reads the registry once at the start of each load, then admits only mapped files and the relative references reached from those files.
 - A registry of version 1 that declares `resources`, a version other than 1 or 2, or a key of `resources` other than an absolute URI makes the registry invalid.
 - The registry consulted by a load becomes a dependency of its schema set. Therefore, a change of the registry reopens the forms and reindexes the records whose schemas it resolves, for every binding source.
 - A file mapped to a URI may itself hold relative references, resolved from its own folder, and absolute references, resolved through the same registry.

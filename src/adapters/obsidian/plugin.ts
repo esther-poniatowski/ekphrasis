@@ -131,7 +131,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       OBSIDIAN_CHECKER_ENVIRONMENT,
       () => customCheckers.checkerNames,
     );
-    const files = new VaultFileSource(this.app.vault, () => this.settings.schemaResourceRoot);
+    const files = new VaultFileSource(this.app.vault);
     const resources = new RegistryReader(parser, files, settings);
     const schemaLoader = new FileSchemaLoader(files, resources);
     const forms = new FormService(
@@ -292,14 +292,13 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     const rulesChanged =
       JSON.stringify(settings.pathRules) !== JSON.stringify(this.settings.pathRules);
     const registryChanged = settings.schemaRegistry !== this.settings.schemaRegistry;
-    const resourceRootChanged = settings.schemaResourceRoot !== this.settings.schemaResourceRoot;
     const checkersChanged =
       settings.pythonInterpreter !== this.settings.pythonInterpreter ||
       settings.customCheckerTimeout !== this.settings.customCheckerTimeout ||
       JSON.stringify(settings.customCheckers) !== JSON.stringify(this.settings.customCheckers);
     this.settings = settings;
     if (checkersChanged) this.replaceCheckerRunner(settings);
-    if (rulesChanged || registryChanged || resourceRootChanged) this.rebuildIdentifiersSoon();
+    if (rulesChanged || registryChanged) this.rebuildIdentifiersSoon();
     this.refreshViewsSoon();
   }
 

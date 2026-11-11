@@ -50,7 +50,7 @@ resources:
   'https://example.org/tool/note@1/base.schema.yaml': '.kleisis/resources/tool/note/base.schema.yaml'
 ```
 
-The setting *Schema resource directory* names the vault directory for generated schemas that Obsidian may omit from its indexed file model. Ekphrasis admits low-level file reads only below this directory. Its default, `.schema-resources`, preserves existing vaults; a project can select another vault directory.
+Obsidian may omit generated schemas below hidden directories from its indexed file model. Ekphrasis uses a low-level read only for an exact path named under `schemas` or `resources`, or for a relative `$ref` reached from such a file. All other hidden paths remain inaccessible. In particular, Ekphrasis never reads `.git/` or `.obsidian/` through this route, and no resolved path may leave the vault.
 
 The current form accepts these keys:
 

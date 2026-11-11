@@ -1,7 +1,7 @@
 /**
  * A folder on disk read as a vault by the setup diagnostic: a path with a hidden segment, such as
- * `.schema-resources/a.yaml`, is not indexed, as Obsidian omits it; the file source reads such a
- * path only below the schema resource directory, as the vault file source of the plugin does; and
+ * `.kleisis/resources/a.yaml`, is not indexed, as Obsidian omits it; the file source reads such a
+ * path only when the registry closure admits it, as the vault file source of the plugin does; and
  * the write permission is asked of the file system.
  */
 import { readFileSync, statSync } from "node:fs";
@@ -18,6 +18,7 @@ export function diskVault(
   root: string,
   settings: () => EkphrasisSettings,
 ): { readonly files: FileSource; readonly inspector: VaultInspector } {
+  void settings;
   const stats = (path: string) => {
     try {
       return statSync(join(root, path));
@@ -27,8 +28,13 @@ export function diskVault(
   };
   const files: FileSource = {
     read: (path) => {
-      const admitted = indexed(path) || path.startsWith(`${settings().schemaResourceRoot}/`);
-      if (!admitted || stats(path)?.isFile() !== true) return Promise.resolve(null);
+      if (!indexed(path) || stats(path)?.isFile() !== true) return Promise.resolve(null);
+      return Promise.resolve(readFileSync(join(root, path), "utf8"));
+    },
+    readSchema: (path, admitted) => {
+      if ((!indexed(path) && !admitted) || stats(path)?.isFile() !== true) {
+        return Promise.resolve(null);
+      }
       return Promise.resolve(readFileSync(join(root, path), "utf8"));
     },
   };

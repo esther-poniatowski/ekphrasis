@@ -13,19 +13,8 @@ describe("settings", () => {
     );
   });
 
-  it("keeps the configured schema resource directory", () => {
-    expect(parseSettings({ schemaResourceRoot: ".generated/schemas" }).schemaResourceRoot).toBe(
-      ".generated/schemas",
-    );
-    expect(parseSettings({ schemaResourceRoot: 3 }).schemaResourceRoot).toBe(
-      DEFAULT_SETTINGS.schemaResourceRoot,
-    );
-    expect(parseSettings({ schemaResourceRoot: "../outside" }).schemaResourceRoot).toBe(
-      DEFAULT_SETTINGS.schemaResourceRoot,
-    );
-    expect(parseSettings({ schemaResourceRoot: "/generated/schemas" }).schemaResourceRoot).toBe(
-      "generated/schemas",
-    );
+  it("ignores the removed schema resource directory", () => {
+    expect(parseSettings({ schemaResourceRoot: ".schema-resources" })).toEqual(DEFAULT_SETTINGS);
   });
 
   it("keeps the well-formed path rules in their order", () => {
