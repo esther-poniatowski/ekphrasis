@@ -1,0 +1,3 @@
+# Manual test record of the schema registry: its format is registered by no identifier, so it stays unbound.
+_schema: scenario:absent@1
+name: unregistered format

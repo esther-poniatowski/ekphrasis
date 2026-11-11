@@ -75,11 +75,11 @@ Ekphrasis classifies an explicit identifier before reading any modeline or path 
 | --- | --- | --- |
 | Not in the form `<owner>:<type>@<major>` | Any | Invalid binding |
 | Well formed | No registry configured | Unbound file |
-| Well formed | No registered identifier has that owner | Unbound file |
-| Well formed | The owner is registered, but the identifier is absent | Invalid binding |
+| Well formed | No registered identifier names that format `<owner>:<type>` | Unbound file |
+| Well formed | The registry holds another major of that format | Invalid binding |
 | Well formed | The identifier maps to a schema | Bound form |
 
-An unbound file opens in the source view without an error. Therefore, files owned by other tools can coexist in the vault. An invalid binding reports a malformed, mistyped or stale identifier. Whenever `_schema` is present, Ekphrasis applies no modeline or path rule. If Ekphrasis cannot read a configured registry, the setup fails. Ekphrasis also reports an error when the mapped schema declares a different contract.
+An unbound file opens in the source view without an error. Therefore, files owned by other tools can coexist in the vault. An invalid binding reports a malformed identifier, or a major that the registry does not hold. Whenever `_schema` is present, Ekphrasis applies no modeline or path rule. If Ekphrasis cannot read a configured registry, the setup fails. Ekphrasis also reports an error when the mapped schema declares a different contract.
 
 A modeline path resolves from the folder of the record, following the YAML language server. Ekphrasis reads schemas from the vault only. Therefore, a modeline binds no schema when it names a web address or a path outside the vault. The form view reports that path. The record below uses this compatibility route:
 

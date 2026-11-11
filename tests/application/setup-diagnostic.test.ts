@@ -323,14 +323,21 @@ describe("the setup diagnostic", () => {
       expect(check(report, "record.form").observed).toContain("without a binding error");
     });
 
-    it("distinguishes unknown owners from absent identifiers of a known owner", async () => {
+    it("distinguishes unregistered formats from absent majors of a registered format", async () => {
       const foreign = "notes/foreign.yml";
       const unknown = await diagnose({
         record: foreign,
         vault: { files: withFiles({ [foreign]: "_schema: other:config@1\n" }) },
       });
       expect(check(unknown, "record.form")).toMatchObject({ status: "pass" });
-      expect(check(unknown, "record.form").observed).toContain("`other`");
+      expect(check(unknown, "record.form").observed).toContain("`other:config`");
+
+      const sibling = await diagnose({
+        record: foreign,
+        vault: { files: withFiles({ [foreign]: "_schema: demo:configuration@1\n" }) },
+      });
+      expect(check(sibling, "record.form")).toMatchObject({ status: "pass" });
+      expect(check(sibling, "record.form").observed).toContain("`demo:configuration`");
 
       const absent = await diagnose({
         vault: { files: withFiles({ [RECORD]: "_schema: demo:note@99\n" }) },

@@ -38,7 +38,7 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 ## Consequences
 
 - An explicit `_schema` value must have the form `<owner>:<type>@<major>`. A malformed value is invalid.
-- When no registry identifier has the declared owner, Ekphrasis leaves the file unbound. When the owner is registered but the exact identifier is absent, Ekphrasis reports an error.
+- When no registry identifier names the declared format `<owner>:<type>`, Ekphrasis leaves the file unbound. When the registry holds another major of that format, Ekphrasis reports an error. A tool may thus register some of its formats only: its other files stay unbound, and the tool reports a wrong identifier when it reads the file.
 - If Ekphrasis cannot read a configured registry, it reports an error. If no registry is configured, Ekphrasis leaves every well-formed `_schema` file unbound.
 - Ekphrasis does not fall back to a modeline or path rule after reading `_schema`.
 - Ekphrasis verifies that the mapped schema declares the same value as the constant of its root `_schema` property.

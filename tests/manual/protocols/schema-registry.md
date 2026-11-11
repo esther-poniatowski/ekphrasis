@@ -4,7 +4,8 @@ This checklist verifies inside Obsidian the binding of a record by its top-level
 
 - the field `_schema` hidden from the form of a bound record;
 - the field `_schema` taking precedence over a modeline;
-- the failures that stop the binding: no registry set, a registry file absent, an unknown identifier, and a schema declaring another contract;
+- the failures that stop the binding: no registry set, a registry file absent, an absent major of a registered format, and a schema declaring another contract;
+- a file of an unregistered format left unbound, without an error;
 - a record bound although its text fails to parse;
 - a change of the registry reaching an open form;
 - the index of identifiers following the registry.
@@ -21,7 +22,8 @@ The records of this protocol lie in the folder `scenarios/registry` of the test 
 - `schemas.yml` is the registry. It maps `scenario:registered@1` to `registered.schema.yaml`, and `scenario:mismatch@1` to the same schema, whose `_schema` declares `scenario:registered@1` only;
 - `bound.yml` declares `scenario:registered@1` and the identifier `scenario.registered`;
 - `precedence.yml` declares `scenario:registered@1`, and holds a modeline naming the schema *Corrections*;
-- `unknown.yml` declares `scenario:absent@1`, absent from the registry;
+- `unknown.yml` declares `scenario:registered@2`, a major that the registry does not hold;
+- `foreign.yml` declares `scenario:absent@1`, a format that no identifier of the registry names;
 - `mismatch.yml` declares `scenario:mismatch@1` and the identifier `scenario.mismatch`;
 - `late.yml` declares `scenario:late@1`, which the protocol adds to the registry;
 - `broken.yml` declares `scenario:registered@1`, and its last line holds an unclosed bracket;
@@ -52,15 +54,16 @@ The records of this protocol lie in the folder `scenarios/registry` of the test 
 
 ## Failures of the binding
 
-- [x] Open `scenarios/registry/unknown.yml`. → The message *Schema not found* reads: *The logical contract `scenario:absent@1` cannot be resolved because the schema identifier is absent from the registry.*
+- [ ] Open `scenarios/registry/unknown.yml`. → The message *Schema not found* reads: *The logical contract `scenario:registered@2` cannot be resolved because the schema identifier is absent from the registry, which holds another major of `scenario:registered`.*
+- [ ] Open `scenarios/registry/foreign.yml`. → The file opens in the source view, and no message states that a schema is missing.
 - [x] Open `scenarios/registry/mismatch.yml`. → The message *Schema not loaded* names the schema `scenarios/registry/registered.schema.yaml`, resolved from the logical contract, and states that the registry binds `scenario:mismatch@1` to this schema, but the constant of its `_schema` property is `scenario:registered@1`.
 - [x] Open `registry-links.md` in the reading view, and click link 2. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.mismatch`.* shows, since a record whose contract mismatches enters no index.
 - [x] Open `scenarios/registry/broken.yml`. → The message *Invalid YAML* names the line of `name`, and offers to open the source view. No message states that the schema is missing.
 
 ## Change of the registry
 
-- [x] Open `scenarios/registry/late.yml`. → The message *Schema not found* states that the schema identifier `scenario:late@1` is absent from the registry.
-- [x] Split the pane, and open `scenarios/registry/schemas.yml` in the new pane. Under `schemas:`, add the line `  'scenario:late@1': 'scenarios/registry/late.schema.yaml'`, aligned with the two other entries, and let the file save. → The pane of `late.yml` displays the form titled *Late record*, without reopening the file, and the line below the title names `scenarios/registry/late.schema.yaml`.
+- [ ] Open `scenarios/registry/late.yml`. → The file opens in the source view, and no message states that a schema is missing, since the registry names no major of `scenario:late`.
+- [ ] Split the pane, and open `scenarios/registry/schemas.yml` in the new pane. Under `schemas:`, add the line `  'scenario:late@1': 'scenarios/registry/late.schema.yaml'`, aligned with the two other entries, and let the file save. → The pane of `late.yml` displays the form titled *Late record*, without reopening the file, and the line below the title names `scenarios/registry/late.schema.yaml`.
 
 ## Reset
 

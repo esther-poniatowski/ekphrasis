@@ -22,14 +22,22 @@ describe("schema binding", () => {
     });
   });
 
-  it("fails closed when a declared logical schema is unknown", () => {
-    const text = "_schema: vault:unknown@1\n# yaml-language-server: $schema=fallback.yaml\n";
+  it("fails closed when the registry holds another major of the declared format", () => {
+    const text = "_schema: vault:record@2\n# yaml-language-server: $schema=fallback.yaml\n";
     const registry = new Map([["vault:record@1", "schemas/record.schema.yaml"]]);
     expect(resolveBinding("q.yml", text, [], registry)).toMatchObject({
       status: "invalid",
       source: "schema-field",
-      reference: "vault:unknown@1",
+      reference: "vault:record@2",
+      reason:
+        "the schema identifier is absent from the registry, which holds another major of `vault:record`",
     });
+  });
+
+  it("leaves an unregistered format of a registered owner unbound", () => {
+    const text = "_schema: vault:configuration@1\n# yaml-language-server: $schema=fallback.yaml\n";
+    const registry = new Map([["vault:record@1", "schemas/record.schema.yaml"]]);
+    expect(resolveBinding("records/q.yml", text, RULES, registry)).toEqual({ status: "unbound" });
   });
 
   it("leaves a schema of an unknown owner unbound", () => {
@@ -79,7 +87,7 @@ describe("schema binding", () => {
     });
   });
 
-  it("does not infer a known owner from a registry key without its separator", () => {
+  it("does not infer a registered format from a malformed registry key", () => {
     expect(
       resolveBinding("q.yml", "_schema: tool:record@1\n", [], new Map([["tool", "s.yml"]])),
     ).toEqual({ status: "unbound" });

@@ -178,13 +178,14 @@ function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
       const identifier = readSchemaField(record.text);
       const declared = identifier === null ? null : parseSchemaIdentifier(identifier);
       if (declared !== null) {
-        const known = facts.identifiers.some(
-          (candidate) => parseSchemaIdentifier(candidate)?.owner === declared.owner,
-        );
-        if (!known) {
+        const registered = facts.identifiers.some((candidate) => {
+          const parsed = parseSchemaIdentifier(candidate);
+          return parsed?.owner === declared.owner && parsed.type === declared.type;
+        });
+        if (!registered) {
           return passed(
             SUBJECTS.form,
-            `The schema owner \`${declared.owner}\` is not registered, so \`${path}\` remains in the source view without a binding error.`,
+            `The format \`${declared.owner}:${declared.type}\` is not registered, so \`${path}\` remains in the source view without a binding error.`,
           );
         }
       }

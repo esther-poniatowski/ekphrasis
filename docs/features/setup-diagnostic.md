@@ -80,7 +80,7 @@ The record checks follow the save of a form up to the file that a save would wri
 - for an authored record, its place among the files indexed by Obsidian, as a save requires;
 - for an authored record, the permission of the operating system to write the file.
 
-A file with a well-formed `_schema` remains in the source view without an error when the registry knows no identifier from that owner. By contrast, the form check fails when the registry knows the owner but omits the exact identifier, or when the identifier does not have the required form.
+A file with a well-formed `_schema` remains in the source view without an error when no registry identifier names its format `<owner>:<type>`. By contrast, the form check fails when the registry holds another major of that format, or when the identifier does not have the required form.
 
 The desktop app of Obsidian writes a saved file in place. Therefore, the write permission of the file decides whether a save succeeds, and the diagnostic asks the operating system for that permission without creating a probe file. The mobile app exposes no permission to plugins. Therefore, on mobile, the check reports `unavailable`, a status distinct from a refused permission.
 

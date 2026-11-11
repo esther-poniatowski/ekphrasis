@@ -77,10 +77,7 @@ export function resolveBinding(
     }
     const registered = registry.get(identifier);
     if (registered === undefined) {
-      const ownerIsKnown = [...registry.keys()].some((candidate) =>
-        candidate.startsWith(`${declared.owner}:`),
-      );
-      if (!ownerIsKnown) {
+      if (!registersFormat(registry, declared)) {
         return {
           status: "unbound",
           ...(registryPath === undefined ? {} : { registryPath }),
@@ -90,7 +87,7 @@ export function resolveBinding(
         status: "invalid",
         source: "schema-field",
         reference: identifier,
-        reason: "the schema identifier is absent from the registry",
+        reason: `the schema identifier is absent from the registry, which holds another major of \`${declared.owner}:${declared.type}\``,
         ...(registryPath === undefined ? {} : { registryPath }),
       };
     }
@@ -108,6 +105,23 @@ export function resolveBinding(
     (candidate) => isComplete(candidate) && new GlobPattern(candidate.pattern).matches(path),
   );
   return rule === undefined ? { status: "unbound" } : bindTo("path-rule", rule.schema, "");
+}
+
+/**
+ * Whether the registry holds a major of the format `<owner>:<type>` that `declared` names.
+ *
+ * Only a registered format can make an absent identifier an error: a stale or future major of
+ * that format. A tool may register some of its formats only, so another format of the same owner
+ * stays unbound, and the tool that reads the file reports a wrong identifier itself.
+ */
+function registersFormat(
+  registry: ReadonlyMap<string, string>,
+  declared: { readonly owner: string; readonly type: string },
+): boolean {
+  return [...registry.keys()].some((candidate) => {
+    const parsed = parseSchemaIdentifier(candidate);
+    return parsed !== null && parsed.owner === declared.owner && parsed.type === declared.type;
+  });
 }
 
 /** Whether a rule names both its pattern and its schema; a rule being filled in binds nothing. */
