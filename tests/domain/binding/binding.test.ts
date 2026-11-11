@@ -24,11 +24,65 @@ describe("schema binding", () => {
 
   it("fails closed when a declared logical schema is unknown", () => {
     const text = "_schema: vault:unknown@1\n# yaml-language-server: $schema=fallback.yaml\n";
-    expect(resolveBinding("q.yml", text, [], new Map())).toMatchObject({
+    const registry = new Map([["vault:record@1", "schemas/record.schema.yaml"]]);
+    expect(resolveBinding("q.yml", text, [], registry)).toMatchObject({
       status: "invalid",
       source: "schema-field",
       reference: "vault:unknown@1",
     });
+  });
+
+  it("leaves a schema of an unknown owner unbound", () => {
+    const registry = new Map([["vault:record@1", "schemas/record.schema.yaml"]]);
+
+    expect(
+      resolveBinding(
+        "records/foreign.yml",
+        "_schema: other:config@1\n# yaml-language-server: $schema=fallback.yaml\n",
+        RULES,
+        registry,
+      ),
+    ).toEqual({ status: "unbound" });
+  });
+
+  it("leaves a valid schema field unbound when no registry is available", () => {
+    expect(resolveBinding("records/q.yml", "_schema: other:config@1\n", RULES)).toEqual({
+      status: "unbound",
+    });
+  });
+
+  it("rejects a malformed schema identifier before considering fallback", () => {
+    const text = "_schema: malformed\n# yaml-language-server: $schema=fallback.yaml\n";
+    expect(resolveBinding("records/q.yml", text, RULES)).toMatchObject({
+      status: "invalid",
+      source: "schema-field",
+      reference: "malformed",
+      reason: "the schema identifier must have the form <owner>:<type>@<major>",
+    });
+  });
+
+  it.each(["_schema:\n", '_schema: ""\n', "_schema: wrong value\n"])(
+    "rejects the present malformed field %j without applying a path rule",
+    (declaration) => {
+      expect(resolveBinding("records/q.yml", declaration, RULES)).toMatchObject({
+        status: "invalid",
+        source: "schema-field",
+        reason: "the schema identifier must have the form <owner>:<type>@<major>",
+      });
+    },
+  );
+
+  it.each(["a@b:c@1", "a:b:c@1"])("rejects the extra separator in %s", (identifier) => {
+    expect(resolveBinding("q.yml", `_schema: ${identifier}\n`, [])).toMatchObject({
+      status: "invalid",
+      source: "schema-field",
+    });
+  });
+
+  it("does not infer a known owner from a registry key without its separator", () => {
+    expect(
+      resolveBinding("q.yml", "_schema: tool:record@1\n", [], new Map([["tool", "s.yml"]])),
+    ).toEqual({ status: "unbound" });
   });
 
   it("does not mistake a nested control-like key for the record binding", () => {

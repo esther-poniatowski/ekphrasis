@@ -37,7 +37,10 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 
 ## Consequences
 
-- If the registry does not map a declared `_schema` value, Ekphrasis reports an error. Ekphrasis does not fall back to another source.
+- An explicit `_schema` value must have the form `<owner>:<type>@<major>`. A malformed value is invalid.
+- When no registry identifier has the declared owner, Ekphrasis leaves the file unbound. When the owner is registered but the exact identifier is absent, Ekphrasis reports an error.
+- If Ekphrasis cannot read a configured registry, it reports an error. If no registry is configured, Ekphrasis leaves every well-formed `_schema` file unbound.
+- Ekphrasis does not fall back to a modeline or path rule after reading `_schema`.
 - Ekphrasis verifies that the mapped schema declares the same value as the constant of its root `_schema` property.
 - A current registry declares `_schema: kleisis:schema-registry@2`. Ekphrasis also reads the numeric markers `schema_version: 1` and `schema_version: 2`. A missing marker, duplicate markers or another value makes the registry invalid.
 - Ekphrasis omits the reserved root property from the content form.

@@ -302,10 +302,37 @@ describe("the setup diagnostic", () => {
       expect(check(report, "registry.version").action).toContain("1 and 2");
     });
 
-    it("asks for a registry when the opened record declares `_schema` and none is configured", async () => {
+    it("treats an explicit schema as foreign when no registry is configured", async () => {
       const report = await diagnose({ settings: { ...SETTINGS, schemaRegistry: "" } });
-      expect(check(report, "registry.setting").status).toBe("fail");
-      expect(check(report, "registry.setting").action).toContain("*Schema registry*");
+      expect(check(report, "registry.setting").status).toBe("pass");
+      expect(check(report, "record.form")).toMatchObject({ status: "pass" });
+      expect(check(report, "record.form").observed).toContain("without a binding error");
+    });
+
+    it("distinguishes unknown owners from absent identifiers of a known owner", async () => {
+      const foreign = "notes/foreign.yml";
+      const unknown = await diagnose({
+        record: foreign,
+        vault: { files: withFiles({ [foreign]: "_schema: other:config@1\n" }) },
+      });
+      expect(check(unknown, "record.form")).toMatchObject({ status: "pass" });
+      expect(check(unknown, "record.form").observed).toContain("`other`");
+
+      const absent = await diagnose({
+        vault: { files: withFiles({ [RECORD]: "_schema: demo:note@99\n" }) },
+      });
+      expect(check(absent, "record.form")).toMatchObject({ status: "fail" });
+      expect(check(absent, "record.form").observed).toContain(
+        "the schema identifier is absent from the registry",
+      );
+    });
+
+    it("fails on a malformed explicit schema identifier", async () => {
+      const report = await diagnose({
+        vault: { files: withFiles({ [RECORD]: "_schema: malformed\n" }) },
+      });
+      expect(check(report, "record.form")).toMatchObject({ status: "fail" });
+      expect(check(report, "record.form").observed).toContain("<owner>:<type>@<major>");
     });
   });
 

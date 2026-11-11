@@ -5,7 +5,7 @@
 import { folderOf, isUri, resolveVaultPath } from "../files/vault-paths";
 import { GlobPattern } from "./glob";
 import { readModeline } from "./modeline";
-import { readSchemaField } from "./schema-field";
+import { parseSchemaIdentifier, readSchemaDeclaration } from "./schema-field";
 
 /** Rule of the settings assigning a schema to every file whose path matches a glob pattern. */
 export interface PathRule {
@@ -32,7 +32,7 @@ export interface SchemaBinding {
 /** Outcome of resolution: a schema binding, no applicable source, or an invalid source value. */
 export type BindingResult =
   | { readonly status: "bound"; readonly binding: SchemaBinding }
-  | { readonly status: "unbound" }
+  | { readonly status: "unbound"; readonly registryPath?: string }
   | {
       readonly status: "invalid";
       readonly source: BindingSource;
@@ -50,19 +50,42 @@ export function resolveBinding(
   registry: ReadonlyMap<string, string> | null = null,
   registryPath?: string,
 ): BindingResult {
-  const identifier = readSchemaField(text);
-  if (identifier !== null) {
-    if (registry === null) {
+  const declaration = readSchemaDeclaration(text);
+  if (declaration.status === "declared") {
+    const identifier = declaration.value;
+    if (identifier === null) {
+      return {
+        status: "invalid",
+        source: "schema-field",
+        reference: declaration.raw,
+        reason: "the schema identifier must have the form <owner>:<type>@<major>",
+        ...(registryPath === undefined ? {} : { registryPath }),
+      };
+    }
+    const declared = parseSchemaIdentifier(identifier);
+    if (declared === null) {
       return {
         status: "invalid",
         source: "schema-field",
         reference: identifier,
-        reason: "no schema registry is available",
+        reason: "the schema identifier must have the form <owner>:<type>@<major>",
         ...(registryPath === undefined ? {} : { registryPath }),
       };
     }
+    if (registry === null) {
+      return { status: "unbound" };
+    }
     const registered = registry.get(identifier);
     if (registered === undefined) {
+      const ownerIsKnown = [...registry.keys()].some((candidate) =>
+        candidate.startsWith(`${declared.owner}:`),
+      );
+      if (!ownerIsKnown) {
+        return {
+          status: "unbound",
+          ...(registryPath === undefined ? {} : { registryPath }),
+        };
+      }
       return {
         status: "invalid",
         source: "schema-field",

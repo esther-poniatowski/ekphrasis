@@ -9,7 +9,13 @@ export * from "./paths/field-path";
 export * from "./binding/binding";
 export { GlobPattern, globDefect, type GlobDefect } from "./binding/glob";
 export { readModeline } from "./binding/modeline";
-export { readSchemaField } from "./binding/schema-field";
+export {
+  parseSchemaIdentifier,
+  readSchemaDeclaration,
+  readSchemaField,
+  type SchemaIdentifier,
+  type SchemaFieldDeclaration,
+} from "./binding/schema-field";
 export {
   readSchemaRegistry,
   SUPPORTED_REGISTRY_VERSIONS,

@@ -10,6 +10,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ### Fixed
 
+- Files whose `_schema` owner is absent from the configured registry remain unbound instead of reporting a false binding error. Missing identifiers of registered owners and malformed identifiers remain errors.
 - Undo and redo in the controls holding text, through their own history of commits: the key `Cmd+Z` undid nothing after a paste joining several lines, and undid unpredictable characters in a value on several lines.
 
 ## [0.1.1] - 2026-10-30

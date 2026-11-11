@@ -5,7 +5,7 @@
  * The diagnostic only reads: it changes no file, no setting and no environment. It runs the
  * configured checker command once on the opened record, as one validation would.
  */
-import { readSchemaField, resolveVaultPath } from "../../domain";
+import { readSchemaDeclaration, resolveVaultPath } from "../../domain";
 import type { DocumentParser, FileSource, SchemaLoader, SchemaValidator } from "../protocols";
 import type { RegistryReader } from "../registry-reader";
 import type { EkphrasisSettings } from "../settings";
@@ -50,7 +50,8 @@ export async function runSetupDiagnostic(
   await guarded(checks, { id: "schemas", name: "the schemas" }, async () => {
     const schemas = await schemaChecks({
       ...dependencies,
-      recordDeclaresSchema: record !== null && readSchemaField(record.text) !== null,
+      recordDeclaresSchema:
+        record !== null && readSchemaDeclaration(record.text).status === "declared",
     });
     facts = schemas.facts;
     return schemas.checks;

@@ -137,7 +137,12 @@ export class IdentifierIndexService implements RecordIdentifiers {
     const text = await this.files.read(path);
     if (text === null) return none;
     const result = await this.bindings.resolve(path, text);
-    if (result.status === "unbound") return none;
+    if (result.status === "unbound") {
+      return {
+        identifier: null,
+        dependencies: result.registryPath === undefined ? [] : [result.registryPath],
+      };
+    }
     if (result.status === "invalid") {
       return {
         identifier: null,

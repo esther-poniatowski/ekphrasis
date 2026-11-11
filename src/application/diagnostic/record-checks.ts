@@ -6,6 +6,7 @@
  * No check writes: the save route is followed up to the file that it would write, and the write
  * permission of that file is asked of the operating system, without any probe file.
  */
+import { parseSchemaIdentifier, readSchemaField } from "../../domain";
 import type { FormState } from "../form-service";
 import type { SchemaFacts } from "./schema-checks";
 import type { VaultInspector } from "./ports";
@@ -72,7 +73,7 @@ export async function recordChecks(
       ),
     ];
   }
-  const checks = [formCheck(record)];
+  const checks = [formCheck(record, facts)];
   const generated = generatedKind(record, facts, resourceRoot);
   if (generated !== null) {
     checks.push(
@@ -160,7 +161,7 @@ function generatedKind(
 }
 
 /** Outcome of the form pipeline on the opened record, as the view last displayed it. */
-function formCheck(record: OpenedRecord): DiagnosticCheck {
+function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
   const state = record.state;
   const path = record.path;
   if (state === null) {
@@ -178,6 +179,19 @@ function formCheck(record: OpenedRecord): DiagnosticCheck {
         `\`${path}\` opens as a form of \`${state.binding.reference}\` (\`${state.binding.schemaPath}\`).`,
       );
     case "unbound":
+      const identifier = readSchemaField(record.text);
+      const declared = identifier === null ? null : parseSchemaIdentifier(identifier);
+      if (declared !== null) {
+        const known = facts.identifiers.some(
+          (candidate) => parseSchemaIdentifier(candidate)?.owner === declared.owner,
+        );
+        if (!known) {
+          return passed(
+            SUBJECTS.form,
+            `The schema owner \`${declared.owner}\` is not registered, so \`${path}\` remains in the source view without a binding error.`,
+          );
+        }
+      }
       return notPassed(
         "warning",
         SUBJECTS.form,

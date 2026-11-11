@@ -22,7 +22,7 @@ import type { ValidationReport, ValidationService } from "./validation-service";
 /** Outcome of opening an instance, one variant per stage that can stop the pipeline. */
 export type FormState =
   /** No schema field, modeline or path rule binds the file: it opens in the source view. */
-  | { readonly status: "unbound" }
+  | { readonly status: "unbound"; readonly schemaPaths: readonly string[] }
   /** A declared binding cannot resolve to a schema in the vault. */
   | {
       readonly status: "invalid-binding";
@@ -87,7 +87,12 @@ export class FormService {
     identities: ItemIdentities = new ItemIdentities(),
   ): Promise<FormState> {
     const result = await this.bindings.resolve(path, text);
-    if (result.status === "unbound") return result;
+    if (result.status === "unbound") {
+      return {
+        status: "unbound",
+        schemaPaths: result.registryPath === undefined ? [] : [result.registryPath],
+      };
+    }
     if (result.status === "invalid") {
       const { source, reference, reason, registryPath } = result;
       const schemaPaths = registryPath === undefined ? [] : [registryPath];

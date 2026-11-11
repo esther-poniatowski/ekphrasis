@@ -139,11 +139,9 @@ export async function schemaChecks(
   if (state.status === "unconfigured") {
     checks.push(
       dependencies.recordDeclaresSchema
-        ? notPassed(
-            "fail",
+        ? passed(
             SUBJECTS.setting,
-            "No schema registry is configured, and the opened record declares `_schema`.",
-            "Enter the vault path of the registry of your project under *Schema registry* in the settings of Ekphrasis.",
+            "No schema registry is configured; well-formed `_schema` identifiers remain unbound.",
           )
         : notPassed(
             "warning",

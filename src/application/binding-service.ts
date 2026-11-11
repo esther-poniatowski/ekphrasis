@@ -1,5 +1,10 @@
 /** Resolves schema bindings, loading a configured logical-identifier registry when required. */
-import { readSchemaField, resolveBinding, type BindingResult } from "../domain";
+import {
+  parseSchemaIdentifier,
+  readSchemaDeclaration,
+  resolveBinding,
+  type BindingResult,
+} from "../domain";
 import type { BindingResolver, DocumentParser, FileSource } from "./protocols";
 import { RegistryReader } from "./registry-reader";
 import type { EkphrasisSettings } from "./settings";
@@ -17,8 +22,12 @@ export class BindingService implements BindingResolver {
 
   async resolve(path: string, text: string): Promise<BindingResult> {
     const rules = this.settings().pathRules;
-    const identifier = readSchemaField(text);
-    if (identifier === null) return resolveBinding(path, text, rules);
+    const declaration = readSchemaDeclaration(text);
+    if (declaration.status === "absent") return resolveBinding(path, text, rules);
+    if (declaration.value === null || parseSchemaIdentifier(declaration.value) === null) {
+      return resolveBinding(path, text, rules);
+    }
+    const identifier = declaration.value;
     const state = await this.registry.read();
     if (state.status === "unconfigured") return resolveBinding(path, text, rules);
     if (state.status === "invalid") {

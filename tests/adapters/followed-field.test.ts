@@ -5,7 +5,7 @@ import type { YamlPath } from "../../src/domain";
 
 /** A form state of status `form`; the outcome reads its status only. */
 const FORM = { status: "form" } as FormState;
-const UNBOUND: FormState = { status: "unbound" };
+const UNBOUND: FormState = { status: "unbound", schemaPaths: [] };
 
 const holds =
   (...ids: string[]) =>
