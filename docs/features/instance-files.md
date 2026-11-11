@@ -32,27 +32,34 @@ Ekphrasis binds each record to at most one [schema](schemas.md). Ekphrasis uses 
 
 ^binding-sources
 
-The registry is a YAML file whose `schemas` mapping relates opaque identifiers to schema paths from the vault root:
+The first key of a registry declares its format. The registry key `schemas` relates opaque identifiers to schema paths from the vault root:
 
 ```yaml
-schema_version: 1
+_schema: kleisis:schema-registry@2
 schemas:
   'geonexus:project@1': 'utils/schemas/project.schema.yaml'
 ```
 
-A registry of version 2 adds the top-level mapping `resources`, which relates each absolute `$id`, written exactly as in its schema file, to the path of that file from the vault root. A `$ref` by absolute URI resolves through that mapping, as the specification of [schemas](schemas.md#^absolute-references) states:
+A version 2 registry may add the key `resources`. Each entry relates an absolute `$id` to a vault path. The schema file at that path must declare the same `$id`. A `$ref` by absolute URI resolves through the corresponding entry, as described under [schemas](schemas.md#^absolute-references):
 
 ```yaml
-schema_version: 2
+_schema: kleisis:schema-registry@2
 schemas:
   'vault:note@1': 'schemas/note.schema.yaml'
 resources:
-  'https://example.org/tool/note@1/base.schema.yaml': '.schema-resources/tool/note/base.schema.yaml'
+  'https://example.org/tool/note@1/base.schema.yaml': '.kleisis/resources/tool/note/base.schema.yaml'
 ```
 
 The setting *Schema resource directory* names the vault directory for generated schemas that Obsidian may omit from its indexed file model. Ekphrasis admits low-level file reads only below this directory. Its default, `.schema-resources`, preserves existing vaults; a project can select another vault directory.
 
-A registry without the key `schema_version` reads as version 1. A registry declaring another version, declaring `resources` under version 1, or mapping a key of `resources` other than an absolute URI is invalid.
+The current form accepts these keys:
+
+- `_schema`, as the first key;
+- `schemas`;
+- `exports`;
+- `resources`.
+
+Ekphrasis also reads the markers `schema_version: 1` and `schema_version: 2`. The reader rejects a missing marker, duplicate markers and every other marker value. A registry marked `schema_version: 1` cannot declare `resources`, and each key under `resources` must be an absolute URI.
 
 A record declares the logical identifier rather than the local path:
 

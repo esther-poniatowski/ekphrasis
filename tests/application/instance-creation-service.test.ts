@@ -11,9 +11,12 @@ import { MemoryFileSource } from "../support/fixture-vault";
 
 const files = new MemoryFileSource({
   "schemas.yml": [
+    "_schema: kleisis:schema-registry@2",
     "schemas:",
     "  project:record@1: record.schema.yaml",
     "  project:view@1: view.schema.yaml",
+    "exports: {}",
+    "resources: {}",
     "",
   ].join("\n"),
   "record.schema.yaml": [

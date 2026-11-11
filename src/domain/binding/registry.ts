@@ -5,8 +5,9 @@
  *
  * Version 1 holds `schemas` only. Version 2 adds the top-level mapping `resources`, whose keys
  * are absolute URIs written exactly as the `$id` of their files, so that a `$ref` by absolute URI
- * resolves to a file of the vault without any request over the network. A registry without the
- * key `schema_version` reads as version 1, the only format without `resources`.
+ * resolves to a file of the vault without any request over the network. The current format uses
+ * `_schema: kleisis:schema-registry@2`; the two numeric `schema_version` markers remain readable
+ * while existing registries migrate.
  */
 import { isUri } from "../files/vault-paths";
 import { isJsonObject, type JsonObject, type JsonValue } from "../schema/json";
@@ -35,6 +36,8 @@ export type RegistryReading =
 /** Versions of the registry format that this reader supports. */
 export const SUPPORTED_REGISTRY_VERSIONS: readonly number[] = [1, 2];
 
+const CURRENT_REGISTRY_MARKER = "kleisis:schema-registry@2";
+
 /** Reads the parsed value of a registry file. */
 export function readSchemaRegistry(value: JsonValue): RegistryReading {
   const malformed = (reason: string, defect: RegistryDefect = "structure"): RegistryReading => ({
@@ -42,17 +45,21 @@ export function readSchemaRegistry(value: JsonValue): RegistryReading {
     reason,
     defect,
   });
-  if (!isJsonObject(value) || !isJsonObject(value["schemas"])) {
-    return malformed("has no schemas mapping");
+  if (!isJsonObject(value)) return malformed("has no schemas mapping");
+  const format = registryFormat(value);
+  if (format === null) {
+    return malformed(`must write _schema: ${CURRENT_REGISTRY_MARKER}`, "version");
   }
-  const declared = value["schema_version"];
-  const version = declared === undefined ? 1 : declared;
-  if (version !== 1 && version !== 2) {
-    return malformed(
-      `declares the unsupported schema_version \`${JSON.stringify(declared)}\``,
-      "version",
-    );
+  if (format.current && Object.keys(value)[0] !== "_schema") {
+    return malformed("must write _schema as its first key");
   }
+  if (format.current) {
+    const admitted = new Set(["_schema", "schemas", "exports", "resources"]);
+    const extra = Object.keys(value).find((key) => !admitted.has(key));
+    if (extra !== undefined) return malformed(`declares the unadmitted key \`${extra}\``);
+  }
+  if (!isJsonObject(value["schemas"])) return malformed("has no schemas mapping");
+  const version = format.version;
   const schemas = pathMapping(value["schemas"]);
   if (schemas === null) return malformed("contains a non-path value");
   const written = value["resources"];
@@ -69,6 +76,19 @@ export function readSchemaRegistry(value: JsonValue): RegistryReading {
     return malformed(`maps the resource \`${relative}\`, which is no absolute URI`);
   }
   return { status: "read", registry: { version, schemas, resources } };
+}
+
+/** Format selected by exactly one admitted registry marker, else `null`. */
+function registryFormat(
+  value: JsonObject,
+): { readonly version: 1 | 2; readonly current: boolean } | null {
+  const marker = value["_schema"];
+  const legacy = value["schema_version"];
+  if (marker !== undefined && legacy !== undefined) return null;
+  if (marker !== undefined) {
+    return marker === CURRENT_REGISTRY_MARKER ? { version: 2, current: true } : null;
+  }
+  return legacy === 1 || legacy === 2 ? { version: legacy, current: false } : null;
 }
 
 /** Entries of `mapping` when every value is a string, else `null`. */

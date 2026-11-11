@@ -45,7 +45,7 @@ describe("FormService", () => {
     const settings = { ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml" };
     const state = await service(
       {
-        "schemas.yml": "schemas:\n  vault:record@1: record.schema.yaml\n",
+        "schemas.yml": "schema_version: 1\nschemas:\n  vault:record@1: record.schema.yaml\n",
         "record.schema.yaml": schema,
       },
       settings,
@@ -65,7 +65,7 @@ describe("FormService", () => {
     const settings = { ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml" };
     const state = await service(
       {
-        "schemas.yml": "schemas:\n  vault:record@1: record.schema.yaml\n",
+        "schemas.yml": "schema_version: 1\nschemas:\n  vault:record@1: record.schema.yaml\n",
         "record.schema.yaml": [
           "type: object",
           "properties:",

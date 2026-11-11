@@ -177,7 +177,7 @@ describe("IdentifierIndexService", () => {
 
   it("indexes a logical record again once its registry entry is added", async () => {
     const vault: Record<string, string> = {
-      "schemas.yml": "schemas: {}\n",
+      "schemas.yml": "schema_version: 1\nschemas: {}\n",
       "record.schema.yaml": [
         "type: object",
         "x-identifier: id",
@@ -193,7 +193,7 @@ describe("IdentifierIndexService", () => {
     await index.rebuild(["a.yml"]);
     expect(index.identifierOf("a.yml")).toBeNull();
 
-    vault["schemas.yml"] = "schemas:\n  vault:record@1: record.schema.yaml\n";
+    vault["schemas.yml"] = "schema_version: 1\nschemas:\n  vault:record@1: record.schema.yaml\n";
     await index.dependencyChanged("schemas.yml");
     expect(index.identifierOf("a.yml")).toBe("quest.a");
   });

@@ -4,6 +4,10 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+### Changed
+
+- Schema registries read the current marker `_schema: kleisis:schema-registry@2`. Existing registries may still use the explicit markers `schema_version: 1` and `schema_version: 2`.
+
 ### Fixed
 
 - Undo and redo in the controls holding text, through their own history of commits: the key `Cmd+Z` undid nothing after a paste joining several lines, and undid unpredictable characters in a value on several lines.

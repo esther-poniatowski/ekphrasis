@@ -69,7 +69,7 @@ properties:
 The configured registry maps the logical identifier to the schema file:
 
 ```yaml
-schema_version: 1
+_schema: kleisis:schema-registry@2
 schemas:
   'example:term@1': 'schemas/term.schema.yaml'
 ```

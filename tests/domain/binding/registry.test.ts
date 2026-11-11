@@ -7,6 +7,20 @@ const reason = (value: JsonValue): string | null => {
 };
 
 describe("schema registry", () => {
+  it("reads the format marker of a version 2 registry", () => {
+    const uri = "https://example.org/tool/note@1/base.schema.yaml";
+    const reading = readSchemaRegistry({
+      _schema: "kleisis:schema-registry@2",
+      schemas: { "a:b@1": "s/b.yaml" },
+      exports: {},
+      resources: { [uri]: ".kleisis/resources/tool/base.schema.yaml" },
+    });
+
+    expect(reading).toMatchObject({ status: "read", registry: { version: 2 } });
+    if (reading.status !== "read") return;
+    expect(reading.registry.resources.get(uri)).toBe(".kleisis/resources/tool/base.schema.yaml");
+  });
+
   it("reads version 1, which maps contracts only", () => {
     const reading = readSchemaRegistry({ schema_version: 1, schemas: { "a:b@1": "s/b.yaml" } });
 
@@ -14,13 +28,6 @@ describe("schema registry", () => {
     if (reading.status !== "read") return;
     expect([...reading.registry.schemas]).toEqual([["a:b@1", "s/b.yaml"]]);
     expect(reading.registry.resources.size).toBe(0);
-  });
-
-  it("reads a registry without schema_version as version 1", () => {
-    expect(readSchemaRegistry({ schemas: {} })).toMatchObject({
-      status: "read",
-      registry: { version: 1 },
-    });
   });
 
   it("reads the resources of version 2, keyed by absolute URIs written exactly", () => {
@@ -50,14 +57,49 @@ describe("schema registry", () => {
     [
       "an unknown version",
       { schema_version: 3, schemas: {} },
-      "declares the unsupported schema_version `3`",
+      "must write _schema: kleisis:schema-registry@2",
     ],
     [
       "a version written as text",
       { schema_version: "2", schemas: {} },
-      'declares the unsupported schema_version `"2"`',
+      "must write _schema: kleisis:schema-registry@2",
     ],
-    ["a non-path contract", { schemas: { "a:b@1": 1 } }, "contains a non-path value"],
+    [
+      "a boolean version",
+      { schema_version: true, schemas: {} },
+      "must write _schema: kleisis:schema-registry@2",
+    ],
+    [
+      "an unknown format marker",
+      { _schema: "other:registry@2", schemas: {} },
+      "must write _schema: kleisis:schema-registry@2",
+    ],
+    [
+      "a non-string format marker",
+      { _schema: true, schemas: {} },
+      "must write _schema: kleisis:schema-registry@2",
+    ],
+    [
+      "both version markers",
+      { _schema: "kleisis:schema-registry@2", schema_version: 2, schemas: {} },
+      "must write _schema: kleisis:schema-registry@2",
+    ],
+    ["no version marker", { schemas: {} }, "must write _schema: kleisis:schema-registry@2"],
+    [
+      "the current marker after another key",
+      { schemas: {}, _schema: "kleisis:schema-registry@2" },
+      "must write _schema as its first key",
+    ],
+    [
+      "an unadmitted current field",
+      { _schema: "kleisis:schema-registry@2", schemas: {}, unknown: true },
+      "declares the unadmitted key `unknown`",
+    ],
+    [
+      "a non-path contract",
+      { schema_version: 1, schemas: { "a:b@1": 1 } },
+      "contains a non-path value",
+    ],
     [
       "resources in version 1",
       { schema_version: 1, schemas: {}, resources: {} },
@@ -92,6 +134,7 @@ describe("defects of a malformed registry", () => {
   it("separates an unsupported version from a malformed structure", () => {
     expect(defect({ schema_version: 3, schemas: {} })).toBe("version");
     expect(defect({ schema_version: 1, schemas: {}, resources: {} })).toBe("structure");
-    expect(defect({ schemas: [] })).toBe("structure");
+    expect(defect({ schemas: [] })).toBe("version");
+    expect(defect({ schemas: {} })).toBe("version");
   });
 });
