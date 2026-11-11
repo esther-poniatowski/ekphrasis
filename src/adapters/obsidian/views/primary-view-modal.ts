@@ -1,11 +1,5 @@
 /** Obsidian interaction for an explicit completion target and its producer-selected view. */
-import {
-  Modal,
-  Notice,
-  Setting,
-  type App,
-  type ButtonComponent,
-} from "obsidian";
+import { Modal, Notice, Setting, type App, type ButtonComponent } from "obsidian";
 import { waitForIndexedFile } from "../indexed-file";
 
 export function openPrimaryViewTarget(
@@ -30,13 +24,9 @@ class PrimaryViewTargetModal extends Modal {
     this.titleEl.setText("Open primary view");
     new Setting(this.contentEl)
       .setName("Completion target")
-      .setDesc(
-        "Explicit target used by the configured producer to select the view",
-      )
+      .setDesc("Explicit target used by the configured producer to select the view")
       .addText((text) => {
-        text
-          .setPlaceholder("question-typed")
-          .onChange((value) => (this.target = value));
+        text.setPlaceholder("question-typed").onChange((value) => (this.target = value));
         text.inputEl.addEventListener("keydown", (event) => {
           if (event.key === "Enter") void this.openView();
         });
