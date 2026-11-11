@@ -24,10 +24,10 @@ The motivation and the approach of the plugin are developed in the [project over
 
 - [ ] **Form initialization**: a command creates a new YAML file from a schema, with default values filled and required choices left unfilled, as specified for [instance creation](docs/features/instance-creation.md).
 - [ ] **Form view**: each field is filled in place, with its instructions and examples on demand and collapsible groups, in the [form view](docs/features/form-view.md).
-- [ ] **Field kinds**: labels, choices, Markdown lines and paragraphs, LaTeX formulas, lists and tables each receive a control of their own, listed under [field kinds](docs/features/field-kinds.md).
+- [ ] **Field kinds**: labels, choices, Markdown lines and paragraphs, LaTeX formulas, lists, tables, trees and directed graphs each receive a control of their own, listed under [field kinds](docs/features/field-kinds.md).
 - [ ] **Outline**: a side panel displays the structure of the instance, moves the form to any field, and marks the fields with issues, in the [outline](docs/features/outline.md).
 - [ ] **Validation**: rules declared in the schema check each field, the whole instance, relations between fields and conditions on other fields, as specified for [validation](docs/features/validation.md).
-- [ ] **Custom checkers**: rules implemented in Python are registered in the plugin and invoked from schemas, as [custom checkers](docs/features/custom-checkers.md).
+- [x] **Custom checkers**: rules implemented in Python are registered in the plugin and invoked from schemas, as [custom checkers](docs/features/custom-checkers.md).
 - [ ] **Progressive saving**: each edit is saved without a submission step, and changes only the edited value, as specified for [saving](docs/features/saving.md).
 - [ ] **Schema editor**: schemas and their versions are created and modified through a form, in the [schema editor](docs/features/schema-editor.md).
 

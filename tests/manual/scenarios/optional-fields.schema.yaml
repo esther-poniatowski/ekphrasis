@@ -1,0 +1,30 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: optional-fields.schema.yaml
+title: Optional fields
+type: object
+required: [title, mandatory]
+properties:
+  title:
+    type: string
+    title: Title
+  note:
+    type: string
+    title: Note
+  details:
+    type: object
+    title: Details
+    properties:
+      summary:
+        type: string
+        title: Summary
+      source:
+        type: string
+        title: Source
+  mandatory:
+    type: object
+    title: Mandatory
+    required: [name]
+    properties:
+      name:
+        type: string
+        title: Name

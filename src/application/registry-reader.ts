@@ -8,6 +8,7 @@ import {
   isUri,
   readSchemaRegistry,
   resolveVaultPath,
+  type RegistryDefect,
   type RegistryReading,
   type SchemaRegistry,
 } from "../domain";
@@ -21,7 +22,18 @@ export type RegistryState =
   | { readonly status: "unconfigured" }
   | { readonly status: "read"; readonly path: string; readonly registry: SchemaRegistry }
   /** The registry cannot be read; `path` is absent when the setting names no vault file. */
-  | { readonly status: "invalid"; readonly reason: string; readonly path?: string };
+  | {
+      readonly status: "invalid";
+      readonly reason: string;
+      readonly defect: RegistryStateDefect;
+      readonly path?: string;
+    };
+
+/**
+ * Why the configured registry cannot be read: the setting names no vault file, the file is
+ * absent, its text is no YAML, or its value declares an unsupported version or another structure.
+ */
+export type RegistryStateDefect = "location" | "absent" | "yaml" | RegistryDefect;
 
 export class RegistryReader implements SchemaResources {
   constructor(
@@ -35,26 +47,49 @@ export class RegistryReader implements SchemaResources {
     const reference = this.settings().schemaRegistry.trim();
     if (reference === "") return { status: "unconfigured" };
     if (isUri(reference)) {
-      return { status: "invalid", reason: "the schema registry must be a vault file" };
+      return {
+        status: "invalid",
+        reason: "the schema registry must be a vault file",
+        defect: "location",
+      };
     }
     const path = resolveVaultPath("", reference);
     if (path === null || path === "") {
-      return { status: "invalid", reason: "the schema registry path leaves the vault" };
+      return {
+        status: "invalid",
+        reason: "the schema registry path leaves the vault",
+        defect: "location",
+      };
     }
     const source = await this.files.read(path);
     if (source === null) {
-      return { status: "invalid", reason: `the registry \`${path}\` is absent`, path };
+      return {
+        status: "invalid",
+        reason: `the registry \`${path}\` is absent`,
+        defect: "absent",
+        path,
+      };
     }
     let reading: RegistryReading;
     try {
       reading = readSchemaRegistry(instanceValue(this.parser.parse(source)));
     } catch (error) {
       if (!(error instanceof YamlParseError)) throw error;
-      return { status: "invalid", reason: `the registry \`${path}\` is invalid YAML`, path };
+      return {
+        status: "invalid",
+        reason: `the registry \`${path}\` is invalid YAML`,
+        defect: "yaml",
+        path,
+      };
     }
     return reading.status === "read"
       ? { status: "read", path, registry: reading.registry }
-      : { status: "invalid", reason: `the registry \`${path}\` ${reading.reason}`, path };
+      : {
+          status: "invalid",
+          reason: `the registry \`${path}\` ${reading.reason}`,
+          defect: reading.defect,
+          path,
+        };
   }
 
   async resources(): Promise<ResourceMapping> {

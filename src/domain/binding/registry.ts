@@ -20,22 +20,38 @@ export interface SchemaRegistry {
   readonly resources: ReadonlyMap<string, string>;
 }
 
+/**
+ * Defect of a malformed registry: a declared version that no reader supports, or a structure
+ * that the declared version does not admit.
+ */
+export type RegistryDefect = "version" | "structure";
+
 /** Outcome of reading the parsed value of a registry file. */
 export type RegistryReading =
   | { readonly status: "read"; readonly registry: SchemaRegistry }
   /** The value is no registry; `reason` completes a sentence opening on the registry path. */
-  | { readonly status: "malformed"; readonly reason: string };
+  | { readonly status: "malformed"; readonly reason: string; readonly defect: RegistryDefect };
+
+/** Versions of the registry format that this reader supports. */
+export const SUPPORTED_REGISTRY_VERSIONS: readonly number[] = [1, 2];
 
 /** Reads the parsed value of a registry file. */
 export function readSchemaRegistry(value: JsonValue): RegistryReading {
-  const malformed = (reason: string): RegistryReading => ({ status: "malformed", reason });
+  const malformed = (reason: string, defect: RegistryDefect = "structure"): RegistryReading => ({
+    status: "malformed",
+    reason,
+    defect,
+  });
   if (!isJsonObject(value) || !isJsonObject(value["schemas"])) {
     return malformed("has no schemas mapping");
   }
   const declared = value["schema_version"];
   const version = declared === undefined ? 1 : declared;
   if (version !== 1 && version !== 2) {
-    return malformed(`declares the unsupported schema_version \`${JSON.stringify(declared)}\``);
+    return malformed(
+      `declares the unsupported schema_version \`${JSON.stringify(declared)}\``,
+      "version",
+    );
   }
   const schemas = pathMapping(value["schemas"]);
   if (schemas === null) return malformed("contains a non-path value");

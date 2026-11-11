@@ -33,6 +33,32 @@ export class GlobPattern {
   }
 }
 
+/** Defect of a glob pattern, as a diagnostic of the settings reports it. */
+export type GlobDefect =
+  /** The pattern compiles to no regular expression, so it matches nothing; `reason` says why. */
+  | { readonly kind: "malformed"; readonly reason: string }
+  /** A `{` or `[` has no closing delimiter, so the pattern matches that character literally. */
+  | { readonly kind: "unclosed"; readonly delimiter: "{" | "[" };
+
+/** Defect of the glob `source`, or `null` when the pattern compiles with every delimiter closed. */
+export function globDefect(source: string): GlobDefect | null {
+  try {
+    new GlobPattern(source);
+  } catch (error) {
+    return { kind: "malformed", reason: error instanceof Error ? error.message : String(error) };
+  }
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === "\\") index += 1;
+    else if (char === "{" && closingBrace(source, index) < 0) {
+      return { kind: "unclosed", delimiter: "{" };
+    } else if (char === "[" && source.indexOf("]", index + 2) < 0) {
+      return { kind: "unclosed", delimiter: "[" };
+    }
+  }
+  return null;
+}
+
 /** Translates a glob into the source of an equivalent regular expression. */
 function compile(pattern: string): string {
   let out = "";

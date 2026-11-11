@@ -97,6 +97,7 @@ The predefined checkers cover rules beyond the standard keywords of JSON Schema:
 | `compare` | Relational | `left`, `operator`, `right` | The two fields satisfy the comparison, among `<`, `<=`, `=`, `!=`, `>=` and `>` |
 | `required-when` | Conditional | `field`, `when` | The field is filled whenever the condition holds |
 | `forbidden-when` | Conditional | `field`, `when` | The field is unfilled whenever the condition holds |
+| `unresolved-value` | Field | `value` | The field equals an admitted value that the schema declares to record unresolved research work |
 
 The checker `inline-markdown` recognizes a block construct by the start of a line, or by a blank line between two lines of text:
 
@@ -129,8 +130,18 @@ After the shared prefix, a wildcard is admitted in the subject path only, and ea
 Each issue carries four elements:
 
 - the [field path](field-paths.md) of the field concerned;
-- the name of the checker that raised it: a keyword of JSON Schema, a checker named under `check`, or a field kind whose implied rule failed;
+- the name of the checker that raised it: a keyword of JSON Schema, a checker named under `check`, a registered instance checker, or a field kind whose implied rule failed;
 - its severity, `error` or `warning`;
 - its message.
 
-An issue of severity `error` reports either a *missing* field, left unfilled although required, or an *invalid* value, found in a filled field. The form view and the outline display each issue at its field, as the [requirement on visible issues](../requirements.md#^visible-issues) demands, with the marks that the [form view](form-view.md) specifies. The command *Validate instance* runs every rule immediately, custom checkers included, without waiting for the commits to pause. The command then reports the number of missing fields, invalid values and warnings in a notice, and scrolls the form to the first issue displayed.
+An issue raised by a [custom checker](custom-checkers.md) may also carry the classification and the guidance of the tool behind it: the identifier of its rule, its class of result, its repair condition and its documentation target, together with its location and its file as the tool wrote them. The form displays them below the message unchanged, and holds no copy of the rules of the tool. A class of result, such as a contract validation or a method-conformance finding, therefore stays visible beside the mark of the issue, and the form never infers a judgment of the researcher from it.
+
+When a custom checker names the field whose authored value or presence activates an issue, the summary groups that issue under the controlling field. The group crosses the marks for missing fields, invalid values and warnings, because one decision can produce dependants of several kinds. The ordinary mark counts and the issue at each field remain present, so the group changes the route through the report without suppressing an independent defect.
+
+The summary presents the groups of controlling fields before its ordinary mark counts. Inside each group, missing fields precede invalid values, and warnings come last. The remaining issues follow the same order: missing fields, invalid values, then warnings. Their original order is preserved within each mark, so a checker can supply a meaningful order without Ekphrasis interpreting its project-specific rules.
+
+A custom checker may also supply context for its current run. The form displays every context object below the schema binding and above the findings, including when the issue list is empty. The checker owns the meaning of that context: Ekphrasis does not infer a clean result from the absence of issues. For example, Gnomon states that a complete run without an error or warning establishes structural and method conformance only, not truth, warrant or acceptance for the research claims.
+
+The checker `unresolved-value` marks an admitted value without rejecting it. The form presents these marks in a separate box titled *Research state*, after any validation findings. The field and the outline use the unresolved mark, and a summary link reveals the exact field. The schema supplies the value and its meaning: Ekphrasis neither fixes a value such as `pending` nor infers unresolved work from a project-specific vocabulary. Missing fields, invalid values and warnings remain in *Validation*.
+
+An issue of severity `error` reports either a *missing* field, left unfilled although required, or an *invalid* value, found in a filled field. An error of a custom checker located at a field left unfilled is likewise missing. The form view and the outline display each issue at its field, as the [requirement on visible issues](../requirements.md#^visible-issues) demands, with the marks that the [form view](form-view.md) specifies. The command *Validate instance* runs every rule immediately, custom checkers included, without waiting for the commits to pause. The command then reports the number of missing fields, invalid values, warnings and unresolved states in a notice, and scrolls the form to the first mark displayed.

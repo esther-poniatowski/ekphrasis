@@ -1,31 +1,74 @@
 /**
- * Exit criterion of the milestone *Guidance and navigation*: a question record of gnomon, filled
- * only through the form, needs no consultation of the template comments.
+ * Guidance carried from a commented template into a schema-derived form.
  *
  * The form carries the guidance of a template when it displays, at each key of the template, the
  * admitted values that a comment lists, the instructions that a comment gives, and an example of
  * the value that a placeholder shows, as `template-guidance.ts` defines them. Two texts are
- * measured against the question schema of the fixtures:
+ * measured in two independent contexts:
  *
- * - the question fixture, whose comments reproduce those of a gnomon record;
- * - the question template of gnomon, `src/gnomon/data/templates/question.yml`, read from the
- *   corpus named by the environment variable `EKPHRASIS_CORPUS` when it holds that file.
+ * - small synthetic schemas exercise the detection of each guidance class;
+ * - the optional Gnomon corpus test loads Gnomon's generated contract through its version 2
+ *   registry, so Ekphrasis never copies Gnomon's field guidance into its fixtures.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { FileSchemaLoader } from "../../src/infrastructure";
+import { parse } from "yaml";
+import { DEFAULT_SETTINGS, RegistryReader } from "../../src/application";
+import { FileSchemaLoader, YamlDocumentParser } from "../../src/infrastructure";
 import { DirectoryFileSource } from "../support/fixture-vault";
+import { schemaSet } from "../support/schemas";
 import { guidanceGaps, listedValues } from "../support/template-guidance";
-import { CORPUS_VARIABLE, FIXTURES_ROOT } from "../support/yaml-files";
+import { CORPUS_VARIABLE } from "../support/yaml-files";
 
-const SCHEMA = "gnomon/schemas/question.schema.yaml";
-const TEMPLATE = "src/gnomon/data/templates/question.yml";
+const TEMPLATES = "src/gnomon/data/templates";
+const REGISTRY = "specs/schema-registry.yml";
 const corpusRoot = process.env[CORPUS_VARIABLE];
-const templatePath = corpusRoot === undefined ? null : join(corpusRoot, TEMPLATE);
-const hasTemplate = templatePath !== null && existsSync(templatePath);
+const templatesPath = corpusRoot === undefined ? null : join(corpusRoot, TEMPLATES);
+const registryPath = corpusRoot === undefined ? null : join(corpusRoot, REGISTRY);
+const hasGnomonContracts =
+  templatesPath !== null &&
+  registryPath !== null &&
+  existsSync(templatesPath) &&
+  existsSync(registryPath);
 
-const schemas = () => new FileSchemaLoader(new DirectoryFileSource(FIXTURES_ROOT)).load(SCHEMA);
+const GUIDANCE_SCHEMA = schemaSet({
+  "guidance.schema.json": {
+    type: "object",
+    description: "A guided record.",
+    properties: {
+      status: { enum: ["open", "closed"], description: "State of the record." },
+      title: { type: "string", examples: ["A concise title"] },
+      tests: {
+        type: "object",
+        properties: { verdict: { enum: ["pending", "pass"] } },
+      },
+    },
+  },
+});
+
+const DEFECTIVE_SCHEMA = schemaSet({
+  "guidance.schema.json": {
+    type: "object",
+    properties: {
+      status: { enum: ["posed"] },
+      title: { type: "string", examples: ["A concise title"] },
+      type: { const: "question" },
+      virtues: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            check: {
+              type: "object",
+              properties: { evidence: { type: "string" } },
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
 describe("values listed by a comment", () => {
   it("reads each value around the separators, without the explanations in parentheses", () => {
@@ -40,14 +83,20 @@ describe("values listed by a comment", () => {
   });
 });
 
-describe("guidance of the question form", () => {
-  it("carries the guidance of the comments and placeholders of the question fixture", async () => {
-    const text = readFileSync(join(FIXTURES_ROOT, "gnomon/question.yml"), "utf8");
-    // The header of the fixture lists its constructs, so it instructs no author.
-    expect(guidanceGaps(await schemas(), text, { header: false })).toEqual([]);
+describe("guidance of a form", () => {
+  it("carries instructions, admitted values, and examples from a synthetic schema", () => {
+    const text = [
+      "# Fill this record before continuing.",
+      "status: open # open | closed",
+      "title: SHORT TITLE",
+      "tests: # pending | pass",
+      "  verdict: pending",
+      "",
+    ].join("\n");
+    expect(guidanceGaps(GUIDANCE_SCHEMA, text)).toEqual([]);
   });
 
-  it("reports a key outside the schema, an unlisted value, a comment without instructions, and a placeholder without example", async () => {
+  it("reports a key outside the schema, an unlisted value, a comment without instructions, and a placeholder without example", () => {
     const text = [
       "status: posed # posed | withdrawn",
       "title: SHORT NAME",
@@ -57,7 +106,7 @@ describe("guidance of the question form", () => {
       '  - check: { evidence: "EVIDENCE OF THE VERDICT" }',
       "",
     ].join("\n");
-    expect(guidanceGaps(await schemas(), text, { header: false })).toEqual([
+    expect(guidanceGaps(DEFECTIVE_SCHEMA, text, { header: false })).toEqual([
       { path: "status", missing: "admitted values", detail: "withdrawn" },
       { path: "type", missing: "instructions", detail: "the only type" },
       { path: "extra", missing: "field", detail: "no field of the form holds this key" },
@@ -66,13 +115,32 @@ describe("guidance of the question form", () => {
   });
 });
 
-describe.skipIf(!hasTemplate)(`gnomon template named by ${CORPUS_VARIABLE}`, () => {
-  it("carries every comment and placeholder of the question template", async () => {
-    const text = readFileSync(templatePath ?? "", "utf8");
-    const gaps = await schemas().then((set) => guidanceGaps(set, text));
-    expect(
-      gaps,
-      gaps.map((gap) => `${gap.path}: ${gap.missing} (${gap.detail})`).join("\n"),
-    ).toEqual([]);
+describe.skipIf(!hasGnomonContracts)(`gnomon contracts named by ${CORPUS_VARIABLE}`, () => {
+  it("carries every instruction, admitted value, and example of every editable template", async () => {
+    const root = corpusRoot ?? "";
+    const files = new DirectoryFileSource(root);
+    const settings = () => ({ ...DEFAULT_SETTINGS, schemaRegistry: REGISTRY });
+    const registry = new RegistryReader(new YamlDocumentParser(), files, settings);
+    const state = await registry.read();
+    expect(state.status).toBe("read");
+    if (state.status !== "read" || templatesPath === null) return;
+    const failures: string[] = [];
+    for (const name of readdirSync(templatesPath).filter((entry) => entry.endsWith(".yml"))) {
+      const text = readFileSync(join(templatesPath, name), "utf8");
+      const identifier = (parse(text) as { _schema?: unknown })._schema;
+      if (typeof identifier !== "string") {
+        failures.push(`${name}: template names no contract`);
+        continue;
+      }
+      const schemaPath = state.registry.schemas.get(identifier);
+      if (schemaPath === undefined) {
+        failures.push(`${name}: registry does not resolve ${identifier}`);
+        continue;
+      }
+      const schemas = await new FileSchemaLoader(files, registry).load(schemaPath);
+      const gaps = guidanceGaps(schemas, text).filter((gap) => gap.path !== "_schema");
+      failures.push(...gaps.map((gap) => `${name}:${gap.path}: ${gap.missing} (${gap.detail})`));
+    }
+    expect(failures, failures.join("\n")).toEqual([]);
   });
 });

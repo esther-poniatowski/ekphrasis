@@ -23,16 +23,49 @@ export const SCALAR_KINDS = [
 export const SINGLE_LINE_KINDS = ["label", "text", "markdown-line", "latex"] as const;
 
 /** Collection kinds whose value is a mapping. */
-export const MAPPING_KINDS = ["group", "keyed-table", "keyed-records", "alternatives"] as const;
+export const MAPPING_KINDS = [
+  "group",
+  "graph",
+  "keyed-table",
+  "keyed-records",
+  "alternatives",
+] as const;
 
 /** Collection kinds whose value is a sequence. */
-export const SEQUENCE_KINDS = ["choices", "list", "table", "records"] as const;
+export const SEQUENCE_KINDS = ["choices", "list", "table", "tree", "records"] as const;
 
 export type ScalarKind = (typeof SCALAR_KINDS)[number];
 export type MappingKind = (typeof MAPPING_KINDS)[number];
 export type SequenceKind = (typeof SEQUENCE_KINDS)[number];
 export type CollectionKind = MappingKind | SequenceKind;
 export type FieldKind = ScalarKind | CollectionKind;
+
+/** Presentation role of a scalar property in one item of a field of kind `tree`. */
+export const TREE_ROLES = ["depth", "label", "identifier", "detail"] as const;
+export type TreeRole = (typeof TREE_ROLES)[number];
+
+/** Presentation role of a field inside a mapping of kind `graph`. */
+export const GRAPH_ROLES = [
+  "nodes",
+  "edges",
+  "node-id",
+  "node-category",
+  "node-category-label",
+  "node-shape",
+  "node-marker",
+  "node-kind",
+  "node-family",
+  "node-label",
+  "node-status-axis",
+  "node-status",
+  "node-root",
+  "node-root-label",
+  "edge-source",
+  "edge-target",
+  "edge-kind",
+  "edge-label",
+] as const;
+export type GraphRole = (typeof GRAPH_ROLES)[number];
 
 const includes = <T extends string>(list: readonly T[], name: string): name is T =>
   (list as readonly string[]).includes(name);
@@ -44,6 +77,8 @@ export const isSequenceKind = (name: string): name is SequenceKind =>
   includes(SEQUENCE_KINDS, name);
 export const isFieldKind = (name: string): name is FieldKind =>
   isScalarKind(name) || isMappingKind(name) || isSequenceKind(name);
+export const isTreeRole = (name: string): name is TreeRole => includes(TREE_ROLES, name);
+export const isGraphRole = (name: string): name is GraphRole => includes(GRAPH_ROLES, name);
 
 /** One admitted value of a field of kind `choice`, with its annotations when the schema has some. */
 export interface ChoiceOption {

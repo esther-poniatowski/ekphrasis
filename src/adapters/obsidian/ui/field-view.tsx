@@ -35,6 +35,7 @@ export function FieldView({
     );
   }
   switch (field.kind) {
+    case "graph":
     case "group":
     case "keyed-table":
     case "keyed-records":
@@ -45,6 +46,7 @@ export function FieldView({
     case "choices":
     case "list":
     case "table":
+    case "tree":
     case "records": {
       const Control = registry.sequence(field.kind);
       return <Control field={field} readOnly={locked} actions={actions} />;

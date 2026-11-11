@@ -7,14 +7,26 @@
  */
 import type { ScalarValue, YamlNode, YamlPath } from "../model";
 import type { JsonValue } from "../schema/json";
-import type { ChoiceOption, MappingKind, ScalarKind, SequenceKind } from "./kinds";
+import type {
+  ChoiceOption,
+  GraphRole,
+  MappingKind,
+  ScalarKind,
+  SequenceKind,
+  TreeRole,
+} from "./kinds";
 
 /**
- * Reason why a field displays a value that a commit at the field must not change: the value is
- * reached through an alias, or merged from another mapping by the key `<<`. In both cases the
- * text of the value lies at its anchor, outside the range of the field.
+ * Reason why a field displays a value that a commit at the field must not change:
+ *
+ * - `alias`, `merge`: the value is reached through an alias, or merged from another mapping by
+ *   the key `<<`. In both cases the text of the value lies at its anchor, outside the range of
+ *   the field.
+ * - `read-only`: the schema of the field, or of one of its ancestors, holds `readOnly: true`. No
+ *   commit changes the value, nor adds, removes or moves an item or an entry below it. This
+ *   reason takes precedence over the two others.
  */
-export type FieldLock = "alias" | "merge";
+export type FieldLock = "alias" | "merge" | "read-only";
 
 export interface FieldBase {
   /** Printed field path, unique in the model, which places the issues and the commits. */
@@ -40,6 +52,10 @@ export interface FieldBase {
   readonly description: string | null;
   readonly examples: readonly JsonValue[];
   readonly required: boolean;
+  /** Presentation role of this field inside an item of a tree; `null` outside that contract. */
+  readonly treeRole: TreeRole | null;
+  /** Presentation role of this field inside a graph; `null` outside that contract. */
+  readonly graphRole: GraphRole | null;
   /** Node of the field, aliases resolved, or `null` when the instance holds no such key. */
   readonly node: YamlNode | null;
   readonly lock: FieldLock | null;

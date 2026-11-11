@@ -13,6 +13,7 @@ import type { ComponentChildren, JSX } from "preact";
 import type { FormReady, SessionSnapshot } from "../../../application";
 import {
   ConstraintIndex,
+  fieldChain,
   IssueIndex,
   type Commit,
   type SchemaBinding,
@@ -21,6 +22,7 @@ import {
 } from "../../../domain";
 import type { YamlParseError } from "../../../errors";
 import type { ControlRegistry } from "./control-registry";
+import { CheckerContexts } from "./checker-context";
 import { FieldHelp, guidanceOf, HelpButton, hasGuidance } from "./field-help";
 import { FieldView } from "./field-view";
 import type { FoldState } from "./fold-state";
@@ -29,6 +31,7 @@ import type { HelpState } from "./help-state";
 import type { IconPainter } from "./icon";
 import { InlineText } from "./inline-text";
 import { IssueSummary } from "./issue-summary";
+import type { OptionalFieldState } from "./optional-field-state";
 import type { RenderScheduler } from "./rendering/render-queue";
 import type { ValueRenderer } from "./rendering/value-renderer";
 import { FieldList } from "./sections/field-list";
@@ -47,6 +50,8 @@ export interface FormPanelProps {
   readonly folds: FoldState;
   /** Shown instructions of the fields, kept by the view across displays. */
   readonly help: HelpState;
+  /** Absent optional fields selected as drafts, kept across displays of the same file. */
+  readonly optionalFields: OptionalFieldState;
   readonly renderer: ValueRenderer;
   readonly scheduler: RenderScheduler;
   /** Painter of the icons of the field kinds. */
@@ -143,6 +148,7 @@ function EditableForm({
   commitDelay,
   folds,
   help,
+  optionalFields,
   renderer,
   scheduler,
   paintIcon,
@@ -153,6 +159,11 @@ function EditableForm({
 }): JSX.Element {
   const issues = IssueIndex.of(form.model, form.report.issues);
   const constraints = new ConstraintIndex(form.report.constraints);
+  const revealField = (path: YamlPath): void => {
+    const chain = fieldChain(form.model.root, path);
+    if (chain !== null) optionalFields.show(chain.slice(1).map((field) => field.uid));
+    reveal(path);
+  };
   return (
     <FormContext.Provider
       value={{
@@ -167,10 +178,11 @@ function EditableForm({
         constraints,
         folds,
         help,
+        optionalFields,
         renderer,
         scheduler,
         paintIcon,
-        reveal,
+        reveal: revealField,
       }}
     >
       <FormRoot form={form} issues={issues} notice={notice} />
@@ -208,6 +220,7 @@ function FormRoot({
             ? ", resolved from the logical contract."
             : `, named by ${BINDING_SOURCES[binding.source]}.`}
         </div>
+        <CheckerContexts contexts={form.report.contexts} />
       </div>
       {notice}
       {schemaIssues.length > 0 && (
@@ -230,7 +243,7 @@ function FormRoot({
       <IssueSummary model={model} issues={issues} />
       {root.mismatch === null &&
       (root.kind === "group" || root.kind === "keyed-table" || root.kind === "keyed-records") ? (
-        <FieldList field={root} />
+        <FieldList field={root} readOnly={root.lock !== null} />
       ) : (
         <FieldView field={root} />
       )}

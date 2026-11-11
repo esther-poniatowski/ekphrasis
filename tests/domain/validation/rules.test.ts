@@ -94,6 +94,25 @@ describe("rules implied by field kinds", () => {
   });
 });
 
+describe("checkers of research state", () => {
+  it("marks a declared value as unresolved without rejecting it", () => {
+    const schema = field(
+      { enum: ["pending", "pass"] },
+      { check: "unresolved-value", value: "pending" },
+    );
+    expect(check(schema, "value: pending\n").issues).toEqual([
+      expect.objectContaining({
+        id: "value",
+        checker: "unresolved-value",
+        missing: false,
+        unresolved: true,
+        message: "This field records an epistemically unresolved state.",
+      }),
+    ]);
+    expect(check(schema, "value: pass\n").issues).toEqual([]);
+  });
+});
+
 describe("checkers of sequences", () => {
   const items = { type: "array", items: { type: "object" } };
 

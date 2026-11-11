@@ -10,7 +10,7 @@ status: accepted
 
 > [!QUESTION] Goal: how does ekphrasis find the schema file designated by a `$ref` written as an absolute URI?
 
-A schema can compose a schema published by another project, such as the base schema of a tool, by a `$ref` to its absolute `$id`, for instance `https://example.org/tool/note@1/base.schema.yaml`. The file of that schema lies in the vault, in a folder filled by a provisioning tool such as `.schema-resources/`, but its URI names no vault path. Until this decision, the loader skipped every absolute `$ref`, which resolved only when another reference had already loaded a file declaring that `$id`.
+A schema can compose a schema published by another project, such as the base schema of a tool, by a `$ref` to its absolute `$id`, for instance `https://example.org/tool/note@1/base.schema.yaml`. The file of that schema lies in the vault, in the configured schema resource directory filled by a provisioning tool, but its URI names no vault path. The directory defaults to `.schema-resources/` and can differ between projects. Until this decision, the loader skipped every absolute `$ref`, which resolved only when another reference had already loaded a file declaring that `$id`.
 
 ## Decision
 

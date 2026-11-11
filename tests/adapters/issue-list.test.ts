@@ -4,10 +4,13 @@ import { issue } from "../../src/domain";
 
 describe("display of issues", () => {
   it.each([
-    [{ missing: 0, invalid: 0, warning: 0 }, "no issue"],
-    [{ missing: 1, invalid: 0, warning: 0 }, "1 missing field"],
-    [{ missing: 2, invalid: 1, warning: 0 }, "2 missing fields, 1 invalid value"],
-    [{ missing: 1, invalid: 2, warning: 3 }, "1 missing field, 2 invalid values, 3 warnings"],
+    [{ missing: 0, invalid: 0, warning: 0, unresolved: 0 }, "no issue"],
+    [{ missing: 1, invalid: 0, warning: 0, unresolved: 0 }, "1 missing field"],
+    [{ missing: 2, invalid: 1, warning: 0, unresolved: 0 }, "2 missing fields, 1 invalid value"],
+    [
+      { missing: 1, invalid: 2, warning: 3, unresolved: 4 },
+      "1 missing field, 2 invalid values, 3 warnings, 4 unresolved states",
+    ],
   ])("counts %j as %s", (counts, phrase) => {
     expect(countPhrase(counts)).toBe(phrase);
   });
@@ -16,9 +19,11 @@ describe("display of issues", () => {
     const missing = issue(["a"], "required", "Missing.", { missing: true });
     const invalid = issue(["a"], "enum", "Invalid.");
     const warning = issue(["a"], "word-count", "Long.", { severity: "warning" });
-    expect(fieldMark([warning, missing, invalid])).toBe("invalid");
-    expect(fieldMark([warning, missing])).toBe("missing");
-    expect(fieldMark([warning])).toBe("warning");
+    const unresolved = issue(["a"], "unresolved-value", "Pending.", { unresolved: true });
+    expect(fieldMark([unresolved, warning, missing, invalid])).toBe("invalid");
+    expect(fieldMark([unresolved, warning, missing])).toBe("missing");
+    expect(fieldMark([unresolved, warning])).toBe("warning");
+    expect(fieldMark([unresolved])).toBe("unresolved");
     expect(fieldMark([])).toBeNull();
   });
 });

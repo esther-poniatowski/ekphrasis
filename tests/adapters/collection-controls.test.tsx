@@ -121,6 +121,9 @@ describe("keyed records", () => {
     const key = element<HTMLInputElement>(terms, ".ekphrasis-key-adder input");
     fireEvent.input(key, { target: { value: "a-term" } });
     fireEvent.click(element(terms, ".ekphrasis-key-adder button"));
+    fireEvent.change(element(container, 'select[aria-label="Add an optional field to a-term"]'), {
+      target: { value: "terms.a-term.label" },
+    });
     type(element<HTMLTextAreaElement>(container, '[data-path="terms.a-term.label"] textarea'), "A");
     expect(session.text).toContain("terms:\n  a-term:\n    label: A\n  b-term:\n");
   });

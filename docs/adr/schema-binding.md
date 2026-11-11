@@ -42,4 +42,4 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 - Ekphrasis omits the reserved root property from the content form.
 - The modeline and path rules remain available to files without `_schema`.
 - The command *Create instance* writes a modeline only when no path rule binds the new path.
-- A registry may map to a schema in `.schema-resources/`. Obsidian omits this hidden subtree from its indexed files. Therefore, the vault adapter must use its low-level reader for this subtree alone. The fallback admits no other hidden path. ^hidden-schema-resources
+- A registry may map to a schema in the directory selected by the setting *Schema resource directory*, whose default is `.schema-resources/`. Obsidian may omit this subtree from its indexed files. Therefore, the vault adapter uses its low-level reader for this configured subtree alone. The fallback admits no path outside it. ^hidden-schema-resources

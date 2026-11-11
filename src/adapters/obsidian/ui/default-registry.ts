@@ -8,9 +8,11 @@ import { ChoicesControl } from "./controls/choices-control";
 import { RenderedControl } from "./controls/rendered-control";
 import { NumberControl, TextControl } from "./controls/text-control";
 import { GroupSection } from "./sections/group-section";
+import { GraphSection } from "./sections/graph-section";
 import { KeyedRecordsSection } from "./sections/keyed-records-section";
 import { SequenceSection } from "./sections/sequence-section";
 import { KeyedTableSection, TableSection } from "./sections/table-section";
+import { TreeSection } from "./sections/tree-section";
 
 export function createDefaultRegistry(): ControlRegistry {
   return new ControlRegistry({
@@ -24,9 +26,11 @@ export function createDefaultRegistry(): ControlRegistry {
     .registerScalar(["boolean"], BooleanControl)
     .registerScalar(["choice"], ChoiceControl)
     .registerMapping(["group", "alternatives"], GroupSection)
+    .registerMapping(["graph"], GraphSection)
     .registerMapping(["keyed-table"], KeyedTableSection)
     .registerMapping(["keyed-records"], KeyedRecordsSection)
     .registerSequence(["list", "records"], SequenceSection)
     .registerSequence(["table"], TableSection)
+    .registerSequence(["tree"], TreeSection)
     .registerSequence(["choices"], ChoicesControl);
 }

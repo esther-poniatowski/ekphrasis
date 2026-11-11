@@ -50,6 +50,8 @@ resources:
   'https://example.org/tool/note@1/base.schema.yaml': '.schema-resources/tool/note/base.schema.yaml'
 ```
 
+The setting *Schema resource directory* names the vault directory for generated schemas that Obsidian may omit from its indexed file model. Ekphrasis admits low-level file reads only below this directory. Its default, `.schema-resources`, preserves existing vaults; a project can select another vault directory.
+
 A registry without the key `schema_version` reads as version 1. A registry declaring another version, declaring `resources` under version 1, or mapping a key of `resources` other than an absolute URI is invalid.
 
 A record declares the logical identifier rather than the local path:

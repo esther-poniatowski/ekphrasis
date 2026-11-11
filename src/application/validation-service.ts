@@ -24,6 +24,7 @@ import {
   issuesFromValidatorErrors,
   MISSING_MESSAGE,
   NO_HOST,
+  PREDEFINED_CHECKERS,
   pruneUnfilled,
   SchemaView,
   undeclaredRequirements,
@@ -39,9 +40,12 @@ import {
 } from "../domain";
 import { SchemaCompileError } from "../errors";
 import type { InstanceValidator, SchemaValidator } from "./protocols";
+import type { CheckerContext } from "./protocols";
 
 export interface ValidationReport {
   readonly issues: readonly Issue[];
+  /** Context reported by external checkers beside their issues. */
+  readonly contexts: readonly CheckerContext[];
   /**
    * Constraints of the conditional rules whose condition holds under the current values, so
    * the form can mark a field required or disable it before any issue arises.
@@ -63,6 +67,7 @@ export class ValidationService {
   constructor(
     private readonly validator: SchemaValidator,
     private readonly environment: CheckerEnvironment = NO_HOST,
+    private readonly externalCheckerNames: () => ReadonlySet<string> = () => new Set(),
   ) {}
 
   /** Report of the instance `tree`, whose form model under `schemas` is `model`. */
@@ -73,6 +78,7 @@ export class ValidationService {
     if (rootUnfilled && !("children" in model.root)) {
       return {
         issues: [issue([], "required", MISSING_MESSAGE, { missing: true })],
+        contexts: [],
         constraints: [],
         schemaIssues: defects,
       };
@@ -89,9 +95,16 @@ export class ValidationService {
       standard = issuesFromValidatorErrors(validator.validate(instance), instance);
     }
 
-    const rules = checkRules(model.root, data, this.environment);
+    const rules = checkRules(
+      model.root,
+      data,
+      this.environment,
+      PREDEFINED_CHECKERS,
+      this.externalCheckerNames(),
+    );
     return {
       issues: [...standard, ...withoutRepeatedMissing(standard, rules.issues)],
+      contexts: [],
       constraints: rules.constraints,
       schemaIssues: [...schemaIssues, ...rules.problems],
     };

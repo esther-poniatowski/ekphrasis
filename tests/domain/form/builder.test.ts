@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildFormModel, fieldChain, type FormModel, type JsonValue } from "../../../src/domain";
+import {
+  buildFormModel,
+  fieldChain,
+  type Field,
+  type FormModel,
+  type JsonValue,
+} from "../../../src/domain";
 import { YamlDocumentParser } from "../../../src/infrastructure";
 import { fieldAt } from "../../support/form-fields";
 import { schemaSet } from "../../support/schemas";
@@ -146,6 +152,71 @@ describe("form model", () => {
     expect(fieldAt(model.root, "case.unit")).toMatchObject({ value: "radian", lock: "merge" });
   });
 
+  it("locks every field below a schema declaring `readOnly`, before an alias or a merge", () => {
+    const text = [
+      "defaults: &defaults",
+      "  unit: radian",
+      "rows:",
+      "  - name: a",
+      "    tags: [x]",
+      "case:",
+      "  <<: *defaults",
+      "  copy: *defaults",
+      "",
+    ].join("\n");
+    const row = {
+      type: "object",
+      properties: { name: { type: "string" }, tags: { type: "array", items: { type: "string" } } },
+    };
+    const model = build(
+      {
+        type: "object",
+        readOnly: true,
+        properties: {
+          defaults: { type: "object", properties: { unit: { type: "string" } } },
+          rows: { type: "array", "x-kind": "table", items: row },
+          case: {
+            type: "object",
+            properties: { unit: { type: "string" }, copy: { type: "object" } },
+          },
+          absent: { type: "string" },
+        },
+      },
+      text,
+    );
+    const locks = (field: Field): (string | null)[] => [
+      field.lock,
+      ...("children" in field ? field.children.flatMap(locks) : []),
+      ...("items" in field ? [...field.items, ...(field.next ? [field.next] : [])] : []).flatMap(
+        locks,
+      ),
+    ];
+    expect(new Set(locks(model.root))).toEqual(new Set(["read-only"]));
+    expect(fieldAt(model.root, "case.unit").lock).toBe("read-only");
+    expect(fieldAt(model.root, "case.copy").lock).toBe("read-only");
+    expect(fieldAt(model.root, "rows[0].tags[0]").lock).toBe("read-only");
+  });
+
+  it("reads `readOnly` from any layer of a composition, and locks only the subtree declaring it", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          note: { type: "string" },
+          derived: {
+            allOf: [{ readOnly: true }, { readOnly: false }],
+            type: "object",
+            properties: { value: { type: "string" } },
+          },
+        },
+      },
+      "note: a\nderived:\n  value: b\n",
+    );
+    expect(fieldAt(model.root, "note").lock).toBeNull();
+    expect(fieldAt(model.root, "derived").lock).toBe("read-only");
+    expect(fieldAt(model.root, "derived.value").lock).toBe("read-only");
+  });
+
   it("displays a value of the wrong shape as text", () => {
     const model = build(
       {
@@ -232,6 +303,35 @@ describe("form model", () => {
     expect(model.schemaIssues).toEqual([
       { path: "a", message: "The keyword `x-kind` names no field kind: `formula`." },
     ]);
+  });
+
+  it("carries valid tree roles and reports an unknown role", () => {
+    const model = build(
+      {
+        type: "object",
+        properties: {
+          nodes: {
+            type: "array",
+            "x-kind": "tree",
+            items: {
+              type: "object",
+              properties: {
+                title: { type: "string", "x-tree-role": "label" },
+                depth: { type: "integer", "x-tree-role": "depth" },
+                extra: { type: "string", "x-tree-role": "unknown" },
+              },
+            },
+          },
+        },
+      },
+      "nodes:\n  - title: Root\n    depth: 0\n    extra: x\n",
+    );
+    expect(fieldAt(model.root, "nodes[0].title")).toMatchObject({ treeRole: "label" });
+    expect(fieldAt(model.root, "nodes[0].depth")).toMatchObject({ treeRole: "depth" });
+    expect(model.schemaIssues).toContainEqual({
+      path: "nodes[0].extra",
+      message: "The keyword `x-tree-role` names no tree role: `unknown`.",
+    });
   });
 
   it("aligns a formula on the left by x-align, and centres it otherwise", () => {

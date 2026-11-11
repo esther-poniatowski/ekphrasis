@@ -15,6 +15,7 @@ import {
 import { SchemaError, YamlParseError } from "../errors";
 import type { DocumentParser, FileSource, SchemaLoader } from "./protocols";
 import { BindingService } from "./binding-service";
+import type { CustomCheckerService } from "./custom-checker-service";
 import type { EkphrasisSettings } from "./settings";
 import type { ValidationReport, ValidationService } from "./validation-service";
 
@@ -71,6 +72,7 @@ export class FormService {
     private readonly validation: ValidationService,
     settings: () => EkphrasisSettings,
     files: FileSource = { read: () => Promise.resolve(null) },
+    private readonly customCheckers: CustomCheckerService | null = null,
   ) {
     this.bindings = new BindingService(parser, files, settings);
   }
@@ -114,7 +116,16 @@ export class FormService {
         );
       }
       const model = buildFormModel(schemas, tree, text, identities);
-      const report = this.validation.validate(schemas, model, tree);
+      const builtIn = this.validation.validate(schemas, model, tree);
+      const custom =
+        this.customCheckers === null
+          ? { issues: [], contexts: [] }
+          : await this.customCheckers.validateReport(path, model, tree, binding.reference);
+      const report = {
+        ...builtIn,
+        issues: [...builtIn.issues, ...custom.issues],
+        contexts: custom.contexts,
+      };
       const schemaPaths = [
         ...new Set([
           ...(binding.registryPath === undefined ? [] : [binding.registryPath]),

@@ -38,6 +38,9 @@ const RUNTIME_PACKAGES = [
   "@lezer/lr",
 ];
 
+/** Node built-ins in both admitted import forms (`child_process` and `node:child_process`). */
+const NODE_BUILTINS = [...builtinModules, ...builtinModules.map((name) => `node:${name}`)];
+
 /** Build targets: each one is a plugin folder holding its own `manifest.json`. */
 const TARGETS = {
   plugin: { entryPoints: ["src/main.ts"], outfile: "main.js" },
@@ -54,9 +57,13 @@ if (!target) {
 const context = await esbuild.context({
   ...target,
   bundle: true,
-  external: [...RUNTIME_PACKAGES, ...builtinModules],
+  external: [...RUNTIME_PACKAGES, ...NODE_BUILTINS],
   format: "cjs",
   target: "es2020",
+  // Electron exposes Node built-ins through CommonJS. Lower dynamic imports so the lazy desktop
+  // paths call `require` only when used; leaving them as `import("node:…")` asks the renderer to
+  // fetch a node: URL and fails. Their laziness keeps the same bundle loadable on mobile.
+  supported: { "dynamic-import": false },
   logLevel: "info",
   sourcemap: production ? false : "inline",
   minify: production,

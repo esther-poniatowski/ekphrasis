@@ -49,10 +49,10 @@ const TEXT = [
 
 afterEach(cleanup);
 
-async function formOf(text = TEXT): Promise<FormReady> {
+async function formOf(text = TEXT, schema = SCHEMA): Promise<FormReady> {
   const forms = new FormService(
     new YamlDocumentParser(),
-    new FileSchemaLoader(new MemoryFileSource({ "s.yaml": SCHEMA })),
+    new FileSchemaLoader(new MemoryFileSource({ "s.yaml": schema })),
     createValidation(),
     () => ({ ...DEFAULT_SETTINGS, pathRules: [{ pattern: "*.yml", schema: "s.yaml" }] }),
   );
@@ -61,11 +61,11 @@ async function formOf(text = TEXT): Promise<FormReady> {
   return state;
 }
 
-async function renderOutline(focusedId: string | null = null) {
+async function renderOutline(focusedId: string | null = null, text = TEXT, schema = SCHEMA) {
   const reveals: [YamlPath, boolean][] = [];
   const { container } = render(
     <OutlinePanel
-      form={await formOf()}
+      form={await formOf(text, schema)}
       focusedId={focusedId}
       onReveal={(path, help) => reveals.push([path, help])}
       paintIcon={NO_ICONS}
@@ -108,6 +108,21 @@ describe("outline panel", () => {
     expect(entry("status").dataset["issue"]).toBe("missing");
     expect(entry("subject.count").dataset["issue"]).toBe("invalid");
     expect(entry("subject").querySelector(".ekphrasis-outline-count")?.textContent).toBe("1");
+  });
+
+  it("labels a schema-declared unresolved value as research state", async () => {
+    const schema = [
+      "type: object",
+      "properties:",
+      "  verdict:",
+      "    enum: [pending, pass]",
+      "    x-rules:",
+      "      - {check: unresolved-value, value: pending}",
+    ].join("\n");
+    const { container } = await renderOutline(null, "verdict: pending\n", schema);
+    const mark = element(container, 'li[data-path="verdict"] .ekphrasis-outline-mark');
+    expect(mark.classList).toContain("mod-unresolved");
+    expect(mark.getAttribute("aria-label")).toBe("unresolved research state");
   });
 
   it("omits the items of a list of scalars, so its entry folds nothing", async () => {

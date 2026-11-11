@@ -1,15 +1,21 @@
 /**
- * Settings tab: the commit delay of the form, and the path rules that bind instances without a
- * modeline to their schemas.
+ * Settings tab: form behavior, schema binding, and the registered Python checkers.
  */
 import { PluginSettingTab, Setting, type App, type Plugin, type TextComponent } from "obsidian";
-import { COMMIT_DELAY_LIMITS, type EkphrasisSettings } from "../../application";
-import type { PathRule } from "../../domain";
+import {
+  COMMIT_DELAY_LIMITS,
+  CUSTOM_CHECKER_TIMEOUT_LIMITS,
+  type CustomCheckerRegistration,
+  type EkphrasisSettings,
+} from "../../application";
+import type { JsonValue, PathRule } from "../../domain";
 
 /** Owner of the settings, which stores them and applies them to the open views. */
 export interface SettingsHost {
   readonly settings: EkphrasisSettings;
   updateSettings(settings: EkphrasisSettings): Promise<void>;
+  /** Opens the report of the setup diagnostic, which checks the settings below and changes none. */
+  diagnoseSetup(): void;
 }
 
 export class EkphrasisSettingTab extends PluginSettingTab {
@@ -24,6 +30,15 @@ export class EkphrasisSettingTab extends PluginSettingTab {
   override display(): void {
     const { containerEl } = this;
     containerEl.empty();
+    new Setting(containerEl)
+      .setName("Setup diagnostic")
+      .setDesc(
+        "Checks the schema registry, the schemas, the opened record and the Python checkers, " +
+          "and states what to repair. The diagnostic changes no file and no setting.",
+      )
+      .addButton((button) =>
+        button.setButtonText("Diagnose setup").onClick(() => this.host.diagnoseSetup()),
+      );
     new Setting(containerEl)
       .setName("Commit delay")
       .setDesc(
@@ -54,6 +69,20 @@ export class EkphrasisSettingTab extends PluginSettingTab {
           ),
       );
     new Setting(containerEl)
+      .setName("Schema resource directory")
+      .setDesc(
+        "Vault directory containing generated schemas that Obsidian may omit from its file " +
+          "index. Ekphrasis permits low-level reads only inside this directory.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder(".schema-resources")
+          .setValue(this.host.settings.schemaResourceRoot)
+          .onChange((schemaResourceRoot) =>
+            this.host.updateSettings({ ...this.host.settings, schemaResourceRoot }),
+          ),
+      );
+    new Setting(containerEl)
       .setName("Path rules")
       .setDesc(
         "Each rule binds the files matched by a glob pattern, such as records/**/*.yml, to a " +
@@ -65,6 +94,84 @@ export class EkphrasisSettingTab extends PluginSettingTab {
     new Setting(containerEl).addButton((button) =>
       button.setButtonText("Add a path rule").onClick(async () => {
         await this.setRules([...this.rules, { pattern: "", schema: "" }]);
+        this.display();
+      }),
+    );
+    new Setting(containerEl)
+      .setName("Python integration")
+      .setDesc(
+        "Interpreter and commands supplied by the project. Python integration is available in " +
+          "the desktop app only.",
+      )
+      .setHeading();
+    new Setting(containerEl)
+      .setName("Python interpreter")
+      .setDesc(
+        "Absolute path of the Python interpreter for the project environment. Leave empty to " +
+          "keep Python checkers and generated-view commands disabled.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("/absolute/path/to/bin/python")
+          .setValue(this.host.settings.pythonInterpreter)
+          .onChange((pythonInterpreter) =>
+            this.host.updateSettings({ ...this.host.settings, pythonInterpreter }),
+          ),
+      );
+    new Setting(containerEl)
+      .setName("Command timeout")
+      .setDesc(
+        "Maximum duration of one Python checker call or generated-view command, in milliseconds. " +
+          "A timed-out operation stops its process.",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(
+            CUSTOM_CHECKER_TIMEOUT_LIMITS.min,
+            CUSTOM_CHECKER_TIMEOUT_LIMITS.max,
+            CUSTOM_CHECKER_TIMEOUT_LIMITS.step,
+          )
+          .setValue(this.host.settings.customCheckerTimeout)
+          .setDynamicTooltip()
+          .onChange((customCheckerTimeout) =>
+            this.host.updateSettings({ ...this.host.settings, customCheckerTimeout }),
+          ),
+      );
+    new Setting(containerEl)
+      .setName("Primary-view command")
+      .setDesc(
+        "JSON list of arguments passed to the Python interpreter. {vault} names the vault root, " +
+          "and {target} names the completion target entered by the researcher. The producer must " +
+          "return one JSON object with the generated YAML path.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder(
+            '["-m", "tool", "views", "{vault}", "--target", "{target}", "--result", "json"]',
+          )
+          .setValue(JSON.stringify(this.host.settings.primaryViewCommand))
+          .onChange((value) => {
+            const command = commandOfText(value);
+            text.inputEl.toggleClass("mod-invalid", command === null);
+            if (command !== null) {
+              return this.host.updateSettings({
+                ...this.host.settings,
+                primaryViewCommand: command,
+              });
+            }
+          }),
+      );
+    new Setting(containerEl)
+      .setName("Custom checkers")
+      .setDesc(
+        "Registered Python functions that schemas may invoke by checker name. Only complete " +
+          "registrations are supplied to the Python process.",
+      )
+      .setHeading();
+    this.checkers.forEach((checker, index) => this.checkerSetting(checker, index));
+    new Setting(containerEl).addButton((button) =>
+      button.setButtonText("Add a custom checker").onClick(async () => {
+        await this.setCheckers([...this.checkers, { name: "", module: "", function: "" }]);
         this.display();
       }),
     );
@@ -124,6 +231,121 @@ export class EkphrasisSettingTab extends PluginSettingTab {
 
   private async setRules(pathRules: readonly PathRule[]): Promise<void> {
     await this.host.updateSettings({ ...this.host.settings, pathRules });
+  }
+
+  private get checkers(): readonly CustomCheckerRegistration[] {
+    return this.host.settings.customCheckers;
+  }
+
+  private checkerSetting(checker: CustomCheckerRegistration, index: number): void {
+    new Setting(this.containerEl)
+      .setName(`Checker ${index + 1}`)
+      .addText((text) =>
+        labelInput(text, "Checker name")
+          .setPlaceholder("declared-symbols")
+          .setValue(checker.name)
+          .onChange((name) => this.replaceChecker(index, { ...this.checkerAt(index), name })),
+      )
+      .addText((text) =>
+        labelInput(text, "Module or file")
+          .setPlaceholder("project.checks")
+          .setValue(checker.module)
+          .onChange((module) => this.replaceChecker(index, { ...this.checkerAt(index), module })),
+      )
+      .addText((text) =>
+        labelInput(text, "Function")
+          .setPlaceholder("declared_symbols")
+          .setValue(checker.function)
+          .onChange((func) =>
+            this.replaceChecker(index, { ...this.checkerAt(index), function: func }),
+          ),
+      )
+      .addExtraButton((button) =>
+        button
+          .setIcon("trash")
+          .setTooltip("Remove this checker")
+          .onClick(async () => {
+            await this.setCheckers(this.checkers.filter((_, position) => position !== index));
+            this.display();
+          }),
+      );
+    new Setting(this.containerEl)
+      .setDesc(
+        "To check every instance of some schemas without a rule declared in them, list the " +
+          "patterns of their identifiers, and give the arguments of each call as a JSON object.",
+      )
+      .addText((text) =>
+        labelInput(text, "Instance schemas")
+          .setPlaceholder("project:*, other:record@2")
+          .setValue((checker.schemas ?? []).join(", "))
+          .onChange((value) => {
+            const schemas = value
+              .split(",")
+              .map((pattern) => pattern.trim())
+              .filter((pattern) => pattern !== "");
+            return this.replaceChecker(index, { ...this.checkerAt(index), schemas });
+          }),
+      )
+      .addText((text) =>
+        labelInput(text, "Arguments")
+          .setPlaceholder('{"command": ["-m", "tool", "check", "{folder}"]}')
+          .setValue(checker.arguments === undefined ? "" : JSON.stringify(checker.arguments))
+          .onChange((value) => {
+            const parsed = argumentsOfText(value);
+            text.inputEl.toggleClass("mod-invalid", parsed === null);
+            if (parsed === null) return;
+            const { name, module, function: func, schemas } = this.checkerAt(index);
+            return this.replaceChecker(index, {
+              name,
+              module,
+              function: func,
+              ...(schemas === undefined ? {} : { schemas }),
+              ...(parsed === undefined ? {} : { arguments: parsed }),
+            });
+          }),
+      );
+  }
+
+  private checkerAt(index: number): CustomCheckerRegistration {
+    return this.checkers[index] ?? { name: "", module: "", function: "" };
+  }
+
+  private async replaceChecker(index: number, checker: CustomCheckerRegistration): Promise<void> {
+    await this.setCheckers(
+      this.checkers.map((current, position) => (position === index ? checker : current)),
+    );
+  }
+
+  private async setCheckers(customCheckers: readonly CustomCheckerRegistration[]): Promise<void> {
+    await this.host.updateSettings({ ...this.host.settings, customCheckers });
+  }
+}
+
+/** Command arguments written as a JSON list of strings; `null` marks invalid input. */
+function commandOfText(text: string): readonly string[] | null {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return Array.isArray(parsed) && parsed.every((item) => typeof item === "string")
+      ? parsed
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Arguments written as a JSON object: `undefined` for an empty text, and `null` for a text that
+ * is no JSON object, which the input then marks without storing.
+ */
+function argumentsOfText(text: string): Readonly<Record<string, JsonValue>> | undefined | null {
+  if (text.trim() === "") return undefined;
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+      ? (parsed as Readonly<Record<string, JsonValue>>)
+      : null;
+  } catch {
+    return null;
   }
 }
 

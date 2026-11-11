@@ -30,6 +30,7 @@ import {
   type EkphrasisSettings,
   type FormReady,
   type FormService,
+  type FormState,
   type SessionHost,
 } from "../../../application";
 import { fieldChain, IssueIndex, type YamlPath } from "../../../domain";
@@ -38,6 +39,7 @@ import type { ControlRegistry } from "../ui/control-registry";
 import { FoldState } from "../ui/fold-state";
 import { FormPanel } from "../ui/form-panel";
 import { HelpState } from "../ui/help-state";
+import { OptionalFieldState } from "../ui/optional-field-state";
 import { countPhrase } from "../ui/issue-list";
 import {
   DEFAULT_QUEUE_OPTIONS,
@@ -95,6 +97,8 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   private readonly folds = new FoldState(() => this.display());
   /** Shown instructions of the fields, kept across displays of the same file. */
   private readonly help = new HelpState(() => this.display());
+  /** Absent optional fields selected as drafts, kept across displays of the same file. */
+  private readonly optionalFields = new OptionalFieldState(() => this.display());
   private readonly renderer: ObsidianValueRenderer;
   private readonly queue: RenderQueue;
   private readonly formEl: HTMLElement;
@@ -165,6 +169,14 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   }
 
   /**
+   * Latest outcome of the form pipeline on the text of the instance, whichever stage stopped it,
+   * or `null` while the pipeline runs; the setup diagnostic reads it without running it again.
+   */
+  get formState(): FormState | null {
+    return this.session.snapshot.state;
+  }
+
+  /**
    * Latest form of the instance, also while the source view is displayed, since a click in the
    * outline then opens the form view; `null` when the instance has no form.
    */
@@ -192,6 +204,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
       this.lastFocused = null;
       this.folds.reset();
       this.help.reset();
+      this.optionalFields.reset();
       this.focused = null;
       this.modes.fileOpened();
     }
@@ -205,6 +218,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
 
   clear(): void {
     this.session.reset();
+    this.optionalFields.reset();
     this.data = "";
     this.editor?.setText("", true);
   }
@@ -213,7 +227,9 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
   write(text: string): void {
     this.data = text;
     this.editor?.setText(text, false);
-    void this.save();
+    // The synchronous commit displays built-in findings at once. The refreshed pipeline adds
+    // custom findings after the saved file is available to checkers that read neighbouring files.
+    void this.save().then(() => this.refresh());
   }
 
   /** Displays the new snapshot of the session. */
@@ -259,8 +275,11 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
    */
   reveal(path: YamlPath, showHelp: boolean): void {
     const form = this.session.snapshot.form;
-    const plan = form === null ? null : planReveal(form.model, path);
+    if (form === null) return;
+    const plan = planReveal(form.model, path);
     if (plan === null) return;
+    const chain = fieldChain(form.model.root, path);
+    if (chain !== null) this.optionalFields.show(chain.slice(1).map((field) => field.uid));
     if (this.mode !== "form") {
       this.modes.choose("form");
       this.app.workspace.requestSaveLayout();
@@ -440,6 +459,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
           commitDelay: this.services.settings().commitDelay,
           folds: this.folds,
           help: this.help,
+          optionalFields: this.optionalFields,
           renderer: this.renderer,
           scheduler: this.queue,
           paintIcon: setIcon,

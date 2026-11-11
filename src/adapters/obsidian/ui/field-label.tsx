@@ -2,7 +2,8 @@
  * Label of a field, as Obsidian labels a property: the icon of its kind, its name, the markers of
  * a required field and of a locked value, and the help button of a field with instructions, at the
  * right of the label. The note that explains a lock follows the row. A field is marked required
- * when the schema requires it, or when a rule `required-when` requires it under the current values.
+ * when the schema requires it, when a rule `required-when` requires it under the current values,
+ * or when a current finding reports it missing.
  *
  * The explanation of a lock is revealed by a click on its badge rather than by a tooltip: no
  * hover exists on touch devices, and no tooltip mechanism displayed on the badge inside Obsidian.
@@ -17,6 +18,7 @@ import { Icon, KIND_ICONS } from "./icon";
 const LOCK_NOTES: Readonly<Record<FieldLock, string>> = {
   alias: "This value comes from an anchor elsewhere in the file; edit it at its anchor.",
   merge: "This value is merged from another mapping by a merge key; edit it in that mapping.",
+  "read-only": "The schema declares this value read-only; the form displays it without editing it.",
 };
 
 /** Whether the note of a lock is shown, shared by the badge and the note it reveals. */
@@ -39,8 +41,11 @@ export function FieldLabel({
   readonly field: Field;
   readonly disclosure: LockDisclosure;
 }): JSX.Element {
-  const { constraints, paintIcon } = useFormContext();
-  const required = field.required || constraints.requires(field.id);
+  const { constraints, issues, paintIcon } = useFormContext();
+  const required =
+    field.required ||
+    constraints.requires(field.id) ||
+    issues.at(field.id).some((item) => item.missing);
   return (
     <div class="ekphrasis-field-label">
       <Icon icon={KIND_ICONS[field.kind]} paint={paintIcon} class="ekphrasis-field-icon" />

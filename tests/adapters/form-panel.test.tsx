@@ -18,6 +18,7 @@ import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
 import { FormPanel } from "../../src/adapters/obsidian/ui/form-panel";
 import { HelpState } from "../../src/adapters/obsidian/ui/help-state";
 import { NO_ICONS } from "../../src/adapters/obsidian/ui/icon";
+import { OptionalFieldState } from "../../src/adapters/obsidian/ui/optional-field-state";
 import { IMMEDIATE_SCHEDULER } from "../../src/adapters/obsidian/ui/rendering/render-queue";
 import { TEXT_RENDERER } from "../../src/adapters/obsidian/ui/rendering/value-renderer";
 import type { YamlPath } from "../../src/domain";
@@ -37,10 +38,10 @@ const SCHEMA = [
 
 afterEach(cleanup);
 
-async function stateOf(text: string): Promise<FormState> {
+async function stateOf(text: string, schema = SCHEMA): Promise<FormState> {
   const forms = new FormService(
     new YamlDocumentParser(),
-    new FileSchemaLoader(new MemoryFileSource({ "s.yaml": SCHEMA })),
+    new FileSchemaLoader(new MemoryFileSource({ "s.yaml": schema })),
     createValidation(),
     () => ({ ...DEFAULT_SETTINGS, pathRules: [{ pattern: "bound/*.yml", schema: "s.yaml" }] }),
   );
@@ -66,6 +67,7 @@ function renderPanel(
       commitDelay={DEFAULT_SETTINGS.commitDelay}
       folds={new FoldState()}
       help={new HelpState()}
+      optionalFields={new OptionalFieldState()}
       renderer={TEXT_RENDERER}
       scheduler={IMMEDIATE_SCHEDULER}
       paintIcon={NO_ICONS}
@@ -109,6 +111,33 @@ describe("boxes at the top of the form", () => {
         expect(children).toEqual(["ekphrasis-issue-path", "ekphrasis-issue-message"]);
       }
     }
+  });
+
+  it("presents an unresolved research state outside validation", async () => {
+    const schema = [
+      "type: object",
+      "properties:",
+      "  verdict:",
+      "    enum: [pending, pass]",
+      "    x-rules:",
+      "      - {check: unresolved-value, value: pending}",
+    ].join("\n");
+    const reveals: unknown[] = [];
+    const container = renderPanel(await stateOf("verdict: pending\n", schema), (path) =>
+      reveals.push(path),
+    );
+    expect(container.querySelector(".ekphrasis-issue-summary")).toBeNull();
+    const research = container.querySelector(".ekphrasis-research-summary");
+    expect(research?.querySelector(".ekphrasis-issue-summary-title")?.textContent).toBe(
+      "Research state",
+    );
+    expect(research?.querySelector(".ekphrasis-issue-line-count")?.textContent).toBe(
+      "1 unresolved state",
+    );
+    const verdict = research?.querySelector<HTMLButtonElement>(".ekphrasis-field-link");
+    expect(verdict?.textContent).toBe("verdict");
+    verdict?.click();
+    expect(reveals).toEqual([["verdict"]]);
   });
 });
 

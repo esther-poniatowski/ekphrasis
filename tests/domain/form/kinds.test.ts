@@ -51,6 +51,7 @@ describe("derivation of field kinds", () => {
 
   it("lets x-kind override the derived kind", () => {
     expect(kindOf({ type: "string", "x-kind": "latex" })).toBe("latex");
+    expect(kindOf({ type: "array", "x-kind": "tree", items: { type: "object" } })).toBe("tree");
     expect(
       kindOf({ type: "array", items: { properties: { a: { type: "array" } } }, "x-kind": "table" }),
     ).toBe("table");

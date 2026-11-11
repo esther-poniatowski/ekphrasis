@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=optional-fields.schema.yaml
+# Manual test record of progressive optional fields.
+title: Existing title

@@ -8,7 +8,7 @@ import type { HTMLAttributes, JSX } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import type { FormulaAlign } from "../../../../domain";
 import { useFormContext } from "../form-context";
-import type { RenderedKind } from "./value-renderer";
+import type { RenderDisplay, RenderedKind } from "./value-renderer";
 
 export type RenderedValueProps = {
   readonly kind: RenderedKind;
@@ -19,6 +19,8 @@ export type RenderedValueProps = {
   readonly class?: string;
   /** Alignment of a formula of kind `latex`, which the style sheet reads; `center` by default. */
   readonly align?: FormulaAlign;
+  /** Placement of the rendered value; formulas outside table cells use display math by default. */
+  readonly display?: RenderDisplay;
 } & Omit<HTMLAttributes<HTMLDivElement>, "ref" | "class" | "className">;
 
 export function RenderedValue({
@@ -27,6 +29,7 @@ export function RenderedValue({
   immediate = false,
   class: className,
   align = "center",
+  display = "block",
   ...attributes
 }: RenderedValueProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,9 +38,9 @@ export function RenderedValue({
     const target = ref.current;
     if (target === null) return;
     target.textContent = text;
-    const job = (): (() => void) => renderer.render(target, kind, text);
+    const job = (): (() => void) => renderer.render(target, kind, text, display);
     return immediate ? job() : scheduler.request(target, job);
-  }, [kind, text, immediate, renderer, scheduler]);
+  }, [kind, text, display, immediate, renderer, scheduler]);
   return (
     <div
       {...attributes}
@@ -45,6 +48,7 @@ export function RenderedValue({
       class={className === undefined ? "ekphrasis-rendered" : `ekphrasis-rendered ${className}`}
       data-kind={kind}
       data-align={kind === "latex" ? align : undefined}
+      data-display={display}
     />
   );
 }

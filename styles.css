@@ -90,6 +90,45 @@
   font-size: var(--font-ui-small);
 }
 
+/* Run context explains what an external checker evaluated without presenting that context as a
+   finding. The completion target leads; its scope explanation remains secondary. */
+.ekphrasis-checker-contexts {
+  margin-top: var(--size-4-3);
+}
+
+.ekphrasis-checker-context {
+  padding: var(--size-4-2) var(--size-4-3);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: var(--radius-s);
+  background-color: var(--background-secondary);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-checker-context-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  align-items: baseline;
+}
+
+.ekphrasis-checker-context-label {
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-checker-context-description {
+  margin-top: var(--size-2-2);
+  color: var(--text-muted);
+}
+
+.ekphrasis-checker-context-origin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  margin-top: var(--size-2-1);
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
 /* Warnings about the schema, framed like a warning callout of the theme. */
 .ekphrasis-schema-issues {
   margin-bottom: var(--size-4-4);
@@ -121,6 +160,18 @@
 
 .ekphrasis-issue-path {
   margin-right: var(--size-4-2);
+}
+
+/* Classification and guidance of an issue reported by an external tool: one line each, below its
+   message, in the colour of secondary text, so the message stays the first thing read. */
+.ekphrasis-issue-origin {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-issue-origin-line {
+  display: block;
 }
 
 /* Messages preceded by their paths, in the boxes at the top of the form, and descriptions preceded
@@ -272,6 +323,10 @@ button.ekphrasis-lock:hover {
   color: rgb(var(--color-orange-rgb));
 }
 
+.ekphrasis-issue.mod-unresolved {
+  color: rgb(var(--color-purple-rgb));
+}
+
 /* The content of a field with issues is marked by a bar in the gap at its left, in the colour of
    its mark, so the mark never moves the control. */
 .ekphrasis-field[data-issue] > .ekphrasis-field-content::before,
@@ -300,6 +355,11 @@ button.ekphrasis-lock:hover {
   background-color: rgb(var(--color-orange-rgb));
 }
 
+.ekphrasis-field[data-issue="unresolved"] > .ekphrasis-field-content::before,
+.ekphrasis-table-cell[data-issue="unresolved"]::before {
+  background-color: rgb(var(--color-purple-rgb));
+}
+
 /* Count of the issues within a group, beside its label. */
 .ekphrasis-issue-count {
   margin-left: auto;
@@ -310,6 +370,11 @@ button.ekphrasis-lock:hover {
   font-size: var(--font-ui-smaller);
 }
 
+.ekphrasis-issue-count.mod-unresolved {
+  color: rgb(var(--color-purple-rgb));
+  background-color: rgba(var(--color-purple-rgb), 0.1);
+}
+
 /* Count of the issues of the instance, with the issues that no field displays. */
 .ekphrasis-issue-summary {
   margin-bottom: var(--size-4-4);
@@ -318,6 +383,19 @@ button.ekphrasis-lock:hover {
   border-radius: var(--radius-s);
   background-color: rgba(var(--color-red-rgb), 0.1);
   font-size: var(--font-ui-small);
+}
+
+.ekphrasis-research-summary {
+  margin-bottom: var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-left: 3px solid rgb(var(--color-purple-rgb));
+  border-radius: var(--radius-s);
+  background-color: rgba(var(--color-purple-rgb), 0.1);
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-research-summary .ekphrasis-issue-summary-title {
+  color: rgb(var(--color-purple-rgb));
 }
 
 /* The title takes the colour of the edge of its box, as the title of the schema warnings does. */
@@ -336,6 +414,7 @@ button.ekphrasis-lock:hover {
 .ekphrasis-form input[type="text"].ekphrasis-control,
 .ekphrasis-form textarea.ekphrasis-control,
 .ekphrasis-form .ekphrasis-rendered.ekphrasis-control,
+.ekphrasis-form .ekphrasis-cell-list.ekphrasis-control,
 .ekphrasis-form select.ekphrasis-control {
   box-sizing: border-box;
   min-height: var(--input-height);
@@ -351,7 +430,8 @@ button.ekphrasis-lock:hover {
 
 .ekphrasis-form input[type="text"].ekphrasis-control,
 .ekphrasis-form textarea.ekphrasis-control,
-.ekphrasis-form .ekphrasis-rendered.ekphrasis-control {
+.ekphrasis-form .ekphrasis-rendered.ekphrasis-control,
+.ekphrasis-form .ekphrasis-cell-list.ekphrasis-control {
   padding: var(--input-padding);
   line-height: calc(var(--input-height) - 2 * var(--size-4-1) - 2 * var(--input-border-width));
 }
@@ -365,6 +445,7 @@ button.ekphrasis-lock:hover {
 .ekphrasis-form input[type="text"].ekphrasis-control:hover,
 .ekphrasis-form textarea.ekphrasis-control:hover,
 .ekphrasis-form .ekphrasis-rendered.ekphrasis-control:hover,
+.ekphrasis-form .ekphrasis-cell-list.ekphrasis-control:hover,
 .ekphrasis-form select.ekphrasis-control:hover {
   border-color: var(--background-modifier-border-hover);
 }
@@ -524,6 +605,13 @@ button.ekphrasis-fold:hover {
   font-size: var(--font-ui-small);
 }
 
+/* One compact route reveals an optional property without writing it into the file. */
+.ekphrasis-optional-field-adder {
+  display: block;
+  margin: var(--size-2-2) 0;
+  font-size: var(--font-ui-small);
+}
+
 .ekphrasis-key-adder {
   display: flex;
   flex-wrap: wrap;
@@ -541,19 +629,31 @@ button.ekphrasis-fold:hover {
   flex-basis: 100%;
 }
 
-/* Tables: a header row of property labels, one row per item, and a scroll on narrow panes. */
+/* Tables: a header row of property labels, one row per item, and one keyboard-scrollable region.
+   The maximum height affects only a table taller than the available reading area. */
 .ekphrasis-table-scroll {
-  overflow-x: auto;
+  max-height: min(70vh, 40rem);
+  overflow: auto;
+}
+
+.ekphrasis-table-scroll:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
 }
 
 .ekphrasis-table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: var(--font-ui-small);
 }
 
 .ekphrasis-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   text-align: left;
+  background: var(--background-primary);
   color: var(--text-muted);
   font-weight: var(--font-normal);
   padding: var(--size-2-2);
@@ -632,6 +732,277 @@ button.ekphrasis-fold:hover {
 .ekphrasis-table-key {
   font-family: var(--font-monospace);
   overflow-wrap: anywhere;
+}
+
+/* Literal labels and formulas in locked cells are values, not disabled editors. */
+.ekphrasis-cell-label {
+  font-family: var(--font-monospace);
+  white-space: nowrap;
+}
+
+.ekphrasis-cell-formula {
+  min-width: max-content;
+}
+
+/* A tree uses structural list nesting for its hierarchy. The guide belongs to the children of a
+   node, so a reader can follow one branch without reading a depth column or an edge table. */
+.ekphrasis-tree,
+.ekphrasis-tree-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ekphrasis-tree-children {
+  margin-left: var(--size-4-4);
+  padding-left: var(--size-4-3);
+  border-left: 1px solid var(--background-modifier-border);
+}
+
+.ekphrasis-tree-item {
+  position: relative;
+  margin: var(--size-2-2) 0;
+}
+
+.ekphrasis-tree-children > .ekphrasis-tree-item::before {
+  position: absolute;
+  top: calc(var(--line-height-normal) / 2);
+  left: calc(-1 * var(--size-4-3));
+  width: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+  content: "";
+}
+
+.ekphrasis-tree-node {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2) var(--size-4-2);
+  align-items: baseline;
+  min-height: var(--line-height-normal);
+}
+
+.ekphrasis-tree-label {
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-tree-identifier {
+  color: var(--text-muted);
+}
+
+.ekphrasis-tree-detail {
+  padding: 0 var(--size-2-2);
+  border-radius: var(--radius-s);
+  background-color: var(--background-secondary);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-tree-detail-label {
+  color: var(--text-faint);
+}
+
+.ekphrasis-tree-depth-target {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* A graph uses a zoomed canvas inside a native scrolling viewport. Nodes keep one fixed internal
+   grid, so kind and status remain aligned while the producer controls their semantic values. */
+.ekphrasis-graph-toolbar {
+  display: flex;
+  gap: var(--size-4-2);
+  align-items: center;
+  margin-bottom: var(--size-4-3);
+}
+
+.ekphrasis-graph-toolbar output {
+  min-width: 3.5rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ekphrasis-graph-viewport {
+  position: relative;
+  width: 100%;
+  height: min(70vh, var(--ekphrasis-graph-height));
+  min-height: 24rem;
+  overflow: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background-color: var(--background-secondary-alt);
+}
+
+.ekphrasis-graph-viewport::after {
+  display: block;
+  width: var(--ekphrasis-graph-width);
+  height: var(--ekphrasis-graph-height);
+  content: "";
+}
+
+.ekphrasis-graph-canvas {
+  position: absolute;
+  transform-origin: top left;
+}
+
+.ekphrasis-graph-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ekphrasis-graph-edges path {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+}
+
+.ekphrasis-graph-edges marker path {
+  fill: var(--text-muted);
+  stroke: none;
+}
+
+.ekphrasis-graph-edges text {
+  fill: var(--text-normal);
+  paint-order: stroke;
+  stroke: var(--background-secondary-alt);
+  stroke-width: 5px;
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+}
+
+button.ekphrasis-graph-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-2);
+  width: 264px;
+  height: 152px;
+  box-sizing: border-box;
+  padding: var(--size-4-3);
+  overflow: hidden;
+  border: 2px solid var(--background-modifier-border-hover);
+  border-radius: var(--radius-m);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  text-align: left;
+  box-shadow: var(--shadow-s);
+}
+
+button.ekphrasis-graph-node[data-shape="capsule"] {
+  border-color: var(--interactive-accent);
+  border-radius: 2rem;
+  background: var(--background-secondary);
+}
+
+button.ekphrasis-graph-node[data-shape="dashed"] {
+  border-style: dashed;
+}
+
+button.ekphrasis-graph-node[data-root] {
+  border-width: 4px;
+  border-color: rgb(var(--color-orange-rgb));
+  box-shadow: 0 0 0 3px rgba(var(--color-orange-rgb), 0.16);
+}
+
+button.ekphrasis-graph-node[data-selected] {
+  outline: 3px solid var(--interactive-accent);
+  outline-offset: 3px;
+}
+
+.ekphrasis-graph-node-header,
+.ekphrasis-graph-node-status {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  justify-content: space-between;
+  gap: var(--size-4-2);
+  align-items: center;
+}
+
+.ekphrasis-graph-node-symbol {
+  display: inline-grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.ekphrasis-graph-node-kind {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-root {
+  display: block;
+  width: 100%;
+  color: rgb(var(--color-orange-rgb));
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ekphrasis-graph-node-category,
+.ekphrasis-graph-node-family {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-node-family {
+  color: var(--interactive-accent);
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-graph-node-label,
+.ekphrasis-graph-node-id {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ekphrasis-graph-node-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.ekphrasis-graph-node-id {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-node-status {
+  margin-top: auto;
+  padding-top: var(--size-2-1);
+  border-top: 1px solid var(--background-modifier-border);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-graph-node-status > span {
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .ekphrasis-table-actions .ekphrasis-item-actions {
@@ -819,6 +1190,58 @@ button.ekphrasis-help-button:hover {
   cursor: default;
 }
 
+/* A list of scalars in a table cell displays as one summary with the appearance of the text
+   controls: one token per item, wrapping within the width of the column, as Obsidian displays
+   the values of a list property. An editable summary opens the control of the list. */
+.ekphrasis-cell-list.ekphrasis-control {
+  cursor: pointer;
+}
+
+.ekphrasis-cell-list.ekphrasis-control:focus-visible {
+  border-color: var(--background-modifier-border-focus);
+}
+
+.ekphrasis-cell-list[aria-readonly="true"] {
+  cursor: default;
+}
+
+.ekphrasis-cell-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ekphrasis-cell-item {
+  padding: 0 var(--size-4-1);
+  border: var(--input-border-width) solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background-color: var(--background-modifier-hover);
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-cell-item[data-issue="invalid"] {
+  border-color: var(--text-error);
+}
+
+.ekphrasis-cell-item[data-issue="missing"] {
+  border-color: var(--text-accent);
+}
+
+.ekphrasis-cell-item[data-issue="warning"] {
+  border-color: rgb(var(--color-orange-rgb));
+}
+
+.ekphrasis-cell-item[data-issue="unresolved"] {
+  border-color: rgb(var(--color-purple-rgb));
+}
+
+.ekphrasis-cell-empty {
+  color: var(--text-faint);
+}
+
 /* The Markdown renderer wraps inline content in a paragraph, displayed inline for one line. */
 .ekphrasis-rendered[data-kind="markdown-line"] p {
   display: inline;
@@ -884,6 +1307,37 @@ td[data-revealed] {
 
 .ekphrasis-issue-line.mod-warning .ekphrasis-issue-line-count {
   color: rgb(var(--color-orange-rgb));
+}
+
+.ekphrasis-issue-line.mod-unresolved .ekphrasis-issue-line-count {
+  color: rgb(var(--color-purple-rgb));
+}
+
+/* Findings activated by one authored choice stay together across their different marks. */
+.ekphrasis-issue-control-groups,
+.ekphrasis-controlled-issues {
+  margin: var(--size-2-1) 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ekphrasis-issue-control-group + .ekphrasis-issue-control-group {
+  margin-top: var(--size-4-2);
+}
+
+.ekphrasis-issue-control-heading {
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-controlled-issues {
+  padding-left: var(--size-4-4);
+}
+
+.ekphrasis-controlled-issue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-1) var(--size-4-2);
+  align-items: baseline;
 }
 
 button.ekphrasis-field-link,
@@ -998,6 +1452,10 @@ button.ekphrasis-outline-result:hover {
   background-color: rgb(var(--color-orange-rgb));
 }
 
+.ekphrasis-outline-mark.mod-unresolved {
+  background-color: rgb(var(--color-purple-rgb));
+}
+
 .ekphrasis-outline-count {
   padding: 0 var(--size-4-1);
   border-radius: var(--radius-s);
@@ -1015,5 +1473,111 @@ button.ekphrasis-outline-result:hover {
 .ekphrasis-outline-trail,
 .ekphrasis-outline-empty {
   color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+/* Report of the setup diagnostic. The text stays selectable, so that a path or a command can be
+   copied; each status reads as a word, and the edge of its check repeats it in colour. */
+.ekphrasis-diagnostic-modal {
+  width: min(52rem, 92vw);
+}
+
+.ekphrasis-diagnostic {
+  font-size: var(--font-ui-small);
+  user-select: text;
+}
+
+.ekphrasis-diagnostic-summary,
+.ekphrasis-diagnostic-running {
+  color: var(--text-muted);
+}
+
+.ekphrasis-diagnostic-group-title {
+  margin: var(--size-4-4) 0 var(--size-4-2);
+  font-size: var(--font-ui-medium);
+}
+
+.ekphrasis-diagnostic-checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ekphrasis-diagnostic-check {
+  margin-bottom: var(--size-4-2);
+  padding: var(--size-4-1) var(--size-4-3);
+  border-left: 3px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+}
+
+.ekphrasis-diagnostic-check.mod-fail {
+  border-left-color: var(--text-error);
+  background-color: rgba(var(--color-red-rgb), 0.08);
+}
+
+.ekphrasis-diagnostic-check.mod-warning {
+  border-left-color: var(--text-warning);
+  background-color: rgba(var(--color-orange-rgb), 0.08);
+}
+
+.ekphrasis-diagnostic-check.mod-unavailable {
+  border-left-color: var(--text-faint);
+}
+
+.ekphrasis-diagnostic-check.mod-pass {
+  border-left-color: var(--text-success);
+}
+
+.ekphrasis-diagnostic-check-head {
+  display: flex;
+  gap: var(--size-4-2);
+  align-items: baseline;
+  font-weight: var(--font-semibold);
+}
+
+.ekphrasis-diagnostic-status {
+  flex-shrink: 0;
+  min-width: 6.5em;
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+}
+
+.ekphrasis-diagnostic-check.mod-fail .ekphrasis-diagnostic-status {
+  color: var(--text-error);
+}
+
+.ekphrasis-diagnostic-check.mod-warning .ekphrasis-diagnostic-status {
+  color: var(--text-warning);
+}
+
+.ekphrasis-diagnostic-check.mod-pass .ekphrasis-diagnostic-status {
+  color: var(--text-success);
+}
+
+.ekphrasis-diagnostic-observed,
+.ekphrasis-diagnostic-line {
+  margin-top: var(--size-2-2);
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-diagnostic-label {
+  color: var(--text-muted);
+}
+
+.ekphrasis-diagnostic-action {
+  font-weight: var(--font-medium);
+}
+
+.ekphrasis-diagnostic-details summary {
+  margin-top: var(--size-2-2);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.ekphrasis-diagnostic-details pre {
+  max-height: 16rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-size: var(--font-ui-smaller);
 }

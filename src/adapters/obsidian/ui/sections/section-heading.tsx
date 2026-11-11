@@ -58,7 +58,7 @@ export function SectionHeading({
         </button>
         <FieldLabel field={field} disclosure={disclosure} />
         <div class="ekphrasis-group-tail">
-          <IssueCount count={issues.countWithin(field.path)} />
+          <IssueCount count={issues.countWithin(field.path)} mark={issues.markWithin(field.path)} />
           {actions}
         </div>
       </div>

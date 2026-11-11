@@ -23,13 +23,13 @@ import {
 import { RELATIONAL_CHECKERS } from "./relational-checkers";
 import { SEQUENCE_CHECKERS } from "./sequence-checkers";
 import { TEXT_CHECKERS } from "./text-checkers";
+import { VALUE_CHECKERS } from "./value-checkers";
 
 /** Predefined checkers, by name. */
 export const PREDEFINED_CHECKERS: ReadonlyMap<string, Checker> = new Map(
-  [...TEXT_CHECKERS, ...SEQUENCE_CHECKERS, ...RELATIONAL_CHECKERS].map((checker) => [
-    checker.name,
-    checker,
-  ]),
+  [...TEXT_CHECKERS, ...SEQUENCE_CHECKERS, ...RELATIONAL_CHECKERS, ...VALUE_CHECKERS].map(
+    (checker) => [checker.name, checker],
+  ),
 );
 
 /**
@@ -54,6 +54,7 @@ export interface RuleReport {
 
 type Binding =
   | { readonly declaration: RuleDeclaration; readonly rule: BoundRule }
+  | { readonly declaration: RuleDeclaration; readonly external: true }
   | { readonly problem: string };
 
 /** Issues of the rules declared under `root`, on `data`. */
@@ -62,6 +63,7 @@ export function checkRules(
   data: InstanceData,
   environment: CheckerEnvironment,
   checkers: ReadonlyMap<string, Checker> = PREDEFINED_CHECKERS,
+  externalCheckers: ReadonlySet<string> = new Set(),
 ): RuleReport {
   // A subschema is shared by every field that it describes, such as the items of a sequence, so
   // each declaration binds once, keyed by its value in the schema.
@@ -78,9 +80,11 @@ export function checkRules(
       const declaration = parseDeclaration(raw);
       const checker = checkers.get(declaration.check);
       binding =
-        checker === undefined
-          ? { problem: `The rule \`${declaration.check}\` names no checker known to ekphrasis.` }
-          : { declaration, rule: checker.bind(declaration.args) };
+        checker !== undefined
+          ? { declaration, rule: checker.bind(declaration.args) }
+          : externalCheckers.has(declaration.check)
+            ? { declaration, external: true }
+            : { problem: `The rule \`${declaration.check}\` names no checker known to ekphrasis.` };
     } catch (error) {
       if (!(error instanceof RuleDeclarationError)) throw error;
       binding = { problem: error.message };
@@ -97,7 +101,7 @@ export function checkRules(
         if (!problems.has(binding.problem)) {
           problems.set(binding.problem, { path: field.id, message: binding.problem });
         }
-      } else if (filled) {
+      } else if (filled && !("external" in binding)) {
         const { declaration, rule } = binding;
         const context = { base: field.path, data, environment };
         constraints.push(...(rule.constraints?.(context) ?? []));
@@ -106,6 +110,7 @@ export function checkRules(
             issue(finding.path, declaration.check, declaration.message ?? finding.message, {
               severity: declaration.severity,
               missing: finding.missing ?? false,
+              unresolved: finding.unresolved ?? false,
             }),
           );
         }

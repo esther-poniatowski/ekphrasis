@@ -17,6 +17,7 @@ Specifies each feature of ekphrasis by the syntax accepted in a schema or an ins
 - [Field kinds](field-kinds.md): matches each field with the control through which it is filled
 - [Field paths](field-paths.md): fixes how a rule, an issue or a checker designates a field of an instance
 - [Instance creation](instance-creation.md): predicts the new instance written from a schema
+- [Generated views](generated-views.md): opens the producer-selected view for an explicit completion target
 - [Form view](form-view.md): fixes how an instance is filled through its form
 - [Outline](outline.md): fixes how an author moves through a long instance and finds its remaining issues
 - [Links](links.md): fixes how a value or a note links to a field of an instance, and how the links of a value resolve
@@ -26,4 +27,5 @@ Specifies each feature of ekphrasis by the syntax accepted in a schema or an ins
 - [Saving](saving.md): predicts how each edit changes the YAML file, and which parts of the file stay unchanged
 - [Validation](validation.md): fixes how a schema declares its validity rules, and how their issues are reported
 - [Custom checkers](custom-checkers.md): fixes how a rule written in Python is registered and invoked from a schema
+- [Setup diagnostic](setup-diagnostic.md): locates the broken dependency that keeps forms, saving or custom checks from working, with the action that repairs it
 - [Schema editor](schema-editor.md): fixes how schemas and their versions are created and modified through a form

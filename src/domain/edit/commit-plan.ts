@@ -119,6 +119,7 @@ export const REFUSALS = {
   notScalar: "Only the values of scalar fields are saved from the form.",
   notCollection: "This field holds no collection whose entries the form can change.",
   locked: "This value is written elsewhere in the file, so it is edited there.",
+  readOnly: "The schema declares this value read-only, so the form does not change it.",
   mismatch:
     "This value does not have the shape that the schema declares; edit it in the source view.",
   position: "This position lies outside the sequence.",
@@ -518,6 +519,7 @@ class CommitPlanner {
 
   /** Change removing the item `field` from its sequence. */
   private removeItem(chain: readonly Field[], field: Field): Change {
+    removable(field);
     const index = field.path.at(-1);
     const { sequence, parent } = this.sequenceOf(chain);
     if (typeof index !== "number" || index >= sequence.items.length) {
@@ -541,6 +543,7 @@ class CommitPlanner {
 
   /** Change moving the item `field` to the position `to` of its sequence. */
   private moveItem(chain: readonly Field[], field: Field, to: number): Change | null {
+    removable(field);
     const from = field.path.at(-1);
     const { sequence, parent } = this.sequenceOf(chain);
     if (typeof from !== "number" || from >= sequence.items.length) {
@@ -568,6 +571,7 @@ class CommitPlanner {
       return refuse(REFUSALS.notCollection);
     }
     editable(parent);
+    removable(field);
     const index = mapping.entries.findIndex((entry) => entry.key === key);
     const entry = mapping.entries[index] ?? refuse(REFUSALS.unlocated);
     const keyStart = entry.keyRange?.start ?? refuse(REFUSALS.unlocated);
@@ -686,13 +690,22 @@ function entryPosition(owner: MappingField, mapping: MappingNode, key: string): 
 }
 
 /**
- * Refuses a commit that writes at `field` when its value lies elsewhere in the file or has
- * another shape than the schema declares. Removing or moving an item writes at its collection
- * only, so an item reached through an alias can be removed and moved.
+ * Refuses a commit that writes at `field` when its value is read-only, lies elsewhere in the file,
+ * or has another shape than the schema declares. Removing or moving an item writes at its
+ * collection only, so an item reached through an alias can be removed and moved.
  */
 function editable(field: Field): void {
+  removable(field);
   if (field.lock !== null) refuse(REFUSALS.locked);
   if (field.mismatch !== null) refuse(REFUSALS.mismatch);
+}
+
+/**
+ * Refuses a commit that removes or moves `field`, or writes at it, when its schema or the schema
+ * of an ancestor declares it read-only. An item or an entry inherits the lock of its collection.
+ */
+function removable(field: Field): void {
+  if (field.lock === "read-only") refuse(REFUSALS.readOnly);
 }
 
 function isScalarField(field: Field): field is ScalarField {

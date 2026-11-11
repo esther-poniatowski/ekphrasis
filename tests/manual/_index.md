@@ -21,5 +21,13 @@ Verifies inside Obsidian the behaviours of ekphrasis that unit tests cannot reac
 - [Test protocol: Form presentation](protocols/form-presentation.md): verifies inside Obsidian the presentation of the rows of fields, of their controls and of the outline
 - [Test protocol: Corrections after the check of Form presentation](protocols/corrections-presentation.md): verifies inside Obsidian the corrections made after the check of form presentation
 - [Test protocol: Undo in text controls](protocols/text-undo.md): verifies inside Obsidian the undo and the redo of the edits of a text control
+- [Test protocol: Setup diagnostic](protocols/setup-diagnostic.md): verifies inside Obsidian the report of the setup diagnostic on desktop and mobile
+- [Test protocol: Instance creation](protocols/instance-creation.md): verifies that a writable registry contract creates and opens a new record without overwriting a file
+- [Test protocol: Optional fields](protocols/optional-fields.md): shows optional properties when selected or made applicable by an authored choice
+- [Test protocol: Validation context](protocols/validation-context.md): verifies that a project checker states its active completion target apart from its findings
+- [Test protocol: Controlled findings](protocols/controlled-findings.md): verifies that a checker groups a dependent finding under its authored controlling field
+- [Test protocol: Research state](protocols/research-state.md): distinguishes a pending researcher verdict from validation findings
+- [Test protocol: Generated-view freshness](protocols/view-freshness.md): distinguishes a current generated view from one invalidated by changed source records
+- [Test protocol: Primary generated view](protocols/primary-view.md): verifies that a producer selects and opens the view for an explicit completion target
 - [Scenario records](scenarios): supplies the records and the schemas of the protocols, copied into the test vault at each build
 - [Settings of the test vault](vault-settings.json): fixes the settings from which every protocol starts

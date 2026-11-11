@@ -301,6 +301,7 @@ const MARK_LABELS = {
   missing: "missing field",
   invalid: "invalid value",
   warning: "warning",
+  unresolved: "unresolved research state",
 } as const;
 
 function SearchResults({

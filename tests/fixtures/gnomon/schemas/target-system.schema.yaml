@@ -1,5 +1,4 @@
-# Synthetic schema of a gnomon target-system record, written for ekphrasis: gnomon itself
-# declares its records by templates and Python checkers, without a JSON Schema.
+# Synthetic schema for exercising collection controls used by a research record.
 # constructs: tables derived from sequences of scalar mappings, records derived from a nested
 # list column, the kinds `label`, `markdown-line` and `latex` declared by `x-kind`, a `const`
 # record type, the unfilled value `open`, the field of the identifier declared by `x-identifier`
@@ -15,7 +14,6 @@ properties:
   title:
     type: string
     x-kind: markdown-line
-    description: Name of the class of systems, as a noun phrase.
   id:
     type: string
     x-kind: label
@@ -26,16 +24,8 @@ properties:
     enum: [draft, provisional, stabilized]
   target_type:
     oneOf:
-      - {
-          const: actual-system,
-          title: Actual system,
-          description: One system observed in the world,
-        }
-      - {
-          const: possible-systems,
-          title: Possible systems,
-          description: A class of systems defined by criteria,
-        }
+      - { const: actual-system, title: Actual system }
+      - { const: possible-systems, title: Possible systems }
   reference_class:
     type: object
     properties:

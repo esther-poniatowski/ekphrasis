@@ -82,3 +82,16 @@ describe("schema registry", () => {
     expect(reason(value)).toBe(expected);
   });
 });
+
+describe("defects of a malformed registry", () => {
+  const defect = (value: JsonValue): string | null => {
+    const reading = readSchemaRegistry(value);
+    return reading.status === "malformed" ? reading.defect : null;
+  };
+
+  it("separates an unsupported version from a malformed structure", () => {
+    expect(defect({ schema_version: 3, schemas: {} })).toBe("version");
+    expect(defect({ schema_version: 1, schemas: {}, resources: {} })).toBe("structure");
+    expect(defect({ schemas: [] })).toBe("structure");
+  });
+});

@@ -45,6 +45,7 @@ const TEXT = [
   "prose: |",
   "  First paragraph.",
   "formula: '\\alpha'",
+  "note:",
   "rows:",
   "  - name: bob",
   "subject:",

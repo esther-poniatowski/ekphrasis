@@ -8,3 +8,7 @@ export { YamlDocumentParser } from "./yaml/yaml-parser";
 export { YamlSourceEditor } from "./yaml/yaml-source-editor";
 export { FileSchemaLoader } from "./schema/schema-loader";
 export { AjvSchemaValidator } from "./schema/ajv-validator";
+export { PythonCheckerProcess, CheckerProcessError } from "./python/checker-process";
+export { PythonSetupProbe, PROBE_TIMEOUT_MS } from "./python/setup-probe";
+export { GeneratedViewProcess, GeneratedViewProcessError } from "./process/generated-view-process";
+export { writeAccessOf } from "./files/write-access";

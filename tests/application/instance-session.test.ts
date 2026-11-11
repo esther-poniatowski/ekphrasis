@@ -1,13 +1,23 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   CommitService,
+  CustomCheckerService,
   DEFAULT_SETTINGS,
   FormService,
   InstanceSession,
+  ValidationService,
+  type CustomCheckerCall,
+  type CustomCheckerIssue,
+  type CustomCheckerRunner,
   type SessionHost,
 } from "../../src/application";
 import { REFUSALS, type Field } from "../../src/domain";
-import { FileSchemaLoader, YamlDocumentParser, YamlSourceEditor } from "../../src/infrastructure";
+import {
+  AjvSchemaValidator,
+  FileSchemaLoader,
+  YamlDocumentParser,
+  YamlSourceEditor,
+} from "../../src/infrastructure";
 import { MemoryFileSource } from "../support/fixture-vault";
 import { fieldAt } from "../support/form-fields";
 import { createValidation } from "../support/validation";
@@ -184,6 +194,69 @@ describe("instance session", () => {
     await Promise.all([first, second]);
 
     expect(field(instance, "title")).toMatchObject({ value: "second" });
+  });
+
+  it("discards custom-checker issues computed for source text replaced meanwhile", async () => {
+    const pending = new Map<string, (issues: readonly CustomCheckerIssue[]) => void>();
+    const runner: CustomCheckerRunner = {
+      call: (input: CustomCheckerCall) => {
+        const value = input.value;
+        if (typeof value !== "string") throw new Error("expected a text value");
+        return new Promise((resolve) => pending.set(value, resolve));
+      },
+      restart: () => Promise.resolve(),
+      close: () => Promise.resolve(),
+    };
+    const registrations = [{ name: "project-check", module: "checks", function: "check" }];
+    const custom = new CustomCheckerService(
+      () => registrations,
+      () => runner,
+      (path) => path,
+    );
+    const validation = new ValidationService(
+      new AjvSchemaValidator(),
+      undefined,
+      () => custom.checkerNames,
+    );
+    const parser = new YamlDocumentParser();
+    const schema = [
+      "type: object",
+      "properties:",
+      "  title:",
+      "    type: string",
+      "    x-rules: [{check: project-check}]",
+    ].join("\n");
+    const forms = new FormService(
+      parser,
+      new FileSchemaLoader(new MemoryFileSource({ "s.yaml": schema })),
+      validation,
+      () => ({ ...DEFAULT_SETTINGS, pathRules: [{ pattern: "*.yml", schema: "s.yaml" }] }),
+      undefined,
+      custom,
+    );
+    const host = new RecordingHost();
+    const instance = new InstanceSession(
+      forms,
+      new CommitService(parser, new YamlSourceEditor(), validation),
+      host,
+    );
+
+    instance.setText("title: first\n");
+    const first = instance.refresh("r.yml");
+    await vi.waitFor(() => expect(pending.has("first")).toBe(true));
+    instance.setText("title: second\n");
+    const second = instance.refresh("r.yml");
+    await vi.waitFor(() => expect(pending.has("second")).toBe(true));
+    pending.get("second")?.(["Current issue"]);
+    await second;
+    pending.get("first")?.(["Stale issue"]);
+    await first;
+
+    expect(field(instance, "title")).toMatchObject({ value: "second" });
+    expect(instance.snapshot.state).toMatchObject({
+      status: "form",
+      report: { issues: [{ message: "Current issue" }] },
+    });
   });
 
   it("runs the pipeline again when a commit changes the text during a run", async () => {

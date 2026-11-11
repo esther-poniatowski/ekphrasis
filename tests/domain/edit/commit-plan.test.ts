@@ -137,6 +137,23 @@ describe("plan of a commit", () => {
     expect(plan(text, ["count"], 1)).toEqual({ status: "refused", reason: REFUSALS.mismatch });
   });
 
+  it("refuses every commit below a schema declaring `readOnly`", () => {
+    const schema: JsonValue = { ...(SCHEMA as Record<string, JsonValue>), readOnly: true };
+    const text = "title: a\nstatus: posed\ncheck: {verdict: x}\ntags: [p, q]\n";
+    const model = buildFormModel(schemaSet({ "s.json": schema }), parser.parse(text), text);
+    const refused = { status: "refused", reason: REFUSALS.readOnly };
+    for (const commit of [
+      { path: ["title"], value: "b" },
+      { path: ["count"], value: 1 },
+      { kind: "insert-item", path: ["tags"], index: 2, value: "r" },
+      { kind: "remove-item", path: ["tags", 0] },
+      { kind: "move-item", path: ["tags", 0], to: 1 },
+      { kind: "remove-entry", path: ["check", "verdict"] },
+    ] as const) {
+      expect(planCommit(model, text, commit), JSON.stringify(commit)).toEqual(refused);
+    }
+  });
+
   it("plans the edits of a key of a flow mapping, and of a cleared item", () => {
     const text = "title: a\nstatus: posed\ncheck: {verdict: x, evidence: y}\ntags: [p]\n";
     expect(plan(text, ["check", "evidence"], null)).toMatchObject({ status: "planned" });

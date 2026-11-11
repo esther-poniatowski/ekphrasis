@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GlobPattern } from "../../../src/domain";
+import { GlobPattern, globDefect } from "../../../src/domain";
 
 const matches = (pattern: string, path: string): boolean => new GlobPattern(pattern).matches(path);
 
@@ -40,5 +40,22 @@ describe("glob patterns", () => {
   it("reads an unclosed brace or bracket as a literal", () => {
     expect(matches("a{b.yml", "a{b.yml")).toBe(true);
     expect(matches("a[b.yml", "a[b.yml")).toBe(true);
+  });
+});
+
+describe("defects of glob patterns", () => {
+  it("accepts a pattern that compiles with every delimiter closed", () => {
+    expect(globDefect("project:*")).toBeNull();
+    expect(globDefect("{a,b}:[a-z]*")).toBeNull();
+    expect(globDefect("a\\{b")).toBeNull();
+  });
+
+  it("reports a class that compiles to no regular expression", () => {
+    expect(globDefect("project:[z-a]")).toMatchObject({ kind: "malformed" });
+  });
+
+  it("reports a delimiter matched literally because it is never closed", () => {
+    expect(globDefect("{project:*")).toEqual({ kind: "unclosed", delimiter: "{" });
+    expect(globDefect("project:[ab")).toEqual({ kind: "unclosed", delimiter: "[" });
   });
 });

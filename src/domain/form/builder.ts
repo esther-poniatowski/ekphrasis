@@ -12,8 +12,10 @@ import { effectiveEntries, resolveAliases } from "./entries";
 import { ItemIdentities } from "./item-identities";
 import {
   choiceOptions,
+  isGraphRole,
   isMappingKind,
   isScalarKind,
+  isTreeRole,
   resolveKind,
   type FieldKind,
   type MappingKind,
@@ -96,7 +98,9 @@ class FormModelBuilder {
 
   private field(site: FieldSite): Field {
     const { node, lock } = resolveAliases(site.node, site.lock);
-    const located = { ...site, node, lock };
+    // A read-only ancestor passes its lock down through `site.lock`, which an alias would replace.
+    const readOnly = site.lock === "read-only" || site.schema?.readOnly === true;
+    const located = { ...site, node, lock: readOnly ? ("read-only" as const) : lock };
     const kind = this.kindOf(located);
     if (isScalarKind(kind)) return this.scalarField(located, kind);
     if (isMappingKind(kind)) return this.mappingField(located, kind);
@@ -127,11 +131,35 @@ class FormModelBuilder {
       description: site.schema?.description ?? null,
       examples: site.schema?.examples ?? [],
       required: site.required,
+      treeRole: this.treeRoleOf(site),
+      graphRole: this.graphRoleOf(site),
       node: site.node,
       lock: site.lock,
       mismatch: fits ? null : this.textOf(site.node),
       unfilled: this.isUnfilled(site.node),
     };
+  }
+
+  /** Valid tree role declared for `site`, with an issue for a name outside the closed vocabulary. */
+  private treeRoleOf(site: FieldSite): FieldBase["treeRole"] {
+    const role = site.schema?.declaredTreeRole ?? null;
+    if (role === null || isTreeRole(role)) return role;
+    this.issues.push({
+      path: printFieldPath(site.path),
+      message: `The keyword \`x-tree-role\` names no tree role: \`${role}\`.`,
+    });
+    return null;
+  }
+
+  /** Valid graph role declared for `site`, with an issue for a name outside the vocabulary. */
+  private graphRoleOf(site: FieldSite): FieldBase["graphRole"] {
+    const role = site.schema?.declaredGraphRole ?? null;
+    if (role === null || isGraphRole(role)) return role;
+    this.issues.push({
+      path: printFieldPath(site.path),
+      message: `The keyword \`x-graph-role\` names no graph role: \`${role}\`.`,
+    });
+    return null;
   }
 
   private scalarField(site: FieldSite, kind: ScalarKind): ScalarField {

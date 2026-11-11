@@ -44,6 +44,8 @@ export interface Finding {
   readonly message: string;
   /** Whether the finding reports a field left unfilled. */
   readonly missing?: boolean;
+  /** Whether the finding records admitted but unresolved research work. */
+  readonly unresolved?: boolean;
 }
 
 /**

@@ -1,0 +1,4 @@
+# Registry used by the creation protocol: every entry is a creatable contract.
+schema_version: 1
+schemas:
+  'scenario:registered@1': 'scenarios/registry/registered.schema.yaml'

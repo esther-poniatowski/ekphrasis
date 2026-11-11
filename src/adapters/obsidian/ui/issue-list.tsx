@@ -3,13 +3,20 @@
  * of the issues within a group, and the phrase counting the issues of an instance.
  */
 import type { JSX } from "preact";
-import { dominantMark, markOf, type Issue, type IssueMark } from "../../../domain";
+import {
+  dominantMark,
+  markOf,
+  type Issue,
+  type IssueMark,
+  type IssueOrigin,
+} from "../../../domain";
 import { InlineText } from "./inline-text";
 
 export const MARK_NOUNS: Readonly<Record<IssueMark, readonly [string, string]>> = {
   missing: ["missing field", "missing fields"],
   invalid: ["invalid value", "invalid values"],
   warning: ["warning", "warnings"],
+  unresolved: ["unresolved state", "unresolved states"],
 };
 
 /**
@@ -26,7 +33,9 @@ export function countPhrase(counts: Readonly<Record<IssueMark, number>>): string
 /**
  * Issues of one field or key, below its control. With `withPaths`, each issue is preceded by its
  * field path, for the issues displayed away from their field, and the messages start in one
- * column, after the longest path.
+ * column, after the longest path. An issue reported by an external tool is followed by the
+ * classification and the guidance of that tool, and, away from its field, by its location as the
+ * tool wrote it.
  */
 export function IssueList({
   issues,
@@ -45,6 +54,9 @@ export function IssueList({
           )}
           <span class="ekphrasis-issue-message">
             <InlineText text={item.message} />
+            {item.origin !== undefined && (
+              <IssueOriginLines origin={item.origin} withLocus={withPaths} />
+            )}
           </span>
         </li>
       ))}
@@ -52,11 +64,65 @@ export function IssueList({
   );
 }
 
+/** Classification, guidance and, when `withLocus` holds, location of an external issue. */
+function IssueOriginLines({
+  origin,
+  withLocus,
+}: {
+  readonly origin: IssueOrigin;
+  readonly withLocus: boolean;
+}): JSX.Element {
+  const { rule, resultClass, repairCondition, documentationTarget, locus, discriminator } = origin;
+  return (
+    <span class="ekphrasis-issue-origin">
+      {(rule !== undefined || resultClass !== undefined) && (
+        <span class="ekphrasis-issue-origin-line ekphrasis-issue-rule">
+          {rule !== undefined && <code>{rule}</code>}
+          {rule !== undefined && resultClass !== undefined && " · "}
+          {resultClass}
+        </span>
+      )}
+      {repairCondition !== undefined && (
+        <span class="ekphrasis-issue-origin-line ekphrasis-issue-repair">
+          {"Repair: "}
+          <InlineText text={repairCondition} />
+        </span>
+      )}
+      {documentationTarget !== undefined && (
+        <span class="ekphrasis-issue-origin-line ekphrasis-issue-documentation">
+          {"Documentation: "}
+          <code>{documentationTarget}</code>
+        </span>
+      )}
+      {withLocus && locus !== undefined && (
+        <span class="ekphrasis-issue-origin-line ekphrasis-issue-locus">
+          {"Location: "}
+          <code>{locus === "" ? "(whole record)" : locus}</code>
+          {discriminator !== undefined && (
+            <>
+              {" · "}
+              <code>{discriminator}</code>
+            </>
+          )}
+        </span>
+      )}
+    </span>
+  );
+}
+
 /** Number of issues within a group or a collection, beside its label. */
-export function IssueCount({ count }: { readonly count: number }): JSX.Element | null {
+export function IssueCount({
+  count,
+  mark,
+}: {
+  readonly count: number;
+  readonly mark: IssueMark | null;
+}): JSX.Element | null {
   if (count === 0) return null;
   return (
-    <span class="ekphrasis-issue-count">{`${count} ${count === 1 ? "issue" : "issues"}`}</span>
+    <span class={`ekphrasis-issue-count${mark === null ? "" : ` mod-${mark}`}`}>
+      {`${count} ${count === 1 ? "issue" : "issues"}`}
+    </span>
   );
 }
 

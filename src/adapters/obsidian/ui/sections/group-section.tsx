@@ -75,7 +75,7 @@ export function GroupSection({
               onChoose={(to) => void switchTo(to)}
             />
           )}
-          <FieldList field={{ ...field, children }} />
+          <FieldList field={{ ...field, children }} readOnly={readOnly} />
           {children.length === 0 && field.extraEntries.length === 0 && (
             <div class="ekphrasis-empty">No entries.</div>
           )}

@@ -115,8 +115,10 @@ function placeholderOf(node: Node | null): string | null {
 function admittedValues(field: Field): readonly unknown[] {
   if ("options" in field && field.kind === "choice") return field.options.map(({ value }) => value);
   if ("children" in field) {
-    const entry = field.entryTemplate ?? field.children.find((child) => child.kind === "choice");
-    return entry === undefined ? [] : admittedValues(entry);
+    const descendants = [field.entryTemplate, ...field.children].flatMap((child) =>
+      child === null ? [] : admittedValues(child),
+    );
+    return descendants.filter((value, index) => descendants.indexOf(value) === index);
   }
   if ("items" in field && field.next !== null) return admittedValues(field.next);
   return [];

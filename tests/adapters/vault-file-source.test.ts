@@ -45,6 +45,18 @@ describe("reading text from the Obsidian vault", () => {
     expect(adapterRead).toHaveBeenCalledWith(".schema-resources/geonexus/project.schema.yaml");
   });
 
+  it("reads only below the schema resource directory selected by the vault", async () => {
+    const { vault, adapterRead } = vaultWith({ adapterExists: true, text: "schema" });
+    let root = ".generated/schemas";
+    const files = new VaultFileSource(vault, () => root);
+
+    await expect(files.read(".generated/schemas/tool/base.schema.yaml")).resolves.toBe("schema");
+    await expect(files.read(".schema-resources/tool/base.schema.yaml")).resolves.toBeNull();
+    root = "project/resources";
+    await expect(files.read("project/resources/tool/base.schema.yaml")).resolves.toBe("schema");
+    expect(adapterRead).toHaveBeenCalledTimes(2);
+  });
+
   it.each([
     ".private/secret.yaml",
     ".schema-resources-private/secret.yaml",

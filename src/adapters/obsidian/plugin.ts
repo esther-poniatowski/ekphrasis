@@ -1,23 +1,44 @@
 /**
  * Plugin class: composition root, lifecycle, and registration of the Obsidian integration
  * points (views, extensions, commands, settings tab, vault events, index of record identifiers,
- * suggestions of field paths and handler of the URIs of ekphrasis). Once the workspace is
- * restored at the first load of the plugin, the outline opens in the right sidebar.
+ * suggestions of field paths and handler of the URIs of ekphrasis, setup diagnostic). Once the
+ * workspace is restored at the first load of the plugin, the outline opens in the right sidebar.
  */
-import { debounce, loadMathJax, Notice, Plugin, type TAbstractFile } from "obsidian";
+import {
+  debounce,
+  FileSystemAdapter,
+  loadMathJax,
+  normalizePath,
+  Notice,
+  Platform,
+  Plugin,
+  type TAbstractFile,
+} from "obsidian";
 import {
   CommitService,
+  completeCustomCheckers,
+  CustomCheckerService,
   DEFAULT_SETTINGS,
   FormService,
   IdentifierIndexService,
+  InstanceCreationService,
   parseSettings,
   RegistryReader,
+  resolveCustomCheckerModules,
+  runSetupDiagnostic,
   ValidationService,
+  type DiagnosticReport,
+  type CustomCheckerRegistration,
   type EkphrasisSettings,
+  type CustomCheckerRunner,
 } from "../../application";
 import {
   AjvSchemaValidator,
   FileSchemaLoader,
+  PythonCheckerProcess,
+  GeneratedViewProcess,
+  PythonSetupProbe,
+  writeAccessOf,
   YamlDocumentParser,
   YamlSourceEditor,
 } from "../../infrastructure";
@@ -32,7 +53,12 @@ import { rebuildRecordIdentifiersSoon, watchRecordIdentifiers } from "./identifi
 import { EkphrasisSettingTab, type SettingsHost } from "./settings-tab";
 import { createDefaultRegistry } from "./ui/default-registry";
 import { VaultFileSource } from "./vault-file-source";
+import { VaultInstanceStore } from "./vault-instance-store";
+import { ObsidianVaultInspector } from "./vault-inspector";
+import { SetupDiagnosticModal } from "./views/diagnostic-modal";
 import { InstanceView } from "./views/instance-view";
+import { openInstanceCreator } from "./views/instance-creation-modal";
+import { openPrimaryViewTarget } from "./views/primary-view-modal";
 import { OutlineChannel } from "./views/outline-channel";
 import {
   OUTLINE_PLACED_KEY,
@@ -54,8 +80,14 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
   override settings: EkphrasisSettings = DEFAULT_SETTINGS;
   /** Index of the identifiers of the records of the vault, built in `onload`. */
   private identifiers: IdentifierIndexService | null = null;
+  /** Python checker process configured for this vault; started lazily by its first call. */
+  private checkerRunner: CustomCheckerRunner | null = null;
   /** Whether the outline was placed at an earlier load, as the data of the plugin records. */
   private outlinePlaced = false;
+  /** Time at which the plugin loaded, after which a change of an unindexed schema needs a restart. */
+  private loadedAt = Date.now();
+  /** Runs the setup diagnostic on the current settings and the current record, built in `onload`. */
+  private diagnostic: (() => Promise<DiagnosticReport>) | null = null;
 
   private readonly refreshViewsSoon = debounce(
     () => this.instanceViews().forEach((view) => void view.refresh()),
@@ -76,30 +108,45 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     const data: unknown = await this.loadData();
     this.settings = parseSettings(data);
     this.outlinePlaced = outlinePlacedIn(data);
+    this.loadedAt = Date.now();
+    this.replaceCheckerRunner(this.settings);
+    this.register(() => this.closeCheckerRunner());
     const parser = new YamlDocumentParser();
     const settings = (): EkphrasisSettings => this.settings;
     // The checker `latex` renders through MathJax, which Obsidian loads on demand.
     loadMathJax().catch((error: unknown) =>
       console.warn("ekphrasis: MathJax did not load.", error),
     );
+    const customCheckers = new CustomCheckerService(
+      () => completeCustomCheckers(this.settings.customCheckers),
+      () => this.checkerRunner,
+      (path) => this.absoluteVaultPath(path),
+      () =>
+        Platform.isDesktopApp
+          ? "no Python interpreter is set: enter its absolute path under *Python interpreter* in the settings of ekphrasis"
+          : "Python checkers run only in the desktop app of Obsidian: open this file on a desktop computer to see their findings",
+    );
     const validation = new ValidationService(
       new AjvSchemaValidator(),
       OBSIDIAN_CHECKER_ENVIRONMENT,
+      () => customCheckers.checkerNames,
     );
-    const files = new VaultFileSource(this.app.vault);
+    const files = new VaultFileSource(this.app.vault, () => this.settings.schemaResourceRoot);
     const resources = new RegistryReader(parser, files, settings);
+    const schemaLoader = new FileSchemaLoader(files, resources);
     const forms = new FormService(
       parser,
-      new FileSchemaLoader(files, resources),
+      schemaLoader,
       validation,
       settings,
       files,
+      customCheckers,
     );
-    const identifiers = new IdentifierIndexService(
-      parser,
-      files,
-      new FileSchemaLoader(files, resources),
-      settings,
+    const identifiers = new IdentifierIndexService(parser, files, schemaLoader, settings);
+    const creation = new InstanceCreationService(
+      resources,
+      schemaLoader,
+      new VaultInstanceStore(this.app.vault),
     );
     this.identifiers = identifiers;
     const links = new FieldLinkOpener(
@@ -110,6 +157,32 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     const commits = new CommitService(parser, new YamlSourceEditor(), validation);
     const registry = createDefaultRegistry();
     const outline = new OutlineChannel();
+    const inspector = new ObsidianVaultInspector(this.app.vault, writeAccessOf);
+    const validator = new AjvSchemaValidator();
+    this.diagnostic = () => {
+      const view =
+        this.app.workspace.getActiveViewOfType(InstanceView) ??
+        (outline.source instanceof InstanceView ? outline.source : null);
+      const path = view?.filePath ?? null;
+      return runSetupDiagnostic({
+        settings: this.settings,
+        desktop: Platform.isDesktopApp,
+        record:
+          view === null || path === null
+            ? null
+            : { path, text: view.getViewData(), state: view.formState },
+        registry: resources,
+        files,
+        parser,
+        loader: new FileSchemaLoader(files, resources),
+        validator,
+        vault: inspector,
+        probe: Platform.isDesktopApp ? new PythonSetupProbe() : null,
+        loadedAt: this.loadedAt,
+        resolveFile: (vaultPath) => this.absoluteVaultPath(vaultPath),
+        now: () => Date.now(),
+      });
+    };
     this.registerView(
       INSTANCE_VIEW_TYPE,
       (leaf) =>
@@ -140,7 +213,14 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       new Notice(refusalNotice(refused, COMMANDS.openInEkphrasis.name), REFUSAL_NOTICE_DURATION_MS);
     }
 
-    registerCommands(this, identifiers);
+    registerCommands(
+      this,
+      identifiers,
+      () => this.restartCheckerRunner(),
+      () => this.diagnoseSetup(),
+      () => openInstanceCreator(this.app, creation),
+      () => this.openPrimaryView(),
+    );
     this.registerEditorSuggest(new FieldPathSuggest(this.app, forms));
     this.registerObsidianProtocolHandler(LINK_ACTION, (parameters) => {
       links
@@ -158,6 +238,35 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     this.registerEvent(vault.on("create", onFileEvent));
     this.registerEvent(vault.on("delete", onFileEvent));
     this.registerEvent(vault.on("rename", onFileEvent));
+  }
+
+  /** Opens the report of the setup diagnostic, which reads the setup and changes nothing. */
+  diagnoseSetup(): void {
+    if (this.diagnostic !== null) new SetupDiagnosticModal(this.app, this.diagnostic).open();
+  }
+
+  /** Asks for an explicit target, runs its configured producer and opens the reported view. */
+  private openPrimaryView(): void {
+    if (!Platform.isDesktopApp) {
+      new Notice("Ekphrasis: generated-view commands run only in the desktop app.");
+      return;
+    }
+    if (this.settings.pythonInterpreter.trim() === "") {
+      new Notice("Ekphrasis: configure the Python interpreter before generating a view.");
+      return;
+    }
+    if (this.settings.primaryViewCommand.length === 0) {
+      new Notice("Ekphrasis: configure the primary-view command before generating a view.");
+      return;
+    }
+    const runner = new GeneratedViewProcess(
+      this.settings.pythonInterpreter,
+      this.absoluteVaultPath(""),
+      this.settings.customCheckerTimeout,
+    );
+    openPrimaryViewTarget(this.app, (target) =>
+      runner.run(this.settings.primaryViewCommand, target),
+    );
   }
 
   /** Reloads the settings changed outside, for instance by a synchronization service. */
@@ -183,9 +292,63 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     const rulesChanged =
       JSON.stringify(settings.pathRules) !== JSON.stringify(this.settings.pathRules);
     const registryChanged = settings.schemaRegistry !== this.settings.schemaRegistry;
+    const resourceRootChanged = settings.schemaResourceRoot !== this.settings.schemaResourceRoot;
+    const checkersChanged =
+      settings.pythonInterpreter !== this.settings.pythonInterpreter ||
+      settings.customCheckerTimeout !== this.settings.customCheckerTimeout ||
+      JSON.stringify(settings.customCheckers) !== JSON.stringify(this.settings.customCheckers);
     this.settings = settings;
-    if (rulesChanged || registryChanged) this.rebuildIdentifiersSoon();
+    if (checkersChanged) this.replaceCheckerRunner(settings);
+    if (rulesChanged || registryChanged || resourceRootChanged) this.rebuildIdentifiersSoon();
     this.refreshViewsSoon();
+  }
+
+  /** Replace the lazy checker process after its interpreter or registrations change. */
+  private replaceCheckerRunner(settings: EkphrasisSettings): void {
+    this.closeCheckerRunner();
+    if (!Platform.isDesktopApp || settings.pythonInterpreter.trim() === "") return;
+    this.checkerRunner = new PythonCheckerProcess(
+      settings.pythonInterpreter,
+      this.checkerRegistrations(settings),
+      settings.customCheckerTimeout,
+    );
+  }
+
+  /** Restart the configured process and refresh each form so it receives current results. */
+  private async restartCheckerRunner(): Promise<boolean> {
+    const runner = this.checkerRunner;
+    if (runner === null) return false;
+    await runner.restart();
+    await Promise.all(this.instanceViews().map((view) => view.refresh()));
+    return true;
+  }
+
+  /** Resolve a checker file inside the desktop vault to the absolute path required by Python. */
+  private checkerRegistrations(settings: EkphrasisSettings): readonly CustomCheckerRegistration[] {
+    return resolveCustomCheckerModules(completeCustomCheckers(settings.customCheckers), (path) =>
+      this.absoluteVaultPath(path),
+    );
+  }
+
+  /** Absolute path of a vault file on a desktop filesystem; unused where no runner exists. */
+  private absoluteVaultPath(path: string): string {
+    const adapter = this.app.vault.adapter;
+    return adapter instanceof FileSystemAdapter
+      ? adapter.getFullPath(normalizePath(path))
+      : normalizePath(path);
+  }
+
+  /** Close the checker process without delaying plugin unload or a settings update. */
+  private closeCheckerRunner(): void {
+    const runner = this.checkerRunner;
+    this.checkerRunner = null;
+    if (runner !== null) {
+      void runner
+        .close()
+        .catch((error: unknown) =>
+          console.error("ekphrasis: Python checkers did not stop.", error),
+        );
+    }
   }
 
   /** Rebuilds the forms built from one of the schema files at `paths`. */

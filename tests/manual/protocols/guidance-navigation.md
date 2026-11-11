@@ -88,7 +88,6 @@ The table *rows* writes its names in double quotes.
 
 The question fixture of gnomon carries instructions and examples restating the comments of the question template of gnomon.
 
-- [x] Open `gnomon/question.yml`. Click the information icon beside the title *Question*. → The panel reads the description of the record, starting with *A question record fixes the question before any candidate answer is evaluated.*
 - [x] Group *subject → domain*: click the information icon of its heading. → The panel reads *Restrictions of the a priori specification only. The assumptions of the analysis belong to the answer.*
 - [x] Group *virtues → #1*, field *standing*: look below the dropdown. → The line *The appraisal ranks the answers on the virtue.* describes the value *preferred*.
 

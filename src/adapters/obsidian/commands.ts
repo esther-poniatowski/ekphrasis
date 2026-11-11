@@ -1,7 +1,7 @@
 /**
  * Commands of the plugin.
  */
-import type { Plugin, Workspace } from "obsidian";
+import { Notice, type Plugin, type Workspace } from "obsidian";
 import type { RecordIdentifiers } from "../../application";
 import { INSTANCE_VIEW_TYPE, isYamlExtension } from "./constants";
 import { registerCopyFieldLink } from "./copy-field-link";
@@ -21,6 +21,10 @@ export const COMMANDS = {
   showInstructions: { id: "show-all-instructions", name: "Show all instructions" },
   hideInstructions: { id: "hide-all-instructions", name: "Hide all instructions" },
   copyFieldLink: { id: "copy-link-to-field", name: "Copy link to field" },
+  restartCheckers: { id: "restart-python-checkers", name: "Restart Python checkers" },
+  diagnoseSetup: { id: "diagnose-setup", name: "Diagnose setup" },
+  createInstance: { id: "create-instance", name: "Create instance" },
+  openPrimaryView: { id: "open-primary-view", name: "Open primary view" },
 } as const;
 
 /**
@@ -34,8 +38,18 @@ async function revealOutline(workspace: Workspace): Promise<OutlineView | null> 
   return leaf.view instanceof OutlineView ? leaf.view : null;
 }
 
-/** Registers the commands; *Copy link to field* reads the identifiers of the records. */
-export function registerCommands(plugin: Plugin, identifiers: RecordIdentifiers): void {
+/**
+ * Registers the commands; *Copy link to field* reads the identifiers of the records, and
+ * *Diagnose setup* opens the report of the setup diagnostic.
+ */
+export function registerCommands(
+  plugin: Plugin,
+  identifiers: RecordIdentifiers,
+  restartCheckers: () => Promise<boolean>,
+  diagnoseSetup: () => void,
+  createInstance: () => void,
+  openPrimaryView: () => void,
+): void {
   const { workspace } = plugin.app;
 
   // Opens the active YAML file in the view of ekphrasis, whichever plugin owns its extension.
@@ -74,6 +88,31 @@ export function registerCommands(plugin: Plugin, identifiers: RecordIdentifiers)
       return true;
     },
   });
+
+  plugin.addCommand({
+    ...COMMANDS.restartCheckers,
+    callback: () => {
+      void restartCheckers()
+        .then((restarted) => {
+          new Notice(
+            restarted
+              ? "Ekphrasis: Python checkers restarted."
+              : "Ekphrasis: Python checkers are unavailable; configure a Python interpreter.",
+          );
+        })
+        .catch((error: unknown) => {
+          console.error("ekphrasis: Python checkers could not be restarted.", error);
+          new Notice(
+            "Ekphrasis: Python checkers could not be restarted; the developer console holds the error.",
+          );
+        });
+    },
+  });
+
+  // Checks the whole setup, with or without an open record, and changes nothing.
+  plugin.addCommand({ ...COMMANDS.diagnoseSetup, callback: diagnoseSetup });
+  plugin.addCommand({ ...COMMANDS.createInstance, callback: createInstance });
+  plugin.addCommand({ ...COMMANDS.openPrimaryView, callback: openPrimaryView });
 
   plugin.addCommand({
     ...COMMANDS.showOutline,

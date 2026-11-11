@@ -105,11 +105,15 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Schema registry
 
 - [x] **Schema registry**: bind a record by its top-level field `_schema`, resolved through the registry named by the setting *Schema registry*, before the modeline and the path rules, and omit `_schema` from the form. (2026-10-29)
-- [ ] **Schema registry**: resolve a `$ref` by absolute URI through the key `resources` of a registry of version 2, as the [decision on absolute references](docs/adr/absolute-references.md) proposes, and confirm it inside Obsidian on a base schema held in `.schema-resources/`.
+- [x] **Schema registry**: make the directory admitted for low-level reads of generated schema resources configurable per vault, with `.schema-resources` as the compatibility default. (2026-11-10)
+- [x] **Form view**: honor `readOnly: true` in any applicable composed schema layer, inherit the lock through descendants, refuse commits below it and test generated Gnomon views without copying them into Ekphrasis. (2026-11-10)
+- [ ] **Schema registry**: resolve a `$ref` by absolute URI through the key `resources` of a registry of version 2, as the [decision on absolute references](docs/adr/absolute-references.md) proposes, and confirm it inside Obsidian on a base schema held in the configured schema resource directory.
 - [ ] **Schema registry**: merge the subschemas composed by `allOf` into the form and read the root keywords through them, as the [decision on schema composition](docs/adr/schema-composition.md) proposes, and confirm it inside Obsidian on a consumer root schema.
 
 ## Form presentation
 
+- [x] **Form view**: keep an absent optional property out of the form until the author selects it, then display a source-free draft written by its first commit. (2026-11-10)
+- [x] **Form view**: reveal an absent optional property when a current condition or missing-field issue requires it, and hide it again only while it remains uncommitted. (2026-11-10)
 - [x] **Form view**: display each field as a row, as Obsidian displays the properties of a note: an icon of its kind at the left, its name in bold, and its control in the remaining width. (2026-10-30)
 - [x] **Form view**: give every text control one font size, the smallest used now, and one appearance: a white fill, a gray border and rounded corners. (2026-10-30)
 - [x] **Form view**: draw the arrow of a dropdown without shifting the control, align the help button of a field at the right of its label, and separate the help buttons of the headers of a table from their names. (2026-10-30)
@@ -177,6 +181,12 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 - [ ] **Schemas**: decide whether an invalid or misplaced `x-list-layout` is reported as a schema defect or ignored.
 - [ ] **Field kinds**: implement compact and expanded controls for `list`, selected initially by `x-list-layout` with `compact` as its default. Keep a manual choice until the view closes or displays another file. Changing the layout must not edit the YAML file.
+- [x] **Field kinds**: display a list of scalars in a table cell as one summary of its items, which opens the control of the list in an editable cell and offers no control in a read-only one. (2026-11-10)
+- [x] **Field kinds**: display literal identifiers and inline formulas in read-only table cells, and keep large tables navigable through a keyboard-focusable scrolling region with sticky headings. Synthetic and Gnomon corpus tests pass, and the 79-row expression view passed in Obsidian. (2026-11-11)
+- [x] **Field kinds**: display a read-only tree from producer-ordered nodes and the generic property roles declared by `x-tree-role`, without field names or hierarchy rules tied to a producer. Writable values retain the records editor. (2026-11-11)
+- [x] **Field kinds**: display a read-only directed graph from generic roles declared by `x-graph-role`. The producer supplies semantic captions, shapes, markers, roots, status axes and edges. Ekphrasis supplies scrolling, zoom, immediate-relation focus and complete-route tracing. Synthetic and current Gnomon corpus tests pass. (2026-11-11)
+- [ ] **Field kinds**: add generic graph filters, relation-layer toggles and keyboard traversal. The root-focused graph has been inspected inside Obsidian. (Inspection completed 2026-11-11)
+- [ ] **Field kinds**: once the compact layout exists, decide whether a list in a table cell is edited in place through it, instead of through the control opened below its summary.
 - [ ] **Field kinds**: insert an item at the top of a list or between two items, and not only at its end.
 - [ ] **Field kinds**: reorder the items of a list by dragging them.
 - [ ] **Field kinds**: decide the ordering modes of a list (lexical, chronological, custom, each reversible), and whether a mode is declared for the field and kept at each edit or applied once by a command, then implement them.
@@ -189,16 +199,39 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Instance creation
 
 - [ ] **Tooling**: measure the time per file of the corpus tests on geonexus, which grew from about 2 minutes on 2026-10-02 to 41 minutes on 2026-10-20, find the cause, and correct it or record the remaining cost.
+- [x] **Instance creation**: create a new record from a writable contract in the configured registry, retain its logical binding in `_schema`, refuse an existing path, and open its form. Synthetic tests and the read-only Gnomon corpus test pass. (2026-11-10)
+- [x] **Instance creation**: run the creation protocol inside Obsidian. (2026-11-10)
+- [ ] **Instance creation**: define how a registry marks the current creatable contract, then make the chooser prioritize that contract without hiding an older version selected deliberately.
 - [ ] **Instance creation**: write the skeleton of a new instance, with its modeline when no path rule binds its path.
 - [ ] **Instance creation**: add the schema folder to the settings, and offer its schemas together with those of the path rules.
 - [ ] **Instance creation**: provide the command *Create instance*, and one command per schema declared with a command name.
 
 ## Custom checkers
 
-- [ ] **Custom checkers**: embed the runner script in the bundle, start the Python process with the interpreter of the settings, and exchange one JSON message per line.
-- [ ] **Custom checkers**: register the checker modules and their names in the settings tab.
-- [ ] **Custom checkers**: bound each call by a timeout, discard stale results, and provide the command *Restart Python checkers*.
-- [ ] **Custom kinds**: decide how a user defines a field kind (a name, a control among the existing ones, a custom checker, a rendering), then implement it.
+- [x] **Custom checkers**: embed the runner script in the bundle, start the Python process with the interpreter stored by the plugin, and exchange one JSON message per line. (2026-11-10)
+- [x] **Custom checkers**: register the checker modules and their names in the settings tab. (2026-11-10)
+- [x] **Custom checkers**: invoke each registered checker declared by a schema after the built-in checks, discard results computed for superseded source text, and merge current issues into the validation report. (2026-11-10)
+- [x] **Custom checkers**: bound each call by a timeout, discard stale results, and provide the command *Restart Python checkers*. (2026-11-10)
+- [x] **Custom checkers**: select an instance checker by schema identifier and run it without requiring the consumer schema to name that checker. (2026-11-10)
+- [x] **Custom checkers**: invoke a configured command through the findings-log adapter and preserve the metadata of its machine-readable report. (2026-11-10)
+- [x] **Custom checkers**: display selected SARIF run context above the findings without counting it as an issue; verify the current Gnomon completion target in Obsidian. (2026-11-10)
+- [x] **Custom checkers**: compare a generated file's stored source state with one producer command, display a current-state context or a stale warning, and reproduce no producer hashing logic. Synthetic rendering, current Gnomon views and the desktop Obsidian protocol pass. (2026-11-11)
+- [x] **Generated views**: accept an explicit completion target, run a configured producer command and open the generated YAML path returned by that producer. The runtime contains no target-to-view mapping or consumer-project path. (2026-11-11)
+- [x] **Generated views**: run the primary-view protocol in desktop Obsidian, including two targets and a refused path outside the vault. (2026-11-11)
+- [x] **Validation**: combine a finding's pointer and discriminator, display a real Gnomon issue at its nested field, and focus that field from the validation summary. (2026-11-10)
+- [x] **Validation**: group dependent findings under the field whose authored value or presence activates them, preserve the ordinary report, and route both the controlling field and each repair target. Synthetic tests, the current Gnomon corpus and the desktop Obsidian protocol pass. (2026-11-10)
+- [x] **Validation**: present controlling groups before the ordinary report, order dependent and remaining findings as missing, invalid and warning, and preserve checker order within one mark. The adversarial component test, current Gnomon corpus and desktop Obsidian protocol pass. (2026-11-10)
+- [x] **Validation**: display Gnomon's bounded clean-result context when a completed check returns no error or warning, without inferring that meaning from an empty issue list. Adapter, component, current Gnomon-corpus and desktop Obsidian checks pass. (2026-11-10)
+- [x] **Validation**: present a schema-declared admitted value as unresolved research state, apart from missing, invalid and warning findings, and route its summary to the exact field. Synthetic tests, the current Gnomon corpus and the desktop Obsidian protocol pass. (2026-11-10)
+- [x] **Tooling**: implement the read-only command and settings button *Diagnose setup*, with checks of the schema route, the active record and the configured custom checkers. (2026-11-10)
+- [ ] **Tooling**: run the protocol of the setup diagnostic inside Obsidian on desktop and mobile.
+- [x] **Custom checkers**: implement the macOS and Linux process-group stop for a configured findings command after a timeout, restart or forced close; verify every trigger and recovery on macOS. (2026-11-10)
+- [x] **Tooling**: lower lazy imports of Node built-ins to lazy CommonJS loads, so desktop checker and diagnostic processes start inside Obsidian while each load remains inside its desktop-only path. (2026-11-10)
+- [ ] **Custom checkers**: run the forced-stop integration on Linux; handle a non-zero Windows `taskkill` exit through a tested fallback that lets the runner's close finish, then run the integration on Windows.
+- [ ] **Tooling**: stop every process tree started by `runCommand` or `callChecker` across the outer TypeScript timeout and the embedded Python command timeout of the setup diagnostic; await termination and test descendants.
+- [ ] **Custom checkers**: discard a queued checker call before it starts when newer source text supersedes its request.
+- [ ] **Validation**: verify on mobile that the applicable checker message remains visible; the desktop protocol now covers the controller and repair-target summary links.
+- [ ] **Custom kinds**: deferred on 2026-11-10. Gnomon already uses the existing controls and renderings, and project-specific rules run through custom checkers. Reconsider this extension after the integrated Gnomon workflow is usable by a new researcher.
 
 ## Schema editor
 

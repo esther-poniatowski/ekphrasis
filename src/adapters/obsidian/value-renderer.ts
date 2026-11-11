@@ -23,7 +23,7 @@ import {
 } from "obsidian";
 import { FieldLinkError, fieldOfFollowedSubpath } from "../../domain";
 import { isYamlExtension } from "./constants";
-import type { RenderedKind, ValueRenderer } from "./ui/rendering/value-renderer";
+import type { RenderDisplay, RenderedKind, ValueRenderer } from "./ui/rendering/value-renderer";
 
 export class ObsidianValueRenderer implements ValueRenderer {
   constructor(
@@ -33,11 +33,16 @@ export class ObsidianValueRenderer implements ValueRenderer {
     private readonly followUri: (uri: string, newLeaf: boolean) => boolean,
   ) {}
 
-  render(target: HTMLElement, kind: RenderedKind, text: string): () => void {
+  render(
+    target: HTMLElement,
+    kind: RenderedKind,
+    text: string,
+    display: RenderDisplay,
+  ): () => void {
     target.empty();
     if (kind === "latex") {
       try {
-        target.appendChild(renderMath(text, true));
+        target.appendChild(renderMath(text, display === "block"));
         void finishRenderMath();
       } catch (error) {
         // MathJax loads after the plugin, so a formula rendered before it is ready stays as text.

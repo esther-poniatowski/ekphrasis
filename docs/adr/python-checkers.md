@@ -36,8 +36,12 @@ One persistent Python process per vault runs the custom checkers. The process is
 ## Consequences
 
 - Custom checkers run on desktop only. The manifest keeps the plugin available on mobile, where the form view works and the custom checkers are skipped.
+- A tool that writes a SARIF findings log runs through the built-in function `findings_log` of the runner, which starts the command of the tool in a child process at each call. Such a call pays the start and the imports of the tool each time, and the timeout must cover the whole command. A timeout stops the runner together with the child process and its descendants.
+- The runner handles one call at a time, and each timeout begins when the request enters the queue. Therefore, the timeout must cover the wait plus the check. A request for superseded source text still starts unless the runner removes it from the queue.
 - Every value exchanged with a checker must be representable in JSON.
-- A command restarts the process after a module changes, and a timeout bounds each call.
+- The command *Restart Python checkers* stops the process after a module changes. The next call starts a process that imports the modules again.
+- A timeout bounds each call. A timeout stops the blocked process, and the next call starts a fresh process.
+- A forced stop of the runner, after a timeout, a restart or a close during a call, is made by the plugin on the whole process tree of the runner. On macOS and Linux, the runner starts as the leader of a process group, which a command and its descendants inherit, and the stop sends `SIGKILL` to that group. On Windows, the stop runs `taskkill /t /f` on the runner. A cleanup made by the runner itself was rejected for two reasons. First, neither `SIGKILL` nor a termination on Windows can be intercepted by the stopped process. Second, the Windows mechanism that survives such a termination, a job object, requires calls to the Win32 interface from the embedded script. The [stop of the process tree](../features/custom-checkers.md#^process-tree-stop) states the descendants that escape the stop on each platform.
 - A rule that spans several files, such as the resolution of references across records, runs as a custom checker, which reads the files neighbouring its instance. The [evaluation of rules across files](../architecture/implementation-plan.md#^rules-across-files) records why ekphrasis adds no predefined checker of that kind.
 
 ## Verification
@@ -56,3 +60,5 @@ Three constraints follow for the milestone *Custom checkers*:
 - A failed start must be reported to the user with the interpreter path, so that an `ENOENT` reads as a wrong path in the settings.
 
 The bundle can carry the runner script as a string. Therefore, the risk on packaging recorded in the implementation plan is resolved.
+
+Unit tests added on 2026-11-10 verify that an explicit restart changes the process identity, that a timed-out function is stopped, and that a later call succeeds in a fresh process. The session tests verify that a result computed for superseded source text does not replace the current form state. The cancellation tests verify, on macOS, that a timeout, a restart and a close during a call each stop the command of a findings call together with a descendant of that command, and that a later call succeeds in a fresh process. The stop on Windows is verified by its arguments only.

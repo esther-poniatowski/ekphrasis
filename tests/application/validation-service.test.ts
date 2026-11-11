@@ -115,6 +115,22 @@ describe("defects of the schema", () => {
     ]);
   });
 
+  it("recognizes a registered external checker without running it as a built-in rule", () => {
+    const validation = new ValidationService(
+      new AjvSchemaValidator(),
+      undefined,
+      () => new Set(["project-check"]),
+    );
+    const report = validate(
+      { type: "object", "x-rules": [{ check: "project-check", projectArgument: true }] },
+      "a: 1\n",
+      validation,
+    );
+
+    expect(report.issues).toEqual([]);
+    expect(report.schemaIssues).toEqual([]);
+  });
+
   it("reports a required property without a field, and an unfilled value admitted by a field", () => {
     const schema: JsonValue = {
       type: "object",

@@ -11,7 +11,13 @@ The form view displays an instance bound to a schema as a form, in which each fi
 
 ## Layout
 
-The fields of the instance appear in the order of the schema. Each field occupies one concise row, as Obsidian displays the properties of a note, with three parts:
+An editable form initially displays the properties stated in the record and every property required by the schema. A current conditional rule or a missing-field issue also displays its absent target. All displayed properties follow schema order. The remaining optional properties stay available through *+ Add a field*. Selecting an optional property displays a draft control without changing the file. Its first committed value writes the property. *Discard* removes an uncommitted property together with every nested draft in that branch.
+
+Three contexts modify this initial display. First, a read-only form offers no optional-property selector. Second, moving from the outline or the issue summary reveals the selected field and its hidden ancestors. Third, a table retains every declared column. All rows share the same column structure.
+
+The form header states the schema binding first. When an external checker supplies run context, the header then states its label and value, followed by its explanation, result class and documentation target when present. For example, a scoped research checker can state the completion target applied to a partial record. This context appears even when the checker reports no issue, and it remains visually separate from the validation summary.
+
+Each displayed field occupies one concise row, as Obsidian displays the properties of a note, with three parts:
 
 - the label, opened by the [icon of the kind](#^kind-icons) of the field, followed by its name in bold. The name is taken from the keyword `title` or else from the key, and marked when the schema requires the field, or when a [conditional rule](#^conditional-controls) requires it under the current values. A declared property without a title displays its key with underscores and hyphens read as spaces, as *empty hint* for `empty_hint`. A key admitted by a pattern, such as an identifier, displays as written. The help button of the field closes the label on its right, so the help buttons of the rows align;
 - the control of its [kind](field-kinds.md), in the remaining width of the row;
@@ -90,14 +96,16 @@ The top of the form summarizes the issues of the instance in a box titled *Valid
 
 Two rules of [validation](validation.md) also act on the controls: `required-when` and `forbidden-when`. Therefore, the author sees which fields the current values require or forbid, without discovering the rules by trial. Each rule acts while its condition holds under the current values: ^conditional-controls
 
-- a field required by a rule `required-when` is marked as required, like a field required by the schema;
+- an absent field required by a rule `required-when` appears automatically and is marked as required, like a field required by the schema. If the rule ceases to apply before a value is committed, the field disappears again. A field stays visible once it holds a committed value;
 - an unfilled field forbidden by a rule `forbidden-when` is disabled and greyed, together with the fields inside it. A note below the field states the condition, such as *This field stays unfilled while `aim` equals `description`.*
 
 When a forbidden field still holds a value, the field stays editable, since a disabled control cannot clear its value. Its issue displays below its control, in the colour of its severity. Once its value is cleared, the field is disabled. The standard keywords `if`, `then`, `else` and `dependentRequired` change no control: their conditions are reported as issues only.
 
 ## Locked values
 
-A field can display a value written elsewhere in the file: a value reached through an alias, such as `*nominal`, or merged from another mapping by the key `<<`. The text of such a value lies at its anchor, outside the field. Therefore, the field stays read-only, and a circled question mark follows its label. A click on that symbol reveals, under the field, where the value is edited: at its anchor, or in the merged mapping.
+A field stays read-only when its schema, an applicable layer of its composed schema, or an ancestor schema declares `readOnly: true`. An ancestor declaration locks every descendant. A circled question mark follows the label and explains that the schema prevents the form from changing the value.
+
+A field can also display a value written elsewhere in the file: a value reached through an alias, such as `*nominal`, or merged from another mapping by the key `<<`. The text of such a value lies at its anchor, outside the field. Therefore, the field stays read-only, and the circled question mark reveals where the value is edited: at its anchor, or in the merged mapping.
 
 ## Keys outside the schema
 

@@ -101,6 +101,14 @@ export class SchemaView {
     return this.keyword("x-collapsed")?.value === true;
   }
 
+  /**
+   * Whether a layer of the composition holds `true` under the keyword `readOnly`. JSON Schema
+   * treats a value as read-only when any applicable occurrence of the keyword holds `true`.
+   */
+  get readOnly(): boolean {
+    return this.composition.layers.some((layer) => layer.keywords["readOnly"] === true);
+  }
+
   /** Value written under the keyword `x-align`, unchecked. */
   get declaredAlign(): string | null {
     return this.string("x-align");
@@ -117,6 +125,16 @@ export class SchemaView {
   /** Name written under the keyword `x-kind`, unchecked. */
   get declaredKind(): string | null {
     return this.string("x-kind");
+  }
+
+  /** Role written under the keyword `x-tree-role`, unchecked. */
+  get declaredTreeRole(): string | null {
+    return this.string("x-tree-role");
+  }
+
+  /** Role written under the keyword `x-graph-role`, unchecked. */
+  get declaredGraphRole(): string | null {
+    return this.string("x-graph-role");
   }
 
   // --- Values ------------------------------------------------------------------------------------
@@ -160,6 +178,12 @@ export class SchemaView {
   get constValue(): { readonly value: JsonScalar } | null {
     const entry = this.keyword("const");
     return entry !== undefined && isJsonScalar(entry.value) ? { value: entry.value } : null;
+  }
+
+  /** Value of the nearest keyword `default`, wrapped so that a default `null` stays distinct. */
+  get defaultValue(): { readonly value: JsonValue } | null {
+    const entry = this.keyword("default");
+    return entry === undefined ? null : { value: entry.value };
   }
 
   /** Keys required by any layer, in the order of their nearest declaration. */

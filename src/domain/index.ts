@@ -7,14 +7,21 @@ export * from "./model";
 export * from "./files/vault-paths";
 export * from "./paths/field-path";
 export * from "./binding/binding";
-export { GlobPattern } from "./binding/glob";
+export { GlobPattern, globDefect, type GlobDefect } from "./binding/glob";
 export { readModeline } from "./binding/modeline";
 export { readSchemaField } from "./binding/schema-field";
-export { readSchemaRegistry, type RegistryReading, type SchemaRegistry } from "./binding/registry";
+export {
+  readSchemaRegistry,
+  SUPPORTED_REGISTRY_VERSIONS,
+  type RegistryDefect,
+  type RegistryReading,
+  type SchemaRegistry,
+} from "./binding/registry";
 export * from "./schema/json";
 export { collectReferences, parseReference } from "./schema/reference";
 export * from "./schema/schema-set";
 export { SchemaView, type PropertySchema } from "./schema/schema-view";
+export { instanceSkeleton } from "./creation/instance-skeleton";
 export * from "./form/kinds";
 export * from "./form/model";
 export { buildFormModel } from "./form/builder";
@@ -63,9 +70,11 @@ export {
   MISSING_MESSAGE,
   type Issue,
   type IssueMark,
+  type IssueOrigin,
   type IssuePlace,
   type Severity,
 } from "./validation/issues";
+export { isJsonPointer, locateFinding } from "./validation/finding-location";
 export {
   issuesFromValidatorErrors,
   pathOfPointer,
@@ -73,10 +82,12 @@ export {
 } from "./validation/validator-errors";
 export {
   NO_HOST,
+  parseDeclaration,
   RuleDeclarationError,
   type Checker,
   type CheckerEnvironment,
   type Constraint,
+  type RuleDeclaration,
 } from "./validation/rules/declaration";
 export { ConstraintIndex } from "./validation/constraints";
 export { checkRules, PREDEFINED_CHECKERS, type RuleReport } from "./validation/rules/run";

@@ -12,6 +12,7 @@ import type { ControlRegistry } from "./control-registry";
 import type { FoldState } from "./fold-state";
 import type { HelpState } from "./help-state";
 import type { IconPainter } from "./icon";
+import type { OptionalFieldState } from "./optional-field-state";
 import type { RenderScheduler } from "./rendering/render-queue";
 import type { ValueRenderer } from "./rendering/value-renderer";
 
@@ -46,6 +47,8 @@ export interface FormContextValue {
   readonly constraints: ConstraintIndex;
   readonly folds: FoldState;
   readonly help: HelpState;
+  /** Absent optional fields selected as drafts in the open instance. */
+  readonly optionalFields: OptionalFieldState;
   /** Renderer of the values of kind `markdown`, `markdown-line` and `latex`. */
   readonly renderer: ValueRenderer;
   /** Scheduler of the renderings, which renders the visible values first. */

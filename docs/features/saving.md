@@ -103,8 +103,9 @@ The two consequences below arise in no fixture, so each was checked on one const
 
 ## Refused commits
 
-A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Five edits are also refused before any text is written:
+A commit is written only once the new text is confirmed. The new text is parsed, and its document is compared with the expected document: the committed value at the edited field, and every other value unchanged. When the two documents differ, or when the new text fails to parse, the commit is refused. Six edits are also refused before any text is written:
 
+- an edit of a field whose schema or ancestor schema declares `readOnly: true` in any applicable composed layer;
 - an edit of a value reached through an alias or merged by a merge key, whose text lies at its anchor. The item holding an alias can still be removed or moved;
 - a removal that would delete a comment: inside a flow collection, or on the line of the first key of a sequence item;
 - an insertion into an item of a block sequence that holds an unfilled value, such as `- open`;

@@ -10,7 +10,9 @@
 import type {
   IdentifierResolution,
   BindingResult,
+  JsonObject,
   JsonValue,
+  Severity,
   SchemaSet,
   SourceEdit,
   ValidatorError,
@@ -35,6 +37,12 @@ export interface DocumentEditor {
 export interface FileSource {
   /** Text of the file at the vault path `path`, or `null` when no such file exists. */
   read(path: string): Promise<string | null>;
+}
+
+/** Creation of a new YAML instance without overwriting a host file. */
+export interface InstanceStore {
+  exists(path: string): Promise<boolean>;
+  create(path: string, value: JsonObject): Promise<void>;
 }
 
 /** Resolves the schema binding of an instance, including any configured schema registry. */
@@ -87,6 +95,112 @@ export interface InstanceValidator {
  */
 export interface SchemaValidator {
   compile(schemas: SchemaSet): InstanceValidator;
+}
+
+/** One Python function admitted under a checker name by the plugin settings. */
+export interface CustomCheckerRegistration {
+  readonly name: string;
+  /** Importable module name or absolute path of a Python module. */
+  readonly module: string;
+  readonly function: string;
+  /**
+   * Glob patterns of the logical schema identifiers, such as `project:*`, whose instances the
+   * checker checks as a whole without a rule declared by the schema; empty or absent otherwise.
+   */
+  readonly schemas?: readonly string[];
+  /** Keyword arguments of each call made for `schemas`, which declare no rule to carry them. */
+  readonly arguments?: Readonly<Record<string, JsonValue>>;
+}
+
+/**
+ * Module and function that the checker runner provides: a registration naming them runs the
+ * command of its argument `command` at each call, and reads the SARIF findings log of that command.
+ */
+export const FINDINGS_LOG_CHECKER = {
+  module: "ekphrasis_findings",
+  function: "findings_log",
+} as const;
+
+/**
+ * Module and function provided by the checker runner for comparing a stored source-state token
+ * with the single-line output of a configured project command.
+ */
+export const SOURCE_STATE_CHECKER = {
+  module: "ekphrasis_commands",
+  function: "source_state",
+} as const;
+
+/** JSON input supplied to one registered custom checker. */
+export interface CustomCheckerCall {
+  readonly checker: string;
+  readonly value: JsonValue;
+  readonly instance: JsonValue;
+  readonly path: string;
+  readonly file: string;
+  readonly arguments: Readonly<Record<string, JsonValue>>;
+}
+
+/** Issue returned by a custom checker; a string stays at the declaring field. */
+export type CustomCheckerIssue = string | LocatedCheckerIssue;
+
+/** Context reported by a custom checker beside its issues, without becoming an issue itself. */
+export interface CustomCheckerContext {
+  readonly kind: "context";
+  readonly label: string;
+  readonly value: string;
+  readonly description?: string;
+  readonly result_class?: string;
+  readonly documentation_target?: string;
+}
+
+/** One item returned by a custom checker. */
+export type CustomCheckerItem = CustomCheckerIssue | CustomCheckerContext;
+
+/** Checker context prepared for display in a validation report. */
+export interface CheckerContext {
+  readonly checker: string;
+  readonly label: string;
+  readonly value: string;
+  readonly description?: string;
+  readonly resultClass?: string;
+  readonly documentationTarget?: string;
+}
+
+/**
+ * Issue located by its checker: by a field path, or by the JSON Pointer of a findings log, which
+ * a discriminator may refine. The optional keys carry the classification and the guidance of the
+ * tool, which the form displays unchanged.
+ */
+export interface LocatedCheckerIssue {
+  readonly message: string;
+  /** Field path from the root of the instance; one of `path` and `pointer` is present. */
+  readonly path?: string;
+  /** JSON Pointer (RFC 6901) from the root of the instance. */
+  readonly pointer?: string;
+  /** JSON Pointer of the field whose value or presence activates this issue. */
+  readonly controlled_by?: string;
+  readonly severity: Severity;
+  readonly discriminator?: string;
+  /** Location as the tool wrote it, when it is no JSON Pointer, such as a typed locus. */
+  readonly locus?: string;
+  readonly rule?: string;
+  readonly result_class?: string;
+  readonly repair_condition?: string;
+  readonly documentation_target?: string;
+  readonly source_file?: string;
+}
+
+/** Persistent process that invokes only the Python functions registered at construction. */
+export interface CustomCheckerRunner {
+  call(input: CustomCheckerCall): Promise<readonly CustomCheckerItem[]>;
+  /** Stop the current process so the next call imports every registered module again. */
+  restart(): Promise<void>;
+  close(): Promise<void>;
+}
+
+/** Runs a configured producer command and returns the vault path of its generated YAML file. */
+export interface GeneratedViewRunner {
+  run(command: readonly string[], target: string): Promise<string>;
 }
 
 /**

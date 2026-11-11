@@ -11,31 +11,36 @@ A command creates a new instance from its schema, as the [requirement on guided 
 
 ## Commands
 
-Two kinds of command create an instance:
+The command *Create instance* creates a record through the following sequence:
 
-- the command *Create instance* asks for a schema, then for the path of the new file;
-- a schema declared in the settings with a command name receives a command of its own, and that command asks for the path only.
+1. The schema chooser lists the writable contracts of the configured [schema registry](instance-files.md#^binding-sources). Each entry shows the schema title and its logical identifier. Schemas whose root declares `readOnly: true` are excluded.
+2. The path prompt proposes a YAML file in the folder of the active file. The entered path must stay inside the vault, end in `.yaml` or `.yml`, and name no existing file.
+3. The command writes the skeleton and opens the new file in the form view.
 
-The schemas offered are those named by the path rules of the settings, and those stored in the schema folder of the settings. The path proposed for the new file lies in the folder of the active file.
+If the registry or a contract is invalid, the command shows a notice and writes no file. In particular, each offered contract must declare its registered logical identifier as the constant value of its `_schema` property.
 
 ## Skeleton
 
 The skeleton holds three elements:
 
-- a modeline that binds the file to its schema, unless a path rule of the settings already binds the chosen path;
+^skeleton
+
+- the field `_schema`, holding the logical identifier chosen from the registry;
 - every field with a default value, holding that value;
 - every required field without a default value, holding the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value.
 
-Optional fields without a default value stay absent from the file, although the form displays them. The first edit of such a field writes its key. In the file, the keys follow the order of the schema, so the file reads in the order of the form. The schema below, stored in the file `schemas/question.schema.yaml`, declares three required fields and one optional field, and gives a default value to one required field:
+Only required fields and fields with defaults enter the skeleton. The form still displays every other declared field, and its first edit writes the key. The file and form use the property order of the schema. The registry maps the logical identifier `project:question@1` to this example schema. The schema requires four fields and gives a default value to one of them:
 
 ```yaml
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: question.schema.yaml
 title: Research question
 type: object
-required: [id, status, statement]
+required: [_schema, id, status, statement]
 x-unfilled: [open]
 properties:
+  _schema:
+    const: project:question@1
   id:
     type: string
     x-kind: label
@@ -50,10 +55,10 @@ properties:
     x-kind: markdown
 ```
 
-For a new file `questions/intermittency.yaml`, bound by no path rule, the command writes the skeleton below. The fields `id` and `statement` hold the unfilled value `open`, so the form reports them as missing until they are filled:
+For the new file `questions/intermittency.yaml`, the command writes the following skeleton. Its fields `id` and `statement` hold the unfilled value `open`. Therefore, the form reports both fields as missing:
 
 ```yaml
-# yaml-language-server: $schema=../schemas/question.schema.yaml
+_schema: project:question@1
 id: open
 status: posed
 statement: open

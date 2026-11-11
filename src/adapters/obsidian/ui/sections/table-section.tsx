@@ -1,7 +1,8 @@
 /**
  * Tables, for the kinds `table` and `keyed-table`: one row per item or entry, and one column per
- * property of the rows, each cell holding the control of the scalar kind of its property. A
- * table of kind `keyed-table` opens each row with the identifier of its entry.
+ * property of the rows, each cell holding the control of the scalar kind of its property, or the
+ * summary of a list of scalars. A table of kind `keyed-table` opens each row with the identifier
+ * of its entry.
  *
  * A row is added as a draft, written by the first value committed in one of its cells: the next
  * item of a sequence, or a new entry under the identifier typed by the author.
@@ -23,6 +24,9 @@ import { FieldView } from "../field-view";
 import { useFormContext } from "../form-context";
 import { columnHelpKey } from "../help-state";
 import { fieldMark, IssueList } from "../issue-list";
+import { RenderedValue } from "../rendering/rendered-value";
+import { displayedValue, formatScalar, UNFILLED_MARK } from "../controls/scalar-format";
+import { CellList } from "./cell-list";
 import { useDraft } from "./draft";
 import { ActionButton, EntryActions, ItemActions } from "./item-actions";
 import { KeyAdder } from "./key-adder";
@@ -193,7 +197,12 @@ function TableFrame({
               title={column.label}
             />
           ))}
-          <div class="ekphrasis-table-scroll">
+          <div
+            class="ekphrasis-table-scroll"
+            role="region"
+            tabIndex={0}
+            aria-label={`${field.label} table`}
+          >
             <table class="ekphrasis-table">
               <thead>
                 <tr>
@@ -280,7 +289,10 @@ function TableRow({
   );
 }
 
-/** Cell of a table: the control of a scalar property, with its issues; any other kind in full. */
+/**
+ * Cell of a table: the control of a scalar property, with its issues; the summary of a list of
+ * scalars; any other kind in full.
+ */
 function Cell({
   field,
   readOnly,
@@ -290,18 +302,37 @@ function Cell({
 }): JSX.Element {
   const { registry, commit, errors, issues } = useFormContext();
   const disabling = useDisabling(field);
+  if (field.kind === "list" && field.mismatch === null) {
+    return <CellList field={field} readOnly={readOnly || field.lock !== null} />;
+  }
   if (!isScalarKind(field.kind) || field.mismatch !== null) return <FieldView field={field} />;
   const scalar = field as ScalarField;
   const Control = registry.scalar(scalar.kind);
   const cellIssues = issues.at(field.id);
   const error = errors.get(field.id) ?? null;
+  const locked = readOnly || disabling !== null || field.lock !== null;
+  const text = formatScalar(displayedValue(scalar)) || UNFILLED_MARK;
   return (
     <div class="ekphrasis-table-cell" data-issue={fieldMark(cellIssues) ?? undefined}>
-      <Control
-        field={scalar}
-        readOnly={readOnly || disabling !== null || field.lock !== null}
-        onCommit={(value) => commit(field.path, value)}
-      />
+      {locked && scalar.kind === "label" ? (
+        <span
+          class={`ekphrasis-cell-label${text === UNFILLED_MARK ? " ekphrasis-cell-empty" : ""}`}
+        >
+          {text}
+        </span>
+      ) : locked && scalar.kind === "latex" && text !== UNFILLED_MARK ? (
+        <RenderedValue
+          kind="latex"
+          text={text}
+          align={scalar.align}
+          display="inline"
+          class="ekphrasis-cell-formula"
+        />
+      ) : locked && scalar.kind === "latex" ? (
+        <span class="ekphrasis-cell-empty">{UNFILLED_MARK}</span>
+      ) : (
+        <Control field={scalar} readOnly={locked} onCommit={(value) => commit(field.path, value)} />
+      )}
       {error !== null && (
         <div class="ekphrasis-commit-error" role="alert">
           {error}
