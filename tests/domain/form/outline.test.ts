@@ -151,6 +151,11 @@ describe("places of the issues of each mark", () => {
         places.map(({ id }) => id),
       ]),
     );
-    expect(ids).toEqual({ missing: ["title"], invalid: ["rows[0].count", "title"], warning: [] });
+    expect(ids).toEqual({
+      missing: ["title"],
+      invalid: ["rows[0].count", "title"],
+      warning: [],
+      unresolved: [],
+    });
   });
 });

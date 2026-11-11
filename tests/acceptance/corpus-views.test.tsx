@@ -68,6 +68,7 @@ function exportedViews(): string[] {
 
 /** Highest exported version of each view schema, which `gnomon views` writes. */
 function currentViews(identifiers: readonly string[]): string[] {
+  if (!hasRegistry) return [];
   const registry = parse(readFileSync(join(corpusRoot ?? "", REGISTRY), "utf8")) as {
     schemas?: Record<string, unknown>;
   };

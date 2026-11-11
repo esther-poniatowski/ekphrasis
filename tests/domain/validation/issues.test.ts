@@ -38,6 +38,6 @@ describe("issue index", () => {
     expect(index.countWithin(["task"])).toBe(3);
     expect(index.countWithin(["ta"])).toBe(0);
     expect(index.countWithin([])).toBe(5);
-    expect(index.counts).toEqual({ missing: 1, invalid: 3, warning: 1 });
+    expect(index.counts).toEqual({ missing: 1, invalid: 3, warning: 1, unresolved: 0 });
   });
 });

@@ -67,7 +67,8 @@ describe.skipIf(!enabled)("current Gnomon views", () => {
     files,
     checkers,
   );
-  const generated = readYamlFiles(views ?? "").filter(({ text }) =>
+  // A skipped suite is still collected, so the files are read only when the corpus is named.
+  const generated = (enabled ? readYamlFiles(views ?? "") : []).filter(({ text }) =>
     /^_schema:\s*gnomon:view\./m.test(text),
   );
 
