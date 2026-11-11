@@ -4,8 +4,8 @@ This checklist verifies inside Obsidian the binding of a record by its top-level
 
 - the field `_schema` hidden from the form of a bound record;
 - the field `_schema` taking precedence over a modeline;
-- the failures that stop the binding: no registry set, a registry file absent, an absent major of a registered format, and a schema declaring another contract;
-- a file of an unregistered format left unbound, without an error;
+- the failures that stop the binding: a registry file absent, an absent major of a registered format, and a schema declaring another contract;
+- a file left unbound, without an error, when no registry is set or when no identifier of the registry names its format;
 - a record bound although its text fails to parse;
 - a change of the registry reaching an open form;
 - the index of identifiers following the registry.
@@ -34,7 +34,7 @@ The records of this protocol lie in the folder `scenarios/registry` of the test 
 ## No registry set
 
 - [x] Open *Settings → Ekphrasis*. → The setting *Schema registry* is empty.
-- [ ] Open `scenarios/registry/bound.yml`. → The message *Schema not found* reads: *The logical contract `scenario:registered@1` cannot be resolved because no schema registry is available.* No form displays, although no path rule or modeline applies.
+- [ ] Open `scenarios/registry/bound.yml`. → The file opens in the source view, and no message states that a schema is missing, since no registry is set. No form displays, although no path rule or modeline applies.
 - [x] Open `scenarios/registry/registry-links.md` in the reading view, and click link 1. → No file opens, and the notice *Ekphrasis: no record of the vault declares the identifier `scenario.registered`.* shows.
 
 ## Registry absent
@@ -77,7 +77,7 @@ To restore the records and the settings, run `npm run test-vault` from the root 
 
 The run tested commit `854ed26`, built in a separate worktree, in Obsidian 1.15.0. Every item passed except the second item of *No registry set*. During the whole run, the console held no line starting with `ekphrasis:`.
 
-- *No registry set*, item 2, deviated: `scenarios/registry/bound.yml` opens in the source view, and no message displays. The console shows no message. Since commit `98a2ff2`, released in 0.2.0, the binding leaves a well-formed `_schema` unbound when no registry is configured, as the [ADR of schema binding](../../../docs/adr/schema-binding.md) states. The plugin therefore follows its specification, and the expected result of this item predates the rule. Commit `854ed26` does not cause the deviation.
+- *No registry set*, item 2, deviated: `scenarios/registry/bound.yml` opens in the source view, and no message displays. The console shows no message. Since commit `98a2ff2`, released in 0.2.0, the binding leaves a well-formed `_schema` unbound when no registry is configured, as the [ADR of schema binding](../../../docs/adr/schema-binding.md) states. The plugin therefore follows its specification, and the expected result of this item predates the rule. Commit `854ed26` does not cause the deviation. After this run, the expected result of the item was restated to the specified behaviour. The observation above matches the restated result, and the item stays unticked until the owner accepts this observation or a new run confirms it.
 - *Failures of the binding*, item 1, passed: `unknown.yml` shows *Schema not found*, which reads: *The logical contract `scenario:registered@2` cannot be resolved because the schema identifier is absent from the registry, which holds another major of `scenario:registered`.*
 - *Failures of the binding*, item 2, passed: `foreign.yml` opens in the source view, without a message.
 - *Change of the registry*, item 1, passed: `late.yml` opens in the source view, without a message.
