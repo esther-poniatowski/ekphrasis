@@ -32,7 +32,12 @@ export interface SchemaBinding {
 /** Outcome of resolution: a schema binding, no applicable source, or an invalid source value. */
 export type BindingResult =
   | { readonly status: "bound"; readonly binding: SchemaBinding }
-  | { readonly status: "unbound"; readonly registryPath?: string }
+  | {
+      readonly status: "unbound";
+      readonly registryPath?: string;
+      /** Excluded path pattern matching the file, which then binds to no schema. */
+      readonly excludedBy?: string;
+    }
   | {
       readonly status: "invalid";
       readonly source: BindingSource;
@@ -105,6 +110,21 @@ export function resolveBinding(
     (candidate) => isComplete(candidate) && new GlobPattern(candidate.pattern).matches(path),
   );
   return rule === undefined ? { status: "unbound" } : bindTo("path-rule", rule.schema, "");
+}
+
+/**
+ * First of the excluded path `patterns` that matches `path`, or `null` when none does.
+ *
+ * An excluded file binds to no schema, whatever its `_schema` field, modeline or path rules
+ * state, so a note skeleton whose placeholders fail its schema opens in the source view. A
+ * blank pattern, such as a line being filled in, excludes no file.
+ */
+export function exclusionOf(path: string, patterns: readonly string[]): string | null {
+  return (
+    patterns.find(
+      (pattern) => pattern.trim() !== "" && new GlobPattern(pattern).matches(path),
+    ) ?? null
+  );
 }
 
 /**

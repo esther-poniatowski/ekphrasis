@@ -45,5 +45,6 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 - A current registry declares `_schema: kleisis:schema-registry@2`. Ekphrasis also reads the numeric markers `schema_version: 1` and `schema_version: 2`. A missing marker, duplicate markers or another value makes the registry invalid.
 - Ekphrasis omits the reserved root property from the content form.
 - The modeline and path rules remain available to files without `_schema`.
+- A file matched by a pattern of the setting *Excluded paths* binds to no source. A note skeleton declares the `_schema` of the records created from it, but its placeholders fail that schema. Excluding its folder opens it in the source view, without any change to the skeleton.
 - The command *Create instance* writes a modeline only when no path rule binds the new path.
 - A registry may map to a schema below any hidden directory. The low-level reader admits an exact registry target and each relative `$ref` reached from an admitted file. The low-level reader refuses every other hidden path, always refuses `.git/` and `.obsidian/`, and refuses paths that leave the vault. ^hidden-schema-resources

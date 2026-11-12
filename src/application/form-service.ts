@@ -21,8 +21,16 @@ import type { ValidationReport, ValidationService } from "./validation-service";
 
 /** Outcome of opening an instance, one variant per stage that can stop the pipeline. */
 export type FormState =
-  /** No schema field, modeline or path rule binds the file: it opens in the source view. */
-  | { readonly status: "unbound"; readonly schemaPaths: readonly string[] }
+  /**
+   * No schema field, modeline or path rule binds the file, or an excluded path pattern matches
+   * it: it opens in the source view.
+   */
+  | {
+      readonly status: "unbound";
+      readonly schemaPaths: readonly string[];
+      /** Excluded path pattern matching the file, absent when no binding source applies. */
+      readonly excludedBy?: string;
+    }
   /** A declared binding cannot resolve to a schema in the vault. */
   | {
       readonly status: "invalid-binding";
@@ -91,6 +99,7 @@ export class FormService {
       return {
         status: "unbound",
         schemaPaths: result.registryPath === undefined ? [] : [result.registryPath],
+        ...(result.excludedBy === undefined ? {} : { excludedBy: result.excludedBy }),
       };
     }
     if (result.status === "invalid") {

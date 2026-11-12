@@ -119,6 +119,29 @@ describe("FormService", () => {
     expect((await forms.open("q.yml", "id: x\n")).status).toBe("form");
   });
 
+  it("leaves an excluded skeleton unbound, whatever its schema field declares", async () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      schemaRegistry: "schemas.yml",
+      pathRules: [{ pattern: "**/*.yml", schema: "s.yaml" }],
+      excludedPaths: ["templates/**"],
+    };
+    const forms = service(
+      {
+        "schemas.yml": "schema_version: 1\nschemas:\n  vault:record@1: s.yaml\n",
+        "s.yaml": SCHEMA,
+      },
+      settings,
+    );
+
+    expect(await forms.open("templates/record.yml", "_schema: vault:record@1\nid: 3\n")).toEqual({
+      status: "unbound",
+      schemaPaths: [],
+      excludedBy: "templates/**",
+    });
+    expect((await forms.open("records/q.yml", "id: x\n")).status).toBe("form");
+  });
+
   it("reports a parse error against the bound schema", async () => {
     const state = await service({ "s.schema.yaml": SCHEMA }).open("q.yml", `${MODELINE}id: [x\n`);
 

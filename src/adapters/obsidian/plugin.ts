@@ -286,11 +286,12 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
 
   /**
    * Replaces the settings, rebuilds the open forms, and indexes every record again when the path
-   * rules change, since a rule can bind a file to another schema.
+   * rules or the excluded paths change, since either can bind a file to another schema or to none.
    */
   private applySettings(settings: EkphrasisSettings): void {
     const rulesChanged =
-      JSON.stringify(settings.pathRules) !== JSON.stringify(this.settings.pathRules);
+      JSON.stringify(settings.pathRules) !== JSON.stringify(this.settings.pathRules) ||
+      JSON.stringify(settings.excludedPaths) !== JSON.stringify(this.settings.excludedPaths);
     const registryChanged = settings.schemaRegistry !== this.settings.schemaRegistry;
     const checkersChanged =
       settings.pythonInterpreter !== this.settings.pythonInterpreter ||

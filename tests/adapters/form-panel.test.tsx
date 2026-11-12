@@ -170,6 +170,15 @@ describe("message of an unbound file", () => {
     );
   });
 
+  it("names the excluded pattern of a skeleton instead of the binding routes", () => {
+    const panel = renderPanel({ status: "unbound", schemaPaths: [], excludedBy: "templates/**" });
+    expect(panel.textContent).toContain("This file is excluded from binding");
+    expect(panel.textContent).not.toContain("bind it to a schema");
+    expect(Array.from(panel.querySelectorAll("code"), (code) => code.textContent)).toEqual([
+      "templates/**",
+    ]);
+  });
+
   it("displays the code spans of a binding reason as code", () => {
     const field = renderPanel({
       status: "invalid-binding",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveBinding, type PathRule } from "../../../src/domain";
+import { exclusionOf, resolveBinding, type PathRule } from "../../../src/domain";
 
 const RULES: readonly PathRule[] = [
   { pattern: "", schema: "ignored.schema.yaml" },
@@ -137,5 +137,18 @@ describe("schema binding", () => {
       status: "invalid",
       reason: "the path leaves the vault",
     });
+  });
+});
+
+describe("excluded paths", () => {
+  it("returns the first excluded pattern matching the path", () => {
+    const patterns = ["", "notes/*.yml", "templates/**", "templates/*.yml"];
+    expect(exclusionOf("templates/project.yml", patterns)).toBe("templates/**");
+    expect(exclusionOf("templates/sub/record.yml", patterns)).toBe("templates/**");
+  });
+
+  it("excludes no file outside every pattern, nor through a blank pattern", () => {
+    expect(exclusionOf("records/templates/q.yml", ["templates/**"])).toBeNull();
+    expect(exclusionOf("q.yml", ["", "  "])).toBeNull();
   });
 });

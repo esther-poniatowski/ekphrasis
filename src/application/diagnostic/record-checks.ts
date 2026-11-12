@@ -175,6 +175,12 @@ function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
         `\`${path}\` opens as a form of \`${state.binding.reference}\` (\`${state.binding.schemaPath}\`).`,
       );
     case "unbound":
+      if (state.excludedBy !== undefined) {
+        return passed(
+          SUBJECTS.form,
+          `\`${path}\` matches the excluded pattern \`${state.excludedBy}\`, so it remains in the source view without a binding.`,
+        );
+      }
       const identifier = readSchemaField(record.text);
       const declared = identifier === null ? null : parseSchemaIdentifier(identifier);
       if (declared !== null) {

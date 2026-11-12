@@ -32,6 +32,8 @@ Ekphrasis binds each record to at most one [schema](schemas.md). Ekphrasis uses 
 
 ^binding-sources
 
+The setting *Excluded paths* removes files from binding before any source is read. A file whose path matches one of its glob patterns binds to no schema, whatever its `_schema` field, its modeline or the path rules state. The file then opens in the source view without an error, and the form view names the matching pattern. Such a file also enters no index of identifiers, so a placeholder identifier collides with no record. The patterns follow the [glob syntax](#^glob-syntax) of the path rules. For example, `templates/**` excludes the skeletons of notes, whose placeholders would fail their schemas.
+
 The first key of a registry declares its format. The registry key `schemas` relates opaque identifiers to schema paths from the vault root:
 
 ```yaml

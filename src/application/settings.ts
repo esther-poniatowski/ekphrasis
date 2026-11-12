@@ -10,6 +10,8 @@ export interface EkphrasisSettings {
   readonly schemaRegistry: string;
   /** Path rules binding instances without a schema field or modeline, applied in this order. */
   readonly pathRules: readonly PathRule[];
+  /** Glob patterns of the files that bind to no schema, such as the skeletons of notes. */
+  readonly excludedPaths: readonly string[];
   /** Pause of typing, in milliseconds, after which a text control commits its value. */
   readonly commitDelay: number;
   /** Absolute path of the Python interpreter that runs registered custom checkers. */
@@ -38,6 +40,7 @@ export const CUSTOM_CHECKER_TIMEOUT_LIMITS = {
 export const DEFAULT_SETTINGS: EkphrasisSettings = {
   schemaRegistry: "",
   pathRules: [],
+  excludedPaths: [],
   commitDelay: 1000,
   pythonInterpreter: "",
   customCheckerTimeout: 10_000,
@@ -67,6 +70,7 @@ export function parseSettings(raw: unknown): EkphrasisSettings {
         ? [{ pattern: rule["pattern"], schema: rule["schema"] }]
         : [],
     ),
+    excludedPaths: stringList(record["excludedPaths"]),
     commitDelay:
       typeof delay === "number" &&
       delay >= COMMIT_DELAY_LIMITS.min &&

@@ -69,6 +69,23 @@ export class EkphrasisSettingTab extends PluginSettingTab {
           ),
       );
     new Setting(containerEl)
+      .setName("Excluded paths")
+      .setDesc(
+        "Glob patterns, one per line, such as templates/**. A file whose path matches one binds " +
+          "to no schema, whatever it declares, and opens in the source view.",
+      )
+      .addTextArea((area) =>
+        area
+          .setPlaceholder("templates/**")
+          .setValue(this.host.settings.excludedPaths.join("\n"))
+          .onChange((value) =>
+            this.host.updateSettings({
+              ...this.host.settings,
+              excludedPaths: value.split("\n").filter((line) => line.trim() !== ""),
+            }),
+          ),
+      );
+    new Setting(containerEl)
       .setName("Path rules")
       .setDesc(
         "Each rule binds the files matched by a glob pattern, such as records/**/*.yml, to a " +

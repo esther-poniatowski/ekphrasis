@@ -32,6 +32,14 @@ describe("settings", () => {
     ]);
   });
 
+  it("keeps a list of excluded path patterns, and else takes the empty default", () => {
+    expect(parseSettings({ excludedPaths: ["templates/**"] }).excludedPaths).toEqual([
+      "templates/**",
+    ]);
+    expect(parseSettings({ excludedPaths: ["templates/**", 3] }).excludedPaths).toEqual([]);
+    expect(parseSettings({ excludedPaths: "templates/**" }).excludedPaths).toEqual([]);
+  });
+
   it("keeps a commit delay within the limits, and else takes the default", () => {
     expect(parseSettings({ commitDelay: 2000 }).commitDelay).toBe(2000);
     expect(parseSettings({ commitDelay: 10 }).commitDelay).toBe(DEFAULT_SETTINGS.commitDelay);

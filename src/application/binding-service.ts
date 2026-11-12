@@ -1,5 +1,6 @@
 /** Resolves schema bindings, loading a configured logical-identifier registry when required. */
 import {
+  exclusionOf,
   parseSchemaIdentifier,
   readSchemaDeclaration,
   resolveBinding,
@@ -21,6 +22,8 @@ export class BindingService implements BindingResolver {
   }
 
   async resolve(path: string, text: string): Promise<BindingResult> {
+    const excludedBy = exclusionOf(path, this.settings().excludedPaths);
+    if (excludedBy !== null) return { status: "unbound", excludedBy };
     const rules = this.settings().pathRules;
     const declaration = readSchemaDeclaration(text);
     if (declaration.status === "absent") return resolveBinding(path, text, rules);

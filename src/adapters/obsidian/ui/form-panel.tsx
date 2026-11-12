@@ -80,6 +80,17 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
     case "form":
       return <EditableForm {...props} form={state} notice={null} />;
     case "unbound":
+      if (state.excludedBy !== undefined) {
+        return (
+          <Message title="This file is excluded from binding" onOpenSource={onOpenSource}>
+            <p>
+              Its path matches the pattern <code>{state.excludedBy}</code> of the setting{" "}
+              <em>Excluded paths</em>, so Ekphrasis binds it to no schema, whatever the file
+              declares.
+            </p>
+          </Message>
+        );
+      }
       return (
         <Message title="This file is bound to no schema" onOpenSource={onOpenSource}>
           <p>To display it as a form, bind it to a schema by one of three methods:</p>
