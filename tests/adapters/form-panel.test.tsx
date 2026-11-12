@@ -169,4 +169,31 @@ describe("message of an unbound file", () => {
       "The logical contract vault:record@1 cannot be resolved because the identifier is absent from the registry.",
     );
   });
+
+  it("displays the code spans of a binding reason as code", () => {
+    const field = renderPanel({
+      status: "invalid-binding",
+      source: "schema-field",
+      reference: "vault:record@2",
+      reason: "the registry holds another major of `vault:record`",
+      schemaPaths: ["schemas.yml"],
+    });
+    expect(field.textContent).not.toContain("`");
+    expect(Array.from(field.querySelectorAll("code"), (code) => code.textContent)).toEqual([
+      "vault:record@2",
+      "vault:record",
+    ]);
+
+    const rule = renderPanel({
+      status: "invalid-binding",
+      source: "path-rule",
+      reference: "schemas/record.schema.yaml",
+      reason: "the file `schemas/record.schema.yaml` is absent",
+      schemaPaths: ["schemas.yml"],
+    });
+    expect(rule.textContent).not.toContain("`");
+    expect(Array.from(rule.querySelectorAll("code"), (code) => code.textContent)).toContain(
+      "schemas/record.schema.yaml",
+    );
+  });
 });

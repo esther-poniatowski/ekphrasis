@@ -7,6 +7,7 @@
  * names in italics when `emphasis` holds; other messages keep their asterisks unchanged.
  */
 import type { JSX } from "preact";
+import { codeSpans } from "../code-spans";
 
 export function InlineText({
   text,
@@ -15,17 +16,15 @@ export function InlineText({
   readonly text: string;
   readonly emphasis?: boolean;
 }): JSX.Element {
-  // Splitting on a capturing group puts the code spans at the odd positions.
-  const parts = text.split(/`([^`]*)`/);
   return (
     <>
-      {parts.map((part, index) =>
-        index % 2 === 1 ? (
-          <code key={index}>{part}</code>
+      {codeSpans(text).map((span, index) =>
+        span.code ? (
+          <code key={index}>{span.text}</code>
         ) : emphasis ? (
-          <Emphasized key={index} text={part} />
+          <Emphasized key={index} text={span.text} />
         ) : (
-          part
+          span.text
         ),
       )}
     </>

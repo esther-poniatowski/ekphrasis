@@ -102,13 +102,15 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
             {state.source === "schema-field" ? (
               <>
                 The logical contract <code>{state.reference}</code>
-                {` cannot be resolved because ${state.reason}.`}
+                {" cannot be resolved because "}
+                <InlineText text={state.reason} />.
               </>
             ) : (
               <>
                 {`The ${BINDING_SOURCES[state.source]} names the schema `}
                 <code>{state.reference}</code>
-                {`, but ${state.reason}.`}
+                {", but "}
+                <InlineText text={state.reason} />.
               </>
             )}
           </p>

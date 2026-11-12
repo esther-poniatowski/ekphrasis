@@ -19,6 +19,7 @@ import {
 } from "../../application";
 import type { FormModel } from "../../domain";
 import { EkphrasisError } from "../../errors";
+import { noticeText } from "./notice-text";
 import { InstanceView } from "./views/instance-view";
 
 /** Source path given to Obsidian for a link whose note is unknown: the vault root. */
@@ -104,18 +105,20 @@ async function copyLink(
         : fieldLinkByPath(formatter, path, model, fieldId);
   } catch (error) {
     if (!(error instanceof EkphrasisError)) throw error;
-    new Notice(error.message);
+    new Notice(noticeText(error.message));
     return;
   }
   if (result.status === "refused") {
-    new Notice(result.reason);
+    new Notice(noticeText(result.reason));
     return;
   }
   await navigator.clipboard.writeText(result.text);
   const ambiguous = designation.by === "path" ? designation.ambiguousIdentifier : null;
   new Notice(
-    ambiguous === null
-      ? `Link copied: ${result.text}`
-      : `Link copied by path, since several files declare the identifier \`${ambiguous}\`: ${result.text}`,
+    noticeText(
+      ambiguous === null
+        ? `Link copied: ${result.text}`
+        : `Link copied by path, since several files declare the identifier \`${ambiguous}\`: ${result.text}`,
+    ),
   );
 }

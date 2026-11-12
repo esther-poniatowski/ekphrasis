@@ -4,6 +4,10 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- Paths and identifiers between backticks in the message *Schema not found* and in the notices of field links display as code, instead of showing the backticks.
+
 ## [0.2.1] - 2026-11-12
 
 ### Changed

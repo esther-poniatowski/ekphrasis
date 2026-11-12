@@ -19,6 +19,7 @@ import {
   type YamlPath,
 } from "../../domain";
 import { INSTANCE_VIEW_TYPE } from "./constants";
+import { noticeText } from "./notice-text";
 
 export class FieldLinkOpener {
   /**
@@ -38,7 +39,7 @@ export class FieldLinkOpener {
       link = fieldLinkOfQuery(parameters);
     } catch (error) {
       if (!(error instanceof FieldLinkError)) throw error;
-      new Notice(`Ekphrasis: ${error.message}`);
+      new Notice(noticeText(`Ekphrasis: ${error.message}`));
       return;
     }
     await this.follow(link, false);
@@ -54,7 +55,7 @@ export class FieldLinkOpener {
       link = fieldLinkOfUri(uri);
     } catch (error) {
       if (!(error instanceof FieldLinkError)) throw error;
-      new Notice(`Ekphrasis: ${error.message}`);
+      new Notice(noticeText(`Ekphrasis: ${error.message}`));
       return true;
     }
     if (link === null) return false;
@@ -69,12 +70,18 @@ export class FieldLinkOpener {
     const resolution = this.identifiers.resolve(identifier);
     switch (resolution.status) {
       case "absent":
-        new Notice(`Ekphrasis: no record of the vault declares the identifier \`${identifier}\`.`);
+        new Notice(
+          noticeText(
+            `Ekphrasis: no record of the vault declares the identifier \`${identifier}\`.`,
+          ),
+        );
         return;
       case "ambiguous":
         new Notice(
-          `Ekphrasis: the identifier \`${identifier}\` is declared by several files, so the link opens none of them:\n` +
-            resolution.paths.map((path) => `- ${path}`).join("\n"),
+          noticeText(
+            `Ekphrasis: the identifier \`${identifier}\` is declared by several files, so the link opens none of them:\n` +
+              resolution.paths.map((path) => `- ${path}`).join("\n"),
+          ),
         );
         return;
       case "found":
@@ -86,7 +93,7 @@ export class FieldLinkOpener {
   private async openAt(path: string, field: YamlPath, newLeaf: boolean): Promise<void> {
     const file = this.app.vault.getAbstractFileByPath(path);
     if (!(file instanceof TFile)) {
-      new Notice(`Ekphrasis: the file \`${path}\` no longer exists.`);
+      new Notice(noticeText(`Ekphrasis: the file \`${path}\` no longer exists.`));
       return;
     }
     const leaf = this.app.workspace.getLeaf(newLeaf);
