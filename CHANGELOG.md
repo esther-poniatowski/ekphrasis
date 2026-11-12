@@ -4,6 +4,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-12
+
 ### Changed
 
 - A file whose `_schema` names a format absent from the registry stays unbound, even when the registry holds other formats of the same owner. A missing major of a registered format and a malformed identifier remain errors, and the setup diagnostic names the unregistered format.
