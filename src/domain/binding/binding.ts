@@ -121,9 +121,8 @@ export function resolveBinding(
  */
 export function exclusionOf(path: string, patterns: readonly string[]): string | null {
   return (
-    patterns.find(
-      (pattern) => pattern.trim() !== "" && new GlobPattern(pattern).matches(path),
-    ) ?? null
+    patterns.find((pattern) => pattern.trim() !== "" && new GlobPattern(pattern).matches(path)) ??
+    null
   );
 }
 
