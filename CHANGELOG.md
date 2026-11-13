@@ -7,6 +7,11 @@ Every notable change to the project is recorded in this changelog. The format fo
 ### Added
 
 - The setting *Excluded paths* lists glob patterns, such as `templates/**`, whose files bind to no schema and open in the source view. Note skeletons can thus declare the `_schema` of their records without reporting the errors of their placeholders.
+- The setting *Graph presentation overrides* changes safe visual recipes for one producer profile within the current vault. Generated graph files remain unchanged.
+
+### Changed
+
+- Graph fields switch between layered and force-directed layouts over the same schema-defined graph. Researchers can drag network cards and restore the computed layout. Graph focus does not move surviving nodes. Cards open compactly, expand to labelled metadata and follow a producer-declared node link.
 
 ### Fixed
 

@@ -5,19 +5,37 @@ index: "[Features](docs/features/_index.md)"
 aliases:
   - Instance creation
 ---
+
 # Instance creation
 
 A command creates a new instance from its schema, as the [requirement on guided creation](../requirements.md#^guided-creation) demands. The command writes a skeleton of the record into a new YAML file, and opens that file in the [form view](form-view.md).
 
 ## Commands
 
-The command *Create instance* creates a record through the following sequence:
+The command _Create instance_ creates a record through the following sequence:
 
 1. The schema chooser lists the writable contracts of the configured [schema registry](instance-files.md#^binding-sources). Each entry shows the schema title and its logical identifier. Schemas whose root declares `readOnly: true` are excluded.
 2. The path prompt proposes a YAML file in the folder of the active file. The entered path must stay inside the vault, end in `.yaml` or `.yml`, and name no existing file.
 3. The command writes the skeleton and opens the new file in the form view.
+4. When a post-creation command is configured, Ekphrasis invokes it with the new path and schema
+   identifier. The producer can then update related project files without placing its rules in
+   Ekphrasis.
 
 If the registry or a contract is invalid, the command shows a notice and writes no file. In particular, each offered contract must declare its registered logical identifier as the constant value of its `_schema` property.
+
+The setting _Post-creation command_ accepts an array of strings. Ekphrasis sends those strings to the
+configured Python interpreter without a shell. Three placeholders supply values that depend on the
+new record:
+
+- `{vault}` supplies the absolute vault root;
+- `{path}` supplies the vault-relative path;
+- `{schema}` supplies the logical schema identifier.
+
+If the configured command fails, the created record remains in place and its form opens. The failure
+notice names the cause and directs the researcher to _Retry failed post-creation action_. The retry
+runs the configured command for the preserved record without writing the record again. If the retry
+fails, the command remains available. If the retry succeeds, the command disappears. A plugin restart
+also clears this session-scoped retry.
 
 ## Skeleton
 

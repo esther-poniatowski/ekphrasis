@@ -100,6 +100,16 @@ The run of a findings route executes the configured command once, through the Py
 
 The interpreter of the diagnostic runs with the option `-B`, so that Python writes no bytecode cache. The configured command runs once, as in one validation, so its side effects are those of the tool alone.
 
+The same configured interpreter runs primary-view and post-creation commands. When either command is
+present, the diagnostic checks this runtime even without a custom checker. The runtime checks cover:
+
+- the desktop platform;
+- the interpreter file;
+- the start of the interpreter.
+
+The diagnostic does not run either project command. If a runtime check fails, the report names the
+unavailable primary-view and post-creation capabilities. Record editing remains available.
+
 ## Duration
 
 The diagnostic runs each instance checker once, and never repeats the run to estimate a duration. Then, the diagnostic compares the measured duration with the setting *Checker timeout*. The process of the checkers answers one call at a time, and the timeout of a call runs from its request. Therefore, a validation started during another call waits for that call, and its call lasts about twice the measured duration. The comparison of the measured duration with the timeout yields three statuses: ^timeout-rule
