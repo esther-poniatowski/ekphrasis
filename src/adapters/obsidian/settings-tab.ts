@@ -5,8 +5,11 @@ import { PluginSettingTab, Setting, type App, type Plugin, type TextComponent } 
 import {
   COMMIT_DELAY_LIMITS,
   CUSTOM_CHECKER_TIMEOUT_LIMITS,
+  graphPresentationOverrideIssues,
+  parseGraphPresentationOverrides,
   type CustomCheckerRegistration,
   type EkphrasisSettings,
+  type GraphPresentationOverride,
 } from "../../application";
 import type { JsonValue, PathRule } from "../../domain";
 
@@ -68,6 +71,36 @@ export class EkphrasisSettingTab extends PluginSettingTab {
             this.host.updateSettings({ ...this.host.settings, schemaRegistry }),
           ),
       );
+    const graphOverrideSetting = new Setting(containerEl)
+      .setName("Graph presentation overrides")
+      .setDesc(
+        "Optional JSON list of vault-local visual overrides, each keyed by a producer profile " +
+          "and version. " +
+          "Safe titles, markers, Lucide icon names, style tokens and layout preferences replace " +
+          "producer defaults without changing generated files.",
+      );
+    const graphOverrideFeedback = graphOverrideSetting.controlEl.createDiv({
+      cls: "ekphrasis-setting-feedback",
+    });
+    graphOverrideSetting.addTextArea((area) => {
+      area.inputEl.rows = 8;
+      return area
+        .setPlaceholder(
+          '[{"profile":"project-workflow","version":1,"nodeKinds":{"question":{"icon":"circle-help"}}}]',
+        )
+        .setValue(JSON.stringify(this.host.settings.graphPresentationOverrides, null, 2))
+        .onChange((value) => {
+          const overrides = graphOverridesOfText(value);
+          area.inputEl.toggleClass("mod-invalid", overrides.issues.length > 0);
+          graphOverrideFeedback.setText(overrides.issues.slice(0, 3).join(" "));
+          if (overrides.issues.length === 0) {
+            return this.host.updateSettings({
+              ...this.host.settings,
+              graphPresentationOverrides: overrides.value,
+            });
+          }
+        });
+    });
     new Setting(containerEl)
       .setName("Excluded paths")
       .setDesc(
@@ -160,6 +193,28 @@ export class EkphrasisSettingTab extends PluginSettingTab {
               return this.host.updateSettings({
                 ...this.host.settings,
                 primaryViewCommand: command,
+              });
+            }
+          }),
+      );
+    new Setting(containerEl)
+      .setName("Post-creation command")
+      .setDesc(
+        "Optional JSON list of arguments passed to the Python interpreter after a new instance " +
+          "is written. {vault} names the vault root, {path} the new vault-relative path, and " +
+          "{schema} its logical schema identifier. The record remains created when the command fails.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder('["-m", "tool", "register", "{vault}/{path}"]')
+          .setValue(JSON.stringify(this.host.settings.postCreationCommand))
+          .onChange((value) => {
+            const command = commandOfText(value);
+            text.inputEl.toggleClass("mod-invalid", command === null);
+            if (command !== null) {
+              return this.host.updateSettings({
+                ...this.host.settings,
+                postCreationCommand: command,
               });
             }
           }),
@@ -333,6 +388,23 @@ function commandOfText(text: string): readonly string[] | null {
       : null;
   } catch {
     return null;
+  }
+}
+
+/** Vault-local graph overrides written as a JSON list, with rejected-unit diagnostics. */
+function graphOverridesOfText(text: string): {
+  readonly value: readonly GraphPresentationOverride[];
+  readonly issues: readonly string[];
+} {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    const issues = graphPresentationOverrideIssues(parsed);
+    return {
+      value: issues.length === 0 ? parseGraphPresentationOverrides(parsed) : [],
+      issues,
+    };
+  } catch {
+    return { value: [], issues: ["The value must be valid JSON."] };
   }
 }
 

@@ -29,5 +29,6 @@ Verifies inside Obsidian the behaviours of ekphrasis that unit tests cannot reac
 - [Test protocol: Research state](protocols/research-state.md): distinguishes a pending researcher verdict from validation findings
 - [Test protocol: Generated-view freshness](protocols/view-freshness.md): distinguishes a current generated view from one invalidated by changed source records
 - [Test protocol: Primary generated view](protocols/primary-view.md): verifies that a producer selects and opens the view for an explicit completion target
+- [Test protocol: Local graph presentation](protocols/graph-presentation-overrides.md): verifies that vault-local recipes change graph visuals without changing producer semantics
 - [Scenario records](scenarios): supplies the records and the schemas of the protocols, copied into the test vault at each build
 - [Settings of the test vault](vault-settings.json): fixes the settings from which every protocol starts

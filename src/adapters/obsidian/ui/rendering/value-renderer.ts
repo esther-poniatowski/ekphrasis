@@ -19,6 +19,8 @@ export interface ValueRenderer {
    * function that releases the rendering when the value is displayed no more.
    */
   render(target: HTMLElement, kind: RenderedKind, text: string, display: RenderDisplay): () => void;
+  /** Follows a schema-declared link from a composite control. */
+  follow(href: string, newLeaf: boolean): void;
 }
 
 /** Renderer writing the text as it stands, for the environments without the renderers of Obsidian. */
@@ -29,4 +31,5 @@ export const TEXT_RENDERER: ValueRenderer = {
       target.textContent = "";
     };
   },
+  follow() {},
 };

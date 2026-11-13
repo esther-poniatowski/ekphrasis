@@ -45,14 +45,22 @@ export function Icon({
   icon,
   paint,
   class: className,
+  fallback = "",
 }: {
   readonly icon: string;
   readonly paint: IconPainter;
   readonly class: string;
+  /** Text shown when the painter does not recognize `icon`. */
+  readonly fallback?: string;
 }): JSX.Element {
   const element = useRef<HTMLSpanElement | null>(null);
   useLayoutEffect(() => {
-    if (element.current !== null) paint(element.current, icon);
-  }, [icon, paint]);
+    if (element.current === null) return;
+    element.current.textContent = "";
+    paint(element.current, icon);
+    if (element.current.childNodes.length === 0 && fallback !== "") {
+      element.current.textContent = fallback;
+    }
+  }, [fallback, icon, paint]);
   return <span ref={element} class={className} data-icon={icon} aria-hidden="true" />;
 }

@@ -46,6 +46,7 @@ export type TreeRole = (typeof TREE_ROLES)[number];
 
 /** Presentation role of a field inside a mapping of kind `graph`. */
 export const GRAPH_ROLES = [
+  "presentation",
   "nodes",
   "edges",
   "node-id",
@@ -56,6 +57,7 @@ export const GRAPH_ROLES = [
   "node-kind",
   "node-family",
   "node-label",
+  "node-link",
   "node-status-axis",
   "node-status",
   "node-root",
@@ -149,7 +151,11 @@ function layerOptions(part: SchemaView): ChoiceOption[] | null {
       const constant = alternative.constValue;
       return constant === null
         ? null
-        : { value: constant.value, title: alternative.title, description: alternative.description };
+        : {
+            value: constant.value,
+            title: alternative.title,
+            description: alternative.description,
+          };
     });
     return options.every((option) => option !== null) ? options : null;
   }

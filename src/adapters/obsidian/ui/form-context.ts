@@ -7,6 +7,7 @@
  */
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
+import type { GraphPresentationOverride } from "../../../application";
 import type { Commit, ConstraintIndex, IssueIndex, ScalarValue, YamlPath } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 import type { FoldState } from "./fold-state";
@@ -55,6 +56,8 @@ export interface FormContextValue {
   readonly scheduler: RenderScheduler;
   /** Painter of the icons of the field kinds. */
   readonly paintIcon: IconPainter;
+  /** Safe vault-local visual overrides for producer graph-presentation profiles. */
+  readonly graphPresentationOverrides: readonly GraphPresentationOverride[];
   /** Moves the form to the field at `path`, unfolding the sections containing it. */
   readonly reveal: (path: YamlPath) => void;
 }

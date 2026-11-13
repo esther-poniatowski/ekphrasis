@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   completeCustomCheckers,
   DEFAULT_SETTINGS,
+  graphPresentationOverrideIssues,
   parseSettings,
   resolveCustomCheckerModules,
 } from "../../src/application";
@@ -105,6 +106,144 @@ describe("settings", () => {
     ).toEqual(["-m", "tool", "{target}"]);
     expect(parseSettings({ primaryViewCommand: ["-m", 3] }).primaryViewCommand).toEqual([]);
     expect(parseSettings({ primaryViewCommand: "-m tool" }).primaryViewCommand).toEqual([]);
+  });
+
+  it("keeps a post-creation command only when every argument is text", () => {
+    expect(
+      parseSettings({ postCreationCommand: ["-m", "tool", "{path}"] }).postCreationCommand,
+    ).toEqual(["-m", "tool", "{path}"]);
+    expect(parseSettings({ postCreationCommand: ["-m", 3] }).postCreationCommand).toEqual([]);
+    expect(parseSettings({ postCreationCommand: "-m tool" }).postCreationCommand).toEqual([]);
+  });
+
+  it("keeps safe partial graph-presentation overrides", () => {
+    expect(
+      parseSettings({
+        graphPresentationOverrides: [
+          {
+            profile: "sample-workflow",
+            version: 1,
+            layouts: {
+              recommended: "force-directed",
+              compatible: ["force-directed", "force-directed", "<script>"],
+            },
+            categories: {
+              artifact: { title: "Local product", marker: "◇", style: "local-product" },
+              "<script>": { title: "Unsafe identifier" },
+            },
+            nodeKinds: {
+              question: { icon: "circle-help", style: "local-question" },
+            },
+            edgeKinds: {
+              supports: {
+                title: "locally supports",
+                layer: "evidence",
+                style: "local-edge",
+                arrow: "diamond",
+                caption: "hide",
+              },
+            },
+          },
+        ],
+      }).graphPresentationOverrides,
+    ).toEqual([
+      {
+        profile: "sample-workflow",
+        version: 1,
+        layouts: {
+          recommended: "force-directed",
+          compatible: ["force-directed"],
+        },
+        categories: {
+          artifact: { title: "Local product", marker: "◇", style: "local-product" },
+        },
+        nodeKinds: {
+          question: { icon: "circle-help", style: "local-question" },
+        },
+        edgeKinds: {
+          supports: {
+            title: "locally supports",
+            layer: "evidence",
+            style: "local-edge",
+            arrow: "diamond",
+            caption: "hide",
+          },
+        },
+      },
+    ]);
+  });
+
+  it("drops malformed graph-presentation overrides without affecting other settings", () => {
+    expect(
+      parseSettings({
+        schemaRegistry: "schemas/registry.yml",
+        graphPresentationOverrides: [
+          { profile: "<script>", version: 1, nodeKinds: { question: { icon: "circle-help" } } },
+          "sample-workflow",
+        ],
+      }),
+    ).toMatchObject({
+      schemaRegistry: "schemas/registry.yml",
+      graphPresentationOverrides: [],
+    });
+  });
+
+  it("reports every graph-presentation unit that the settings editor would discard", () => {
+    expect(
+      graphPresentationOverrideIssues([
+        { profile: "sample-workflow", version: 1, node_kinds: {} },
+        { profile: "sample-workflow", version: 2 },
+        { profile: "<script>", version: 0 },
+      ]),
+    ).toEqual([
+      "Entry 1.node_kinds is not recognized.",
+      "Entry 2.profile duplicates sample-workflow.",
+      "Entry 3.profile must be a safe identifier.",
+      "Entry 3.version must be a positive integer.",
+    ]);
+  });
+
+  it("rejects unregistered edge recipes while retaining valid edge properties", () => {
+    const raw = [
+      {
+        profile: "sample-workflow",
+        version: 1,
+        edgeKinds: { supports: { style: "evidence", arrow: "fork", caption: "sometimes" } },
+      },
+    ];
+
+    expect(graphPresentationOverrideIssues(raw)).toEqual([
+      "Entry 1.edgeKinds.supports.arrow is not a registered recipe.",
+      "Entry 1.edgeKinds.supports.caption is not a registered recipe.",
+    ]);
+    expect(parseSettings({ graphPresentationOverrides: raw }).graphPresentationOverrides).toEqual([
+      {
+        profile: "sample-workflow",
+        version: 1,
+        categories: {},
+        nodeKinds: {},
+        edgeKinds: { supports: { style: "evidence" } },
+      },
+    ]);
+  });
+
+  it("keeps only the first versioned override for one profile", () => {
+    expect(
+      parseSettings({
+        graphPresentationOverrides: [
+          { profile: "sample-workflow", version: 1 },
+          { profile: "sample-workflow", version: 2 },
+        ],
+      }).graphPresentationOverrides,
+    ).toEqual([
+      {
+        profile: "sample-workflow",
+        version: 1,
+        categories: {},
+        nodeKinds: {},
+        edgeKinds: {},
+      },
+    ]);
   });
 
   it("supplies only complete checker registrations to the process", () => {

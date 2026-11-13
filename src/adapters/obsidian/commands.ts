@@ -24,6 +24,10 @@ export const COMMANDS = {
   restartCheckers: { id: "restart-python-checkers", name: "Restart Python checkers" },
   diagnoseSetup: { id: "diagnose-setup", name: "Diagnose setup" },
   createInstance: { id: "create-instance", name: "Create instance" },
+  retryPostCreation: {
+    id: "retry-post-creation",
+    name: "Retry failed post-creation action",
+  },
   openPrimaryView: { id: "open-primary-view", name: "Open primary view" },
 } as const;
 
@@ -48,6 +52,7 @@ export function registerCommands(
   restartCheckers: () => Promise<boolean>,
   diagnoseSetup: () => void,
   createInstance: () => void,
+  retryPostCreation: (checking: boolean) => boolean,
   openPrimaryView: () => void,
 ): void {
   const { workspace } = plugin.app;
@@ -112,6 +117,7 @@ export function registerCommands(
   // Checks the whole setup, with or without an open record, and changes nothing.
   plugin.addCommand({ ...COMMANDS.diagnoseSetup, callback: diagnoseSetup });
   plugin.addCommand({ ...COMMANDS.createInstance, callback: createInstance });
+  plugin.addCommand({ ...COMMANDS.retryPostCreation, checkCallback: retryPostCreation });
   plugin.addCommand({ ...COMMANDS.openPrimaryView, callback: openPrimaryView });
 
   plugin.addCommand({

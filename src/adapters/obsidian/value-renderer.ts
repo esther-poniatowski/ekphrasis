@@ -82,6 +82,11 @@ export class ObsidianValueRenderer implements ValueRenderer {
     };
   }
 
+  follow(href: string, newLeaf: boolean): void {
+    if (this.followUri(href, newLeaf)) return;
+    void this.app.workspace.openLinkText(href, this.sourcePath(), newLeaf);
+  }
+
   /**
    * Defect of the internal link `href` when it reaches a YAML file but its subpath holds no valid
    * field path, and else `null`.

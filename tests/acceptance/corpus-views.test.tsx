@@ -218,6 +218,9 @@ describe.skipIf(!hasRegistry)(`gnomon views named by ${CORPUS_VARIABLE}`, () => 
           const rendered = renderedGraphs[index];
           if (rendered === undefined || !("children" in field)) return;
           graphs += 1;
+          const presentationField = field.children.find(
+            (child) => child.graphRole === "presentation",
+          );
           const nodeField = field.children.find((child) => child.graphRole === "nodes");
           const edgeField = field.children.find((child) => child.graphRole === "edges");
           const expectedNodes =
@@ -254,6 +257,56 @@ describe.skipIf(!hasRegistry)(`gnomon views named by ${CORPUS_VARIABLE}`, () => 
             failures.push(
               `${identifier} in ${name}:${field.id}: ${renderedEdges.length} edges for ${expectedEdges.length} rows`,
             );
+          }
+          if (presentationField?.node?.kind === "mapping") {
+            if (!section?.dataset.presentationProfile) {
+              failures.push(`${identifier} in ${name}:${field.id}: missing presentation profile`);
+            }
+            if (renderedNodes.some((node) => !node.dataset.kind)) {
+              failures.push(`${identifier} in ${name}:${field.id}: a node exposes no kind`);
+            }
+            if (section?.dataset.visibleNodes !== String(expectedNodes.length)) {
+              failures.push(`${identifier} in ${name}:${field.id}: incorrect visible-node count`);
+            }
+            if (section?.dataset.hiddenNodes !== "0") {
+              failures.push(
+                `${identifier} in ${name}:${field.id}: whole graph reports hidden nodes`,
+              );
+            }
+            if (section?.querySelector(".ekphrasis-graph-node-facets") === null) {
+              failures.push(`${identifier} in ${name}:${field.id}: missing node-facet control`);
+            }
+            if (
+              renderedNodes.length > 0 &&
+              !renderedNodes.some((node) => node.querySelector(".ekphrasis-graph-node-icon"))
+            ) {
+              failures.push(`${identifier} in ${name}:${field.id}: no registered node icon`);
+            }
+            if (renderedEdges.some((edge) => !edge.dataset.layer)) {
+              failures.push(`${identifier} in ${name}:${field.id}: an edge exposes no layer`);
+            }
+            if (section?.dataset.visibleEdges !== String(expectedEdges.length)) {
+              failures.push(`${identifier} in ${name}:${field.id}: incorrect visible-edge count`);
+            }
+            if (section?.dataset.hiddenEdges !== "0") {
+              failures.push(
+                `${identifier} in ${name}:${field.id}: whole graph reports hidden edges`,
+              );
+            }
+            if (
+              new Set(renderedEdges.map((edge) => edge.dataset.layer)).size > 1 &&
+              section?.querySelector(".ekphrasis-graph-relations") === null
+            ) {
+              failures.push(`${identifier} in ${name}:${field.id}: missing relation-layer control`);
+            }
+            if (
+              new Set(renderedEdges.map((edge) => edge.dataset.kind)).size > 1 &&
+              !Array.from(
+                section?.querySelectorAll(".ekphrasis-graph-relations legend") ?? [],
+              ).some((legend) => legend.textContent === "Relation kinds")
+            ) {
+              failures.push(`${identifier} in ${name}:${field.id}: missing relation-kind control`);
+            }
           }
         });
         cleanup();

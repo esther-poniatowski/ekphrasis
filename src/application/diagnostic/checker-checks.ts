@@ -1,8 +1,7 @@
 /**
- * Checks of the route of the configured custom checkers, from the platform to the issues of one
- * measured run: the registrations and their schema patterns, the interpreter file, its start, the
- * modules and the package data that the checkers import, then, for each checker selecting the
- * opened record, one run whose report and duration are checked.
+ * Checks of the Python route used by configured project capabilities. Every configured command
+ * requires the platform, interpreter file and interpreter start. Custom checkers additionally
+ * require their registrations, schema patterns, imports, package data and one measured run.
  *
  * The run is made once, on the opened record, through the same Python code as a validation; the
  * diagnostic never repeats it to estimate a duration.
@@ -37,26 +36,12 @@ export interface CheckerCheckDependencies {
   readonly resolveFile: (vaultPath: string) => string;
 }
 
-const CUSTOM_CHECKS = "custom checks of the records";
-
 const SUBJECTS = {
-  platform: {
-    id: "checker.platform",
-    consequence: "checks",
-    dependency: "Platform of Python checkers",
-    affects: CUSTOM_CHECKS,
-  },
   registrations: {
     id: "checker.registrations",
     consequence: "checks",
     dependency: "Registered custom checkers",
     affects: "the checkers concerned",
-  },
-  interpreter: {
-    id: "checker.interpreter",
-    consequence: "checks",
-    dependency: "Python interpreter file",
-    affects: CUSTOM_CHECKS,
   },
   patterns: {
     id: "checker.patterns",
@@ -76,12 +61,6 @@ const SUBJECTS = {
     dependency: "Instance checkers of the opened record",
     affects: "custom checks of this record",
   },
-  launch: {
-    id: "checker.launch",
-    consequence: "checks",
-    dependency: "Start of the Python interpreter",
-    affects: CUSTOM_CHECKS,
-  },
   imports: {
     id: "checker.imports",
     consequence: "checks",
@@ -96,22 +75,58 @@ const SUBJECTS = {
   },
 } as const satisfies Record<string, CheckSubject>;
 
+interface RuntimeSubjects {
+  readonly platform: CheckSubject;
+  readonly interpreter: CheckSubject;
+  readonly launch: CheckSubject;
+  readonly configured: boolean;
+  readonly provider: string;
+}
+
+/** Subjects of the shared Python runtime, specialized by the capabilities that use it. */
+function runtimeSubjects(settings: EkphrasisSettings): RuntimeSubjects {
+  const capabilities = [
+    ...(settings.customCheckers.length > 0 ? ["custom checks"] : []),
+    ...(settings.primaryViewCommand.length > 0 ? ["primary views"] : []),
+    ...(settings.postCreationCommand.length > 0 ? ["post-creation actions"] : []),
+  ];
+  const checkers = settings.customCheckers.length > 0;
+  const commands = capabilities.length > (checkers ? 1 : 0);
+  const prefix = !checkers && commands ? "command" : "checker";
+  const consequence = checkers ? "checks" : "degraded";
+  const affects = capabilities.length === 0 ? "Python integration" : capabilities.join(" and ");
+  const subject = (id: string, dependency: string): CheckSubject => ({
+    id: `${prefix}.${id}`,
+    consequence,
+    dependency,
+    affects,
+  });
+  return {
+    platform: subject("platform", "Platform of Python integration"),
+    interpreter: subject("interpreter", "Python interpreter file"),
+    launch: subject("launch", "Start of the Python interpreter"),
+    configured: capabilities.length > 0,
+    provider: affects,
+  };
+}
+
 export async function checkerChecks(
   dependencies: CheckerCheckDependencies,
 ): Promise<readonly DiagnosticCheck[]> {
   const { settings, probe } = dependencies;
+  const runtime = runtimeSubjects(settings);
   if (!dependencies.desktop || probe === null) {
     return [
       notPassed(
         "unavailable",
-        SUBJECTS.platform,
-        "Python custom checkers run only in the desktop app of Obsidian. On this device, forms and built-in checks remain available.",
-        "Open the vault on a desktop computer to run the custom checkers and to see their findings.",
+        runtime.platform,
+        "Python integration runs only in the desktop app of Obsidian. On this device, forms and built-in checks remain available.",
+        "Open the vault on a desktop computer to run the configured Python capabilities.",
       ),
     ];
   }
   const checks: DiagnosticCheck[] = [
-    passed(SUBJECTS.platform, "The desktop app of Obsidian can run Python checkers."),
+    passed(runtime.platform, "The desktop app of Obsidian can run Python integration."),
   ];
   if (settings.customCheckers.length === 0) {
     checks.push(
@@ -120,12 +135,32 @@ export async function checkerChecks(
         "No custom checker is registered, so only the checks declared in the schemas run.",
       ),
     );
+    if (!runtime.configured) return checks;
+    const interpreter = settings.pythonInterpreter.trim();
+    const interpreterCheck = await interpreterFileCheck(
+      probe,
+      interpreter,
+      runtime.interpreter,
+      runtime.provider,
+    );
+    checks.push(interpreterCheck);
+    if (interpreterCheck.status !== "pass") {
+      checks.push(blocked(runtime.launch, "the Python interpreter file"));
+      return checks;
+    }
+    const environment = await probe.environment(interpreter);
+    checks.push(launchCheck(environment, interpreter, runtime.launch));
     return checks;
   }
   const { check: registrationCheck, usable } = registrationsCheck(settings.customCheckers);
   checks.push(registrationCheck);
   const interpreter = settings.pythonInterpreter.trim();
-  const interpreterCheck = await interpreterFileCheck(probe, interpreter);
+  const interpreterCheck = await interpreterFileCheck(
+    probe,
+    interpreter,
+    runtime.interpreter,
+    runtime.provider,
+  );
   checks.push(interpreterCheck);
   checks.push(patternsCheck(usable));
   checks.push(selectionCheck(usable, dependencies.facts));
@@ -134,13 +169,13 @@ export async function checkerChecks(
   checks.push(recordSelectionCheck(usable, reference, selecting));
 
   if (interpreterCheck.status !== "pass") {
-    for (const subject of [SUBJECTS.launch, SUBJECTS.imports, SUBJECTS.data, REPORT_SUBJECT]) {
+    for (const subject of [runtime.launch, SUBJECTS.imports, SUBJECTS.data, REPORT_SUBJECT]) {
       checks.push(blocked(subject, "the Python interpreter file"));
     }
     return checks;
   }
   const environment = await probe.environment(interpreter);
-  checks.push(launchCheck(environment, interpreter));
+  checks.push(launchCheck(environment, interpreter, runtime.launch));
   if (environment.status !== "answered") {
     for (const subject of [SUBJECTS.imports, SUBJECTS.data, REPORT_SUBJECT]) {
       checks.push(blocked(subject, "the start of the Python interpreter"));
@@ -222,7 +257,10 @@ function registrationsCheck(registrations: readonly CustomCheckerRegistration[])
       failures.push(`${label} runs a command, but ${args.reason}.`);
       return;
     }
-    usable.push({ registration, findings: { command: args.command, root: args.root } });
+    usable.push({
+      registration,
+      findings: { command: args.command, root: args.root },
+    });
   });
   const total = registrations.length;
   if (failures.length > 0) {
@@ -261,16 +299,17 @@ function registrationsCheck(registrations: readonly CustomCheckerRegistration[])
 async function interpreterFileCheck(
   probe: PythonProbe,
   interpreter: string,
+  subject: CheckSubject,
+  provider: string,
 ): Promise<DiagnosticCheck> {
-  const enter =
-    'Enter under *Python interpreter* the absolute path of the interpreter of the environment where your checkers are installed, for instance the output of `python -c "import sys; print(sys.executable)"` run in that environment.';
+  const enter = `Enter under *Python interpreter* the absolute path of the environment that provides ${provider}, for instance the output of \`python -c "import sys; print(sys.executable)"\` run in that environment.`;
   if (interpreter === "") {
-    return notPassed("fail", SUBJECTS.interpreter, "No Python interpreter is set.", enter);
+    return notPassed("fail", subject, "No Python interpreter is set.", enter);
   }
   if (!isAbsolute(interpreter)) {
     return notPassed(
       "fail",
-      SUBJECTS.interpreter,
+      subject,
       `The interpreter \`${interpreter}\` is not an absolute path; Obsidian does not search the paths of your shell.`,
       enter,
     );
@@ -278,25 +317,20 @@ async function interpreterFileCheck(
   const file = await probe.inspectInterpreter(interpreter);
   switch (file.status) {
     case "executable":
-      return passed(SUBJECTS.interpreter, `\`${interpreter}\` is an executable file.`);
+      return passed(subject, `\`${interpreter}\` is an executable file.`);
     case "missing":
-      return notPassed(
-        "fail",
-        SUBJECTS.interpreter,
-        `No file exists at \`${interpreter}\`.`,
-        enter,
-      );
+      return notPassed("fail", subject, `No file exists at \`${interpreter}\`.`, enter);
     case "not-file":
       return notPassed(
         "fail",
-        SUBJECTS.interpreter,
+        subject,
         `\`${interpreter}\` is a directory, not an interpreter.`,
         enter,
       );
     case "not-executable":
       return notPassed(
         "fail",
-        SUBJECTS.interpreter,
+        subject,
         `\`${interpreter}\` exists but cannot be executed (${file.reason}).`,
         `Make the file executable, or ${enter.charAt(0).toLowerCase()}${enter.slice(1)}`,
         [file.reason],
@@ -420,18 +454,22 @@ function recordSelectionCheck(
 }
 
 function launchCheck(
-  outcome: ProbeOutcome<{ readonly version: string; readonly executable: string }>,
+  outcome: ProbeOutcome<{
+    readonly version: string;
+    readonly executable: string;
+  }>,
   interpreter: string,
+  subject: CheckSubject,
 ): DiagnosticCheck {
   if (outcome.status === "answered") {
-    return passed(SUBJECTS.launch, `\`${interpreter}\` starts Python ${outcome.result.version}.`, [
+    return passed(subject, `\`${interpreter}\` starts Python ${outcome.result.version}.`, [
       outcome.result.executable,
     ]);
   }
   const failure = probeFailure(outcome);
   return notPassed(
     "fail",
-    SUBJECTS.launch,
+    subject,
     `\`${interpreter}\` does not start as a Python interpreter: ${failure.summary}`,
     "Select a Python interpreter under *Python interpreter*, such as the file `bin/python` of a conda or virtual environment.",
     failure.details,
@@ -460,7 +498,11 @@ function importTargets(
       return [
         {
           name,
-          target: { kind: "module", module, attribute: registration.function } as const,
+          target: {
+            kind: "module",
+            module,
+            attribute: registration.function,
+          } as const,
           packageName: registration.module.endsWith(".py") ? null : topPackage(module),
         },
       ];

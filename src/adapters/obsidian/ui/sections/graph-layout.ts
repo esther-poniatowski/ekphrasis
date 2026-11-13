@@ -21,6 +21,11 @@ export interface GraphLayout {
   readonly height: number;
 }
 
+export interface GraphLayoutOptions {
+  readonly nodeWidth?: number;
+  readonly nodeHeight?: number;
+}
+
 const NODE_WIDTH = 264;
 const NODE_HEIGHT = 152;
 const COLUMN_GAP = 96;
@@ -28,57 +33,96 @@ const ROW_GAP = 56;
 const MARGIN = 48;
 
 /**
- * Places roots and nodes without predecessors in the first column, then assigns each unplaced
- * target to the column after the first placed predecessor that reaches it. The first-reach rule
- * terminates on cycles and preserves producer order within each column.
+ * Places the unvisited ancestors of declared roots above them, then traverses their descendants
+ * before independent components. The first-reach rule terminates on cycles, keeps a root's primary
+ * route in the first column, and preserves producer order within each row.
  */
 export function layoutGraph(
   nodes: readonly GraphLayoutNode[],
   edges: readonly GraphLayoutEdge[],
+  options: GraphLayoutOptions = {},
 ): GraphLayout {
+  const nodeWidth = options.nodeWidth ?? NODE_WIDTH;
+  const nodeHeight = options.nodeHeight ?? NODE_HEIGHT;
   const known = new Set(nodes.map((node) => node.id));
   const outgoing = new Map<string, string[]>();
+  const predecessors = new Map<string, string[]>();
   const incoming = new Map(nodes.map((node) => [node.id, 0]));
   for (const edge of edges) {
     if (!known.has(edge.source) || !known.has(edge.target)) continue;
     outgoing.set(edge.source, [...(outgoing.get(edge.source) ?? []), edge.target]);
+    predecessors.set(edge.target, [...(predecessors.get(edge.target) ?? []), edge.source]);
     incoming.set(edge.target, (incoming.get(edge.target) ?? 0) + 1);
   }
   const ranks = new Map<string, number>();
-  const queue = nodes
-    .filter((node) => node.root || incoming.get(node.id) === 0)
-    .map((node) => node.id);
-  for (const id of queue) ranks.set(id, 0);
-  for (let cursor = 0; cursor < queue.length; cursor += 1) {
-    const source = queue[cursor];
-    if (source === undefined) continue;
-    const nextRank = (ranks.get(source) ?? 0) + 1;
-    for (const target of outgoing.get(source) ?? []) {
-      if (ranks.has(target)) continue;
-      ranks.set(target, nextRank);
-      queue.push(target);
+  const discoveryOrder = new Map<string, number>();
+  let nextDiscovery = 0;
+  const remember = (id: string, rank: number): void => {
+    ranks.set(id, rank);
+    discoveryOrder.set(id, nextDiscovery);
+    nextDiscovery += 1;
+  };
+  const placeAncestors = (seeds: readonly string[]): void => {
+    const queue = [...seeds];
+    for (const seed of seeds) if (!ranks.has(seed)) remember(seed, 0);
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const target = queue[cursor];
+      if (target === undefined) continue;
+      const previousRank = (ranks.get(target) ?? 0) - 1;
+      for (const source of predecessors.get(target) ?? []) {
+        if (ranks.has(source)) continue;
+        remember(source, previousRank);
+        queue.push(source);
+      }
     }
+  };
+  const placeDescendants = (seeds: readonly string[]): void => {
+    const queue: string[] = [];
+    for (const seed of seeds) {
+      if (!ranks.has(seed)) remember(seed, 0);
+      queue.push(seed);
+    }
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const source = queue[cursor];
+      if (source === undefined) continue;
+      const nextRank = (ranks.get(source) ?? 0) + 1;
+      for (const target of outgoing.get(source) ?? []) {
+        if (ranks.has(target)) continue;
+        remember(target, nextRank);
+        queue.push(target);
+      }
+    }
+  };
+  const roots = nodes.filter((node) => node.root).map((node) => node.id);
+  placeAncestors(roots);
+  placeDescendants(roots);
+  for (const node of nodes.filter((item) => incoming.get(item.id) === 0)) {
+    if (!ranks.has(node.id)) placeDescendants([node.id]);
   }
-  for (const node of nodes) if (!ranks.has(node.id)) ranks.set(node.id, 0);
+  for (const node of nodes) if (!ranks.has(node.id)) placeDescendants([node.id]);
 
-  const rows = new Map<number, number>();
+  const columns = new Map<number, number>();
   const positioned = new Map<string, PositionedNode>();
-  for (const node of nodes) {
-    const rank = ranks.get(node.id) ?? 0;
-    const row = rows.get(rank) ?? 0;
-    rows.set(rank, row + 1);
+  const orderedNodes = [...nodes].sort(
+    (left, right) => (discoveryOrder.get(left.id) ?? 0) - (discoveryOrder.get(right.id) ?? 0),
+  );
+  const minimumRank = Math.min(0, ...ranks.values());
+  for (const node of orderedNodes) {
+    const rank = (ranks.get(node.id) ?? 0) - minimumRank;
+    const column = columns.get(rank) ?? 0;
+    columns.set(rank, column + 1);
     positioned.set(node.id, {
       ...node,
-      x: MARGIN + rank * (NODE_WIDTH + COLUMN_GAP),
-      y: MARGIN + row * (NODE_HEIGHT + ROW_GAP),
+      x: MARGIN + column * (nodeWidth + COLUMN_GAP),
+      y: MARGIN + rank * (nodeHeight + ROW_GAP),
     });
   }
-  const maxRank = Math.max(0, ...ranks.values());
-  const maxRows = Math.max(1, ...rows.values());
+  const maxRank = Math.max(0, ...ranks.values()) - minimumRank;
+  const maxColumns = Math.max(1, ...columns.values());
   return {
     nodes: positioned,
-    width: MARGIN * 2 + (maxRank + 1) * NODE_WIDTH + maxRank * COLUMN_GAP,
-    height: MARGIN * 2 + maxRows * NODE_HEIGHT + (maxRows - 1) * ROW_GAP,
+    width: MARGIN * 2 + maxColumns * nodeWidth + (maxColumns - 1) * COLUMN_GAP,
+    height: MARGIN * 2 + (maxRank + 1) * nodeHeight + maxRank * ROW_GAP,
   };
 }
 

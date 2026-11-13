@@ -71,6 +71,7 @@ function renderPanel(
       renderer={TEXT_RENDERER}
       scheduler={IMMEDIATE_SCHEDULER}
       paintIcon={NO_ICONS}
+      graphPresentationOverrides={[]}
       reveal={reveal}
       onOpenSource={() => undefined}
     />,

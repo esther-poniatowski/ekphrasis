@@ -75,7 +75,9 @@ const CHECKER: CustomCheckerRegistration = {
   name: "tool",
   ...FINDINGS_LOG_CHECKER,
   schemas: ["demo:*"],
-  arguments: { command: ["-m", "tool", "check", "{folder}", "--format", "sarif"] },
+  arguments: {
+    command: ["-m", "tool", "check", "{folder}", "--format", "sarif"],
+  },
 };
 
 const SETTINGS: EkphrasisSettings = {
@@ -180,10 +182,21 @@ function scriptedProbe(
         })),
       ),
     packageData: (_interpreter, _cwd, name) =>
-      answer({ package: name, root: `/env/lib/${name}`, readable: 12, unreadable: [] }),
+      answer({
+        package: name,
+        root: `/env/lib/${name}`,
+        readable: 12,
+        unreadable: [],
+      }),
     runCommand: () => {
       counter.commands += 1;
-      return answer({ timedOut: false, durationMs, exitCode: 0, stderr: "", report });
+      return answer({
+        timedOut: false,
+        durationMs,
+        exitCode: 0,
+        stderr: "",
+        report,
+      });
     },
     callChecker: () => answer({ durationMs: 10, issues: [] }),
     ...script,
@@ -217,7 +230,11 @@ async function diagnose(scenario: Scenario = {}): Promise<DiagnosticReport> {
   if (recordPath !== null) {
     const text = (scenario.vault?.files ?? FILES)[recordPath] ?? "";
     const forms = new FormService(parser, loader, createValidation(), current, source);
-    record = { path: recordPath, text, state: await forms.open(recordPath, text) };
+    record = {
+      path: recordPath,
+      text,
+      state: await forms.open(recordPath, text),
+    };
   }
   const report = await runSetupDiagnostic({
     settings,
@@ -285,7 +302,9 @@ describe("the setup diagnostic", () => {
 
   describe("schema registry", () => {
     it("fails on a missing registry, and blocks the checks that depend on it", async () => {
-      const report = await diagnose({ vault: { files: withFiles({ [REGISTRY]: null }) } });
+      const report = await diagnose({
+        vault: { files: withFiles({ [REGISTRY]: null }) },
+      });
       expect(check(report, "registry.read")).toMatchObject({
         status: "fail",
         consequence: "forms",
@@ -312,12 +331,16 @@ describe("the setup diagnostic", () => {
         },
       });
       expect(check(report, "registry.read").status).toBe("pass");
-      expect(check(report, "registry.version")).toMatchObject({ status: "fail" });
+      expect(check(report, "registry.version")).toMatchObject({
+        status: "fail",
+      });
       expect(check(report, "registry.version").action).toContain("1 and 2");
     });
 
     it("treats an explicit schema as foreign when no registry is configured", async () => {
-      const report = await diagnose({ settings: { ...SETTINGS, schemaRegistry: "" } });
+      const report = await diagnose({
+        settings: { ...SETTINGS, schemaRegistry: "" },
+      });
       expect(check(report, "registry.setting").status).toBe("pass");
       expect(check(report, "record.form")).toMatchObject({ status: "pass" });
       expect(check(report, "record.form").observed).toContain("without a binding error");
@@ -334,7 +357,9 @@ describe("the setup diagnostic", () => {
 
       const sibling = await diagnose({
         record: foreign,
-        vault: { files: withFiles({ [foreign]: "_schema: demo:configuration@1\n" }) },
+        vault: {
+          files: withFiles({ [foreign]: "_schema: demo:configuration@1\n" }),
+        },
       });
       expect(check(sibling, "record.form")).toMatchObject({ status: "pass" });
       expect(check(sibling, "record.form").observed).toContain("`demo:configuration`");
@@ -359,7 +384,9 @@ describe("the setup diagnostic", () => {
 
   describe("schema resources", () => {
     it("fails on a contract whose schema file is absent", async () => {
-      const report = await diagnose({ vault: { files: withFiles({ [CONTRACT]: null }) } });
+      const report = await diagnose({
+        vault: { files: withFiles({ [CONTRACT]: null }) },
+      });
       expect(check(report, "registry.contracts").status).toBe("fail");
       expect(check(report, "registry.contracts").observed).toContain("is absent");
     });
@@ -367,7 +394,11 @@ describe("the setup diagnostic", () => {
     it("fails on an absolute reference that no resource of the registry maps", async () => {
       const missing = "https://example.org/tool/missing.schema.yaml";
       const report = await diagnose({
-        vault: { files: withFiles({ [CONTRACT]: CONTRACT_TEXT.replace(BASE_URI, missing) }) },
+        vault: {
+          files: withFiles({
+            [CONTRACT]: CONTRACT_TEXT.replace(BASE_URI, missing),
+          }),
+        },
       });
       expect(check(report, "schemas.references").status).toBe("fail");
       expect(check(report, "schemas.references").observed).toContain(missing);
@@ -398,7 +429,10 @@ describe("the setup diagnostic", () => {
       expect(check(report, "resources.reload").details).toContain(BASE_CHILD);
       expect(check(report, "resources.reload").action).toContain("Restart Obsidian");
       const indexed = await diagnose({
-        vault: { modified: { [BASE]: 5000 }, indexedFolders: [".schema-resources"] },
+        vault: {
+          modified: { [BASE]: 5000 },
+          indexedFolders: [".schema-resources"],
+        },
       });
       expect(check(indexed, "resources.reload").status).toBe("pass");
     });
@@ -412,7 +446,9 @@ describe("the setup diagnostic", () => {
     });
 
     it("fails on a record that the operating system refuses to write", async () => {
-      const report = await diagnose({ vault: { access: { status: "denied", reason: "EACCES" } } });
+      const report = await diagnose({
+        vault: { access: { status: "denied", reason: "EACCES" } },
+      });
       expect(check(report, "record.write")).toMatchObject({
         status: "fail",
         consequence: "saving",
@@ -422,7 +458,12 @@ describe("the setup diagnostic", () => {
 
     it("separates a permission that cannot be checked from a refused one", async () => {
       const report = await diagnose({
-        vault: { access: { status: "unknown", reason: "the mobile app exposes no permission" } },
+        vault: {
+          access: {
+            status: "unknown",
+            reason: "the mobile app exposes no permission",
+          },
+        },
       });
       expect(check(report, "record.write").status).toBe("unavailable");
     });
@@ -458,9 +499,37 @@ describe("the setup diagnostic", () => {
   });
 
   describe("configured checkers", () => {
+    it("checks the interpreter required by configured project commands without custom checkers", async () => {
+      const settings = {
+        ...SETTINGS,
+        customCheckers: [],
+        primaryViewCommand: ["-m", "tool", "views", "{target}"],
+        postCreationCommand: ["-m", "tool", "register", "{path}"],
+      };
+      const absent = await diagnose({
+        settings,
+        probe: scriptedProbe({
+          inspectInterpreter: () => Promise.resolve({ status: "missing" }),
+        }),
+      });
+      expect(check(absent, "command.interpreter")).toMatchObject({
+        status: "fail",
+        consequence: "degraded",
+      });
+      expect(check(absent, "command.interpreter").affects).toContain("primary views");
+      expect(check(absent, "command.interpreter").affects).toContain("post-creation actions");
+      expect(check(absent, "command.launch").status).toBe("unavailable");
+
+      const working = await diagnose({ settings });
+      expect(check(working, "command.interpreter").status).toBe("pass");
+      expect(check(working, "command.launch").status).toBe("pass");
+    });
+
     it("fails on an absent, a relative or a non-executable interpreter, and blocks the probe", async () => {
       const absent = await diagnose({
-        probe: scriptedProbe({ inspectInterpreter: () => Promise.resolve({ status: "missing" }) }),
+        probe: scriptedProbe({
+          inspectInterpreter: () => Promise.resolve({ status: "missing" }),
+        }),
       });
       expect(check(absent, "checker.interpreter").status).toBe("fail");
       for (const id of [
@@ -471,7 +540,9 @@ describe("the setup diagnostic", () => {
       ]) {
         expect(check(absent, id).status).toBe("unavailable");
       }
-      const relative = await diagnose({ settings: { ...SETTINGS, pythonInterpreter: "python3" } });
+      const relative = await diagnose({
+        settings: { ...SETTINGS, pythonInterpreter: "python3" },
+      });
       expect(check(relative, "checker.interpreter").observed).toContain("not an absolute path");
       const locked = await diagnose({
         probe: scriptedProbe({
@@ -483,18 +554,27 @@ describe("the setup diagnostic", () => {
 
     it("fails on a malformed schema pattern, and warns on an unclosed delimiter", async () => {
       const malformed = await diagnose({
-        settings: { ...SETTINGS, customCheckers: [{ ...CHECKER, schemas: ["demo:[z-a]"] }] },
+        settings: {
+          ...SETTINGS,
+          customCheckers: [{ ...CHECKER, schemas: ["demo:[z-a]"] }],
+        },
       });
       expect(check(malformed, "checker.patterns").status).toBe("fail");
       const unclosed = await diagnose({
-        settings: { ...SETTINGS, customCheckers: [{ ...CHECKER, schemas: ["{demo:*"] }] },
+        settings: {
+          ...SETTINGS,
+          customCheckers: [{ ...CHECKER, schemas: ["{demo:*"] }],
+        },
       });
       expect(check(unclosed, "checker.patterns").status).toBe("warning");
     });
 
     it("fails when no contract of the registry matches the patterns of a checker", async () => {
       const report = await diagnose({
-        settings: { ...SETTINGS, customCheckers: [{ ...CHECKER, schemas: ["other:*"] }] },
+        settings: {
+          ...SETTINGS,
+          customCheckers: [{ ...CHECKER, schemas: ["other:*"] }],
+        },
       });
       expect(check(report, "checker.selection").status).toBe("fail");
       expect(check(report, "checker.selection").action).toContain("`demo:note@1`");
@@ -521,7 +601,11 @@ describe("the setup diagnostic", () => {
       const report = await diagnose({
         probe: scriptedProbe({
           environment: () =>
-            Promise.resolve({ status: "launch-failed", code: "ENOENT", message: "spawn ENOENT" }),
+            Promise.resolve({
+              status: "launch-failed",
+              code: "ENOENT",
+              message: "spawn ENOENT",
+            }),
         }),
       });
       expect(check(report, "checker.launch").status).toBe("fail");
@@ -556,7 +640,10 @@ describe("the setup diagnostic", () => {
               root: "/env/lib/tool",
               readable: 3,
               unreadable: [
-                { path: "/env/lib/tool/data/rules.yml", error: "PermissionError: denied" },
+                {
+                  path: "/env/lib/tool/data/rules.yml",
+                  error: "PermissionError: denied",
+                },
               ],
             }),
         }),
@@ -586,7 +673,9 @@ describe("the setup diagnostic", () => {
 
     it("compares the measured duration with the timeout, and recommends a timeout", async () => {
       const close = await diagnose({ probe: scriptedProbe({}, 8000) });
-      expect(check(close, "checker.duration:tool")).toMatchObject({ status: "warning" });
+      expect(check(close, "checker.duration:tool")).toMatchObject({
+        status: "warning",
+      });
       expect(check(close, "checker.duration:tool").action).toContain("16.0 s");
       const over = await diagnose({ probe: scriptedProbe({}, 12_000) });
       expect(check(over, "checker.duration:tool").status).toBe("fail");
@@ -616,7 +705,12 @@ describe("the setup diagnostic", () => {
         settings: {
           ...SETTINGS,
           customCheckers: [
-            { name: "symbols", module: "project.checks", function: "symbols", schemas: ["demo:*"] },
+            {
+              name: "symbols",
+              module: "project.checks",
+              function: "symbols",
+              schemas: ["demo:*"],
+            },
           ],
         },
       });
@@ -630,11 +724,19 @@ describe("the setup diagnostic", () => {
     it("reports Python checkers as unavailable on mobile, without failing forms or records", async () => {
       const report = await diagnose({
         desktop: false,
-        vault: { access: { status: "unknown", reason: "the mobile app exposes no permission" } },
+        vault: {
+          access: {
+            status: "unknown",
+            reason: "the mobile app exposes no permission",
+          },
+        },
       });
       const checker = report.checks.filter(({ id }) => id.startsWith("checker."));
       expect(checker).toHaveLength(1);
-      expect(checker[0]).toMatchObject({ id: "checker.platform", status: "unavailable" });
+      expect(checker[0]).toMatchObject({
+        id: "checker.platform",
+        status: "unavailable",
+      });
       expect(checker[0]?.observed).toContain("forms and built-in checks remain available");
       expect(statusCounts(report.checks).fail).toBe(0);
     });
@@ -646,7 +748,9 @@ describe("the setup diagnostic", () => {
         files: withFiles({ [REGISTRY]: null }),
         access: { status: "denied", reason: "EROFS" },
       },
-      probe: scriptedProbe({ inspectInterpreter: () => Promise.resolve({ status: "missing" }) }),
+      probe: scriptedProbe({
+        inspectInterpreter: () => Promise.resolve({ status: "missing" }),
+      }),
     });
     expect(check(report, "registry.read").status).toBe("fail");
     expect(check(report, "record.write").status).toBe("fail");
@@ -668,7 +772,9 @@ describe("the setup diagnostic", () => {
         environment: () => Promise.reject(new TypeError("probe exploded")),
       }),
     });
-    expect(check(report, "diagnostic.checkers")).toMatchObject({ status: "fail" });
+    expect(check(report, "diagnostic.checkers")).toMatchObject({
+      status: "fail",
+    });
     expect(check(report, "diagnostic.checkers").details).toEqual(["TypeError: probe exploded"]);
     expect(check(report, "registry.read").status).toBe("pass");
   });

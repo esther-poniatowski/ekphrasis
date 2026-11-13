@@ -10,7 +10,7 @@
  * names the fields holding them, and lists those whose path designates no field of the form.
  */
 import type { ComponentChildren, JSX } from "preact";
-import type { FormReady, SessionSnapshot } from "../../../application";
+import type { FormReady, GraphPresentationOverride, SessionSnapshot } from "../../../application";
 import {
   ConstraintIndex,
   fieldChain,
@@ -56,6 +56,8 @@ export interface FormPanelProps {
   readonly scheduler: RenderScheduler;
   /** Painter of the icons of the field kinds. */
   readonly paintIcon: IconPainter;
+  /** Safe vault-local visual overrides for producer graph-presentation profiles. */
+  readonly graphPresentationOverrides: readonly GraphPresentationOverride[];
   /** Moves the form to the field at a path, unfolding the sections containing it. */
   readonly reveal: (path: YamlPath) => void;
   readonly onOpenSource: () => void;
@@ -165,6 +167,7 @@ function EditableForm({
   renderer,
   scheduler,
   paintIcon,
+  graphPresentationOverrides,
   reveal,
 }: FormPanelProps & {
   readonly form: FormReady;
@@ -195,6 +198,7 @@ function EditableForm({
         renderer,
         scheduler,
         paintIcon,
+        graphPresentationOverrides,
         reveal: revealField,
       }}
     >

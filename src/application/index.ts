@@ -33,9 +33,12 @@ export {
   CUSTOM_CHECKER_TIMEOUT_LIMITS,
   DEFAULT_SETTINGS,
   completeCustomCheckers,
+  graphPresentationOverrideIssues,
   parseSettings,
+  parseGraphPresentationOverrides,
   resolveCustomCheckerModules,
   type EkphrasisSettings,
+  type GraphPresentationOverride,
 } from "./settings";
 export { FormService, type FormReady, type FormState } from "./form-service";
 export { CommitService, UNCONFIRMED, type CommitResult } from "./commit-service";
@@ -56,6 +59,7 @@ export {
   InstanceCreationService,
   type CreatedInstance,
   type CreatableSchema,
+  type AfterInstanceCreation,
 } from "./instance-creation-service";
 export {
   fieldLinkByIdentifier,

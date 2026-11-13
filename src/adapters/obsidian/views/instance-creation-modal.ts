@@ -13,6 +13,7 @@ import {
   type InstanceCreationService,
 } from "../../../application";
 import { folderOf } from "../../../domain";
+import { COMMANDS } from "../commands";
 import { INSTANCE_VIEW_TYPE } from "../constants";
 
 export function openInstanceCreator(app: App, creation: InstanceCreationService): void {
@@ -105,7 +106,14 @@ class InstancePathModal extends Modal {
         state: { file: created.path },
         active: true,
       });
-      new Notice(`Ekphrasis: created ${created.path}.`);
+      if (created.followUpError === undefined) {
+        new Notice(`Ekphrasis: created ${created.path}.`);
+      } else {
+        new Notice(
+          `Ekphrasis: created ${created.path}, but its post-creation command failed: ${created.followUpError}. Correct the cause, then run *${COMMANDS.retryPostCreation.name}*.`,
+          15_000,
+        );
+      }
     } catch (error) {
       reportCreationFailure(error);
       this.createButton?.setDisabled(false);

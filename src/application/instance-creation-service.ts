@@ -19,18 +19,30 @@ export interface CreatableSchema {
 export interface CreatedInstance {
   readonly path: string;
   readonly identifier: string;
+  /** Failure of an optional producer-owned follow-up; the instance itself still exists. */
+  readonly followUpError?: string;
 }
+
+export type AfterInstanceCreation = (instance: CreatedInstance) => Promise<void>;
 
 export class InstanceCreationError extends EkphrasisError {
   override name = "InstanceCreationError";
 }
 
 export class InstanceCreationService {
+  private failedFollowUp: CreatedInstance | null = null;
+
   constructor(
     private readonly registry: RegistryReader,
     private readonly schemas: SchemaLoader,
     private readonly store: InstanceStore,
+    private readonly afterCreate: AfterInstanceCreation | null = null,
   ) {}
+
+  /** Whether the last failed producer-owned follow-up remains available to retry. */
+  get canRetryFollowUp(): boolean {
+    return this.failedFollowUp !== null && this.afterCreate !== null;
+  }
 
   /** Writable contracts in registry order. */
   async availableSchemas(): Promise<readonly CreatableSchema[]> {
@@ -72,7 +84,38 @@ export class InstanceCreationService {
     const root = SchemaView.root(await this.schemas.load(contract.schemaPath));
     const value: JsonObject = instanceSkeleton(root, identifier);
     await this.store.create(path, value);
-    return { path, identifier };
+    const created = { path, identifier };
+    if (this.afterCreate === null) return created;
+    try {
+      await this.afterCreate(created);
+      return created;
+    } catch (error) {
+      const failed = {
+        ...created,
+        followUpError: error instanceof Error ? error.message : "the post-creation command failed",
+      };
+      this.failedFollowUp = failed;
+      return failed;
+    }
+  }
+
+  /** Retry the last failed producer-owned follow-up without creating the record again. */
+  async retryFollowUp(): Promise<CreatedInstance | null> {
+    const failed = this.failedFollowUp;
+    if (failed === null || this.afterCreate === null) return null;
+    this.failedFollowUp = null;
+    const created = { path: failed.path, identifier: failed.identifier };
+    try {
+      await this.afterCreate(created);
+      return created;
+    } catch (error) {
+      const repeated = {
+        ...created,
+        followUpError: error instanceof Error ? error.message : "the post-creation command failed",
+      };
+      this.failedFollowUp = repeated;
+      return repeated;
+    }
   }
 }
 

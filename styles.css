@@ -5,6 +5,18 @@
  * plugins. Colors and spacing rely on Obsidian CSS variables so that themes apply transparently.
  * ============================================================================================== */
 
+.ekphrasis-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --- Instance view ------------------------------------------------------------------------------ */
 
 .ekphrasis-view {
@@ -812,15 +824,92 @@ button.ekphrasis-fold:hover {
    grid, so kind and status remain aligned while the producer controls their semantic values. */
 .ekphrasis-graph-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--size-4-2);
   align-items: center;
   margin-bottom: var(--size-4-3);
+  text-transform: lowercase;
 }
 
 .ekphrasis-graph-toolbar output {
   min-width: 3.5rem;
   color: var(--text-muted);
   text-align: center;
+}
+
+.ekphrasis-graph-layout-control,
+.ekphrasis-graph-density-control {
+  display: inline-flex;
+  gap: var(--size-4-1);
+  align-items: center;
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-graph-filter {
+  position: relative;
+}
+
+.ekphrasis-graph-filter > summary {
+  padding: var(--size-2-2) var(--size-4-2);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  font-size: var(--font-ui-small);
+}
+
+.ekphrasis-graph-filter > fieldset,
+.ekphrasis-graph-filter-panel {
+  position: absolute;
+  z-index: var(--layer-menu, 100);
+  display: grid;
+  min-width: 15rem;
+  margin: var(--size-2-2) 0 0;
+  padding: var(--size-4-3);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+}
+
+.ekphrasis-graph-filter-panel {
+  grid-template-columns: repeat(2, minmax(16rem, 1fr));
+  gap: var(--size-4-4);
+  max-height: min(60vh, 32rem);
+  overflow: auto;
+}
+
+.ekphrasis-graph-filter-panel fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ekphrasis-graph-filter legend {
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-graph-filter label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--size-4-2);
+  align-items: start;
+  padding-block: var(--size-2-1);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-tight);
+}
+
+.ekphrasis-graph-filter-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ekphrasis-graph-filter-count {
+  color: var(--text-muted);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .ekphrasis-graph-viewport {
@@ -855,14 +944,21 @@ button.ekphrasis-fold:hover {
   pointer-events: none;
 }
 
-.ekphrasis-graph-edges path {
-  fill: none;
-  stroke: var(--text-muted);
-  stroke-width: 2;
+.ekphrasis-graph-edge {
+  --ekphrasis-graph-edge-color: var(--text-muted);
 }
 
-.ekphrasis-graph-edges marker path {
-  fill: var(--text-muted);
+.ekphrasis-graph-edge > path {
+  fill: none;
+  stroke: var(--ekphrasis-graph-edge-color);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ekphrasis-graph-edges marker path,
+.ekphrasis-graph-edges marker circle {
+  fill: var(--ekphrasis-graph-edge-color);
   stroke: none;
 }
 
@@ -875,13 +971,12 @@ button.ekphrasis-fold:hover {
   font-weight: var(--font-semibold);
 }
 
-button.ekphrasis-graph-node {
+.ekphrasis-graph-node {
   position: absolute;
   display: flex;
   flex-direction: column;
   gap: var(--size-2-2);
   width: 264px;
-  height: 152px;
   box-sizing: border-box;
   padding: var(--size-4-3);
   overflow: hidden;
@@ -893,28 +988,124 @@ button.ekphrasis-graph-node {
   box-shadow: var(--shadow-s);
 }
 
-button.ekphrasis-graph-node[data-shape="capsule"] {
+.ekphrasis-graph-node[data-density="minimal"] {
+  gap: var(--size-2-1);
+  padding: var(--size-4-2);
+}
+
+.ekphrasis-graph-node[data-density="minimal"] .ekphrasis-graph-node-label {
+  -webkit-line-clamp: 1;
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-node[data-shape="capsule"] {
   border-color: var(--interactive-accent);
   border-radius: 2rem;
   background: var(--background-secondary);
 }
 
-button.ekphrasis-graph-node[data-shape="dashed"] {
+.ekphrasis-graph-node[data-shape="dashed"] {
   border-style: dashed;
 }
 
-button.ekphrasis-graph-node[data-root] {
+.ekphrasis-graph-node[data-root] {
   border-width: 4px;
   border-color: rgb(var(--color-orange-rgb));
   box-shadow: 0 0 0 3px rgba(var(--color-orange-rgb), 0.16);
 }
 
-button.ekphrasis-graph-node[data-selected] {
+.ekphrasis-graph-node[data-selected] {
   outline: 3px solid var(--interactive-accent);
   outline-offset: 3px;
 }
 
-.ekphrasis-graph-node-header,
+.ekphrasis-graph-node[data-presentation="point"] {
+  display: block;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+  --ekphrasis-graph-node-color: var(--interactive-accent);
+}
+
+.ekphrasis-graph-node[data-presentation="point"][data-selected] {
+  outline: 0;
+}
+
+.ekphrasis-graph-node[data-presentation="point"] .ekphrasis-graph-node-focus {
+  width: 100%;
+  height: 1.125rem;
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  justify-content: center;
+}
+
+.ekphrasis-graph-map-node-dot {
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid var(--background-primary);
+  border-radius: 50%;
+  background: var(--ekphrasis-graph-node-color);
+  box-shadow: 0 0 0 1px var(--background-modifier-border-hover);
+}
+
+.ekphrasis-graph-node[data-presentation="point"][data-root]
+  .ekphrasis-graph-map-node-dot {
+  box-shadow:
+    0 0 0 2px rgb(var(--color-orange-rgb)),
+    0 0 0 5px rgba(var(--color-orange-rgb), 0.18);
+}
+
+.ekphrasis-graph-node[data-presentation="point"][data-selected]
+  .ekphrasis-graph-map-node-dot {
+  box-shadow:
+    0 0 0 3px var(--background-secondary-alt),
+    0 0 0 6px var(--interactive-accent);
+}
+
+.ekphrasis-graph-map-node-label {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: var(--text-normal);
+  font-size: 0.72rem;
+  font-weight: var(--font-normal);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  text-shadow:
+    -1px -1px 0 var(--background-secondary-alt),
+    1px -1px 0 var(--background-secondary-alt),
+    -1px 1px 0 var(--background-secondary-alt),
+    1px 1px 0 var(--background-secondary-alt);
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-map-node-label[href]:hover,
+.ekphrasis-graph-map-node-label[href]:focus-visible {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.ekphrasis-graph-viewport[data-layout="network"]
+  .ekphrasis-graph-node[data-draggable] {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.ekphrasis-graph-viewport[data-layout="network"]
+  .ekphrasis-graph-node[data-draggable]:active {
+  cursor: grabbing;
+}
+
+.ekphrasis-graph-node-focus,
 .ekphrasis-graph-node-status {
   display: flex;
   width: 100%;
@@ -922,6 +1113,22 @@ button.ekphrasis-graph-node[data-selected] {
   justify-content: space-between;
   gap: var(--size-4-2);
   align-items: center;
+}
+
+.ekphrasis-graph-node-focus {
+  min-height: 1.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  box-shadow: none;
+}
+
+.ekphrasis-graph-node-focus:hover,
+.ekphrasis-graph-node-focus:focus-visible {
+  background: transparent;
+  color: inherit;
 }
 
 .ekphrasis-graph-node-symbol {
@@ -932,6 +1139,24 @@ button.ekphrasis-graph-node[data-selected] {
   border-radius: 50%;
   background: var(--interactive-accent);
   color: var(--text-on-accent);
+  font-variant-emoji: text;
+}
+
+.ekphrasis-graph-node-icon,
+.ekphrasis-graph-node-icon > svg {
+  width: 1rem;
+  height: 1rem;
+  color: currentColor;
+  stroke: currentColor;
+}
+
+.ekphrasis-graph-node-icon {
+  display: inline-flex;
+}
+
+.ekphrasis-graph-node-marker,
+.ekphrasis-graph-node-icon:not(:has(svg)) {
+  filter: grayscale(1) brightness(0) invert(1);
 }
 
 .ekphrasis-graph-node-kind {
@@ -985,11 +1210,46 @@ button.ekphrasis-graph-node[data-selected] {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+  text-decoration: none;
+}
+
+.ekphrasis-graph-node-label[href]:hover,
+.ekphrasis-graph-node-label[href]:focus-visible {
+  color: var(--link-color);
+  text-decoration: underline;
 }
 
 .ekphrasis-graph-node-id {
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+}
+
+.ekphrasis-graph-node-details {
+  display: grid;
+  gap: var(--size-2-1);
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--font-ui-smaller);
+}
+
+.ekphrasis-graph-node-details > div {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--size-2-2);
+}
+
+.ekphrasis-graph-node-details dt {
+  color: var(--text-muted);
+}
+
+.ekphrasis-graph-node-details dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

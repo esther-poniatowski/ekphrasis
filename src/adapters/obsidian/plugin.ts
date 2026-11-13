@@ -36,6 +36,7 @@ import {
   AjvSchemaValidator,
   FileSchemaLoader,
   PythonCheckerProcess,
+  ConfiguredCommandProcess,
   GeneratedViewProcess,
   PythonSetupProbe,
   writeAccessOf,
@@ -147,6 +148,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       resources,
       schemaLoader,
       new VaultInstanceStore(this.app.vault),
+      (created) => this.runPostCreation(created.path, created.identifier),
     );
     this.identifiers = identifiers;
     const links = new FieldLinkOpener(
@@ -219,6 +221,11 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       () => this.restartCheckerRunner(),
       () => this.diagnoseSetup(),
       () => openInstanceCreator(this.app, creation),
+      (checking) => {
+        if (!creation.canRetryFollowUp) return false;
+        if (!checking) void this.retryPostCreation(creation);
+        return true;
+      },
       () => this.openPrimaryView(),
     );
     this.registerEditorSuggest(new FieldPathSuggest(this.app, forms));
@@ -266,6 +273,40 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
     );
     openPrimaryViewTarget(this.app, (target) =>
       runner.run(this.settings.primaryViewCommand, target),
+    );
+  }
+
+  /** Let the configured producer update its own related files after generic instance creation. */
+  private async runPostCreation(path: string, schema: string): Promise<void> {
+    const command = this.settings.postCreationCommand;
+    if (command.length === 0) return;
+    if (!Platform.isDesktopApp) {
+      throw new Error("post-creation commands run only in the desktop app");
+    }
+    const interpreter = this.settings.pythonInterpreter.trim();
+    if (interpreter === "") {
+      throw new Error("configure the Python interpreter to run the post-creation command");
+    }
+    const vault = this.absoluteVaultPath("");
+    const runner = new ConfiguredCommandProcess(
+      interpreter,
+      vault,
+      this.settings.customCheckerTimeout,
+    );
+    await runner.run(command, { vault, path, schema });
+  }
+
+  /** Retry a failed producer-owned follow-up without creating its record again. */
+  private async retryPostCreation(creation: InstanceCreationService): Promise<void> {
+    const retried = await creation.retryFollowUp();
+    if (retried === null) return;
+    if (retried.followUpError === undefined) {
+      new Notice(`Ekphrasis: completed the post-creation action for ${retried.path}.`);
+      return;
+    }
+    new Notice(
+      `Ekphrasis: the post-creation action for ${retried.path} still failed: ${retried.followUpError}. Correct the cause, then run *${COMMANDS.retryPostCreation.name}* again.`,
+      15_000,
     );
   }
 

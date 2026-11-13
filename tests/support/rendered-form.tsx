@@ -87,6 +87,7 @@ export async function renderForm(
       renderer={TEXT_RENDERER}
       scheduler={IMMEDIATE_SCHEDULER}
       paintIcon={NO_ICONS}
+      graphPresentationOverrides={current().graphPresentationOverrides}
       reveal={(path) => reveals.push(path)}
       onOpenSource={() => undefined}
     />
@@ -116,8 +117,9 @@ export function element<E extends Element = HTMLElement>(container: Element, sel
 /**
  * Elements of `container` through which the author can change the instance: a field of input,
  * enabled and not read-only; an enabled button adding, moving or removing an item or an entry;
- * and a rendered value whose activation opens its editor. A checkbox ignores `readOnly`, so only
- * its disabled state counts.
+ * and a rendered value whose activation opens its editor. A control marked `data-view-control`
+ * changes only presentation state and is excluded. A checkbox otherwise ignores `readOnly`, so
+ * only its disabled state counts.
  */
 export function editableControls(container: Element): Element[] {
   const fields = Array.from(
@@ -125,6 +127,7 @@ export function editableControls(container: Element): Element[] {
       "input, textarea, select",
     ),
   ).filter((control) => {
+    if (control.hasAttribute("data-view-control")) return false;
     if (control.disabled) return false;
     if (control instanceof HTMLSelectElement) return true;
     if (control instanceof HTMLInputElement && ["checkbox", "radio"].includes(control.type)) {

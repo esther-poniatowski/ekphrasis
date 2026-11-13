@@ -11,4 +11,8 @@ export { AjvSchemaValidator } from "./schema/ajv-validator";
 export { PythonCheckerProcess, CheckerProcessError } from "./python/checker-process";
 export { PythonSetupProbe, PROBE_TIMEOUT_MS } from "./python/setup-probe";
 export { GeneratedViewProcess, GeneratedViewProcessError } from "./process/generated-view-process";
+export {
+  ConfiguredCommandProcess,
+  ConfiguredCommandProcessError,
+} from "./process/configured-command-process";
 export { writeAccessOf } from "./files/write-access";

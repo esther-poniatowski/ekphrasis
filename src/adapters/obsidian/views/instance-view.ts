@@ -463,6 +463,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
           renderer: this.renderer,
           scheduler: this.queue,
           paintIcon: setIcon,
+          graphPresentationOverrides: this.services.settings().graphPresentationOverrides,
           reveal: (path) => this.reveal(path, false),
           onOpenSource: () => {
             if (this.mode === "form") this.toggleMode();
