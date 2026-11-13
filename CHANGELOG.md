@@ -4,6 +4,8 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-13
+
 ### Added
 
 - The setting *Excluded paths* lists glob patterns, such as `templates/**`, whose files bind to no schema and open in the source view. Note skeletons can thus declare the `_schema` of their records without reporting the errors of their placeholders.
