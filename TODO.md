@@ -211,7 +211,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [ ] **Instance creation**: define how a registry marks the current creatable contract, then make the chooser prioritize that contract without hiding an older version selected deliberately.
 - [ ] **Instance creation**: write the skeleton of a new instance, with its modeline when no path rule binds its path.
 - [ ] **Instance creation**: add the schema folder to the settings, and offer its schemas together with those of the path rules.
-- [ ] **Instance creation**: provide the command *Create instance*, and one command per schema declared with a command name.
+- [ ] **Instance creation**: beside the command *Create instance*, provide one command per schema declared with a command name.
 
 ## Custom checkers
 
