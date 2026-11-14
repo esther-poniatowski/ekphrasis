@@ -94,6 +94,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 
 ## Links
 
+- [ ] **Logical targets (high priority)**: consume the TypeScript read package of Anagraphe, once published, behind the ports for binding, schema loading and files. A logical target such as `{repository, id, unit}` then opens its record from the form. Retire the identifier index of Ekphrasis once the package covers it, as the decision of Geonexus on tool roles states.
 - [x] **Links**: decide, in a decision record, the location of the index of identifiers (a module of ekphrasis or a separate plugin), the syntax of a link by identifier, and the declaration of the identifier of a record type. Accepted by the user on 2026-10-23, in the [decision on record identifiers](docs/adr/record-identifiers.md). (2026-10-23)
 - [x] **Links**: confirm in a test vault how Obsidian passes the subpath of a followed link to the view of a YAML file, which paths of a YAML file it resolves, and whether a plugin can suggest field paths after a hash sign. Verdicts recorded in the [implementation plan](docs/architecture/implementation-plan.md). (2026-10-23)
 - [x] **Links**: verify that the Markdown links and the wikilinks of a value resolve as in a note stored in the folder of the instance, including relative paths, encoded spaces and subpaths of notes, and that an external link such as `https://…` opens in the browser. (2026-10-29)
@@ -209,8 +210,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 - [x] **Instance creation**: run the creation protocol inside Obsidian. (2026-11-10)
 - [x] **Instance creation**: invoke an optional producer-owned command after generic creation, with the new path and schema as generic placeholders. Preserve and open the created record when the follow-up fails, and retry that follow-up without creating the record again. Synthetic process and application tests pass; the Gnomon registration and failure-recovery routes passed inside Obsidian. (2026-11-11)
 - [ ] **Instance creation**: define how a registry marks the current creatable contract, then make the chooser prioritize that contract without hiding an older version selected deliberately.
-- [ ] **Instance creation**: write the skeleton of a new instance, with its modeline when no path rule binds its path.
-- [ ] **Instance creation**: add the schema folder to the settings, and offer its schemas together with those of the path rules.
+- [ ] **Instance creation**: create an instance in a vault without a schema registry, through the other binding routes. The chooser offers the schemas of a schema folder declared in the settings with those of the path rules, and the skeleton carries a modeline when no path rule binds its path.
 - [ ] **Instance creation**: beside the command *Create instance*, provide one command per schema declared with a command name.
 
 ## Custom checkers
