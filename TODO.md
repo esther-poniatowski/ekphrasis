@@ -95,7 +95,7 @@ The roadmap of ekphrasis lists the steps of each milestone of the [implementatio
 ## Links
 
 - [ ] **Logical targets (high priority)**: consume the TypeScript read package of Anagraphe, pinned as a release tarball by its URL and its integrity hash, behind the ports for binding, schema loading and files. A logical target such as `{repository, id, unit}` then opens its record from the form. Retire the identifier index of Ekphrasis once the package covers it, as the decision of Geonexus on tool roles states.
-  - Pin the tarball of `@anagraphe/read` attached to the next release of Anagraphe; during joint development, install `file:../anagraphe/packages/read`. The [README of the package](https://github.com/esther-poniatowski/anagraphe/blob/main/packages/read/README.md) states its ports.
+  - Pin the tarball of `@anagraphe/read` attached to the release of Anagraphe that the vault pins; during joint development, install `file:../anagraphe/packages/read`. The [README of the package](https://github.com/esther-poniatowski/anagraphe/blob/main/packages/read/README.md) states its ports.
   - Write the adapter of the binding port over `BindingService`, and decide whether a binding by `_schema` must still match the constant `_schema` of its schema.
   - Write the adapter of the schema-loading port over `FileSchemaLoader`, a `SchemaError` becoming a failed load.
   - Replace `IdentifierIndexService` by the `RepositoryIndex` of the package, given the path of the record registry from the section `records` of `anagraphe.yml`. Markdown notes and the default field `metadata.id` then enter the index.
