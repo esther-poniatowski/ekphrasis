@@ -1,0 +1,14 @@
+// Emission of the package: JavaScript and declarations of `src/` into `dist/`. The sources import no
+// Node module, so the build loads no Node types.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "sourceMap": false,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": []
+  },
+  "include": ["src/**/*.ts"]
+}

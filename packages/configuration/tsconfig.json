@@ -1,0 +1,26 @@
+// =================================================================================================
+// TypeScript Configuration for @ekphrasis/configuration
+//
+// Type checking of the sources, the tests, the scripts and the tool configurations, with strict
+// options. The build emits the sources alone, through `tsconfig.build.json`. Node module resolution
+// requires the suffix `.js` in each relative import, so that the emitted ES modules load in Node as
+// well as in a bundler.
+// =================================================================================================
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2020"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts", "config/tools/*.ts"]
+}

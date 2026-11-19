@@ -1,0 +1,93 @@
+# Cases of the configuration ekphrasis:configuration@1: the verdict of the schema on each document,
+# and for a valid document its projection onto the settings of the plugin, with the folder of the
+# root of the repository in the vault (empty for the vault itself).
+cases:
+  - name: minimal
+    document: {_schema: "ekphrasis:configuration@1"}
+    valid: true
+    settings: {}
+  - name: registry-and-rules
+    document:
+      _schema: "ekphrasis:configuration@1"
+      schema_registry: specs/schema-registry.yml
+      path_rules:
+        - {pattern: "**/constraints_*.yml", schema: specs/schemas/constraints.schema.yaml}
+      excluded_paths: ["templates/**"]
+      commit_delay: 1000
+    valid: true
+    settings:
+      schemaRegistry: specs/schema-registry.yml
+      pathRules:
+        - {pattern: "**/constraints_*.yml", schema: specs/schemas/constraints.schema.yaml}
+      excludedPaths: ["templates/**"]
+      commitDelay: 1000
+  - name: root-in-a-folder-of-the-vault
+    document:
+      _schema: "ekphrasis:configuration@1"
+      schema_registry: specs/schema-registry.yml
+      path_rules: [{pattern: "records/*.yml", schema: specs/record.schema.json}]
+      excluded_paths: ["templates/**"]
+    root: projects/lab
+    valid: true
+    settings:
+      schemaRegistry: projects/lab/specs/schema-registry.yml
+      pathRules: [{pattern: "projects/lab/records/*.yml", schema: projects/lab/specs/record.schema.json}]
+      excludedPaths: ["projects/lab/templates/**"]
+  - name: every-key
+    document:
+      _schema: "ekphrasis:configuration@1"
+      custom_checker_timeout: 5000
+      custom_checkers:
+        - {name: units, module: lab.checks, function: units, schemas: ["lab:*"], arguments: {strict: true}}
+      primary_view_command: [lab, view, "{target}"]
+      post_creation_command: [lab, update]
+      graph_presentation_overrides:
+        - profile: inquiry
+          version: 2
+          layouts: {recommended: layered, compatible: [layered, force]}
+          categories: {claim: {title: Claim, shape: box}}
+          node_kinds: {question: {category: claim, icon: help}}
+          edge_kinds: {supports: {arrow: diamond, caption: hide}}
+    valid: true
+    settings:
+      customCheckerTimeout: 5000
+      customCheckers:
+        - {name: units, module: lab.checks, function: units, schemas: ["lab:*"], arguments: {strict: true}}
+      primaryViewCommand: [lab, view, "{target}"]
+      postCreationCommand: [lab, update]
+      graphPresentationOverrides:
+        - profile: inquiry
+          version: 2
+          layouts: {recommended: layered, compatible: [layered, force]}
+          categories: {claim: {title: Claim, shape: box}}
+          nodeKinds: {question: {category: claim, icon: help}}
+          edgeKinds: {supports: {arrow: diamond, caption: hide}}
+  - name: no-format
+    document: {schema_registry: specs/schema-registry.yml}
+    valid: false
+  - name: other-format
+    document: {_schema: "kataskeue:obsidian-plugins@1"}
+    valid: false
+  - name: unknown-key
+    document: {_schema: "ekphrasis:configuration@1", python_interpreter: /usr/bin/python3}
+    valid: false
+  - name: absolute-path
+    document: {_schema: "ekphrasis:configuration@1", schema_registry: /specs/schema-registry.yml}
+    valid: false
+  - name: leaving-path
+    document: {_schema: "ekphrasis:configuration@1", excluded_paths: ["../other/**"]}
+    valid: false
+  - name: glob-as-schema
+    document:
+      _schema: "ekphrasis:configuration@1"
+      path_rules: [{pattern: "*.yml", schema: "specs/*.json"}]
+    valid: false
+  - name: short-delay
+    document: {_schema: "ekphrasis:configuration@1", commit_delay: 100}
+    valid: false
+  - name: unknown-arrow
+    document:
+      _schema: "ekphrasis:configuration@1"
+      graph_presentation_overrides:
+        - {profile: inquiry, version: 1, edge_kinds: {supports: {arrow: star}}}
+    valid: false

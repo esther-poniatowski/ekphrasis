@@ -36,3 +36,30 @@ jobs:
             main.js
             manifest.json
             styles.css
+
+  configuration-package:
+    # The TypeScript implementation of the configuration, which runs the cases of specs/cases/.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/configuration
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: packages/configuration/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Check formatting (prettier)
+        run: npm run format:check
+      - name: Run linter (eslint)
+        run: npm run lint
+      - name: Run type checker (tsc)
+        run: npm run typecheck
+      - name: Run tests
+        run: npm test
+      - name: Check the tarball
+        run: npm pack --dry-run

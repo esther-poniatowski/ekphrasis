@@ -1,0 +1,5 @@
+# Files excluded from Prettier, passed through `--ignore-path` by the scripts `format` and
+# `format:check`. Prettier resolves these paths from this folder.
+../../node_modules/
+../../dist/
+../../src/generated/

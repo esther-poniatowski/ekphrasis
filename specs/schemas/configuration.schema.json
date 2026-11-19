@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/esther-poniatowski/ekphrasis/specs/schemas/configuration.schema.json",
+  "title": "ekphrasis:configuration@1",
+  "description": "the configuration ekphrasis.yml of a repository, from which the settings of the plugin are projected; its paths are relative to the root of the repository. The settings of one machine, such as the Python interpreter, and the state of the interface are no part of it",
+  "type": "object",
+  "required": [
+    "_schema"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "_schema": {
+      "const": "ekphrasis:configuration@1"
+    },
+    "schema_registry": {
+      "description": "the schema registry mapping each contract to its schema file",
+      "$ref": "#/$defs/path"
+    },
+    "path_rules": {
+      "description": "the rules binding the records that name no contract, applied in this order",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "pattern",
+          "schema"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "pattern": {
+            "description": "a glob of the paths of the records",
+            "$ref": "#/$defs/path"
+          },
+          "schema": {
+            "description": "the schema file of the matched records",
+            "$ref": "#/$defs/literal-path"
+          }
+        }
+      }
+    },
+    "excluded_paths": {
+      "description": "the globs of the files that bind to no schema, such as the skeletons of notes",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/path"
+      }
+    },
+    "commit_delay": {
+      "description": "the pause of typing, in milliseconds, after which a text control commits its value",
+      "type": "integer",
+      "minimum": 250,
+      "maximum": 10000
+    },
+    "custom_checker_timeout": {
+      "description": "the longest duration of one call of a custom checker, in milliseconds",
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 120000
+    },
+    "custom_checkers": {
+      "description": "the Python functions admitted under checker names, in display order",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "module",
+          "function"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "module": {
+            "description": "an importable module, or the path of a Python module",
+            "type": "string",
+            "minLength": 1
+          },
+          "function": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schemas": {
+            "description": "the globs of the contracts whose records the checker checks as a whole",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "arguments": {
+            "description": "the keyword arguments of each such call",
+            "type": "object"
+          }
+        }
+      }
+    },
+    "primary_view_command": {
+      "description": "the arguments that generate one view selected by a target",
+      "$ref": "#/$defs/command"
+    },
+    "post_creation_command": {
+      "description": "the arguments run after a record is created",
+      "$ref": "#/$defs/command"
+    },
+    "graph_presentation_overrides": {
+      "description": "the overrides of the presentation of graphs, keyed by the profile of their producer",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/graph-override"
+      }
+    }
+  },
+  "$defs": {
+    "path": {
+      "description": "a path or a glob relative to the root of the repository, with segments separated by /",
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "^/|^[A-Za-z]:|://|(?:^|/)\\.\\.(?:/|$)|\\\\"
+      }
+    },
+    "literal-path": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/path"
+        },
+        {
+          "not": {
+            "pattern": "[*?{}\\[\\]]"
+          }
+        }
+      ]
+    },
+    "command": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "token": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "graph-override": {
+      "type": "object",
+      "required": [
+        "profile",
+        "version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/token"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "layouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recommended": {
+              "$ref": "#/$defs/token"
+            },
+            "compatible": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/token"
+              }
+            }
+          }
+        },
+        "categories": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "shape": {
+                "$ref": "#/$defs/token"
+              },
+              "marker": {
+                "type": "string"
+              },
+              "style": {
+                "$ref": "#/$defs/token"
+              }
+            }
+          }
+        },
+        "node_kinds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "$ref": "#/$defs/token"
+              },
+              "title": {
+                "type": "string"
+              },
+              "icon": {
+                "$ref": "#/$defs/token"
+              },
+              "marker": {
+                "type": "string"
+              },
+              "style": {
+                "$ref": "#/$defs/token"
+              }
+            }
+          }
+        },
+        "edge_kinds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "layer": {
+                "$ref": "#/$defs/token"
+              },
+              "style": {
+                "$ref": "#/$defs/token"
+              },
+              "arrow": {
+                "enum": [
+                  "arrow",
+                  "diamond",
+                  "circle",
+                  "none"
+                ]
+              },
+              "caption": {
+                "enum": [
+                  "show",
+                  "hide"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

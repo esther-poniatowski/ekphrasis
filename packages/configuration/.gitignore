@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Generated from specs/schemas/configuration.schema.json by scripts/generate-schema.mjs.
+src/generated/

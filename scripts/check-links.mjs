@@ -30,7 +30,10 @@ function markdownFiles(folder) {
   const files = [];
   for (const name of readdirSync(folder).sort()) {
     const path = join(folder, name);
-    if (SKIPPED.some((skipped) => relative(root, path) === skipped)) continue;
+    // A package of the repository holds a folder node_modules of its own, skipped as the root one.
+    if (name === "node_modules" || SKIPPED.some((skipped) => relative(root, path) === skipped)) {
+      continue;
+    }
     if (statSync(path).isDirectory()) files.push(...markdownFiles(path));
     else if (name.endsWith(".md")) files.push(path);
   }

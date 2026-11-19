@@ -1,0 +1,54 @@
+{
+  "name": "@ekphrasis/configuration",
+  "version": "0.3.0",
+  "description": "Checks a configuration ekphrasis:configuration@1 of a repository, and projects it onto the settings of the Ekphrasis plugin, in TypeScript.",
+  "author": "Esther Poniatowski",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esther-poniatowski/ekphrasis.git",
+    "directory": "packages/configuration"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "generate": "node scripts/generate-schema.mjs",
+    "pretypecheck": "npm run generate",
+    "typecheck": "tsc --noEmit",
+    "prelint": "npm run generate",
+    "lint": "eslint --config config/tools/eslint.config.mjs src tests",
+    "format": "prettier --config config/tools/prettier.json --ignore-path config/tools/prettier.ignore --write src tests config scripts",
+    "format:check": "prettier --config config/tools/prettier.json --ignore-path config/tools/prettier.ignore --check src tests config scripts",
+    "pretest": "npm run generate",
+    "test": "vitest run --config config/tools/vitest.config.ts",
+    "prebuild": "npm run generate",
+    "build": "tsc --project tsconfig.build.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "eslint": "^9.14.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.13.0",
+    "vitest": "^5.1.0",
+    "yaml": "^2.6.0"
+  }
+}
