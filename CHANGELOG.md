@@ -4,6 +4,12 @@ Every notable change to the project is recorded in this changelog. The format fo
 
 ## [Unreleased]
 
+### Added
+
+- The format `ekphrasis:configuration@1` of the file `ekphrasis.yml`, published as a JSON Schema with cases, and its projection onto the settings of the plugin, published as the TypeScript package `@ekphrasis/configuration`. Ekphrasis owns the format that a tool installing the plugin writes.
+- The schema of the presentation profile of a graph, published under an absolute `$id`, to which a producer of graphs refers.
+- The configuration of Kleisis and the registry of Ekphrasis, which export the configuration and list the profile.
+
 ## [0.3.0] - 2026-11-13
 
 ### Added

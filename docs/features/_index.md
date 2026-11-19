@@ -29,3 +29,5 @@ Specifies each feature of ekphrasis by the syntax accepted in a schema or an ins
 - [Custom checkers](custom-checkers.md): fixes how a rule written in Python is registered and invoked from a schema
 - [Setup diagnostic](setup-diagnostic.md): locates the broken dependency that keeps forms, saving or custom checks from working, with the action that repairs it
 - [Schema editor](schema-editor.md): fixes how schemas and their versions are created and modified through a form
+- [Configuration](configuration.md): fixes the file that configures Ekphrasis in a repository, and its projection onto the settings of the plugin
+- [Graph presentation profile](graph-presentation-profile.md): fixes the profile through which a producer of graphs states how Ekphrasis draws them
