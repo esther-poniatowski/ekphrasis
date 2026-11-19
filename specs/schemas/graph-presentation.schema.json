@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/esther-poniatowski/ekphrasis/specs/schemas/graph-presentation.schema.json",
+  "title": "Graph presentation profile",
+  "description": "the presentation profile that a producer embeds once in a generated graph, read by Ekphrasis, which owns the recipes of its rendering; a vault may override it locally. A producer refers to this schema by its absolute $id",
+  "type": "object",
+  "required": ["profile", "version", "layouts", "categories", "node_kinds", "edge_kinds"],
+  "additionalProperties": false,
+  "properties": {
+    "profile": {"description": "the identifier of the profile", "$ref": "#/$defs/token"},
+    "version": {"description": "the version of the profile", "type": "integer", "minimum": 1},
+    "layouts": {
+      "type": "object",
+      "required": ["recommended", "compatible"],
+      "additionalProperties": false,
+      "properties": {
+        "recommended": {"description": "the layout applied first", "$ref": "#/$defs/token"},
+        "compatible": {
+          "description": "the layouts that the graph admits",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/token"}
+        }
+      }
+    },
+    "categories": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/category"}},
+    "node_kinds": {"type": "array", "items": {"$ref": "#/$defs/node-kind"}},
+    "edge_kinds": {"type": "array", "items": {"$ref": "#/$defs/edge-kind"}}
+  },
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "label": {"type": "string", "minLength": 1},
+    "category": {
+      "type": "object",
+      "required": ["id", "title", "shape", "marker", "style"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "title": {"$ref": "#/$defs/label"},
+        "shape": {"$ref": "#/$defs/token"},
+        "marker": {"$ref": "#/$defs/label"},
+        "style": {"$ref": "#/$defs/token"}
+      }
+    },
+    "node-kind": {
+      "type": "object",
+      "required": ["id", "category", "title", "icon", "marker", "style"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "category": {"$ref": "#/$defs/token"},
+        "title": {"$ref": "#/$defs/label"},
+        "icon": {"$ref": "#/$defs/token"},
+        "marker": {"$ref": "#/$defs/label"},
+        "style": {"$ref": "#/$defs/token"}
+      }
+    },
+    "edge-kind": {
+      "type": "object",
+      "required": ["id", "title", "layer", "style"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "title": {"$ref": "#/$defs/label"},
+        "layer": {"$ref": "#/$defs/token"},
+        "style": {"$ref": "#/$defs/token"},
+        "arrow": {"description": "the arrowhead of the edge; arrow by default", "enum": ["arrow", "diamond", "circle", "none"]},
+        "caption": {"description": "whether the caption of the edge shows; show by default", "enum": ["show", "hide"]}
+      }
+    }
+  }
+}
