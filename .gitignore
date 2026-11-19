@@ -37,3 +37,6 @@ examples/vault/.obsidian/*
 
 ## Claude Code skill-generated backups
 .claude/*.bak.*
+
+# State of Kleisis
+.kleisis/

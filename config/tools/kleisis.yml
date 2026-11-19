@@ -1,0 +1,9 @@
+# Configuration of Kleisis for the schemas that Ekphrasis publishes.
+_schema: kleisis:configuration@1
+
+paths:
+  owned_schemas: specs/schemas
+  registry: specs/schema-registry.yml
+
+exports:
+  - ekphrasis:configuration@1

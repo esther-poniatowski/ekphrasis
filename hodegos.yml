@@ -1,0 +1,4 @@
+# Folders searched for the configuration of a tool, besides the root and .config/.
+_schema: hodegos:configuration@1
+folders:
+  - config/tools
