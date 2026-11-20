@@ -123,6 +123,17 @@ export {
 } from "./links/record-identifier";
 export { IdentifierIndex, type IdentifierResolution } from "./links/identifier-index";
 export {
+  entryIdentifiers,
+  referenceDeclaration,
+  referenceDefects,
+  referenceOf,
+  unknownEntryMessage,
+  type EntryReference,
+  type ReferenceDeclaration,
+  type ReferenceEntries,
+} from "./links/entry-reference";
+export { EntryIndex } from "./links/entry-index";
+export {
   completionInsertion,
   destinationText,
   fieldPathCompletions,

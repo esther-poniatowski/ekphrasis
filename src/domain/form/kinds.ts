@@ -2,6 +2,7 @@
  * Field kinds, and their derivation from a schema: the keyword `x-kind` when it names a kind,
  * and else the standard keywords, following the tables of the feature note on field kinds.
  */
+import { referenceOf } from "../links/entry-reference";
 import type { JsonScalar } from "../schema/json";
 import { isJsonScalar, jsonEquals } from "../schema/json";
 import type { SchemaView } from "../schema/schema-view";
@@ -15,12 +16,32 @@ export const SCALAR_KINDS = [
   "number",
   "boolean",
   "choice",
+  "date",
+  "duration",
+  "reference",
 ] as const;
 
 /**
  * Scalar kinds whose value holds one line, so that a commit never writes it as a block scalar.
  */
-export const SINGLE_LINE_KINDS = ["label", "text", "markdown-line", "latex"] as const;
+export const SINGLE_LINE_KINDS = [
+  "label",
+  "text",
+  "markdown-line",
+  "latex",
+  "date",
+  "duration",
+  "reference",
+] as const;
+
+/**
+ * Kinds derived from the keyword `format` of a string schema. Each value of `format` names one
+ * variant of a temporal value; the variants that this table omits keep the kind `text`.
+ */
+const FORMAT_KINDS: ReadonlyMap<string, ScalarKind> = new Map([
+  ["date", "date"],
+  ["duration", "duration"],
+]);
 
 /** Collection kinds whose value is a mapping. */
 export const MAPPING_KINDS = [
@@ -220,7 +241,11 @@ function deriveKind(schema: SchemaView, depth: number): FieldKind | null {
     return mappingKind(schema, depth);
   }
   if (untyped && isAlternatives(schema)) return "alternatives";
-  if (types.includes("string")) return "text";
+  if (types.includes("string")) {
+    // A malformed keyword `x-reference` is reported, and the kind follows the other keywords.
+    if (referenceOf(schema) !== null) return "reference";
+    return (schema.format === null ? undefined : FORMAT_KINDS.get(schema.format)) ?? "text";
+  }
   if (types.includes("number") || types.includes("integer")) return "number";
   if (types.includes("boolean")) return "boolean";
   return null;

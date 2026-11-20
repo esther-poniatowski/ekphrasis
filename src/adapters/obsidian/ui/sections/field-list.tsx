@@ -1,6 +1,11 @@
-/** Fields of a mapping, its way to reveal an absent optional property, then its extra keys. */
+/**
+ * Fields of a mapping, its way to reveal an absent optional property, then its extra keys.
+ *
+ * An optional field present in the file carries an action removing its key with its whole value,
+ * scalar or collection, so a field without an empty state, such as a toggle, can leave the file. A field required by the schema or by a current conditional rule offers no removal.
+ */
 import type { JSX } from "preact";
-import type { Field, MappingField, YamlPath } from "../../../../domain";
+import type { ConstraintIndex, Field, MappingField, YamlPath } from "../../../../domain";
 import { FieldView } from "../field-view";
 import { useFormContext } from "../form-context";
 import { ExtraEntries } from "./extra-entries";
@@ -13,7 +18,12 @@ export function FieldList({
   readonly field: MappingField;
   readonly readOnly?: boolean;
 }): JSX.Element {
-  const { constraints, issues, optionalFields, reveal } = useFormContext();
+  const { constraints, edit, issues, optionalFields, reveal } = useFormContext();
+  const remove = (child: Field): void => {
+    // A mapping left without keys holds an empty value, so its next field is written in block form.
+    edit({ kind: "remove-entry", path: child.path, emptyAsNull: true });
+    optionalFields.hide(child.uid);
+  };
   const isCurrent = (child: Field): boolean =>
     child.required ||
     child.node !== null ||
@@ -31,11 +41,17 @@ export function FieldList({
           key={child.id}
           field={child}
           actions={
-            !readOnly && isOptionalDraft(child, optionalFields.isShown(child.uid)) ? (
+            readOnly ? null : isOptionalDraft(child, optionalFields.isShown(child.uid)) ? (
               <ActionButton
                 label={`Discard ${child.label}`}
                 symbol="✕"
                 onClick={() => optionalFields.hide(child.uid)}
+              />
+            ) : isRemovable(child, constraints) ? (
+              <ActionButton
+                label={`Remove ${child.label}`}
+                symbol="✕"
+                onClick={() => remove(child)}
               />
             ) : null
           }
@@ -52,6 +68,20 @@ export function FieldList({
 /** Whether `field` is an optional draft that can be hidden without changing the source. */
 function isOptionalDraft(field: Field, shown: boolean): boolean {
   return shown && !field.required && field.node === null && field.lock === null;
+}
+
+/**
+ * Whether the key of `field` can be removed from the file: the field is present, optional under
+ * the schema and the current conditional rules, and editable.
+ */
+function isRemovable(field: Field, constraints: ConstraintIndex): boolean {
+  return (
+    field.node !== null &&
+    !field.required &&
+    field.lock === null &&
+    typeof field.path.at(-1) === "string" &&
+    !constraints.requires(field.id)
+  );
 }
 
 /** Selector revealing one absent optional property of `parent` as a draft. */

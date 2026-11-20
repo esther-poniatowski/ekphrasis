@@ -280,3 +280,69 @@ describe("IdentifierIndexService", () => {
     expect(index.identifierOf("geonexus/glossary.yml")).toBeNull();
   });
 });
+
+describe("entries named by references", () => {
+  const CATALOG_SCHEMA = [
+    "type: object",
+    "properties:",
+    "  _schema: { const: 'ex:catalog@1' }",
+    "  title: { type: string }",
+    "  streams: { type: object, additionalProperties: { type: object } }",
+    "",
+  ].join("\n");
+  const REFERENCE = { schema: "ex:catalog@1", collection: ["streams"], key: null };
+  const vault = (): Record<string, string> => ({
+    "schemas.yml": "schema_version: 1\nschemas:\n  'ex:catalog@1': catalog.schema.yaml\n",
+    "catalog.schema.yaml": CATALOG_SCHEMA,
+    "catalog.yml": "_schema: ex:catalog@1\nstreams:\n  research: {}\n  teaching: {}\n",
+    "by-path.yml": `${MODELINE("catalog.schema.yaml")}streams:\n  leisure: {}\n`,
+    "other.yml": `${MODELINE("record.schema.yaml")}id: quest.a\n`,
+    "record.schema.yaml": RECORD_SCHEMA,
+  });
+  const settings = () => ({ ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml" });
+  const PATHS = ["catalog.yml", "by-path.yml", "other.yml"];
+
+  it("answers no entry before the first build, then the entries of records bound by `_schema`", async () => {
+    const index = service(vault(), settings);
+    expect(index.referenceEntries(REFERENCE)).toBeNull();
+    await index.rebuild(PATHS);
+    expect(index.referenceEntries(REFERENCE)).toEqual({
+      records: 1,
+      identifiers: ["research", "teaching"],
+    });
+  });
+
+  it("notifies a change of the entries of a reference asked for, and no other change", async () => {
+    const files = vault();
+    const index = service(files, settings);
+    let calls = 0;
+    index.onReferencesChanged(() => (calls += 1));
+    await index.rebuild(PATHS);
+    expect(calls).toBe(1);
+    index.referenceEntries(REFERENCE);
+
+    files["other.yml"] = `${MODELINE("record.schema.yaml")}id: quest.b\n`;
+    await index.indexFile("other.yml");
+    files["catalog.yml"] = `${files["catalog.yml"]}title: Streams\n`;
+    await index.indexFile("catalog.yml");
+    expect(calls).toBe(1);
+
+    files["catalog.yml"] = "_schema: ex:catalog@1\nstreams:\n  research: {}\n  admin: {}\n";
+    await index.indexFile("catalog.yml");
+    expect(calls).toBe(2);
+    expect(index.referenceEntries(REFERENCE)?.identifiers).toEqual(["research", "admin"]);
+
+    index.removeFile("catalog.yml");
+    expect(calls).toBe(3);
+    expect(index.referenceEntries(REFERENCE)).toEqual({ records: 0, identifiers: [] });
+  });
+
+  it("answers no entry while a rebuild runs", async () => {
+    const index = service(vault(), settings);
+    await index.rebuild(PATHS);
+    const rebuilding = index.rebuild(PATHS);
+    expect(index.referenceEntries(REFERENCE)).toBeNull();
+    await rebuilding;
+    expect(index.referenceEntries(REFERENCE)?.records).toBe(1);
+  });
+});

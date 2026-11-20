@@ -10,7 +10,12 @@
  * names the fields holding them, and lists those whose path designates no field of the form.
  */
 import type { ComponentChildren, JSX } from "preact";
-import type { FormReady, GraphPresentationOverride, SessionSnapshot } from "../../../application";
+import type {
+  FormReady,
+  GraphPresentationOverride,
+  ReferenceLookup,
+  SessionSnapshot,
+} from "../../../application";
 import {
   ConstraintIndex,
   fieldChain,
@@ -56,6 +61,8 @@ export interface FormPanelProps {
   readonly scheduler: RenderScheduler;
   /** Painter of the icons of the field kinds. */
   readonly paintIcon: IconPainter;
+  /** Entries of the records of the vault that a field of kind `reference` may name. */
+  readonly references: ReferenceLookup;
   /** Safe vault-local visual overrides for producer graph-presentation profiles. */
   readonly graphPresentationOverrides: readonly GraphPresentationOverride[];
   /** Moves the form to the field at a path, unfolding the sections containing it. */
@@ -167,6 +174,7 @@ function EditableForm({
   renderer,
   scheduler,
   paintIcon,
+  references,
   graphPresentationOverrides,
   reveal,
 }: FormPanelProps & {
@@ -198,6 +206,7 @@ function EditableForm({
         renderer,
         scheduler,
         paintIcon,
+        references,
         graphPresentationOverrides,
         reveal: revealField,
       }}

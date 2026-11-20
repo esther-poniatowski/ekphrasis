@@ -10,6 +10,8 @@
 import type {
   IdentifierResolution,
   BindingResult,
+  EntryReference,
+  ReferenceEntries,
   JsonObject,
   JsonValue,
   Severity,
@@ -217,6 +219,12 @@ export interface RecordIdentifiers {
   /** Identifier declared by the file at the vault path `path`, or `null` when it declares none. */
   identifierOf(path: string): string | null;
 }
+
+/**
+ * Entries of the records of the vault named by a reference, or `null` while the records are not
+ * read yet, so that no value is reported for an entry that the index has not seen.
+ */
+export type ReferenceLookup = (reference: EntryReference) => ReferenceEntries | null;
 
 /** Writer of links in the link format set in the host, Markdown link or wikilink. */
 export interface LinkFormatter {

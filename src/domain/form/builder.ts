@@ -2,6 +2,7 @@
  * Construction of the form model from a schema set and the parsed tree of an instance.
  */
 import type { YamlNode, YamlPath } from "../model";
+import { referenceOf } from "../links/entry-reference";
 import { printFieldPath } from "../paths/field-path";
 import type { PropertySchema } from "../schema/schema-view";
 import { SchemaView } from "../schema/schema-view";
@@ -173,6 +174,7 @@ class FormModelBuilder {
       value,
       options: options.filter((option) => !this.unfilled.has(option.value)),
       align: kind === "latex" && site.schema?.declaredAlign === "left" ? "left" : "center",
+      reference: site.schema === null ? null : referenceOf(site.schema),
     };
   }
 

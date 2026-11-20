@@ -12,7 +12,8 @@
  * The draft also keeps the history of its edits for the keys of undo and redo: the texts of its
  * successive commits, so one undo returns to the text of the previous commit, or drops the text
  * typed since the last commit. A change made outside starts a new history, since the texts of the
- * former one no longer describe the field.
+ * former one no longer describe the field. The return of a commit of the draft is no such change,
+ * whether or not the draft holds the focus.
  *
  * The class depends on no interface library, so unit tests exercise it outside Obsidian.
  */
@@ -36,6 +37,13 @@ export class TextDraft {
   private past: string[];
   /** Texts undone, the last one being restored first by a redo. */
   private undone: string[] = [];
+  /**
+   * Value of the latest commit taken from the draft, until the field follows a change of value.
+   * A change to that value is the commit of the draft coming back, not a change made outside, so
+   * it keeps the history even when the commit came from a control other than the input, such as
+   * the calendar of a date.
+   */
+  private taken: { readonly value: ScalarValue } | null = null;
 
   /**
    * @param value Value of the field when the control is created.
@@ -125,7 +133,8 @@ export class TextDraft {
       this.past.push(this.text);
       if (this.past.length > HISTORY_LIMIT) this.past.shift();
     }
-    return { value: this.read(this.text) };
+    this.taken = { value: this.read(this.text) };
+    return this.taken;
   }
 
   /**
@@ -135,9 +144,18 @@ export class TextDraft {
   update(value: ScalarValue): void {
     if (value === this.value) return;
     this.value = value;
+    const own = this.taken !== null && this.taken.value === value;
+    this.taken = null;
     if (this.dirty) return;
     if (this.focused && this.read(this.text) === value) return;
-    this.text = formatScalar(value);
+    const written = formatScalar(value);
+    if (own) {
+      // The text written replaces the text of the latest commit, which it stands for.
+      if (this.past[this.past.length - 1] === this.text) this.past[this.past.length - 1] = written;
+      this.text = written;
+      return;
+    }
+    this.text = written;
     this.past = [this.text];
     this.undone = [];
   }

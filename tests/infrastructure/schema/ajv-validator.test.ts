@@ -46,6 +46,20 @@ describe("Ajv validator", () => {
     expect(compiled.validate("2026-02-30")).toMatchObject([{ keyword: "format" }]);
   });
 
+  it("checks an ISO 8601 duration, and rejects a partial date under the format `date`", () => {
+    const durations = validator.compile(
+      schemaSet({ "s.json": { type: "string", format: "duration" } }),
+    );
+    for (const valid of ["PT2H", "PT1H30M", "P3D", "P2W", "P1Y2M10DT2H30M"]) {
+      expect(durations.validate(valid)).toEqual([]);
+    }
+    for (const invalid of ["2H", "P", "PT", "P1H", "1:30"]) {
+      expect(durations.validate(invalid)).toMatchObject([{ keyword: "format" }]);
+    }
+    const dates = validator.compile(schemaSet({ "s.json": { type: "string", format: "date" } }));
+    expect(dates.validate("2026-11")).toMatchObject([{ keyword: "format" }]);
+  });
+
   it("ignores a format unknown to the validator", () => {
     const compiled = validator.compile(
       schemaSet({ "s.json": { type: "string", format: "kebab" } }),

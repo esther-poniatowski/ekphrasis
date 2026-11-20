@@ -130,6 +130,20 @@ const COMPARISONS: Readonly<Record<string, string>> = {
   "<": "less than",
 };
 
+/** Expected form of the text of a format, stated by the message of its failure. */
+const FORMAT_FORMS: ReadonlyMap<string, string> = new Map([
+  ["date", "a calendar date written `YYYY-MM-DD`, such as `2026-03-01`"],
+  ["duration", "an ISO 8601 duration, such as `PT1H30M`, `P3D` or `P2W`"],
+]);
+
+/** Message of a text failing the format `format`, with its expected form when it has one. */
+function formatMessage(format: string): string {
+  const form = FORMAT_FORMS.get(format);
+  return form === undefined
+    ? `The text must be a valid ${code(format)}.`
+    : `The text must be ${form}.`;
+}
+
 function messageOf(error: ValidatorError, alternatives: readonly ValidatorError[]): string {
   const { params } = error;
   const limit = params["limit"];
@@ -157,7 +171,7 @@ function messageOf(error: ValidatorError, alternatives: readonly ValidatorError[
     case "pattern":
       return `The text must match the pattern ${code(params["pattern"])}.`;
     case "format":
-      return `The text must be a valid ${code(params["format"])}.`;
+      return formatMessage(plain(params["format"]));
     case "minLength":
       return `The text must hold at least ${plain(limit)} characters.`;
     case "maxLength":

@@ -45,6 +45,16 @@ describe("derivation of field kinds", () => {
       "alternatives",
     ],
     ["no keyword", {}, null],
+    ["calendar date", { type: "string", format: "date" }, "date"],
+    ["ISO 8601 duration", { type: "string", format: "duration" }, "duration"],
+    ["date and time, left open", { type: "string", format: "date-time" }, "text"],
+    ["date without a string type", { format: "date" }, null],
+    [
+      "reference to entries",
+      { type: "string", "x-reference": { schema: "ex:catalog@1", collection: "streams" } },
+      "reference",
+    ],
+    ["malformed reference", { type: "string", "x-reference": { schema: "nope" } }, "text"],
   ])("derives the kind of %s", (_, schema, kind) => {
     expect(kindOf(schema)).toBe(kind);
   });

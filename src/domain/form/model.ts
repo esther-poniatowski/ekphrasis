@@ -5,6 +5,7 @@
  * The model is plain data computed by a pure function, so the controls, the issues and the
  * outline refer to one field through the same path, and unit tests build it without Obsidian.
  */
+import type { EntryReference } from "../links/entry-reference";
 import type { ScalarValue, YamlNode, YamlPath } from "../model";
 import type { JsonValue } from "../schema/json";
 import type {
@@ -90,6 +91,12 @@ export interface ScalarField extends FieldBase {
    * option stands for; empty for the other kinds.
    */
   readonly options: readonly ChoiceOption[];
+  /**
+   * Entries of other records that the value names, declared by the keyword `x-reference`, or
+   * `null` when the schema declares none or a malformed one. A field of any scalar kind holding
+   * a reference is checked against the entries found; the kind `reference` also suggests them.
+   */
+  readonly reference: EntryReference | null;
 }
 
 export interface MappingField extends FieldBase {

@@ -102,6 +102,15 @@ describe("history of a draft", () => {
     expect([draft.undo(), draft.displayed]).toEqual([false, "changed outside"]);
   });
 
+  it("keeps its history when its own commit returns while it holds no focus", () => {
+    const draft = numberDraft(1);
+    draft.input("2.50");
+    draft.take();
+    draft.update(2.5);
+    expect(draft.displayed).toBe("2.5");
+    expect([draft.undo(), draft.displayed]).toEqual([true, "1"]);
+  });
+
   it("undoes to the text written at the end of the focus, rather than the text typed", () => {
     const draft = numberDraft(1);
     draft.focus();

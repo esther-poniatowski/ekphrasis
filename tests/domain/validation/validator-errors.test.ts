@@ -145,3 +145,16 @@ describe("messages", () => {
     expect(issue?.message).toBe(message);
   });
 });
+
+describe("messages of formats", () => {
+  it.each([
+    ["date", "The text must be a calendar date written `YYYY-MM-DD`, such as `2026-03-01`."],
+    ["duration", "The text must be an ISO 8601 duration, such as `PT1H30M`, `P3D` or `P2W`."],
+    ["email", "The text must be a valid `email`."],
+  ])("states the expected form of the format %s when it has one", (format, message) => {
+    const [issue] = issuesFromValidatorErrors([error("/due", "format", { format })], {
+      due: "soon",
+    });
+    expect(issue).toMatchObject({ id: "due", checker: "format", message });
+  });
+});

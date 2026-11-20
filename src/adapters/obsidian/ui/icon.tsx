@@ -6,7 +6,7 @@
  * The kind of each field is shown by the icon of `KIND_ICONS`, drawn at the left of its label as
  * Obsidian draws the type of a property. Where Obsidian gives a property type an icon, the kind
  * closest to that type takes the same icon: `text` for text, `list` for a list, `binary` for a
- * number, and `check-square` for a checkbox.
+ * number, `check-square` for a checkbox, and `calendar` for a date.
  */
 import type { JSX } from "preact";
 import { useLayoutEffect, useRef } from "preact/hooks";
@@ -28,6 +28,9 @@ export const KIND_ICONS: Readonly<Record<FieldKind, string>> = {
   number: "binary",
   boolean: "check-square",
   choice: "circle-dot",
+  date: "calendar",
+  duration: "timer",
+  reference: "crosshair",
   choices: "list-checks",
   list: "list",
   group: "braces",

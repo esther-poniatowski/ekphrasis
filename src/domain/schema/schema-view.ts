@@ -122,6 +122,19 @@ export class SchemaView {
     return this.keyword("x-identifier")?.value ?? null;
   }
 
+  /**
+   * Value written under the keyword `x-reference`, unchecked, or `null` when it is absent. A
+   * well-formed value names the entries of other records that the field may name.
+   */
+  get declaredReference(): JsonValue | null {
+    return this.keyword("x-reference")?.value ?? null;
+  }
+
+  /** Name written under the keyword `format`, read as an annotation, unchecked. */
+  get format(): string | null {
+    return this.string("format");
+  }
+
   /** Name written under the keyword `x-kind`, unchecked. */
   get declaredKind(): string | null {
     return this.string("x-kind");

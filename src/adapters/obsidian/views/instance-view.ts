@@ -31,6 +31,7 @@ import {
   type FormReady,
   type FormService,
   type FormState,
+  type ReferenceLookup,
   type SessionHost,
 } from "../../../application";
 import { fieldChain, IssueIndex, type YamlPath } from "../../../domain";
@@ -74,6 +75,8 @@ export interface InstanceViewServices {
   readonly registry: ControlRegistry;
   readonly settings: () => EkphrasisSettings;
   readonly outline: OutlineChannel;
+  /** Entries of the records of the vault that a field of kind `reference` may name. */
+  readonly references: ReferenceLookup;
   /** Follows a URI clicked in a rendered value, and returns whether it was a URI of ekphrasis. */
   readonly followUri: (uri: string, newLeaf: boolean) => boolean;
 }
@@ -463,6 +466,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
           renderer: this.renderer,
           scheduler: this.queue,
           paintIcon: setIcon,
+          references: this.services.references,
           graphPresentationOverrides: this.services.settings().graphPresentationOverrides,
           reveal: (path) => this.reveal(path, false),
           onOpenSource: () => {

@@ -7,6 +7,7 @@
  * rule runs on any field.
  */
 import { EkphrasisError } from "../../../errors";
+import type { EntryReference, ReferenceEntries } from "../../links/entry-reference";
 import type { YamlPath } from "../../model";
 import { FieldPathError, parseFieldPath, type PatternSegment } from "../../paths/field-path";
 import { isJsonObject, type JsonObject, type JsonValue } from "../../schema/json";
@@ -25,6 +26,12 @@ export interface CheckerEnvironment {
    * renderer is available.
    */
   formulaError(source: string): string | null;
+  /**
+   * Entries found in the records of the vault for `reference`, or `null` while the host has not
+   * read the records yet. A host without an index of records omits the method, and a reference is
+   * then never reported.
+   */
+  referenceEntries?(reference: EntryReference): ReferenceEntries | null;
 }
 
 /** Environment without host capabilities, under which the checker `latex` reports nothing. */

@@ -483,6 +483,31 @@ textarea.ekphrasis-wrapping {
   color: var(--text-faint);
 }
 
+/* A date: its text input, then the button opening the calendar of the platform. The native date
+   input stays out of view below the button, so its calendar opens beside the button. */
+.ekphrasis-date-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-2);
+}
+
+.ekphrasis-date-picker {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+button.ekphrasis-date-button {
+  flex: none;
+}
+
 /* A field disabled by a rule `forbidden-when` is greyed, with the note stating its condition. */
 .ekphrasis-field[data-disabled] > .ekphrasis-field-label,
 .ekphrasis-field[data-disabled] > .ekphrasis-field-content,

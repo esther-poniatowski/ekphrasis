@@ -5,6 +5,8 @@ import { ControlRegistry } from "./control-registry";
 import { BooleanControl } from "./controls/boolean-control";
 import { ChoiceControl } from "./controls/choice-control";
 import { ChoicesControl } from "./controls/choices-control";
+import { DateControl } from "./controls/date-control";
+import { ReferenceControl } from "./controls/reference-control";
 import { RenderedControl } from "./controls/rendered-control";
 import { NumberControl, TextControl } from "./controls/text-control";
 import { GroupSection } from "./sections/group-section";
@@ -20,7 +22,9 @@ export function createDefaultRegistry(): ControlRegistry {
     mapping: GroupSection,
     sequence: SequenceSection,
   })
-    .registerScalar(["label", "text"], TextControl)
+    .registerScalar(["label", "text", "duration"], TextControl)
+    .registerScalar(["date"], DateControl)
+    .registerScalar(["reference"], ReferenceControl)
     .registerScalar(["markdown-line", "markdown", "latex"], RenderedControl)
     .registerScalar(["number"], NumberControl)
     .registerScalar(["boolean"], BooleanControl)

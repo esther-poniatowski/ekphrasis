@@ -31,6 +31,7 @@ import {
   type CustomCheckerRegistration,
   type EkphrasisSettings,
   type CustomCheckerRunner,
+  type ReferenceLookup,
 } from "../../application";
 import {
   AjvSchemaValidator,
@@ -127,14 +128,18 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
           ? "no Python interpreter is set: enter its absolute path under *Python interpreter* in the settings of ekphrasis"
           : "Python checkers run only in the desktop app of Obsidian: open this file on a desktop computer to see their findings",
     );
-    const validation = new ValidationService(
-      new AjvSchemaValidator(),
-      OBSIDIAN_CHECKER_ENVIRONMENT,
-      () => customCheckers.checkerNames,
-    );
     const files = new VaultFileSource(this.app.vault);
     const resources = new RegistryReader(parser, files, settings);
     const schemaLoader = new FileSchemaLoader(files, resources);
+    const identifiers = new IdentifierIndexService(parser, files, schemaLoader, settings);
+    const references: ReferenceLookup = (reference) => identifiers.referenceEntries(reference);
+    // A change of the entries that a form names checks the open forms again.
+    this.register(identifiers.onReferencesChanged(() => this.refreshViewsSoon()));
+    const validation = new ValidationService(
+      new AjvSchemaValidator(),
+      { ...OBSIDIAN_CHECKER_ENVIRONMENT, referenceEntries: references },
+      () => customCheckers.checkerNames,
+    );
     const forms = new FormService(
       parser,
       schemaLoader,
@@ -143,7 +148,6 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       files,
       customCheckers,
     );
-    const identifiers = new IdentifierIndexService(parser, files, schemaLoader, settings);
     const creation = new InstanceCreationService(
       resources,
       schemaLoader,
@@ -194,6 +198,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
           registry,
           settings,
           outline,
+          references,
           followUri: (uri, newLeaf) => links.followUri(uri, newLeaf),
         }),
     );

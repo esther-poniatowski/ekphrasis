@@ -22,6 +22,7 @@ export type {
   LinkFormatter,
   LocatedCheckerIssue,
   RecordIdentifiers,
+  ReferenceLookup,
   ResourceMapping,
   SchemaLoader,
   SchemaResources,

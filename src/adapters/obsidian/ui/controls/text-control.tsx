@@ -1,12 +1,22 @@
 /**
- * Single-line input, for the kinds `label` and `number`, and for any scalar value that the
- * control of its kind cannot hold. A value of kind `text` displays in an input that wraps it.
+ * Single-line input, for the kinds `label`, `number` and `duration`, and for any scalar value that
+ * the control of its kind cannot hold. A value of kind `text` displays in an input that wraps it.
  */
 import type { JSX } from "preact";
+import type { ScalarKind } from "../../../../domain";
 import type { ScalarControlProps } from "../control-registry";
 import { placeholderOf } from "./scalar-format";
 import { useTextDraft, type TextDraftBinding } from "./use-text-draft";
 import { WrappingInput } from "./wrapping-input";
+
+/** Kinds whose text follows a syntax or names an identifier, so a spell checker marks no word. */
+const UNCHECKED_SPELLING: ReadonlySet<ScalarKind> = new Set([
+  "label",
+  "latex",
+  "date",
+  "duration",
+  "reference",
+]);
 
 export function TextControl({ field, readOnly, onCommit }: ScalarControlProps): JSX.Element {
   const draft = useTextDraft(field, onCommit);
@@ -18,7 +28,7 @@ export function TextControl({ field, readOnly, onCommit }: ScalarControlProps): 
       field={field}
       readOnly={readOnly}
       draft={draft}
-      spellcheck={kind !== "label" && kind !== "latex"}
+      spellcheck={!UNCHECKED_SPELLING.has(kind)}
     />
   );
 }
@@ -55,15 +65,19 @@ export function TextInput({
   inputRef,
   spellcheck,
   inputMode,
+  list,
 }: EditorProps & {
   readonly spellcheck: boolean;
   readonly inputMode?: "decimal";
+  /** Identifier of the element `datalist` whose options the input suggests. */
+  readonly list?: string | undefined;
 }): JSX.Element {
   return (
     <input
       ref={inputRef ?? null}
       type="text"
       class="ekphrasis-control"
+      list={list}
       value={draft.text}
       placeholder={placeholderOf(field)}
       readOnly={readOnly}

@@ -14,6 +14,7 @@ import {
   type CustomCheckerService,
   type EkphrasisSettings,
   type FileSource,
+  type ReferenceLookup,
 } from "../../src/application";
 import { createDefaultRegistry } from "../../src/adapters/obsidian/ui/default-registry";
 import { FoldState } from "../../src/adapters/obsidian/ui/fold-state";
@@ -45,7 +46,8 @@ export interface RenderedForm {
  * read from `files` and bound by `rules`. Each request of confirmation is recorded, and answered
  * by `confirm`. The schemas resolve absolute URIs through the registry that `settings` names, as
  * the plugin resolves them. The issues of `checkers`, when given, join the report as the form
- * service appends them in the plugin.
+ * service appends them in the plugin. The entries that references name are read from `references`,
+ * by the controls and by validation, as the plugin reads them from its index of records.
  */
 export async function renderForm(
   files: FileSource,
@@ -55,12 +57,21 @@ export async function renderForm(
   confirm = true,
   settings: Partial<EkphrasisSettings> = {},
   checkers: CustomCheckerService | null = null,
+  references: ReferenceLookup = () => null,
 ): Promise<RenderedForm> {
   const parser = new YamlDocumentParser();
   const current = (): EkphrasisSettings => ({ ...DEFAULT_SETTINGS, pathRules: rules, ...settings });
   const loader = new FileSchemaLoader(files, new RegistryReader(parser, files, current));
-  const forms = new FormService(parser, loader, createValidation(), current, files, checkers);
-  const commits = new CommitService(parser, new YamlSourceEditor(), createValidation());
+  const environment = { referenceEntries: references };
+  const forms = new FormService(
+    parser,
+    loader,
+    createValidation(environment),
+    current,
+    files,
+    checkers,
+  );
+  const commits = new CommitService(parser, new YamlSourceEditor(), createValidation(environment));
   const registry = createDefaultRegistry();
   let rerender: ((ui: ComponentChild) => void) | null = null;
   const display = (): void => rerender?.(panel());
@@ -87,6 +98,7 @@ export async function renderForm(
       renderer={TEXT_RENDERER}
       scheduler={IMMEDIATE_SCHEDULER}
       paintIcon={NO_ICONS}
+      references={references}
       graphPresentationOverrides={current().graphPresentationOverrides}
       reveal={(path) => reveals.push(path)}
       onOpenSource={() => undefined}

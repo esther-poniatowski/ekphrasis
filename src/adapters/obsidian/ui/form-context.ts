@@ -3,11 +3,11 @@
  * and of structural edits, the confirmation of a loss of values, the commit delay, the reasons of
  * the refused commits, the issues of validation, the constraints of the conditional rules, the
  * folded state of the sections, the shown instructions, the rendering of values, the painter of
- * icons, and the move of the form to a field.
+ * icons, the entries that references may name, and the move of the form to a field.
  */
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
-import type { GraphPresentationOverride } from "../../../application";
+import type { GraphPresentationOverride, ReferenceLookup } from "../../../application";
 import type { Commit, ConstraintIndex, IssueIndex, ScalarValue, YamlPath } from "../../../domain";
 import type { ControlRegistry } from "./control-registry";
 import type { FoldState } from "./fold-state";
@@ -56,6 +56,8 @@ export interface FormContextValue {
   readonly scheduler: RenderScheduler;
   /** Painter of the icons of the field kinds. */
   readonly paintIcon: IconPainter;
+  /** Entries of the records of the vault that a field of kind `reference` may name. */
+  readonly references: ReferenceLookup;
   /** Safe vault-local visual overrides for producer graph-presentation profiles. */
   readonly graphPresentationOverrides: readonly GraphPresentationOverride[];
   /** Moves the form to the field at `path`, unfolding the sections containing it. */

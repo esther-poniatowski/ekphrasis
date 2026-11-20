@@ -9,6 +9,7 @@
 import type { FieldKind } from "../../form/kinds";
 import type { Field, SchemaIssue } from "../../form/model";
 import type { JsonValue } from "../../schema/json";
+import { unknownEntryMessage } from "../../links/entry-reference";
 import type { InstanceData } from "../instance-data";
 import { issue, type Issue } from "../issues";
 import {
@@ -121,6 +122,13 @@ export function checkRules(
     const filledText = typeof value === "string" && data.isFilled(field.path);
     if (implicit !== undefined && filledText && implicit.rejects.test(value)) {
       issues.push(issue(field.path, field.kind, implicit.message));
+    }
+    const reference = "reference" in field ? field.reference : null;
+    // The entries are read from other records through the host, which may not hold them yet.
+    const entries = reference === null ? null : (environment.referenceEntries?.(reference) ?? null);
+    if (reference !== null && entries !== null && filledText) {
+      const message = unknownEntryMessage(value, reference, entries);
+      if (message !== null) issues.push(issue(field.path, "x-reference", message));
     }
     const children = "children" in field ? field.children : "items" in field ? field.items : [];
     for (const child of children) visit(child);
