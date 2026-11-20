@@ -7,3 +7,15 @@ exports:
 resources:
   "https://github.com/esther-poniatowski/ekphrasis/specs/schemas/configuration.schema.json": "specs/schemas/configuration.schema.json"
   "https://github.com/esther-poniatowski/ekphrasis/specs/schemas/graph-presentation.schema.json": "specs/schemas/graph-presentation.schema.json"
+keywords:
+  "x-align": "the alignment of a formula in its control or its cell"
+  "x-collapsed": "whether a group or a collection is folded when the form opens"
+  "x-graph-role": "the role of an array of a field of kind graph, which holds its nodes or its edges"
+  "x-image-width": "the width of each image of a field of kind image"
+  "x-kind": "the field kind, which fixes the control through which the field is filled"
+  "x-list-layout": "the initial layout of a field of kind list, compact or expanded"
+  "x-reference": "the entries of other records that a string field names"
+  "x-rules": "the rules checked on a field, or on the root, beside the standard keywords"
+  "x-tree-role": "the presentation role of a scalar property of an item of kind tree"
+  "x-unfilled": "the values counted as unfilled beside the null value, at the root"
+  "x-version": "the version of a schema, at its root"
