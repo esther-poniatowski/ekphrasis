@@ -1,6 +1,8 @@
 /** Registry-backed creation of a new instance. */
 import {
   extensionOf,
+  DEFAULT_BINDING_KEY,
+  declaredContract,
   instanceSkeleton,
   resolveVaultPath,
   SchemaView,
@@ -37,6 +39,7 @@ export class InstanceCreationService {
     private readonly schemas: SchemaLoader,
     private readonly store: InstanceStore,
     private readonly afterCreate: AfterInstanceCreation | null = null,
+    private readonly bindingKey: () => string = () => DEFAULT_BINDING_KEY,
   ) {}
 
   /** Whether the last failed producer-owned follow-up remains available to retry. */
@@ -63,7 +66,7 @@ export class InstanceCreationService {
       }
       const root = SchemaView.root(await this.schemas.load(schemaPath));
       if (root.readOnly) continue;
-      assertContract(root, identifier);
+      assertContract(root, identifier, this.bindingKey());
       available.push({ identifier, schemaPath, title: root.title ?? identifier });
     }
     return available;
@@ -82,7 +85,7 @@ export class InstanceCreationService {
       throw new InstanceCreationError(`The writable schema \`${identifier}\` is not registered.`);
     }
     const root = SchemaView.root(await this.schemas.load(contract.schemaPath));
-    const value: JsonObject = instanceSkeleton(root, identifier);
+    const value: JsonObject = instanceSkeleton(root, identifier, this.bindingKey());
     await this.store.create(path, value);
     const created = { path, identifier };
     if (this.afterCreate === null) return created;
@@ -119,11 +122,10 @@ export class InstanceCreationService {
   }
 }
 
-function assertContract(schema: SchemaView, identifier: string): void {
-  const declared = schema.properties().find(({ key }) => key === "_schema")?.schema.constValue;
-  if (declared?.value !== identifier) {
+function assertContract(schema: SchemaView, identifier: string, bindingKey: string): void {
+  if (declaredContract(schema, bindingKey) !== identifier) {
     throw new InstanceCreationError(
-      `The schema registered as \`${identifier}\` must declare that identifier as the constant value of \`_schema\`.`,
+      `The schema registered as \`${identifier}\` must declare that identifier as the constant value of \`${bindingKey}\`.`,
     );
   }
 }

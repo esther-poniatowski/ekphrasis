@@ -27,6 +27,7 @@ export * from "./schema/json";
 export { collectReferences, parseReference } from "./schema/reference";
 export * from "./schema/schema-set";
 export { SchemaView, type PropertySchema } from "./schema/schema-view";
+export { DEFAULT_BINDING_KEY, declaredContract, isBindingKey } from "./schema/binding-key";
 export { instanceSkeleton } from "./creation/instance-skeleton";
 export * from "./form/kinds";
 export * from "./form/model";

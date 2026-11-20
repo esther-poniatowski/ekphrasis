@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { exclusionOf, resolveBinding, type PathRule } from "../../../src/domain";
+import {
+  exclusionOf,
+  readSchemaDeclaration,
+  resolveBinding,
+  type PathRule,
+} from "../../../src/domain";
 
 const RULES: readonly PathRule[] = [
   { pattern: "", schema: "ignored.schema.yaml" },
@@ -137,6 +142,26 @@ describe("schema binding", () => {
       status: "invalid",
       reason: "the path leaves the vault",
     });
+  });
+
+  it("reads the contract under the binding key that the consumer names", () => {
+    const registry = new Map([["vault:record@1", "schemas/record.schema.yaml"]]);
+    const text = "contract: vault:record@1\n_schema: vault:other@1\n";
+    expect(resolveBinding("q.yml", text, [], registry, undefined, "contract")).toEqual({
+      status: "bound",
+      binding: {
+        source: "schema-field",
+        reference: "vault:record@1",
+        schemaPath: "schemas/record.schema.yaml",
+      },
+    });
+    expect(
+      resolveBinding("q.yml", "_schema: vault:record@1\n", [], registry, undefined, "contract"),
+    ).toEqual({ status: "unbound" });
+  });
+
+  it("refuses a binding key that is no property name", () => {
+    expect(() => readSchemaDeclaration("a.b: x:y@1\n", "a.b")).toThrow(RangeError);
   });
 });
 

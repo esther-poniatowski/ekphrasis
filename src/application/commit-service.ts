@@ -65,7 +65,7 @@ export class CommitService {
     }
     if (!sameContent(tree, plan.expected)) return { status: "refused", reason: UNCONFIRMED };
     for (const { sequence, change } of plan.itemChanges) identities.apply(sequence, change);
-    const model = buildFormModel(state.schemas, tree, next, identities);
+    const model = buildFormModel(state.schemas, tree, next, identities, state.model.bindingKey);
     const report = this.validation.validate(state.schemas, model, tree);
     return { status: "written", text: next, state: { ...state, model, report } };
   }

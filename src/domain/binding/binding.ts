@@ -1,9 +1,10 @@
 /**
- * Resolution of the schema of an instance. A root `_schema` contract resolves through the
- * registry. Otherwise, a modeline or the first matching path rule names the schema file.
+ * Resolution of the schema of an instance. A contract named under the root binding key resolves
+ * through the registry. Otherwise, a modeline or the first matching path rule names the schema file.
  */
 import { folderOf, isUri, resolveVaultPath } from "../files/vault-paths";
 import { GlobPattern } from "./glob";
+import { DEFAULT_BINDING_KEY } from "../schema/binding-key";
 import { readModeline } from "./modeline";
 import { parseSchemaIdentifier, readSchemaDeclaration } from "./schema-field";
 
@@ -54,8 +55,9 @@ export function resolveBinding(
   rules: readonly PathRule[],
   registry: ReadonlyMap<string, string> | null = null,
   registryPath?: string,
+  bindingKey: string = DEFAULT_BINDING_KEY,
 ): BindingResult {
-  const declaration = readSchemaDeclaration(text);
+  const declaration = readSchemaDeclaration(text, bindingKey);
   if (declaration.status === "declared") {
     const identifier = declaration.value;
     if (identifier === null) {
@@ -115,7 +117,7 @@ export function resolveBinding(
 /**
  * First of the excluded path `patterns` that matches `path`, or `null` when none does.
  *
- * An excluded file binds to no schema, whatever its `_schema` field, modeline or path rules
+ * An excluded file binds to no schema, whatever its binding key, modeline or path rules
  * state, so a note skeleton whose placeholders fail its schema opens in the source view. A
  * blank pattern, such as a line being filled in, excludes no file.
  */

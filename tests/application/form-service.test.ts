@@ -215,4 +215,32 @@ describe("FormService", () => {
       expect(state.error.message).toContain("referenced from `schemas/note.schema.yaml`");
     }
   });
+
+  it("binds a record by the binding key that the settings name", async () => {
+    const schema = [
+      "$id: record.schema.yaml",
+      "type: object",
+      "required: [contract, id]",
+      "properties:",
+      "  contract: { const: 'vault:record@1' }",
+      "  id: { type: string }",
+      "",
+    ].join("\n");
+    const settings = { ...DEFAULT_SETTINGS, schemaRegistry: "schemas.yml", bindingKey: "contract" };
+    const forms = service(
+      {
+        "schemas.yml": "schema_version: 1\nschemas:\n  vault:record@1: record.schema.yaml\n",
+        "record.schema.yaml": schema,
+      },
+      settings,
+    );
+    const state = await forms.open("record.yml", "contract: vault:record@1\nid: x\n");
+    expect(state).toMatchObject({ status: "form", binding: { source: "schema-field" } });
+    if (state.status === "form" && state.model.root.kind === "group") {
+      expect(state.model.root.children.map((field) => field.key)).toEqual(["id"]);
+    }
+    expect(await forms.open("other.yml", "_schema: vault:record@1\nid: x\n")).toMatchObject({
+      status: "unbound",
+    });
+  });
 });

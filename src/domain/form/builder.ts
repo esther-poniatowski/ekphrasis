@@ -2,6 +2,7 @@
  * Construction of the form model from a schema set and the parsed tree of an instance.
  */
 import type { YamlNode, YamlPath } from "../model";
+import { DEFAULT_BINDING_KEY } from "../schema/binding-key";
 import { referenceOf } from "../links/entry-reference";
 import { printFieldPath } from "../paths/field-path";
 import type { PropertySchema } from "../schema/schema-view";
@@ -45,8 +46,9 @@ export function buildFormModel(
   tree: YamlNode,
   source: string,
   identities: ItemIdentities = new ItemIdentities(),
+  bindingKey: string = DEFAULT_BINDING_KEY,
 ): FormModel {
-  return new FormModelBuilder(source, identities).build(SchemaView.root(schemas), tree);
+  return new FormModelBuilder(source, identities, bindingKey).build(SchemaView.root(schemas), tree);
 }
 
 /**
@@ -75,6 +77,7 @@ class FormModelBuilder {
   constructor(
     private readonly source: string,
     private readonly identities: ItemIdentities,
+    private readonly bindingKey: string,
   ) {}
 
   build(schema: SchemaView, tree: YamlNode): FormModel {
@@ -94,6 +97,7 @@ class FormModelBuilder {
       root,
       unfilled: schema.unfilledValues,
       schemaIssues: this.issues,
+      bindingKey: this.bindingKey,
     };
   }
 
@@ -194,7 +198,7 @@ class FormModelBuilder {
       requiredKeys: ReadonlySet<string>,
     ): Field[] =>
       properties.flatMap(({ key, schema: property }) => {
-        if (site.path.length === 0 && key === "_schema") return [];
+        if (site.path.length === 0 && key === this.bindingKey) return [];
         const entry = byKey.get(key);
         return [
           this.field({

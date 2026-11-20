@@ -5,6 +5,7 @@
 import {
   buildFormModel,
   ItemIdentities,
+  declaredContract,
   SchemaView,
   type BindingSource,
   type FormModel,
@@ -78,7 +79,7 @@ export class FormService {
     private readonly parser: DocumentParser,
     private readonly schemas: SchemaLoader,
     private readonly validation: ValidationService,
-    settings: () => EkphrasisSettings,
+    private readonly settings: () => EkphrasisSettings,
     files: FileSource = { read: () => Promise.resolve(null) },
     private readonly customCheckers: CustomCheckerService | null = null,
   ) {
@@ -117,19 +118,18 @@ export class FormService {
     }
     try {
       const schemas = await this.schemas.load(binding.schemaPath);
-      const declared = SchemaView.root(schemas)
-        .properties()
-        .find(({ key }) => key === "_schema")?.schema.constValue?.value;
+      const { bindingKey } = this.settings();
+      const declared = declaredContract(SchemaView.root(schemas), bindingKey);
       if (binding.source === "schema-field" && declared !== binding.reference) {
         throw new SchemaError(
           `The registry binds \`${binding.reference}\` to this schema, but the constant of its ` +
-            `\`_schema\` property is ${
+            `\`${bindingKey}\` property is ${
               declared === undefined ? "absent" : `\`${String(declared)}\``
             }.`,
           binding.schemaPath,
         );
       }
-      const model = buildFormModel(schemas, tree, text, identities);
+      const model = buildFormModel(schemas, tree, text, identities, bindingKey);
       const builtIn = this.validation.validate(schemas, model, tree);
       const custom =
         this.customCheckers === null

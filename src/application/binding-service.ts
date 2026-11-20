@@ -24,15 +24,17 @@ export class BindingService implements BindingResolver {
   async resolve(path: string, text: string): Promise<BindingResult> {
     const excludedBy = exclusionOf(path, this.settings().excludedPaths);
     if (excludedBy !== null) return { status: "unbound", excludedBy };
-    const rules = this.settings().pathRules;
-    const declaration = readSchemaDeclaration(text);
-    if (declaration.status === "absent") return resolveBinding(path, text, rules);
+    const { pathRules: rules, bindingKey } = this.settings();
+    const unregistered = (): BindingResult =>
+      resolveBinding(path, text, rules, null, undefined, bindingKey);
+    const declaration = readSchemaDeclaration(text, bindingKey);
+    if (declaration.status === "absent") return unregistered();
     if (declaration.value === null || parseSchemaIdentifier(declaration.value) === null) {
-      return resolveBinding(path, text, rules);
+      return unregistered();
     }
     const identifier = declaration.value;
     const state = await this.registry.read();
-    if (state.status === "unconfigured") return resolveBinding(path, text, rules);
+    if (state.status === "unconfigured") return unregistered();
     if (state.status === "invalid") {
       return {
         status: "invalid",
@@ -42,6 +44,6 @@ export class BindingService implements BindingResolver {
         ...(state.path === undefined ? {} : { registryPath: state.path }),
       };
     }
-    return resolveBinding(path, text, rules, state.registry.schemas, state.path);
+    return resolveBinding(path, text, rules, state.registry.schemas, state.path, bindingKey);
   }
 }

@@ -153,6 +153,7 @@ export default class EkphrasisPlugin extends Plugin implements SettingsHost {
       schemaLoader,
       new VaultInstanceStore(this.app.vault),
       (created) => this.runPostCreation(created.path, created.identifier),
+      () => settings().bindingKey,
     );
     this.identifiers = identifiers;
     const links = new FieldLinkOpener(

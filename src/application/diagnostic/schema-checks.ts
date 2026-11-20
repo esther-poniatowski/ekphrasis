@@ -15,6 +15,7 @@ import {
   isUri,
   parseReference,
   resolveVaultPath,
+  declaredContract,
   SchemaView,
   SUPPORTED_REGISTRY_VERSIONS,
   type JsonValue,
@@ -37,7 +38,7 @@ export interface SchemaCheckDependencies {
   readonly vault: VaultInspector;
   /** Time at which the plugin loaded, in milliseconds, after which a change needs a restart. */
   readonly loadedAt: number;
-  /** Whether the opened record declares `_schema`, which then requires a registry. */
+  /** Whether the opened record declares its binding key, which then requires a registry. */
   readonly recordDeclaresSchema: boolean;
 }
 
@@ -48,9 +49,11 @@ export interface SchemaFacts {
   readonly identifiers: readonly string[];
   /** Vault paths of the registry and every schema reached from one of its mappings. */
   readonly generatedPaths: ReadonlySet<string>;
+  /** Root property through which a record names its contract, from the settings. */
+  readonly bindingKey: string;
 }
 
-const FORMS_OF_SCHEMA_FIELD = "forms of the records that declare `_schema`";
+const FORMS_OF_SCHEMA_FIELD = "forms of the records that name their contract under the binding key";
 
 const SUBJECTS = {
   setting: {
@@ -127,6 +130,7 @@ export async function schemaChecks(
     registry: state,
     identifiers,
     generatedPaths: generated,
+    bindingKey: settings.bindingKey,
   });
 
   if (state.status === "unconfigured") {
@@ -134,7 +138,7 @@ export async function schemaChecks(
       dependencies.recordDeclaresSchema
         ? passed(
             SUBJECTS.setting,
-            "No schema registry is configured; well-formed `_schema` identifiers remain unbound.",
+            `No schema registry is configured; well-formed \`${settings.bindingKey}\` identifiers remain unbound.`,
           )
         : notPassed(
             "warning",
@@ -200,7 +204,9 @@ export async function schemaChecks(
       state.path,
     ),
   );
-  checks.push(compositionCheck(dependencies.validator, contracts.loaded));
+  checks.push(
+    compositionCheck(dependencies.validator, contracts.loaded, dependencies.settings.bindingKey),
+  );
   checks.push(await reloadCheck(vault, [...generated], dependencies.loadedAt));
   return { checks, facts: facts([...registry.schemas.keys()]) };
 }
@@ -275,7 +281,7 @@ interface ParsedDocument {
   readonly root: JsonValue;
 }
 
-/** Contract schemas: each file read, its closure loaded, and its `_schema` constant compared. */
+/** Contract schemas: each file read, its closure loaded, and the constant of its binding key compared. */
 async function contractChecks(
   dependencies: SchemaCheckDependencies,
   contracts: ReadonlyMap<string, string>,
@@ -307,13 +313,12 @@ async function contractChecks(
       failures.push(`\`${id}\` → \`${located.path}\`: ${error.message}`);
       continue;
     }
-    const declared = SchemaView.root(schemas)
-      .properties()
-      .find(({ key }) => key === "_schema")?.schema.constValue?.value;
+    const { bindingKey } = dependencies.settings;
+    const declared = declaredContract(SchemaView.root(schemas), bindingKey);
     if (declared !== id) {
       const written = declared === undefined ? "absent" : `\`${String(declared)}\``;
       failures.push(
-        `\`${id}\` → \`${located.path}\`: the constant of the property \`_schema\` is ${written}.`,
+        `\`${id}\` → \`${located.path}\`: the constant of the property \`${bindingKey}\` is ${written}.`,
       );
       continue;
     }
@@ -459,10 +464,11 @@ function referenceCheck(
 function compositionCheck(
   validator: SchemaValidator,
   loaded: readonly LoadedSchema[],
+  bindingKey: string,
 ): DiagnosticCheck {
   const defects: string[] = [];
   for (const { key, schemas } of loaded) {
-    for (const conflict of compositionConflicts(SchemaView.root(schemas))) {
+    for (const conflict of compositionConflicts(SchemaView.root(schemas), bindingKey)) {
       defects.push(`\`${key}\` at \`${conflict.path || "(root)"}\`: ${conflict.message}`);
     }
     try {

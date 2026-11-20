@@ -16,6 +16,7 @@ type Json = Record<string, unknown>;
 /** Each key of the configuration and the settings key that it projects onto, in order. */
 export const SETTINGS_KEYS: Readonly<Record<string, string>> = {
   schema_registry: "schemaRegistry",
+  binding_key: "bindingKey",
   path_rules: "pathRules",
   excluded_paths: "excludedPaths",
   commit_delay: "commitDelay",

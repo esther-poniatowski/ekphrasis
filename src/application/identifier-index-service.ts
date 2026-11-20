@@ -7,7 +7,7 @@
  * the value of that field in the file is its identifier. A file that is unbound, fails to parse,
  * or is bound to a schema that fails to load or declares no identifier, declares none.
  *
- * The same reading keeps the value of each record bound through its field `_schema`, under its
+ * The same reading keeps the value of each record bound through its binding key, under its
  * logical contract, so the entries that a field of kind `reference` names are read from the
  * index without reading the files again. Until the first build completes, a reference receives
  * no entries, so no value is reported for an entry that the index has not seen. A listener learns
@@ -23,6 +23,7 @@ import {
   identifierDeclaration,
   instanceValue,
   readIdentifier,
+  declaredContract,
   SchemaView,
   type EntryReference,
   type IdentifierResolution,
@@ -42,14 +43,14 @@ interface SchemaDeclaration {
   readonly field: YamlPath | null;
   /** Vault paths of the schema files read and of the registry consulted, or of the failure. */
   readonly documents: readonly string[];
-  /** Logical record contract declared by the root `_schema` property. */
+  /** Logical record contract declared by the root property of the binding key. */
   readonly contract: string | null;
 }
 
 /** Identifier and record declared by one file, with the schema files on which they depend. */
 interface FileDeclaration {
   readonly identifier: string | null;
-  /** Value of a record bound through its field `_schema`, with that logical contract. */
+  /** Value of a record bound through its binding key, with that logical contract. */
   readonly record: { readonly contract: string; readonly value: JsonValue } | null;
   readonly dependencies: readonly string[];
 }
@@ -73,7 +74,7 @@ export class IdentifierIndexService implements RecordIdentifiers {
    */
   private readonly generations = new Map<string, number>();
   private counter = 0;
-  /** Records bound through their field `_schema`, from which references read their entries. */
+  /** Records bound through their binding key, from which references read their entries. */
   private readonly entries = new EntryIndex();
   /** Whether a build of the whole index has completed, and no rebuild runs. */
   private ready = false;
@@ -85,7 +86,7 @@ export class IdentifierIndexService implements RecordIdentifiers {
     private readonly parser: DocumentParser,
     private readonly files: FileSource,
     private readonly schemas: SchemaLoader,
-    settings: () => EkphrasisSettings,
+    private readonly settings: () => EkphrasisSettings,
   ) {
     this.bindings = new BindingService(parser, files, settings);
   }
@@ -252,9 +253,7 @@ export class IdentifierIndexService implements RecordIdentifiers {
     try {
       const schemas = await this.schemas.load(schemaPath);
       const declaration = identifierDeclaration(SchemaView.root(schemas));
-      const contract = SchemaView.root(schemas)
-        .properties()
-        .find(({ key }) => key === "_schema")?.schema.constValue?.value;
+      const contract = declaredContract(SchemaView.root(schemas), this.settings().bindingKey);
       return {
         field: declaration.status === "declared" ? declaration.path : null,
         documents: schemas.dependencies,

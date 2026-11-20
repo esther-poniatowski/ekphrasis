@@ -20,11 +20,15 @@ import {
   type PatternSegment,
 } from "../paths/field-path";
 import { displayedProperties, walkFieldSchemas } from "../schema/field-walk";
+import { DEFAULT_BINDING_KEY } from "../schema/binding-key";
 import { isJsonObject } from "../schema/json";
 import type { PropertySchema, SchemaView } from "../schema/schema-view";
 
 /** Defects of the schema `root`, each naming the required property that no field displays. */
-export function undeclaredRequirements(root: SchemaView): SchemaIssue[] {
+export function undeclaredRequirements(
+  root: SchemaView,
+  bindingKey: string = DEFAULT_BINDING_KEY,
+): SchemaIssue[] {
   const found = new Map<string, SchemaIssue>();
   const report = (key: string, group: readonly PatternSegment[], source: string): void => {
     const issue: SchemaIssue = {
@@ -35,23 +39,27 @@ export function undeclaredRequirements(root: SchemaView): SchemaIssue[] {
     if (!found.has(id)) found.set(id, issue);
   };
 
-  walkFieldSchemas(root, (schema, path) => {
-    const declared = new Set(displayedProperties(schema).map(({ key }) => key));
-    const check = (scope: SchemaView, keyword: string): void => {
-      requirementsOf(scope, keyword, (key, source) => {
-        if (!declared.has(key)) report(key, path, source);
-      });
-    };
-    check(schema, "the keyword `required`");
-    for (const alternative of schema.oneOf()) {
-      check(alternative, "the keyword `required` of an alternative");
-    }
-    for (const field of requiredWhenFields(schema)) {
-      const missing = firstUndeclared(schema, field);
-      if (missing !== null)
-        report(missing.key, [...path, ...missing.group], "the rule `required-when`");
-    }
-  });
+  walkFieldSchemas(
+    root,
+    (schema, path) => {
+      const declared = new Set(displayedProperties(schema).map(({ key }) => key));
+      const check = (scope: SchemaView, keyword: string): void => {
+        requirementsOf(scope, keyword, (key, source) => {
+          if (!declared.has(key)) report(key, path, source);
+        });
+      };
+      check(schema, "the keyword `required`");
+      for (const alternative of schema.oneOf()) {
+        check(alternative, "the keyword `required` of an alternative");
+      }
+      for (const field of requiredWhenFields(schema)) {
+        const missing = firstUndeclared(schema, field);
+        if (missing !== null)
+          report(missing.key, [...path, ...missing.group], "the rule `required-when`");
+      }
+    },
+    bindingKey,
+  );
   return [...found.values()];
 }
 

@@ -277,4 +277,10 @@ describe("settings", () => {
       expect(parseSettings(raw)).toEqual(DEFAULT_SETTINGS);
     },
   );
+
+  it("keeps a binding key of property form, and otherwise takes _schema", () => {
+    expect(parseSettings({ bindingKey: "contract" }).bindingKey).toBe("contract");
+    expect(parseSettings({ bindingKey: "meta.schema" }).bindingKey).toBe("_schema");
+    expect(parseSettings({}).bindingKey).toBe("_schema");
+  });
 });

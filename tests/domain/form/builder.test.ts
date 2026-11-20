@@ -459,4 +459,22 @@ describe("form model", () => {
     ]);
     expect(fieldChain(model.root, ["source", "doi"])?.at(-1)).toMatchObject({ node: null });
   });
+
+  it("hides the root field of the binding key that the consumer names", () => {
+    const schema = {
+      type: "object",
+      properties: { contract: { const: "vault:record@1" }, _schema: { type: "string" } },
+    };
+    const text = "contract: vault:record@1\n_schema: domain value\n";
+    const model = buildFormModel(
+      schemaSet({ "s.json": schema }),
+      parser.parse(text),
+      text,
+      undefined,
+      "contract",
+    );
+    expect(model.bindingKey).toBe("contract");
+    expect(() => fieldAt(model.root, "contract")).toThrow("No field");
+    expect(fieldAt(model.root, "_schema")).toMatchObject({ value: "domain value" });
+  });
 });

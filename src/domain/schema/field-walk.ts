@@ -5,6 +5,7 @@
  * instance affects visit each field schema through this walk, once.
  */
 import { ANY_ITEM, ANY_KEY, type PatternSegment } from "../paths/field-path";
+import { DEFAULT_BINDING_KEY } from "./binding-key";
 import type { PropertySchema, SchemaView } from "./schema-view";
 
 /** Bound on the depth of the walk, so a recursive schema terminates. */
@@ -26,6 +27,7 @@ export function displayedProperties(schema: SchemaView): PropertySchema[] {
 export function walkFieldSchemas(
   root: SchemaView,
   visit: (schema: SchemaView, path: readonly PatternSegment[]) => void,
+  bindingKey: string = DEFAULT_BINDING_KEY,
 ): void {
   const visited = new Set<object>();
   const walk = (schema: SchemaView, path: readonly PatternSegment[]): void => {
@@ -34,7 +36,7 @@ export function walkFieldSchemas(
     visited.add(identity);
     visit(schema, path);
     for (const { key, schema: property } of displayedProperties(schema)) {
-      if (path.length === 0 && key === "_schema") continue;
+      if (path.length === 0 && key === bindingKey) continue;
       walk(property, [...path, key]);
     }
     const items = schema.items();

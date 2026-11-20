@@ -64,7 +64,10 @@ export interface ValidationReport {
 
 export class ValidationService {
   private readonly compiled = new WeakMap<SchemaSet, InstanceValidator | SchemaCompileError>();
-  private readonly defects = new WeakMap<SchemaSet, readonly SchemaIssue[]>();
+  private readonly defects = new WeakMap<
+    SchemaSet,
+    { readonly bindingKey: string; readonly defects: readonly SchemaIssue[] }
+  >();
 
   constructor(
     private readonly validator: SchemaValidator,
@@ -75,7 +78,7 @@ export class ValidationService {
   /** Report of the instance `tree`, whose form model under `schemas` is `model`. */
   validate(schemas: SchemaSet, model: FormModel, tree: YamlNode): ValidationReport {
     const data = InstanceData.fromTree(tree, new UnfilledValues(model.unfilled));
-    const defects = this.defectsOf(schemas);
+    const defects = this.defectsOf(schemas, model.bindingKey);
     const rootUnfilled = data.unfilled.has(data.value);
     if (rootUnfilled && !("children" in model.root)) {
       return {
@@ -112,19 +115,19 @@ export class ValidationService {
     };
   }
 
-  private defectsOf(schemas: SchemaSet): readonly SchemaIssue[] {
-    let defects = this.defects.get(schemas);
-    if (defects === undefined) {
-      const root = SchemaView.root(schemas);
-      defects = [
-        ...undeclaredRequirements(root),
-        ...admittedUnfilledValues(root),
-        ...identifierDefects(root),
-        ...referenceDefects(root),
-        ...compositionConflicts(root),
-      ];
-      this.defects.set(schemas, defects);
-    }
+  /** Defects of `schemas`, the property `bindingKey` of the root left out, computed once. */
+  private defectsOf(schemas: SchemaSet, bindingKey: string): readonly SchemaIssue[] {
+    const cached = this.defects.get(schemas);
+    if (cached !== undefined && cached.bindingKey === bindingKey) return cached.defects;
+    const root = SchemaView.root(schemas);
+    const defects = [
+      ...undeclaredRequirements(root, bindingKey),
+      ...admittedUnfilledValues(root, bindingKey),
+      ...identifierDefects(root),
+      ...referenceDefects(root, bindingKey),
+      ...compositionConflicts(root, bindingKey),
+    ];
+    this.defects.set(schemas, { bindingKey, defects });
     return defects;
   }
 

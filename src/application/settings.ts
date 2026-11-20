@@ -2,12 +2,14 @@
  * Model of the plugin settings, and their validation at the boundary where they are read from
  * the data file of the plugin.
  */
-import type { JsonValue, PathRule } from "../domain";
+import { DEFAULT_BINDING_KEY, isBindingKey, type JsonValue, type PathRule } from "../domain";
 import type { CustomCheckerRegistration } from "./protocols";
 
 export interface EkphrasisSettings {
   /** Vault path of the registry mapping logical schema identifiers to schema files. */
   readonly schemaRegistry: string;
+  /** Root property through which a record names its contract, `_schema` by default. */
+  readonly bindingKey: string;
   /** Path rules binding instances without a schema field or modeline, applied in this order. */
   readonly pathRules: readonly PathRule[];
   /** Glob patterns of the files that bind to no schema, such as the skeletons of notes. */
@@ -83,6 +85,7 @@ export const CUSTOM_CHECKER_TIMEOUT_LIMITS = {
 
 export const DEFAULT_SETTINGS: EkphrasisSettings = {
   schemaRegistry: "",
+  bindingKey: DEFAULT_BINDING_KEY,
   pathRules: [],
   excludedPaths: [],
   commitDelay: 1000,
@@ -111,6 +114,10 @@ export function parseSettings(raw: unknown): EkphrasisSettings {
       typeof record["schemaRegistry"] === "string"
         ? record["schemaRegistry"]
         : DEFAULT_SETTINGS.schemaRegistry,
+    bindingKey:
+      typeof record["bindingKey"] === "string" && isBindingKey(record["bindingKey"])
+        ? record["bindingKey"]
+        : DEFAULT_SETTINGS.bindingKey,
     pathRules: rules.flatMap((rule) =>
       isRecord(rule) && typeof rule["pattern"] === "string" && typeof rule["schema"] === "string"
         ? [{ pattern: rule["pattern"], schema: rule["schema"] }]

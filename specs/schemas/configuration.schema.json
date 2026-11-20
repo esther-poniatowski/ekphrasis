@@ -16,6 +16,11 @@
       "description": "the schema registry mapping each contract to its schema file",
       "$ref": "#/$defs/path"
     },
+    "binding_key": {
+      "description": "the root property through which a record names its contract, as the schema registry binds it; _schema by default",
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+    },
     "path_rules": {
       "description": "the rules binding the records that name no contract, applied in this order",
       "type": "array",

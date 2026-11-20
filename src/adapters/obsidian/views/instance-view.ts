@@ -468,6 +468,7 @@ export class InstanceView extends TextFileView implements SessionHost, OutlineSo
           paintIcon: setIcon,
           references: this.services.references,
           graphPresentationOverrides: this.services.settings().graphPresentationOverrides,
+          bindingKey: this.services.settings().bindingKey,
           reveal: (path) => this.reveal(path, false),
           onOpenSource: () => {
             if (this.mode === "form") this.toggleMode();

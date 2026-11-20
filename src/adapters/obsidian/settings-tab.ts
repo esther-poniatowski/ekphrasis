@@ -11,7 +11,7 @@ import {
   type EkphrasisSettings,
   type GraphPresentationOverride,
 } from "../../application";
-import type { JsonValue, PathRule } from "../../domain";
+import { DEFAULT_BINDING_KEY, isBindingKey, type JsonValue, type PathRule } from "../../domain";
 
 /** Owner of the settings, which stores them and applies them to the open views. */
 export interface SettingsHost {
@@ -61,7 +61,8 @@ export class EkphrasisSettingTab extends PluginSettingTab {
       .setName("Schema registry")
       .setDesc(
         "Vault path of the YAML registry that maps logical schema identifiers to schema files. " +
-          "Records declaring _schema use this registry before compatibility bindings.",
+          "Records naming their contract under the binding key use this registry before " +
+          "compatibility bindings.",
       )
       .addText((text) =>
         text
@@ -70,6 +71,24 @@ export class EkphrasisSettingTab extends PluginSettingTab {
           .onChange((schemaRegistry) =>
             this.host.updateSettings({ ...this.host.settings, schemaRegistry }),
           ),
+      );
+    new Setting(containerEl)
+      .setName("Binding key")
+      .setDesc(
+        "Root property through which a record names its contract, as the schema registry of " +
+          "the repository binds it: letters, digits, _ and -, not opening on a digit or -.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder(DEFAULT_BINDING_KEY)
+          .setValue(this.host.settings.bindingKey)
+          .onChange((value) => {
+            const bindingKey = value.trim() === "" ? DEFAULT_BINDING_KEY : value.trim();
+            text.inputEl.toggleClass("mod-invalid", !isBindingKey(bindingKey));
+            if (isBindingKey(bindingKey)) {
+              return this.host.updateSettings({ ...this.host.settings, bindingKey });
+            }
+          }),
       );
     const graphOverrideSetting = new Setting(containerEl)
       .setName("Graph presentation overrides")
@@ -122,7 +141,7 @@ export class EkphrasisSettingTab extends PluginSettingTab {
       .setName("Path rules")
       .setDesc(
         "Each rule binds the files matched by a glob pattern, such as records/**/*.yml, to a " +
-          "schema given by its path from the vault root. A file without _schema or a modeline takes the " +
+          "schema given by its path from the vault root. A file without a binding key or a modeline takes the " +
           "schema of the first matching rule.",
       )
       .setHeading();

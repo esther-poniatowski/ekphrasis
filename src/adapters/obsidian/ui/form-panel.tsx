@@ -18,6 +18,7 @@ import type {
 } from "../../../application";
 import {
   ConstraintIndex,
+  DEFAULT_BINDING_KEY,
   fieldChain,
   IssueIndex,
   type Commit,
@@ -65,13 +66,15 @@ export interface FormPanelProps {
   readonly references: ReferenceLookup;
   /** Safe vault-local visual overrides for producer graph-presentation profiles. */
   readonly graphPresentationOverrides: readonly GraphPresentationOverride[];
+  /** Root property through which a record names its contract, `_schema` when absent. */
+  readonly bindingKey?: string;
   /** Moves the form to the field at a path, unfolding the sections containing it. */
   readonly reveal: (path: YamlPath) => void;
   readonly onOpenSource: () => void;
 }
 
 const BINDING_SOURCES: Readonly<Record<SchemaBinding["source"], string>> = {
-  "schema-field": "the _schema field",
+  "schema-field": "the binding key",
   modeline: "the modeline",
   "path-rule": "a path rule",
 };
@@ -105,7 +108,8 @@ export function FormPanel(props: FormPanelProps): JSX.Element {
           <p>To display it as a form, bind it to a schema by one of three methods:</p>
           <ul class="ekphrasis-message-list">
             <li>
-              declare its logical identifier in a top-level <code>_schema</code> field;
+              declare its logical identifier in a top-level{" "}
+              <code>{props.bindingKey ?? DEFAULT_BINDING_KEY}</code> field;
             </li>
             <li>
               write at the top of the file the line{" "}

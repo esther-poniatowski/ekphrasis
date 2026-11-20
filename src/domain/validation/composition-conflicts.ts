@@ -14,36 +14,44 @@ import { commonOptions, enumerations, isAlternatives, type ChoiceOption } from "
 import type { SchemaIssue } from "../form/model";
 import { printPatternPath } from "../paths/field-path";
 import { walkFieldSchemas } from "../schema/field-walk";
+import { DEFAULT_BINDING_KEY } from "../schema/binding-key";
 import { commonTypes } from "../schema/schema-view";
 import type { SchemaView } from "../schema/schema-view";
 
 /** Defects of the schema `root`, one per conflict of the subschemas composed for a field. */
-export function compositionConflicts(root: SchemaView): SchemaIssue[] {
+export function compositionConflicts(
+  root: SchemaView,
+  bindingKey: string = DEFAULT_BINDING_KEY,
+): SchemaIssue[] {
   const issues: SchemaIssue[] = [];
-  walkFieldSchemas(root, (schema, path) => {
-    const parts = schema.parts();
-    if (parts.length < 2) return;
-    const report = (message: string): void => {
-      issues.push({ path: printPatternPath(path), message });
-    };
-    const types = parts.map((part) => part.types).filter((names) => names.length > 0);
-    if (types.length > 1 && commonTypes(types).length === 0) {
-      report(
-        `The subschemas composed by \`$ref\` or \`allOf\` admit no common type: ${types.map(listOfNames).join(" against ")}. The form follows the nearest declaration.`,
-      );
-    }
-    const lists = enumerations(schema);
-    if (lists.length > 1 && commonOptions(lists).length === 0) {
-      report(
-        `The subschemas composed by \`$ref\` or \`allOf\` admit no common value: ${lists.map(listOfValues).join(" against ")}. The form follows the nearest declaration.`,
-      );
-    }
-    if (parts.filter(isAlternatives).length > 1) {
-      report(
-        "Several subschemas composed by `$ref` or `allOf` declare alternatives by `oneOf`, whereas the form displays the alternatives of one keyword. The form follows the nearest declaration.",
-      );
-    }
-  });
+  walkFieldSchemas(
+    root,
+    (schema, path) => {
+      const parts = schema.parts();
+      if (parts.length < 2) return;
+      const report = (message: string): void => {
+        issues.push({ path: printPatternPath(path), message });
+      };
+      const types = parts.map((part) => part.types).filter((names) => names.length > 0);
+      if (types.length > 1 && commonTypes(types).length === 0) {
+        report(
+          `The subschemas composed by \`$ref\` or \`allOf\` admit no common type: ${types.map(listOfNames).join(" against ")}. The form follows the nearest declaration.`,
+        );
+      }
+      const lists = enumerations(schema);
+      if (lists.length > 1 && commonOptions(lists).length === 0) {
+        report(
+          `The subschemas composed by \`$ref\` or \`allOf\` admit no common value: ${lists.map(listOfValues).join(" against ")}. The form follows the nearest declaration.`,
+        );
+      }
+      if (parts.filter(isAlternatives).length > 1) {
+        report(
+          "Several subschemas composed by `$ref` or `allOf` declare alternatives by `oneOf`, whereas the form displays the alternatives of one keyword. The form follows the nearest declaration.",
+        );
+      }
+    },
+    bindingKey,
+  );
   return issues;
 }
 

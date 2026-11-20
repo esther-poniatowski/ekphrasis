@@ -39,4 +39,16 @@ describe("instanceSkeleton", () => {
       title: null,
     });
   });
+
+  it("writes the identifier under the binding key of the consumer", () => {
+    const schema = view({
+      type: "object",
+      required: ["contract", "_schema"],
+      properties: { contract: { const: "project:record@1" }, _schema: { const: "domain" } },
+    });
+    expect(instanceSkeleton(schema, "project:record@1", "contract")).toEqual({
+      contract: "project:record@1",
+      _schema: "domain",
+    });
+  });
 });

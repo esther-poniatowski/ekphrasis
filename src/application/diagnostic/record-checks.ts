@@ -181,7 +181,7 @@ function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
           `\`${path}\` matches the excluded pattern \`${state.excludedBy}\`, so it remains in the source view without a binding.`,
         );
       }
-      const identifier = readSchemaField(record.text);
+      const identifier = readSchemaField(record.text, facts.bindingKey);
       const declared = identifier === null ? null : parseSchemaIdentifier(identifier);
       if (declared !== null) {
         const registered = facts.identifiers.some((candidate) => {
@@ -198,8 +198,8 @@ function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
       return notPassed(
         "warning",
         SUBJECTS.form,
-        `No \`_schema\` field, modeline or path rule binds \`${path}\`, so it opens in the source view.`,
-        "Write the identifier of its contract in the field `_schema`, or add a path rule matching its path under *Path rules* in the settings of Ekphrasis.",
+        `No \`${facts.bindingKey}\` field, modeline or path rule binds \`${path}\`, so it opens in the source view.`,
+        `Write the identifier of its contract in the field \`${facts.bindingKey}\`, or add a path rule matching its path under *Path rules* in the settings of Ekphrasis.`,
       );
     case "invalid-binding":
       return notPassed(
@@ -207,7 +207,7 @@ function formCheck(record: OpenedRecord, facts: SchemaFacts): DiagnosticCheck {
         SUBJECTS.form,
         `The binding \`${state.reference}\` of \`${path}\` does not resolve: ${state.reason}.`,
         state.source === "schema-field"
-          ? "Check the identifier written in `_schema` against the registry, and the checks of the schema registry above."
+          ? `Check the identifier written in \`${facts.bindingKey}\` against the registry, and the checks of the schema registry above.`
           : "Correct the schema path written in the modeline or the path rule so that it names a schema file of the vault.",
         [state.reason],
       );

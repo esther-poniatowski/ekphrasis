@@ -10,6 +10,7 @@ const FACTS: SchemaFacts = {
   registry: { status: "unconfigured" },
   identifiers: ["vault:project@1"],
   generatedPaths: new Set(),
+  bindingKey: "_schema",
 };
 
 const VAULT: VaultInspector = {

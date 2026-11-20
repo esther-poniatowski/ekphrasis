@@ -3,7 +3,7 @@
  * collection held by the records of another type, declared by the keyword `x-reference`.
  *
  * The keyword names three parts. The key `schema` names the logical contract of the records that
- * hold the entries, as their field `_schema` declares it. The key `collection` names the field of
+ * hold the entries, as their binding key declares it. The key `collection` names the field of
  * those records that holds the entries, by a field path from their root. The optional key `key`
  * names the identifier of an entry, by a field path from the entry. Without `key`, the entries of
  * a mapping are named by their keys, and the items of a sequence by their own text:
@@ -25,6 +25,7 @@ import {
   printPatternPath,
 } from "../paths/field-path";
 import { walkFieldSchemas } from "../schema/field-walk";
+import { DEFAULT_BINDING_KEY } from "../schema/binding-key";
 import { isJsonObject, type JsonValue } from "../schema/json";
 import type { SchemaView } from "../schema/schema-view";
 
@@ -118,14 +119,21 @@ export function referenceOf(schema: SchemaView): EntryReference | null {
 }
 
 /** Defects of the keywords `x-reference` under the schema `root`, one per field schema. */
-export function referenceDefects(root: SchemaView): SchemaIssue[] {
+export function referenceDefects(
+  root: SchemaView,
+  bindingKey: string = DEFAULT_BINDING_KEY,
+): SchemaIssue[] {
   const issues: SchemaIssue[] = [];
-  walkFieldSchemas(root, (schema, path) => {
-    const declaration = referenceDeclaration(schema);
-    if (declaration.status === "defective") {
-      issues.push({ path: printPatternPath(path), message: declaration.message });
-    }
-  });
+  walkFieldSchemas(
+    root,
+    (schema, path) => {
+      const declaration = referenceDeclaration(schema);
+      if (declaration.status === "defective") {
+        issues.push({ path: printPatternPath(path), message: declaration.message });
+      }
+    },
+    bindingKey,
+  );
   return issues;
 }
 

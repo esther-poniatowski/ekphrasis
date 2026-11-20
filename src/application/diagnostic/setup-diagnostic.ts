@@ -46,12 +46,14 @@ export async function runSetupDiagnostic(
     registry: { status: "unconfigured" },
     identifiers: [],
     generatedPaths: new Set(),
+    bindingKey: dependencies.settings.bindingKey,
   };
   await guarded(checks, { id: "schemas", name: "the schemas" }, async () => {
     const schemas = await schemaChecks({
       ...dependencies,
       recordDeclaresSchema:
-        record !== null && readSchemaDeclaration(record.text).status === "declared",
+        record !== null &&
+        readSchemaDeclaration(record.text, dependencies.settings.bindingKey).status === "declared",
     });
     facts = schemas.facts;
     return schemas.checks;

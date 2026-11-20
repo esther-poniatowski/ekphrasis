@@ -36,6 +36,7 @@ cases:
   - name: every-key
     document:
       _schema: "ekphrasis:configuration@1"
+      binding_key: contract
       custom_checker_timeout: 5000
       custom_checkers:
         - {name: units, module: lab.checks, function: units, schemas: ["lab:*"], arguments: {strict: true}}
@@ -50,6 +51,7 @@ cases:
           edge_kinds: {supports: {arrow: diamond, caption: hide}}
     valid: true
     settings:
+      bindingKey: contract
       customCheckerTimeout: 5000
       customCheckers:
         - {name: units, module: lab.checks, function: units, schemas: ["lab:*"], arguments: {strict: true}}
@@ -81,6 +83,9 @@ cases:
     document:
       _schema: "ekphrasis:configuration@1"
       path_rules: [{pattern: "*.yml", schema: "specs/*.json"}]
+    valid: false
+  - name: binding-key-with-a-dot
+    document: {_schema: "ekphrasis:configuration@1", binding_key: "meta.schema"}
     valid: false
   - name: short-delay
     document: {_schema: "ekphrasis:configuration@1", commit_delay: 100}

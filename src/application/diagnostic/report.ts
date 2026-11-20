@@ -35,7 +35,7 @@ export interface CheckSubject {
   readonly consequence: Consequence;
   /** Dependency checked, named for the researcher, such as *Schema registry file*. */
   readonly dependency: string;
-  /** Capability that depends on it, such as *forms of the records declaring `_schema`*. */
+  /** Capability that depends on it, such as *forms of the records that name their contract under the binding key*. */
   readonly affects: string;
 }
 

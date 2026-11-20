@@ -159,4 +159,6 @@ export interface FormModel {
   /** Values that the schema counts as unfilled besides the null value, in their written order. */
   readonly unfilled: readonly JsonValue[];
   readonly schemaIssues: readonly SchemaIssue[];
+  /** Root property naming the contract of the record, which the form shows as no field. */
+  readonly bindingKey: string;
 }
