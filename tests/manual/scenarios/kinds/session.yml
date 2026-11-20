@@ -1,0 +1,9 @@
+# Manual test record of dates, durations, references and the removal of optional fields.
+_schema: scenario:session@1
+title: Weekly review
+stream: research
+host: ana
+due: '2026-11-15'
+length: PT1H
+archived: true
+details: Some *details* # kept comment

@@ -1,0 +1,23 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: session.schema.yaml
+title: Session
+type: object
+required: [_schema, title]
+$defs:
+  stream_reference:
+    type: string
+    description: Identifier of a stream declared by the catalog.
+    x-reference: { schema: 'scenario:catalog@1', collection: streams }
+properties:
+  _schema: { const: 'scenario:session@1' }
+  title: { type: string, title: Title }
+  stream: { $ref: '#/$defs/stream_reference', title: Stream }
+  host:
+    type: string
+    title: Host
+    x-reference: { schema: 'scenario:catalog@1', collection: members, key: id }
+  due: { type: string, format: date, title: Due }
+  length: { type: string, format: duration, title: Length }
+  archived: { type: boolean, title: Archived }
+  details: { type: string, x-kind: markdown, title: Details }
+  note: { type: string, x-kind: markdown, title: Note }

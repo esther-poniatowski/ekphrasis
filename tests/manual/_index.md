@@ -30,5 +30,6 @@ Verifies inside Obsidian the behaviours of ekphrasis that unit tests cannot reac
 - [Test protocol: Generated-view freshness](protocols/view-freshness.md): distinguishes a current generated view from one invalidated by changed source records
 - [Test protocol: Primary generated view](protocols/primary-view.md): verifies that a producer selects and opens the view for an explicit completion target
 - [Test protocol: Local graph presentation](protocols/graph-presentation-overrides.md): verifies that vault-local recipes change graph visuals without changing producer semantics
+- [Test protocol: Dates, references and removal](protocols/dates-references-removal.md): verifies the date, duration and reference kinds, the removal of optional fields, and the clearing of an optional Markdown field
 - [Scenario records](scenarios): supplies the records and the schemas of the protocols, copied into the test vault at each build
 - [Settings of the test vault](vault-settings.json): fixes the settings from which every protocol starts

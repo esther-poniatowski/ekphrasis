@@ -27,6 +27,7 @@ The form follows the schema structure. Each property of an object schema becomes
 | `default` | Value written into a new instance |
 | `required` | Fields of the object that must be filled |
 | `type`, `enum`, `oneOf`, `items`, `properties` | [Kind of the field](field-kinds.md), when the keyword `x-kind` is absent |
+| `format` | Kind `date` for `date`, and kind `duration` for `duration`, on a string; checked by [validation](validation.md) |
 
 ^field-keywords
 
@@ -95,7 +96,7 @@ The form displays every unfilled value as an empty control, as the [form view](f
 
 ## Keywords of ekphrasis
 
-Ekphrasis adds ten keywords, each prefixed by `x-`:
+Ekphrasis adds eleven keywords, each prefixed by `x-`:
 
 | Keyword | Position | Value | Effect |
 | --- | --- | --- | --- |
@@ -109,6 +110,7 @@ Ekphrasis adds ten keywords, each prefixed by `x-`:
 | `x-unfilled` | Root | Sequence of JSON values | Values counted as unfilled, in addition to the null value |
 | `x-version` | Root | Version identifier | [Version](schema-editor.md#^schema-version) of the schema |
 | `x-identifier` | Root | [Field path](field-paths.md), such as `identity.id` | Field holding the identifier of each record, named by the [links by identifier](links.md) |
+| `x-reference` | String field | Mapping of `schema`, `collection` and optionally `key` | [Entries of other records](field-kinds.md#^reference-kind) that the value names, suggested and checked |
 
 Every record of a type must hold its identifier at the same path. Therefore, the keyword `x-identifier` must designate a declared property, reached from the root through the keyword `properties` of each group, of the schemas that it [composes](#^composition), or of its alternatives. When the value of the keyword is no field path, holds a wildcard, or designates no declared property, the form reports a defect of the schema.
 

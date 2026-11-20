@@ -36,7 +36,7 @@ The validator locates each error of a standard keyword at a node of the instance
 - the failures of the alternatives of one `oneOf` or `anyOf` merge into one issue, and its message lists the admitted values when each alternative fixes a value by `const` or `enum`;
 - the failure of an `if` is reported through the keywords of its `then` or its `else` only.
 
-The keyword `format` is checked for the formats of JSON Schema, such as `date`, `date-time`, `email` and `uri`, and a date must also lie in its calendar range. A format unknown to the validator is ignored. When the validator refuses a schema, for instance for a pattern that is no valid regular expression, the refusal is reported as a [schema defect](form-view.md), and the rules still run.
+The keyword `format` is checked for the formats of JSON Schema, such as `date`, `date-time`, `email` and `uri`, and a date must also lie in its calendar range. A format unknown to the validator is ignored. The message of a failed `date` or `duration`, the formats of the kinds of the same names, states the expected form, such as `YYYY-MM-DD`. A duration follows ISO 8601 as the validator reads it: a week stands alone, as `P2W`, and seconds are whole. When the validator refuses a schema, for instance for a pattern that is no valid regular expression, the refusal is reported as a [schema defect](form-view.md), and the rules still run.
 
 ## Rule declarations
 
@@ -110,7 +110,7 @@ The key `key` of a checker of sequences is a field path written from each item, 
 
 A condition `when` names a field under the key `field`, and applies one test to its value: `equals: VALUE`, `in: [VALUES]`, `filled: true` or `unfilled: true`. A relational or conditional checker declared at the root of the schema acts on the whole instance, so its field paths start from the root. The form view also reflects the checkers `required-when` and `forbidden-when` in its controls, as specified for [conditional rules](form-view.md#^conditional-controls).
 
-The predefined checkers read one instance only. A rule that reads other files, such as the resolution of references across records, is implemented as a [custom checker](custom-checkers.md).
+The predefined checkers read one instance only. One built-in check reads other records: a filled text whose field declares [`x-reference`](field-kinds.md#^reference-kind) is reported when it names no entry found in the records of the vault. The check names the keyword `x-reference`, and it reports nothing until ekphrasis has read the records of the vault. Every other rule that reads other files, such as the uniqueness of identifiers across files, is implemented as a [custom checker](custom-checkers.md), as the [decision on entry references](../adr/entry-references.md) weighs.
 
 ### Paths with wildcards
 
@@ -130,7 +130,7 @@ After the shared prefix, a wildcard is admitted in the subject path only, and ea
 Each issue carries four elements:
 
 - the [field path](field-paths.md) of the field concerned;
-- the name of the checker that raised it: a keyword of JSON Schema, a checker named under `check`, a registered instance checker, or a field kind whose implied rule failed;
+- the name of the checker that raised it: a keyword of JSON Schema, a checker named under `check`, a registered instance checker, a field kind whose implied rule failed, or the keyword `x-reference`;
 - its severity, `error` or `warning`;
 - its message.
 

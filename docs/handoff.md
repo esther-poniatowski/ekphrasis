@@ -67,6 +67,8 @@ The read-only command and settings button *Diagnose setup* now inspect the schem
 
 Each decision record verified by a spike states the constraints that the later milestones must respect: in its section *Verification*, or for the extension conflict in its consequences.
 
+On 2026-11-15, four requests of a consumer project were implemented, with neutral names in the code, the tests and the documentation. The kinds `date` and `duration` derive from `format`, and the kind `reference` reads the keyword `x-reference` and the entries kept by the identifier index service. The action *Remove* removes a committed optional field, key included. Three decision records await ratification with the status `proposed`: [entry references](adr/entry-references.md), [date and duration kinds](adr/date-duration-kinds.md) and [optional field removal](adr/optional-field-removal.md). The record on entry references reopens the evaluation of rules across files for one rule. Unit and component tests cover each behaviour. The [protocol of dates, references and removal](../tests/manual/protocols/dates-references-removal.md) has not run inside Obsidian, so the three roadmap steps stay unchecked. A component test of a cleared optional Markdown field reproduced no defect of saving: a field revealed through *+ Add a field* stays an empty draft after clearing, as the rule of drafts states, and the roadmap records that check.
+
 The local graph-presentation match requires both the producer profile identifier and its version. The [manual protocol](../tests/manual/protocols/graph-presentation-overrides.md) passed the setting, persistence, refresh, diagnostic and visible-fallback route in Obsidian 1.15.1 on macOS on 2026-11-13.
 
 ## Environment
@@ -197,4 +199,7 @@ The design decisions and their rationale are recorded in the [architecture decis
 - The setup diagnostic and the request loop use the same checker-runner library. A change to that library must run both the request-loop tests and the diagnostic-probe tests.
 - Obsidian 1.15 saves an existing file in place. Therefore, the diagnostic checks the operating-system write permission of that file without creating a probe file.
 - Synthetic and corpus tests show that a summary click reaches a field. An Obsidian protocol must still verify that the control receives focus and that the applicable checker message appears on desktop and mobile.
+- The [draft of a text control](../src/adapters/obsidian/ui/controls/text-draft.ts) recognizes the return of its own commit by the value last taken, not by the focus. Therefore, a commit made by another element, such as the calendar of a date, keeps the history of the control. A new element that commits for a text input must commit through the draft of that input.
+- The [identifier index service](../src/application/identifier-index-service.ts) keeps the value of every record bound by `_schema`, and answers a reference only after its first build and outside a rebuild. A change of the entries of a reference already asked for refreshes every open form after the delay of the settings refresh.
+- The action *Remove* refuses the only key of the root mapping, with the generic reason that the place of the value could not be determined, as the [decision on optional field removal](adr/optional-field-removal.md) records.
 

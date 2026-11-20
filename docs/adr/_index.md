@@ -21,3 +21,6 @@ Records the design choices of ekphrasis, each binding on every later change of t
 - [Record identifiers](record-identifiers.md): weighs how a link designates a record by its identifier
 - [Absolute references](absolute-references.md): explains why a `$ref` by absolute URI resolves through the resources of the schema registry, and never over the network
 - [Schema composition](schema-composition.md): explains how the form merges the subschemas composed by `$ref` and `allOf`, and what it does when their constraints conflict
+- [Entry references](entry-references.md): weighs how a field names an entry of another record, and how the form suggests and checks it
+- [Date and duration kinds](date-duration-kinds.md): weighs how the form recognizes, displays and checks a date and a duration while the variants of dates stay open
+- [Optional field removal](optional-field-removal.md): weighs how the author removes a committed optional field from the file, key included

@@ -11,7 +11,9 @@ The form view displays an instance bound to a schema as a form, in which each fi
 
 ## Layout
 
-An editable form initially displays the properties stated in the record and every property required by the schema. A current conditional rule or a missing-field issue also displays its absent target. All displayed properties follow schema order. The remaining optional properties stay available through *+ Add a field*. Selecting an optional property displays a draft control without changing the file. Its first committed value writes the property. *Discard* removes an uncommitted property together with every nested draft in that branch.
+An editable form initially displays the properties stated in the record and every property required by the schema. A current conditional rule or a missing-field issue also displays its absent target. All displayed properties follow schema order. The remaining optional properties stay available through *+ Add a field*. Selecting an optional property displays a draft control without changing the file. Its first committed value writes the property. *Discard* removes an uncommitted property together with every nested draft in that branch. A revealed property stays a draft until it is discarded: clearing its committed value removes its key, while the empty control stays in the form with *Discard*. ^optional-drafts
+
+An optional property present in the file carries the action *Remove*, beside its control or in the heading of its section. The action removes the key with its whole value, as specified for [removed fields](saving.md#^removed-fields), so a toggle and a collection can leave the file as a text can. The removed property then leaves the form, even when the author had revealed it, and returns to *+ Add a field*. A property required by the schema or by a current [conditional rule](#^conditional-controls), and a locked property, carry no such action. The [decision on optional field removal](../adr/optional-field-removal.md) compares the alternatives.
 
 Three contexts modify this initial display. First, a read-only form offers no optional-property selector. Second, moving from the outline or the issue summary reveals the selected field and its hidden ancestors. Third, a table retains every declared column. All rows share the same column structure.
 
@@ -37,6 +39,9 @@ The icon of each kind is drawn from the Lucide set bundled with Obsidian. Where 
 | `number` | `binary` | Number |
 | `boolean` | `check-square` | Checkbox |
 | `choice` | `circle-dot` | None |
+| `date` | `calendar` | Date |
+| `duration` | `timer` | None |
+| `reference` | `crosshair` | None |
 | `choices` | `list-checks` | None |
 | `list` | `list` | List |
 | `group` | `braces` | None |
@@ -82,7 +87,7 @@ The control of a field displays no value when the field holds an [unfilled value
 
 - a text control displays `—` as placeholder text, followed by the first example of the field when the field has one;
 - a dropdown selects its empty option, labelled `—`, and lists no unfilled value among its options;
-- a toggle has no empty state, so it displays turned off and followed by `—`.
+- a toggle has no empty state, so it displays turned off and followed by `—`. Its key leaves the file through the action *Remove*.
 
 The file keeps its unfilled value, and a cleared required field receives the first unfilled value of the schema, as specified for [cleared values](saving.md#^cleared-values).
 

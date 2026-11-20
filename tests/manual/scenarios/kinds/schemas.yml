@@ -1,0 +1,7 @@
+# Manual test registry of the dates, durations, references and removal: maps each logical identifier to a schema, by its path from the vault root.
+_schema: kleisis:schema-registry@2
+schemas:
+  scenario:catalog@1: scenarios/kinds/catalog.schema.yaml
+  scenario:session@1: scenarios/kinds/session.schema.yaml
+exports: {}
+resources: {}

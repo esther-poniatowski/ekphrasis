@@ -61,6 +61,8 @@ Ekphrasis keeps an index that maps each identifier to the files declaring it. Th
 - a change of a schema file reads again every file whose binding reads that schema file;
 - a change of the path rules of the settings reads every file again, since a rule can bind a file to another schema.
 
+The same reading keeps the value of each record bound through its field `_schema`, under its logical contract. A field of kind [`reference`](field-kinds.md#^reference-kind) reads from it the entries that it may name.
+
 An identifier declared by several files is ambiguous: a link to it opens no file, and a notice lists the files. Files of different record types can also declare the same identifier, since the identifiers of geonexus are unique within one type only. A link to an unknown identifier also leaves every file closed, and a notice names that identifier. The index is built once Obsidian has loaded the vault, so a link by identifier followed while Obsidian starts waits for that build.
 
 ## Following a link

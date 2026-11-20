@@ -31,7 +31,7 @@ The code of each feature is divided according to whether it calls the API of Obs
 | --- | --- | --- | --- | --- |
 | [YAML instances](../features/instance-files.md) | Reading of the modeline and of the registry value, matching of path rules, resolution of the schema | Model of the settings, reader of the configured registry | — | Registration of the extensions, path rules in the settings tab |
 | [Schemas](../features/schemas.md) | Interpretation of a schema with its references and its compositions resolved: kind, rules, unfilled values, conflicts of composed constraints | Ports for loading schemas and for the resources of the registry | Loader of the JSON and YAML schema files reached by `$ref`, through the registry for an absolute URI | — |
-| [Field kinds](../features/field-kinds.md) | Derivation of the kind of each field | — | — | One control per kind |
+| [Field kinds](../features/field-kinds.md) | Derivation of the kind of each field, declaration of a reference and reading of the entries that it names, index of the records bound to a contract | Entries of the records kept by the use case that indexes identifiers, port for reading the entries of a reference | — | One control per kind, refresh of the open forms when the entries of a reference change |
 | [Field paths](../features/field-paths.md) | Parser of field paths, matching of paths against the instance | — | — | — |
 | [Instance creation](../features/instance-creation.md) | Skeleton of a new instance | Use case that creates an instance | — | Commands, choice of the schema and of the path |
 | [Form view](../features/form-view.md) | Form model | Use case that opens a form | — | Form view, instructions on demand, rendered values and their queue, source view |

@@ -1,0 +1,23 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: catalog.schema.yaml
+title: Catalog
+type: object
+required: [_schema, streams]
+properties:
+  _schema: { const: 'scenario:catalog@1' }
+  streams:
+    type: object
+    title: Streams
+    description: Streams declared by the catalog, keyed by their identifiers.
+    additionalProperties:
+      type: object
+      properties:
+        label: { type: string, title: Label }
+  members:
+    type: array
+    title: Members
+    items:
+      type: object
+      properties:
+        id: { type: string, title: Identifier }
+        name: { type: string, title: Name }

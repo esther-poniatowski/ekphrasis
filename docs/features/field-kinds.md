@@ -23,10 +23,40 @@ A scalar kind holds one value per field:
 | `number` | Integer or decimal number | Single-line input with a decimal keyboard | `type: number` or `type: integer` |
 | `boolean` | `true` or `false` | Toggle | `type: boolean` |
 | `choice` | One of the admitted values | Dropdown | `enum`, or `oneOf` of `const` values |
+| `date` | Calendar date written `YYYY-MM-DD` | Single-line input, with a button opening a calendar | `type: string` with `format: date` |
+| `duration` | ISO 8601 duration, such as `PT1H30M` | Single-line input | `type: string` with `format: duration` |
+| `reference` | Identifier of an entry of another record | Single-line input suggesting the entries found | `type: string` with a well-formed `x-reference` |
 
 The input of the kinds `text`, `markdown-line` and `latex` wraps a long value onto several lines, and grows to show the whole value, so that the end of the value stays editable. A value on one line stays on one line in the file: the key `Enter` commits it instead of inserting a line break, and a line break pasted into the input becomes a space. A value already holding a line break, such as a block scalar written in the source, keeps its line breaks, so that an edit loses no line of it: the key `Enter` inserts a line break, and a pasted line break stays. The kind `markdown-line` still reports such a value, by its implicit rule below.
 
 Two kinds carry an implicit rule. The kind `label` admits one word only, and the kind `markdown-line` admits no line break. [Validation](validation.md) checks both rules like any declared rule. In a `oneOf` of `const` values, each value may carry a `title` and a `description`. The dropdown displays the title, and the instructions of the field list the descriptions on demand, as the [form view](form-view.md#^option-descriptions) specifies.
+
+The kinds `date` and `duration` follow the keyword `format`, which also checks their values, as [validation](validation.md) states. Their input admits any text, so a partial or invalid value stays visible beside its issue. An empty input shows the expected form after the mark `—`: `YYYY-MM-DD` for a date, and `ISO 8601, such as PT1H30M` for a duration, unless the field has an example. The button beside a date opens the calendar of the platform. A date chosen there replaces the text of the input and commits at once, and `Cmd+Z` restores the previous text. Every other value of `format`, such as `date-time`, keeps the kind `text`. The variants of dates left open by the roadmap, such as partial dates and ranges, are outside these two kinds, as the [decision on date and duration kinds](../adr/date-duration-kinds.md) records. ^temporal-kinds
+
+## References
+
+A field of kind `reference` names one entry of a collection held by other records, such as one of the streams that a catalog declares. The keyword `x-reference` of its schema names the records and the collection, as the [decision on entry references](../adr/entry-references.md) records:
+
+```yaml
+stream:
+  type: string
+  x-reference: { schema: 'example:catalog@1', collection: streams }
+host:
+  type: string
+  x-reference: { schema: 'example:team@1', collection: members, key: id }
+```
+
+The keyword holds three keys:
+
+| Key | Value | Absence |
+| --- | --- | --- |
+| `schema` | Logical contract of the records holding the entries, as their field `_schema` declares it | Makes the keyword malformed |
+| `collection` | [Field path](field-paths.md) of the collection, from the root of each record, without wildcard | Makes the keyword malformed |
+| `key` | Field path of the identifier, from each entry, without wildcard | The entries of a mapping are named by their keys, and the items of a sequence by their text |
+
+Only the records bound through their field `_schema` hold entries, and every record bound to the named contract contributes its entries. A value other than a non-empty text names no entry, such as an identifier field holding a number. The keyword is read through `$ref` and `allOf`, so one shared definition can declare it for many fields.
+
+The input suggests the identifiers of the entries found, filtered by the typed text, and still admits any text. [Validation](validation.md) reports a value naming no entry. The suggestions and the check read the same index as the [links by identifier](links.md), so neither acts before that index has read the vault: the open forms are refreshed once it has. A later change of the entries of a reference, such as a stream added to the catalog, also refreshes the open forms. A malformed keyword is reported as a [schema defect](form-view.md), and the kind of its field is derived from the other keywords. A field declaring `x-kind` together with `x-reference` keeps its declared control, and its value is still checked. ^reference-kind
 
 ## Collection kinds
 

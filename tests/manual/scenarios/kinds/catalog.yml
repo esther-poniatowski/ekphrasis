@@ -1,0 +1,12 @@
+# Manual test record holding the entries that the session names.
+_schema: scenario:catalog@1
+streams:
+  research:
+    label: Research
+  teaching:
+    label: Teaching
+members:
+  - id: ana
+    name: Ana
+  - id: ben
+    name: Ben
