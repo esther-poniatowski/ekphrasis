@@ -9,6 +9,7 @@ Every notable change to the project is recorded in this changelog. The format fo
 - The format `ekphrasis:configuration@1` of the file `ekphrasis.yml`, published as a JSON Schema with cases, and its projection onto the settings of the plugin, published as the TypeScript package `@ekphrasis/configuration`. Ekphrasis owns the format that a tool installing the plugin writes.
 - The schema of the presentation profile of a graph, published under an absolute `$id`, to which a producer of graphs refers.
 - The configuration of Kleisis and the registry of Ekphrasis, which export the configuration and list the profile.
+- The setting *Binding key*, and the key `binding_key` of `ekphrasis:configuration@1`, name the root property through which a record names its contract, `_schema` by default. The binding, the form, the creation of a record, the checks of a schema and the diagnostic follow that key.
 
 ## [0.3.0] - 2026-11-13
 

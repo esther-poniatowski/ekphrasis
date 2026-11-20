@@ -40,7 +40,7 @@ The kind of each field selects its control, as listed under [field kinds](../fea
 
 To open records as forms, the author selects one of three binding routes:
 
-- a top-level `_schema` field resolved through the schema registry configured in Ekphrasis;
+- a top-level field of the binding key, `_schema` unless the setting *Binding key* names another, resolved through the schema registry configured in Ekphrasis;
 - a path rule in the settings of the plugin, such as the pattern `notation/*.yaml` assigned to the schema `schemas/notation.schema.yaml`;
 - a modeline at the top of each record, `# yaml-language-server: $schema=../schemas/notation.schema.yaml`, written by the command *Create instance* when no path rule binds the new file.
 

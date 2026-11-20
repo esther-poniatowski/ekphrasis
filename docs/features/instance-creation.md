@@ -21,7 +21,7 @@ The command _Create instance_ creates a record through the following sequence:
    identifier. The producer can then update related project files without placing its rules in
    Ekphrasis.
 
-If the registry or a contract is invalid, the command shows a notice and writes no file. In particular, each offered contract must declare its registered logical identifier as the constant value of its `_schema` property.
+If the registry or a contract is invalid, the command shows a notice and writes no file. In particular, each offered contract must declare its registered logical identifier as the constant value of the property of its binding key, `_schema` by default.
 
 The setting _Post-creation command_ accepts an array of strings. Ekphrasis sends those strings to the
 configured Python interpreter without a shell. Three placeholders supply values that depend on the
@@ -43,7 +43,7 @@ The skeleton holds three elements:
 
 ^skeleton
 
-- the field `_schema`, holding the logical identifier chosen from the registry;
+- the field of the binding key, holding the logical identifier chosen from the registry;
 - every field with a default value, holding that value;
 - every required field without a default value, holding the first scalar among the [unfilled values](schemas.md#^unfilled-values) of the schema, or else the null value.
 

@@ -35,6 +35,13 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 | Path rules in the settings | The files carry no line for the binding, so a file that admits no additional key and loses its comments when a program rewrites it keeps its schema | A file moved to another folder loses its schema, and the binding is stored outside the project |
 | `_schema`, modeline, then path rules | Canonical records carry a stable contract; a file of a foreign format is bound by a comment, and a rewritten file by its folder | Three routes require explicit precedence |
 
+The binding key itself admits two options:
+
+| Option | Benefit | Cost |
+| --- | --- | --- |
+| The key `_schema`, fixed by Ekphrasis | No setting | A consumer whose registry binds by another key, as Kleisis and Anagraphe admit, loses its forms |
+| **A key named by the setting *Binding key*, `_schema` by default** | Ekphrasis follows the key that the consumer declares | A further setting. Taken |
+
 ## Consequences
 
 - An explicit `_schema` value must have the form `<owner>:<type>@<major>`. A malformed value is invalid.
@@ -43,7 +50,7 @@ Ekphrasis first resolves a top-level `_schema` field through a configured regist
 - Ekphrasis does not fall back to a modeline or path rule after reading `_schema`.
 - Ekphrasis verifies that the mapped schema declares the same value as the constant of its root `_schema` property.
 - A current registry declares `_schema: kleisis:schema-registry@2`. Ekphrasis also reads the numeric markers `schema_version: 1` and `schema_version: 2`. A missing marker, duplicate markers or another value makes the registry invalid.
-- Ekphrasis omits the reserved root property from the content form.
+- Ekphrasis omits the root property of the binding key from the content form. In the consequences above, `_schema` stands for that key. The marker of a registry file stays `_schema`, since the format of Kleisis fixes it.
 - The modeline and path rules remain available to files without `_schema`.
 - A file matched by a pattern of the setting *Excluded paths* binds to no source. A note skeleton declares the `_schema` of the records created from it, but its placeholders fail that schema. Excluding its folder opens it in the source view, without any change to the skeleton.
 - The command *Create instance* writes a modeline only when no path rule binds the new path.

@@ -58,10 +58,10 @@ Within a group, the checks that fail come first. When the checks of one group st
 
 The schema checks read every file through the file boundary of the forms. Therefore, a file that the diagnostic cannot read is also a file that the forms cannot read. The checks examine eight dependencies:
 
-- the setting *Schema registry*: present when Ekphrasis serves the `_schema` owner of a file;
+- the setting *Schema registry*: present when Ekphrasis serves the owner of the contract that a file names under its binding key;
 - the registry file: present, valid YAML, and structured as the [binding sources](instance-files.md#^binding-sources) define;
 - the version of the registry: 1 or 2;
-- the schema of each contract: present, loadable with the closure of its references, and declaring the contract as the constant of its property `_schema`;
+- the schema of each contract: present, loadable with the closure of its references, and declaring the contract as the constant of the property of the binding key;
 - the file of each resource: present, and declaring as its root `$id` the URI mapped to it;
 - each absolute `$ref` written in a file of the registry: resolved through the key `resources` or a loaded `$id`, as the [absolute references](schemas.md#^absolute-references) require;
 - the guarded schema closure: each hidden file is named by the registry or reached through a relative `$ref`;
@@ -80,7 +80,7 @@ The record checks follow the save of a form up to the file that a save would wri
 - for an authored record, its place among the files indexed by Obsidian, as a save requires;
 - for an authored record, the permission of the operating system to write the file.
 
-A file with a well-formed `_schema` remains in the source view without an error when no registry identifier names its format `<owner>:<type>`. By contrast, the form check fails when the registry holds another major of that format, or when the identifier does not have the required form.
+A file with a well-formed binding key remains in the source view without an error when no registry identifier names its format `<owner>:<type>`. By contrast, the form check fails when the registry holds another major of that format, or when the identifier does not have the required form.
 
 The desktop app of Obsidian writes a saved file in place. Therefore, the write permission of the file decides whether a save succeeds, and the diagnostic asks the operating system for that permission without creating a probe file. The mobile app exposes no permission to plugins. Therefore, on mobile, the check reports `unavailable`, a status distinct from a refused permission.
 

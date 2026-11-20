@@ -16,6 +16,7 @@ The format is published as the JSON Schema [configuration.schema.json](../../spe
 | Key | Setting | Holds |
 | --- | --- | --- |
 | `schema_registry` | `schemaRegistry` | the schema registry mapping each contract to its schema file |
+| `binding_key` | `bindingKey` | the root property through which a record names its contract, `_schema` by default |
 | `path_rules` | `pathRules` | the rules binding the records that name no contract, each a glob `pattern` and a `schema` file |
 | `excluded_paths` | `excludedPaths` | the globs of the files that bind to no schema |
 | `commit_delay` | `commitDelay` | the pause of typing after which a text control commits its value, from 250 to 10000 milliseconds |

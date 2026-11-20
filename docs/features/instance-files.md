@@ -26,13 +26,15 @@ The error raised by Obsidian names no owner, so the notice cannot name the plugi
 
 Ekphrasis binds each record to at most one [schema](schemas.md). Ekphrasis uses the first applicable source:
 
-1. a top-level `_schema` field, whose logical identifier resolves through the configured registry;
+1. the top-level field of the binding key, whose logical identifier resolves through the configured registry;
 2. a modeline comment among the leading comment lines of the file, in the syntax of the YAML language server: `# yaml-language-server: $schema=<path>`;
 3. the path rules of the plugin settings, each assigning a schema to the files matched by a glob pattern.
 
 ^binding-sources
 
-The setting *Excluded paths* removes files from binding before any source is read. A file whose path matches one of its glob patterns binds to no schema, whatever its `_schema` field, its modeline or the path rules state. The file then opens in the source view without an error, and the form view names the matching pattern. Such a file also enters no index of identifiers, so a placeholder identifier collides with no record. The patterns follow the [glob syntax](#^glob-syntax) of the path rules. For example, `templates/**` excludes the skeletons of notes, whose placeholders would fail their schemas.
+The setting *Binding key* names the root property of the first source, `_schema` by default. Kleisis lets a repository bind its records by another property. Such a repository names that property in this setting. The key is a property name of letters, digits, `_` and `-`. It opens on a letter or on `_`. The marker of the registry file itself stays `_schema`, since the format of the registry fixes it.
+
+The setting *Excluded paths* removes files from binding before any source is read. A file whose path matches one of its glob patterns binds to no schema, whatever its binding key, its modeline or the path rules state. The file then opens in the source view without an error, and the form view names the matching pattern. Such a file also enters no index of identifiers, so a placeholder identifier collides with no record. The patterns follow the [glob syntax](#^glob-syntax) of the path rules. For example, `templates/**` excludes the skeletons of notes, whose placeholders would fail their schemas.
 
 The first key of a registry declares its format. The registry key `schemas` relates opaque identifiers to schema paths from the vault root:
 

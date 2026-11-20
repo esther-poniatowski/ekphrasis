@@ -10,7 +10,7 @@ aliases:
 The form pipeline turns the text of an instance into a form, and turns each commit of the form back into text. Opening an instance, or any change of its file, runs five stages, each taking the output of its predecessor:
 
 1. **Parsing** converts the text into a tree that keeps the source range, the scalar style and the comments of each node.
-2. **Binding** resolves the schema of the instance, from its field `_schema` through the registry, else from its modeline or from the path rules, and loads the schema with its references. An absolute `$ref` resolves through the resources of the same registry, read through the port `SchemaResources`.
+2. **Binding** resolves the schema of the instance, from the field of its binding key through the registry, else from its modeline or from the path rules, and loads the schema with its references. An absolute `$ref` resolves through the resources of the same registry, read through the port `SchemaResources`.
 3. **Modelling** combines the schema and the tree into the form model. The model holds one field per property of the schema and of the schemas that it composes by `$ref` and `allOf`. Each field holds its kind, its rules, its field path and, when the file contains it, its node.
 4. **Validation** attaches the issues of the checks to the fields of the model.
 5. **Presentation** builds the controls of the form view and the entries of the outline from the model.
